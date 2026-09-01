@@ -18,7 +18,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
@@ -106,7 +106,7 @@ public class ContactPartiesSelectDocumentIT {
             .value(populateContactPartiesDocumentsList())
             .listItems(populateContactPartiesDocumentsList())
             .build());
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .contactPartiesDocuments(contactPartiesDocuments)
             .build();
 
@@ -174,7 +174,7 @@ public class ContactPartiesSelectDocumentIT {
             .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
             .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
             .content(objectMapper.writeValueAsString(
-                callbackRequest(CaseData.builder()
+                callbackRequest(CriminalInjuriesCompensationData.builder()
                     .contactPartiesDocuments(contactPartiesDocuments)
                     .build(),
                     CASEWORKER_CONTACT_PARTIES)))

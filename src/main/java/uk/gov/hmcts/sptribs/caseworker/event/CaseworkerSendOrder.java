@@ -27,10 +27,10 @@ import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.SendOrderUtil;
 import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
@@ -95,7 +95,8 @@ public class CaseworkerSendOrder implements CCDConfig<CriminalInjuriesCompensati
         sendReminder.addTo(pageBuilder);
     }
 
-    public PageBuilder<CriminalInjuriesCompensationData> send(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+    public PageBuilder<CriminalInjuriesCompensationData> send(final ConfigBuilder<CriminalInjuriesCompensationData, State,
+        UserRole> configBuilder) {
         Event.EventBuilder<CriminalInjuriesCompensationData, UserRole, State> eventBuilder =
                 configBuilder
                     .event(CASEWORKER_SEND_ORDER)
@@ -114,7 +115,8 @@ public class CaseworkerSendOrder implements CCDConfig<CriminalInjuriesCompensati
         return new PageBuilder<>(eventBuilder);
     }
 
-    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStart(CaseDetails<CriminalInjuriesCompensationData, State> caseDetails) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStart(CaseDetails<CriminalInjuriesCompensationData,
+        State> caseDetails) {
         CriminalInjuriesCompensationData data = caseDetails.getData();
         CicCase cicCase = data.getCicCase();
 
@@ -130,8 +132,10 @@ public class CaseworkerSendOrder implements CCDConfig<CriminalInjuriesCompensati
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(final CaseDetails<CriminalInjuriesCompensationData, State> details,
-                                                                       final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+        State> aboutToSubmit(final CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                                       final CaseDetails<CriminalInjuriesCompensationData,
+                                                                           State> beforeDetails) {
 
         final CriminalInjuriesCompensationData caseData = details.getData();
         if (caseData.getCicCase().getOrderFile() != null) {

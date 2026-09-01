@@ -16,6 +16,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
@@ -40,7 +41,7 @@ public class DocumentListUtilTest {
     void shouldGenerateDocList() {
         //Given
 
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
         CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
             .documentCategory(DocumentType.LINKED_DOCS)
@@ -52,7 +53,7 @@ public class DocumentListUtilTest {
         CicCase cicCase = CicCase.builder()
             .reinstateDocuments(listValueList)
             .build();
-        final CaseData caseData = CaseData.builder().build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         caseData.setCicCase(cicCase);
         details.setData(caseData);
         //When
@@ -67,7 +68,7 @@ public class DocumentListUtilTest {
     void shouldGenerateEmptyContactPartiesDocList() {
         //Given
 
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
         CaseworkerCICDocument mp3Doc = CaseworkerCICDocument.builder()
             .documentCategory(DocumentType.LINKED_DOCS)
@@ -86,7 +87,7 @@ public class DocumentListUtilTest {
         CicCase cicCase = CicCase.builder()
             .reinstateDocuments(listValueList)
             .build();
-        final CaseData caseData = CaseData.builder().build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         caseData.setCicCase(cicCase);
         details.setData(caseData);
         //When
@@ -101,7 +102,7 @@ public class DocumentListUtilTest {
     void shouldGenerateNonEmptyContactPartiesDocList() {
         //Given
 
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
         CaseworkerCICDocument pdfDoc = CaseworkerCICDocument.builder()
             .documentCategory(DocumentType.LINKED_DOCS)
@@ -120,7 +121,7 @@ public class DocumentListUtilTest {
         CicCase cicCase = CicCase.builder()
             .reinstateDocuments(listValueList)
             .build();
-        final CaseData caseData = CaseData.builder().build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         caseData.setCicCase(cicCase);
         details.setData(caseData);
         //When
@@ -136,7 +137,7 @@ public class DocumentListUtilTest {
         //Given
         String baseUrl = "http://mocked-url.com/";
 
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
 
         String testDocUUID1 = UUID.randomUUID().toString();
@@ -168,7 +169,7 @@ public class DocumentListUtilTest {
         CicCase cicCase = CicCase.builder()
             .reinstateDocuments(listValueList)
             .build();
-        final CaseData caseData = CaseData.builder().build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         caseData.setCicCase(cicCase);
         details.setData(caseData);
 
@@ -197,7 +198,7 @@ public class DocumentListUtilTest {
         //Given
         String baseUrl = "http://mocked-url.com/";
 
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
         String testDocUUID1 = UUID.randomUUID().toString();
         CaseworkerCICDocument pdfDoc = CaseworkerCICDocument.builder()
@@ -225,7 +226,7 @@ public class DocumentListUtilTest {
         docxlistValue.setValue(docxDoc);
         listValueList.add(docxlistValue);
 
-        final CaseData caseData = CaseData.builder().build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         caseData.setAllDocManagement(DocumentManagement.builder().caseworkerCICDocument(listValueList).build());
         details.setData(caseData);
 
@@ -253,7 +254,7 @@ public class DocumentListUtilTest {
     void shouldGenerateDocListApplicant() {
         //Given
 
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
         CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
             .documentCategory(DocumentType.LINKED_DOCS)
@@ -265,7 +266,7 @@ public class DocumentListUtilTest {
         CicCase cicCase = CicCase.builder()
             .applicantDocumentsUploaded(listValueList)
             .build();
-        final CaseData caseData = CaseData.builder().build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         caseData.setCicCase(cicCase);
         details.setData(caseData);
         //When
@@ -280,7 +281,7 @@ public class DocumentListUtilTest {
     void shouldGenerateDocListClose() {
         //Given
 
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
         CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
             .documentCategory(DocumentType.LINKED_DOCS)
@@ -289,7 +290,7 @@ public class DocumentListUtilTest {
         ListValue<CaseworkerCICDocument> list = new ListValue<>();
         list.setValue(doc);
         listValueList.add(list);
-        final CaseData caseData = CaseData.builder().build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         caseData.setCloseCase(CloseCase.builder().documents(listValueList).build());
         details.setData(caseData);
         //When
@@ -305,7 +306,7 @@ public class DocumentListUtilTest {
     void shouldGenerateDocListDocManagement() {
         //Given
 
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
         CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
             .documentCategory(DocumentType.LINKED_DOCS)
@@ -314,7 +315,7 @@ public class DocumentListUtilTest {
         ListValue<CaseworkerCICDocument> list = new ListValue<>();
         list.setValue(doc);
         listValueList.add(list);
-        final CaseData caseData = CaseData.builder().build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         caseData.setAllDocManagement(DocumentManagement.builder().caseworkerCICDocument(listValueList).build());
         details.setData(caseData);
         //When
@@ -327,7 +328,7 @@ public class DocumentListUtilTest {
     @Test
     void shouldGenerateDocListHearingSummary() {
         //Given
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
         CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
             .documentCategory(DocumentType.LINKED_DOCS)
@@ -336,7 +337,7 @@ public class DocumentListUtilTest {
         ListValue<CaseworkerCICDocument> list = new ListValue<>();
         list.setValue(doc);
         listValueList.add(list);
-        final CaseData caseData = CaseData.builder().build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         final Listing listing = Listing.builder().build();
         final HearingSummary summary = HearingSummary.builder().recFile(listValueList).build();
         listing.setSummary(summary);
@@ -358,9 +359,9 @@ public class DocumentListUtilTest {
     @Test
     void shouldNotPopulateDocumentListIfRecFileListIsEmpty() {
         //Given
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
 
-        final CaseData caseData = CaseData.builder().build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         final Listing listing = Listing.builder().build();
         final HearingSummary summary = HearingSummary.builder().build();
         listing.setSummary(summary);
@@ -385,7 +386,7 @@ public class DocumentListUtilTest {
             .issueDecisionDraft(Document.builder().filename("name").binaryUrl("d").build())
             .build();
 
-        final CaseData caseData = CaseData.builder().build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         caseData.setCaseIssueDecision(decision);
 
         //When
@@ -403,7 +404,7 @@ public class DocumentListUtilTest {
             .document(CICDocument.builder().documentLink(Document.builder().filename("name").binaryUrl("d").build()).build())
             .build();
 
-        final CaseData caseData = CaseData.builder().build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         caseData.setCaseIssueFinalDecision(decision);
 
         //When
@@ -433,7 +434,7 @@ public class DocumentListUtilTest {
     @Test
     void shouldGetAllCaseDocumentsExcludingInitialCicaUploadWithFurtherUploadedDocuments() {
         //Given
-        final CaseData caseData = CaseData.builder().build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
 
         // Set up further uploaded documents (these should be included)
         List<ListValue<CaseworkerCICDocument>> furtherDocs = new ArrayList<>();
@@ -498,7 +499,7 @@ public class DocumentListUtilTest {
     @Test
     void shouldGetAllCaseDocumentsExcludingInitialCicaUploadWithNullFurtherUploadedDocuments() {
         //Given
-        final CaseData caseData = CaseData.builder().build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
 
         // Set further uploaded documents to null
         caseData.setFurtherUploadedDocuments(null);
@@ -550,7 +551,7 @@ public class DocumentListUtilTest {
     @Test
     void shouldGetAllCaseDocumentsExcludingInitialCicaUploadWithEmptyFurtherUploadedDocuments() {
         //Given
-        final CaseData caseData = CaseData.builder().build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
 
         // Set further uploaded documents to empty list
         caseData.setFurtherUploadedDocuments(new ArrayList<>());
@@ -602,7 +603,7 @@ public class DocumentListUtilTest {
     @Test
     void shouldGetAllCaseDocumentsExcludingInitialCicaUploadWithMultipleFurtherUploadedDocuments() {
         //Given
-        final CaseData caseData = CaseData.builder().build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
 
         // Set up multiple further uploaded documents
         List<ListValue<CaseworkerCICDocument>> furtherDocs = new ArrayList<>();
@@ -680,7 +681,7 @@ public class DocumentListUtilTest {
     @Test
     void shouldGetAllCaseDocumentsExcludingInitialCicaUploadWithNoDocuments() {
         //Given
-        final CaseData caseData = CaseData.builder().build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
 
         // Set all document lists to null/empty
         caseData.setFurtherUploadedDocuments(null);
@@ -713,15 +714,15 @@ public class DocumentListUtilTest {
         final List<ListValue<CaseworkerCICDocument>> applicantDocuments =
             List.of(ListValue.<CaseworkerCICDocument>builder().value(cicDocument).build());
 
-        final CaseDetails<CaseData, State> caseDetails = CaseDetails.<CaseData, State>builder()
-            .data(CaseData.builder()
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = CaseDetails.<CriminalInjuriesCompensationData, State>builder()
+            .data(CriminalInjuriesCompensationData.builder()
                 .cicCase(CicCase.builder()
                     .fullName("Test Name")
                     .caseNumber(TEST_CASE_ID.toString())
                     .build())
                 .build())
             .build();
-        final CaseData data = caseDetails.getData();
+        final CriminalInjuriesCompensationData data = caseDetails.getData();
         final CicCase cicCase = data.getCicCase();
         cicCase.setApplicantDocumentsUploaded(applicantDocuments);
 
@@ -744,7 +745,7 @@ public class DocumentListUtilTest {
     void givenCicDoc_whenRemoveFurtherUploadedDocument_thenRemoveIfExists() {
         //given
 
-        final CaseData caseData = CaseData.builder().build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         List<ListValue<CaseworkerCICDocument>> furtherUploadedDocsList = new ArrayList<>();
         CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
             .documentCategory(DocumentType.LINKED_DOCS)
@@ -769,7 +770,7 @@ public class DocumentListUtilTest {
     void givenCicDoc_whenRemoveFurtherUploadedDocument_thenNoMatchAndDontRemove() {
         //given
 
-        final CaseData caseData = CaseData.builder().build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         List<ListValue<CaseworkerCICDocument>> furtherUploadedDocsList = new ArrayList<>();
         CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
             .documentCategory(DocumentType.LINKED_DOCS)
@@ -801,7 +802,7 @@ public class DocumentListUtilTest {
     @Test
     void givenCicDocAndNullOrders_whenRemoveFurtherUploadedDocument_thenDoNothing() {
         //given
-        final CaseData caseData = CaseData.builder().build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
 
         CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
             .documentCategory(DocumentType.LINKED_DOCS)
@@ -820,7 +821,7 @@ public class DocumentListUtilTest {
 
     @Test
     void shouldRemoveInitialCaseDocuments_whenDocumentMatches() {
-        final CaseData caseData = CaseData.builder().build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
 
         List<ListValue<CaseworkerCICDocument>> initialDocs = TestDataHelper.get2Document();
         caseData.setInitialCicaDocuments(initialDocs);
@@ -841,7 +842,7 @@ public class DocumentListUtilTest {
 
     @Test
     void shouldNotRemoveInitialCaseDocuments_whenNoDocumentMatches() {
-        final CaseData caseData = CaseData.builder().build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
 
         List<ListValue<CaseworkerCICDocument>> initialDocs = TestDataHelper.get2Document();
         caseData.setInitialCicaDocuments(initialDocs);
@@ -862,7 +863,7 @@ public class DocumentListUtilTest {
 
     @Test
     void shouldNotRemoveInitialCaseDocuments_whenEmpty() {
-        final CaseData caseData = CaseData.builder().build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         caseData.setInitialCicaDocuments(new ArrayList<>());
 
         CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
@@ -882,7 +883,7 @@ public class DocumentListUtilTest {
 
     @Test
     void shouldNotRemoveInitialCaseDocuments_whenNull() {
-        final CaseData caseData = CaseData.builder().build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
 
         CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
                 .documentCategory(DocumentType.LINKED_DOCS)

@@ -15,6 +15,7 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -73,7 +74,7 @@ class CaseworkerCaseFlagTest {
 
     @Test
     void shouldSuccessfullyAddFlagSubject() {
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         details.setId(TEST_CASE_ID);
 
         SubmittedCallbackResponse submittedCallbackResponse = caseworkerCaseFlag.submitted(details, details);
@@ -84,20 +85,20 @@ class CaseworkerCaseFlagTest {
 
     @Test
     void shouldKeepOriginalListItemIdAndCopyLatestAnonymityFlagDetailsOnCreate() {
-        CaseData caseData = CaseData.builder().cicCase(new CicCase()).build();
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().cicCase(new CicCase()).build();
         ArrayList<ListValue<FlagDetail>> flags = new ArrayList<>();
         flags.add(buildAnonymityFlag("2", "Active", "Latest comment"));
         flags.add(buildAnonymityFlag("1", "Inactive", "Old comment"));
         caseData.setCaseFlags(Flags.builder().details(flags).build());
 
-        CaseData beforeData = CaseData.builder()
+        CriminalInjuriesCompensationData beforeData = CriminalInjuriesCompensationData.builder()
             .caseFlags(Flags.builder()
                 .details(new ArrayList<>(List.of(buildAnonymityFlag("1", "Inactive", "Old comment"))))
                 .build())
             .build();
 
-        CaseDetails<CaseData, State> details = CaseDetails.<CaseData, State>builder().data(caseData).build();
-        CaseDetails<CaseData, State> beforeDetails = CaseDetails.<CaseData, State>builder().data(beforeData).build();
+        CaseDetails<CriminalInjuriesCompensationData, State> details = CaseDetails.<CriminalInjuriesCompensationData, State>builder().data(caseData).build();
+        CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = CaseDetails.<CriminalInjuriesCompensationData, State>builder().data(beforeData).build();
 
         doReturn("AC").when(anonymisationService).getOrCreateAnonymisation();
 
@@ -129,7 +130,7 @@ class CaseworkerCaseFlagTest {
 
     @Test
     void shouldSendAnonymityNotificationWhenAnonymityIsNewlyApplied() {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .hyphenatedCaseRef("1234-5678-9012-3456")
             .cicCase(CicCase.builder()
                 .anonymiseYesOrNo(YesOrNo.YES)
@@ -137,7 +138,7 @@ class CaseworkerCaseFlagTest {
                 .build())
             .build();
 
-        final CaseData beforeCaseData = CaseData.builder()
+        final CriminalInjuriesCompensationData beforeCaseData = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .anonymiseYesOrNo(YesOrNo.NO)
                 .anonymityAlreadyApplied(YesOrNo.NO)
@@ -145,10 +146,10 @@ class CaseworkerCaseFlagTest {
                 .build())
             .build();
 
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setId(TEST_CASE_ID);
         caseDetails.setData(caseData);
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(beforeCaseData);
 
         SubmittedCallbackResponse submittedResponse = caseworkerCaseFlag.submitted(caseDetails, beforeDetails);

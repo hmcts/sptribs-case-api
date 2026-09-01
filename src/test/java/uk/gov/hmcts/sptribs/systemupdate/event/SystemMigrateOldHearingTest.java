@@ -12,7 +12,6 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
@@ -20,6 +19,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -48,7 +48,7 @@ class SystemMigrateOldHearingTest {
     @Test
     void shouldAddConfigurationToConfigBuilder() {
         //Given
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         //When
         systemMigrateOldHearing.configure(configBuilder);
@@ -74,10 +74,10 @@ class SystemMigrateOldHearingTest {
             .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
             .hearingNotificationParties(parties)
             .build();
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setCicCase(cicCase);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         final Listing listing = getRecordListing();
         caseData.setListing(listing);
 
@@ -87,7 +87,7 @@ class SystemMigrateOldHearingTest {
 
         //When
         doNothing().when(hearingService).addListingIfExists(any());
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             systemMigrateOldHearing.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //Then

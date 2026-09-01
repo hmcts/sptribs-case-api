@@ -27,11 +27,11 @@ class PageBuilderTest {
     private FieldCollection.FieldCollectionBuilder fieldsBuilder;
 
     @InjectMocks
-    private PageBuilder pageBuilder;
+    private PageBuilder<CaseData> pageBuilder;
 
     @BeforeEach
     void setUp() {
-        pageBuilder = new PageBuilder(eventBuilder);
+        pageBuilder = new PageBuilder<>(eventBuilder);
         fieldsBuilder = FieldCollection.FieldCollectionBuilder.builder(null, null, null, null);
     }
 

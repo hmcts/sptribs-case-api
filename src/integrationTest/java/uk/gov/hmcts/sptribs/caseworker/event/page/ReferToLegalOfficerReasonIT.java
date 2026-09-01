@@ -14,8 +14,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.sptribs.caseworker.model.ReferToLegalOfficer;
 import uk.gov.hmcts.sptribs.caseworker.model.ReferralReason;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
@@ -60,7 +60,7 @@ public class ReferToLegalOfficerReasonIT {
 
     @Test
     void shouldValidateJudgeReferralReasonInMidEvent() throws Exception {
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .referToLegalOfficer(ReferToLegalOfficer.builder()
                 .referralReason(ReferralReason.CORRECTIONS)
                 .build())

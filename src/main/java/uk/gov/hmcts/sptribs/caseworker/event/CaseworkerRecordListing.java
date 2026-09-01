@@ -21,11 +21,11 @@ import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ListingCreatedNotification;
@@ -105,7 +105,8 @@ public class CaseworkerRecordListing implements CCDConfig<CriminalInjuriesCompen
         recordNotifyParties.addTo(pageBuilder);
     }
 
-    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStart(CaseDetails<CriminalInjuriesCompensationData, State> details) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStart(CaseDetails<CriminalInjuriesCompensationData,
+        State> details) {
         final CriminalInjuriesCompensationData caseData = details.getData();
 
         caseData.setListing(new Listing());
@@ -117,7 +118,8 @@ public class CaseworkerRecordListing implements CCDConfig<CriminalInjuriesCompen
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> midEvent(CaseDetails<CriminalInjuriesCompensationData, State> details,
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> midEvent(CaseDetails<CriminalInjuriesCompensationData,
+        State> details,
                                                                   CaseDetails<CriminalInjuriesCompensationData, State> detailsBefore) {
         final CriminalInjuriesCompensationData caseData = details.getData();
 
@@ -131,7 +133,8 @@ public class CaseworkerRecordListing implements CCDConfig<CriminalInjuriesCompen
     }
 
     @SneakyThrows
-    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(CaseDetails<CriminalInjuriesCompensationData, State> details,
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+        State> aboutToSubmit(CaseDetails<CriminalInjuriesCompensationData, State> details,
                                                                        CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
 
         final CriminalInjuriesCompensationData caseData = details.getData();

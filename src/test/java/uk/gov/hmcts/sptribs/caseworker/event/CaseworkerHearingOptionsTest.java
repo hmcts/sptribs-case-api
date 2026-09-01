@@ -13,9 +13,9 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 
 import java.util.List;
 import java.util.Set;
@@ -47,7 +47,7 @@ public class CaseworkerHearingOptionsTest {
     @Test
     void shouldAddConfigurationToConfigBuilder() {
         //Given
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         //When
         caseworkerHearingOptions.configure(configBuilder);
@@ -61,8 +61,8 @@ public class CaseworkerHearingOptionsTest {
     @Test
     void shouldNotPopulateHearingVenuesDataIfNoRegionSelected() {
         //Given
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseData caseData = caseData();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setListing(Listing.builder().build());
         caseDetails.setData(caseData);
 
@@ -73,7 +73,7 @@ public class CaseworkerHearingOptionsTest {
                 .build();
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerHearingOptions.midEvent(caseDetails, caseDetails);
 
         //Then
@@ -85,8 +85,8 @@ public class CaseworkerHearingOptionsTest {
     @Test
     void shouldClearHearingVenuesDataIfChosenRegionValueUnselected() {
         //Given
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseData caseData = caseData();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setListing(
             Listing.builder()
                 .hearingVenues(getMockedHearingVenueData())
@@ -102,7 +102,7 @@ public class CaseworkerHearingOptionsTest {
                 .build();
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerHearingOptions.midEvent(caseDetails, caseDetails);
 
         //Then
@@ -115,21 +115,21 @@ public class CaseworkerHearingOptionsTest {
     @Test
     void shouldPopulateHearingVenuesDataWithPreviouslySelectedValuesIfPresent() {
         //Given
-        final CaseData caseDataBefore = caseData();
+        final CriminalInjuriesCompensationData caseDataBefore = caseData();
         final Listing recordListing = new Listing();
         recordListing.setHearingVenues(getMockedHearingVenueData());
         recordListing.setRegionList(getMockedRegionData());
         caseDataBefore.setListing(recordListing);
-        final CaseDetails<CaseData, State> caseDetailsBefore = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetailsBefore = new CaseDetails<>();
         caseDetailsBefore.setData(caseDataBefore);
 
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseData caseData = caseData();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setListing(Listing.builder().regionList(getMockedRegionData()).build());
         caseDetails.setData(caseData);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerHearingOptions.midEvent(caseDetails, caseDetailsBefore);
 
         //Then
@@ -142,14 +142,14 @@ public class CaseworkerHearingOptionsTest {
     @Test
     void shouldPopulateHearingVenuesIfNotAlreadyPopulatedAndSavedToCase() {
         //Given
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final Listing recordListing = new Listing();
         recordListing.setRegionList(getMockedRegionData());
         caseData.setListing(recordListing);
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> caseDetailsBefore = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetailsBefore = new CaseDetails<>();
         caseDetails.setData(caseData);
-        final CaseData caseDataBefore = caseData();
+        final CriminalInjuriesCompensationData caseDataBefore = caseData();
         caseDataBefore.setListing(Listing.builder().regionList(getMockedRegionData()).build());
         caseDetailsBefore.setData(caseDataBefore);
 
@@ -163,14 +163,14 @@ public class CaseworkerHearingOptionsTest {
     @Test
     void shouldPopulateHearingVenuesIfSelectedRegionChangesInEditJourney() {
         //Given
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final Listing recordListing = new Listing();
         recordListing.setRegionList(getMockedRegionData());
         caseData.setListing(recordListing);
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> caseDetailsBefore = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetailsBefore = new CaseDetails<>();
         caseDetails.setData(caseData);
-        final CaseData caseDataBefore = caseData();
+        final CriminalInjuriesCompensationData caseDataBefore = caseData();
         final DynamicListElement listItem = DynamicListElement
             .builder()
             .label("2-Scotland")
@@ -196,18 +196,18 @@ public class CaseworkerHearingOptionsTest {
     void shouldNotPopulateHearingVenuesIfVenuesArePopulated() {
         //Given
         final DynamicList hearingVenues = getMockedHearingVenueData();
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final Listing recordListing = new Listing();
         recordListing.setRegionList(getMockedRegionData());
         recordListing.setHearingVenues(hearingVenues);
         caseData.setListing(recordListing);
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> caseDetailsBefore = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetailsBefore = new CaseDetails<>();
         caseDetails.setData(caseData);
         caseDetailsBefore.setData(caseData);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerHearingOptions.midEvent(caseDetails, caseDetailsBefore);
 
         //Then
@@ -219,8 +219,8 @@ public class CaseworkerHearingOptionsTest {
     @Test
     void shouldCallRecordListHelperToPopulateRegionDataIfRegionListIsNull() {
         //Given
-        final CaseData caseData = caseData();
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = caseData();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
 
         //When
@@ -233,9 +233,9 @@ public class CaseworkerHearingOptionsTest {
     @Test
     void shouldNotCallRecordListHelperToPopulateRegionDataIfRegionListIsPopulated() {
         //Given
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.getListing().setRegionList(getMockedRegionData());
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
 
         //When
@@ -248,15 +248,15 @@ public class CaseworkerHearingOptionsTest {
     @Test
     void shouldChangeStateOnAboutToSubmitIfCurrentStateIsCaseManagement() {
         //Given
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.getListing().setHearingVenues(getMockedHearingVenueData());
         caseData.getListing().setVenueNotListedOption(Set.of());
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
         caseDetails.setState(CaseManagement);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerHearingOptions.aboutToSubmit(caseDetails, caseDetails);
 
         //Then
@@ -266,15 +266,15 @@ public class CaseworkerHearingOptionsTest {
     @Test
     void shouldNotChangeStateOnAboutToSubmitIfCurrentStateIsReadyToList() {
         //Given
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.getListing().setHearingVenues(getMockedHearingVenueData());
         caseData.getListing().setVenueNotListedOption(Set.of());
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
         caseDetails.setState(ReadyToList);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerHearingOptions.aboutToSubmit(caseDetails, caseDetails);
 
         //Then
@@ -284,10 +284,10 @@ public class CaseworkerHearingOptionsTest {
     @Test
     void shouldClearHearingVenuesOnAboutToSubmitIfVenueNotListedCheckboxIsSelected() {
         //Given
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.getListing().setHearingVenues(getMockedHearingVenueData());
         caseData.getListing().setVenueNotListedOption(Set.of(VENUE_NOT_LISTED));
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
 
         final DynamicList expectedHearingVenuesDynamicList = DynamicList
@@ -296,7 +296,7 @@ public class CaseworkerHearingOptionsTest {
             .build();
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerHearingOptions.aboutToSubmit(caseDetails, caseDetails);
 
         //Then
@@ -307,15 +307,15 @@ public class CaseworkerHearingOptionsTest {
     @Test
     void shouldNotClearHearingVenuesOnAboutToSubmitIfVenueNotListedCheckboxIsNotSelected() {
         //Given
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final DynamicList hearingVenues = getMockedHearingVenueData();
         caseData.getListing().setHearingVenues(hearingVenues);
         caseData.getListing().setVenueNotListedOption(Set.of());
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerHearingOptions.aboutToSubmit(caseDetails, caseDetails);
 
         //Then

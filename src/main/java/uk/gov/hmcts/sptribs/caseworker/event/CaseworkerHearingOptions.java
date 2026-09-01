@@ -10,9 +10,9 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import static java.util.Collections.emptyList;
@@ -62,7 +62,8 @@ public class CaseworkerHearingOptions implements CCDConfig<CriminalInjuriesCompe
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStart(CaseDetails<CriminalInjuriesCompensationData, State> details) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStart(CaseDetails<CriminalInjuriesCompensationData,
+        State> details) {
         final CriminalInjuriesCompensationData caseData = details.getData();
 
         if (isNull(caseData.getListing().getRegionList())) {
@@ -74,7 +75,8 @@ public class CaseworkerHearingOptions implements CCDConfig<CriminalInjuriesCompe
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> midEvent(CaseDetails<CriminalInjuriesCompensationData, State> details,
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> midEvent(CaseDetails<CriminalInjuriesCompensationData,
+        State> details,
                                                                   CaseDetails<CriminalInjuriesCompensationData, State> detailsBefore) {
 
         final CriminalInjuriesCompensationData caseData = details.getData();
@@ -105,8 +107,10 @@ public class CaseworkerHearingOptions implements CCDConfig<CriminalInjuriesCompe
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(final CaseDetails<CriminalInjuriesCompensationData, State> details,
-                                                                       final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+        State> aboutToSubmit(final CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                                       final CaseDetails<CriminalInjuriesCompensationData,
+                                                                           State> beforeDetails) {
 
         final CriminalInjuriesCompensationData caseData = details.getData();
 

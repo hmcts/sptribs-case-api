@@ -25,6 +25,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundlingService;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleCallback;
@@ -85,7 +86,7 @@ class CaseworkerCreateBundleTest {
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
 
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         caseworkerCreateBundle.configure(configBuilder);
 
@@ -110,13 +111,13 @@ class CaseworkerCreateBundleTest {
 
     @Test
     void shouldSuccessfullyCreateBundle() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList();
         final CicCase cicCase = CicCase.builder().build();
         cicCase.setApplicantDocumentsUploaded(cicDocuments);
         caseData.setCicCase(cicCase);
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -137,14 +138,15 @@ class CaseworkerCreateBundleTest {
             return List.of(bundle);
         });
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
-            caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
+            caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CriminalInjuriesCompensationData,
+                State>builder().build());
 
         verify(bundlingService).getMultiBundleConfig();
         verify(bundlingService).getMultiBundleConfigs();
         verify(bundlingService).buildBundleListValues(anyList());
 
-        final CaseData responseData = response.getData();
+        final CriminalInjuriesCompensationData responseData = response.getData();
         assertThat(responseData)
             .isNotNull()
             .isEqualTo(updatedCaseDetails.getData());
@@ -253,7 +255,7 @@ class CaseworkerCreateBundleTest {
 
     @Test
     void shouldSuccessfullyCreateBundleWithNewOrderEnabled_noInitialDocuments_null() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setNewBundleOrderEnabled(YesNo.YES);
         caseData.setInitialCicaDocuments(null);
 
@@ -271,7 +273,7 @@ class CaseworkerCreateBundleTest {
         caseData.setAllDocManagement(documentManagement);
         caseData.setCicCase(cicCase);
 
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setId(TEST_CASE_ID);
         caseDetails.setCreatedDate(LOCAL_DATE_TIME);
         caseDetails.setData(caseData);
@@ -293,14 +295,14 @@ class CaseworkerCreateBundleTest {
             return List.of(bundle);
         });
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
-            caseworkerCreateBundle.aboutToSubmit(caseDetails, CaseDetails.<CaseData, State>builder().build());
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
+            caseworkerCreateBundle.aboutToSubmit(caseDetails, CaseDetails.<CriminalInjuriesCompensationData, State>builder().build());
 
         verify(bundlingService).getMultiBundleConfig();
         verify(bundlingService).getMultiBundleConfigs();
         verify(bundlingService).buildBundleListValues(anyList());
 
-        final CaseData responseData = response.getData();
+        final CriminalInjuriesCompensationData responseData = response.getData();
         assertThat(responseData)
             .isNotNull()
             .isEqualTo(caseDetails.getData());
@@ -311,7 +313,7 @@ class CaseworkerCreateBundleTest {
 
     @Test
     void shouldSuccessfullyCreateBundleWithNewOrderEnabled_FurtherUploadsAfterCicaUpload() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setNewBundleOrderEnabled(YesNo.YES);
 
         final CicCase cicCase = CicCase.builder().build();
@@ -351,7 +353,7 @@ class CaseworkerCreateBundleTest {
         caseData.setAllDocManagement(documentManagement);
         caseData.setCicCase(cicCase);
 
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setId(TEST_CASE_ID);
         caseDetails.setCreatedDate(LOCAL_DATE_TIME);
         caseDetails.setData(caseData);
@@ -373,14 +375,14 @@ class CaseworkerCreateBundleTest {
             return List.of(bundle);
         });
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
-            caseworkerCreateBundle.aboutToSubmit(caseDetails, CaseDetails.<CaseData, State>builder().build());
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
+            caseworkerCreateBundle.aboutToSubmit(caseDetails, CaseDetails.<CriminalInjuriesCompensationData, State>builder().build());
 
         verify(bundlingService).getMultiBundleConfig();
         verify(bundlingService).getMultiBundleConfigs();
         verify(bundlingService).buildBundleListValues(anyList());
 
-        final CaseData responseData = response.getData();
+        final CriminalInjuriesCompensationData responseData = response.getData();
         assertThat(responseData)
             .isNotNull()
             .isEqualTo(caseDetails.getData());
@@ -405,7 +407,7 @@ class CaseworkerCreateBundleTest {
 
     @Test
     void shouldUseOldBundleLogicWhenNewOrderDisabled() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setNewBundleOrderEnabled(YesNo.NO);
 
         final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList("test.pdf");
@@ -413,7 +415,7 @@ class CaseworkerCreateBundleTest {
         cicCase.setApplicantDocumentsUploaded(cicDocuments);
         caseData.setCicCase(cicCase);
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -437,14 +439,15 @@ class CaseworkerCreateBundleTest {
             return List.of(bundle);
         });
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
-            caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
+            caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CriminalInjuriesCompensationData,
+                State>builder().build());
 
         verify(bundlingService).getMultiBundleConfig();
         verify(bundlingService).getMultiBundleConfigs();
         verify(bundlingService).buildBundleListValues(anyList());
 
-        final CaseData responseData = response.getData();
+        final CriminalInjuriesCompensationData responseData = response.getData();
         assertThat(responseData)
             .isNotNull()
             .isEqualTo(updatedCaseDetails.getData());
@@ -455,12 +458,12 @@ class CaseworkerCreateBundleTest {
 
     @Test
     void shouldIgnoreInvalidFilesWhenCreatingBundle() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final List<ListValue<CaseworkerCICDocument>> documents = getCaseworkerCICDocumentList("test.mp3");
         final CicCase cicCase = CicCase.builder().build();
         cicCase.setApplicantDocumentsUploaded(documents);
         caseData.setCicCase(cicCase);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -480,14 +483,15 @@ class CaseworkerCreateBundleTest {
         when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
         when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
-            caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
+            caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CriminalInjuriesCompensationData,
+                State>builder().build());
 
         verify(bundlingService).getMultiBundleConfig();
         verify(bundlingService).getMultiBundleConfigs();
         verify(bundlingService).buildBundleListValues(anyList());
 
-        final CaseData responseData = response.getData();
+        final CriminalInjuriesCompensationData responseData = response.getData();
         assertThat(responseData)
             .isNotNull()
             .isEqualTo(updatedCaseDetails.getData());
@@ -498,12 +502,12 @@ class CaseworkerCreateBundleTest {
 
     @Test
     void shouldReturnNullCaseBundlesWhenNoBundlesCreated() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final List<ListValue<CaseworkerCICDocument>> documents = getCaseworkerCICDocumentList("test.mp3");
         final CicCase cicCase = CicCase.builder().build();
         cicCase.setApplicantDocumentsUploaded(documents);
         caseData.setCicCase(cicCase);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -513,10 +517,11 @@ class CaseworkerCreateBundleTest {
 
         when(bundlingService.buildBundleListValues(anyList())).thenReturn(null);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
-            caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
+            caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CriminalInjuriesCompensationData,
+                State>builder().build());
 
-        final CaseData responseData = response.getData();
+        final CriminalInjuriesCompensationData responseData = response.getData();
         assertThat(responseData)
             .isNotNull()
             .isEqualTo(updatedCaseDetails.getData());
@@ -525,14 +530,14 @@ class CaseworkerCreateBundleTest {
 
     @Test
     void shouldCreateNewBundleWithTimestampWithoutExistingBundles() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setCaseBundleIdsAndTimestamps(new ArrayList<>());
         final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList();
         final CicCase cicCase = CicCase.builder().build();
         cicCase.setApplicantDocumentsUploaded(cicDocuments);
         caseData.setCicCase(cicCase);
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -567,14 +572,15 @@ class CaseworkerCreateBundleTest {
         when(clock.instant()).thenReturn(instant);
         when(clock.getZone()).thenReturn(zoneId);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
-            caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
+            caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CriminalInjuriesCompensationData,
+                State>builder().build());
 
         verify(bundlingService).getMultiBundleConfig();
         verify(bundlingService).getMultiBundleConfigs();
         verify(bundlingService).buildBundleListValues(anyList());
 
-        final CaseData responseData = response.getData();
+        final CriminalInjuriesCompensationData responseData = response.getData();
         assertThat(responseData)
             .isNotNull()
             .isEqualTo(updatedCaseDetails.getData());
@@ -591,7 +597,7 @@ class CaseworkerCreateBundleTest {
 
     @Test
     void shouldCreateNewBundleWithTimestampWhenBundlesAlreadyExist() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
 
         String testBundleUUID1 = UUID.randomUUID().toString();
         String testBundleUUID2 = UUID.randomUUID().toString();
@@ -702,7 +708,7 @@ class CaseworkerCreateBundleTest {
         final CicCase cicCase = CicCase.builder().build();
         cicCase.setApplicantDocumentsUploaded(documents);
         caseData.setCicCase(cicCase);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -710,8 +716,9 @@ class CaseworkerCreateBundleTest {
         when(clock.instant()).thenReturn(instant);
         when(clock.getZone()).thenReturn(zoneId);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
-            caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
+            caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CriminalInjuriesCompensationData,
+                State>builder().build());
 
         List<ListValue<BundleIdAndTimestamp>> updatedTestBundleIdsAndTimestampsWithValues =
             new ArrayList<>(testBundleIdsAndTimestampsWithValues);
@@ -726,7 +733,7 @@ class CaseworkerCreateBundleTest {
         );
         updatedCaseDetails.getData().setCaseBundleIdsAndTimestamps(updatedTestBundleIdsAndTimestampsWithValues);
 
-        final CaseData responseData = response.getData();
+        final CriminalInjuriesCompensationData responseData = response.getData();
         assertThat(responseData)
             .isNotNull()
             .isEqualTo(updatedCaseDetails.getData());
@@ -749,7 +756,7 @@ class CaseworkerCreateBundleTest {
 
     @Test
     void shouldCreateNewBundleWithTimestampWhenBundlesAlreadyExistAndPutBundlesWithNullDateAndTimeLast() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
 
         String testBundleUUID1 = UUID.randomUUID().toString();
         String testBundleUUID2 = UUID.randomUUID().toString();
@@ -856,7 +863,7 @@ class CaseworkerCreateBundleTest {
         final CicCase cicCase = CicCase.builder().build();
         cicCase.setApplicantDocumentsUploaded(documents);
         caseData.setCicCase(cicCase);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -864,8 +871,9 @@ class CaseworkerCreateBundleTest {
         when(clock.instant()).thenReturn(instant);
         when(clock.getZone()).thenReturn(zoneId);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
-            caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
+            caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CriminalInjuriesCompensationData,
+                State>builder().build());
 
         List<ListValue<BundleIdAndTimestamp>> updatedTestBundleIdsAndTimestampsWithValues =
             new ArrayList<>(testBundleIdsAndTimestampsWithValues);
@@ -880,7 +888,7 @@ class CaseworkerCreateBundleTest {
         );
         updatedCaseDetails.getData().setCaseBundleIdsAndTimestamps(updatedTestBundleIdsAndTimestampsWithValues);
 
-        final CaseData responseData = response.getData();
+        final CriminalInjuriesCompensationData responseData = response.getData();
         assertThat(responseData)
             .isNotNull()
             .isEqualTo(updatedCaseDetails.getData());
@@ -903,7 +911,7 @@ class CaseworkerCreateBundleTest {
 
     @Test
     void shouldNotSetTimestampForOldBundlesWithoutTimestampEntryWhenCreatingNewBundle() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
 
         String existingOldBundleUUID1 = UUID.randomUUID().toString();
         String existingOldBundleUUID2 = UUID.randomUUID().toString();
@@ -921,10 +929,10 @@ class CaseworkerCreateBundleTest {
         existingBundles.add(ListValue.<Bundle>builder().id("1").value(oldBundle1).build());
         existingBundles.add(ListValue.<Bundle>builder().id("2").value(oldBundle2).build());
 
-        CaseData beforeCaseData = caseData();
+        CriminalInjuriesCompensationData beforeCaseData = caseData();
         beforeCaseData.setCaseBundles(existingBundles);
 
-        CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(beforeCaseData);
 
         // bundleIdsAndTimestamps is empty (no timestamps recorded for old bundles)
@@ -956,7 +964,7 @@ class CaseworkerCreateBundleTest {
         cicCase.setApplicantDocumentsUploaded(documents);
         caseData.setCicCase(cicCase);
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -964,10 +972,10 @@ class CaseworkerCreateBundleTest {
         when(clock.instant()).thenReturn(instant);
         when(clock.getZone()).thenReturn(zoneId);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
-        final CaseData responseData = response.getData();
+        final CriminalInjuriesCompensationData responseData = response.getData();
 
         // Verify only the new bundle has a timestamp
         assertThat(responseData.getCaseBundles()).hasSize(3);
@@ -992,7 +1000,7 @@ class CaseworkerCreateBundleTest {
 
     @Test
     void shouldHandleNullBundleIdsAndTimestampsGracefully() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
 
         String newBundleUUID = UUID.randomUUID().toString();
 
@@ -1014,7 +1022,7 @@ class CaseworkerCreateBundleTest {
         cicCase.setApplicantDocumentsUploaded(documents);
         caseData.setCicCase(cicCase);
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -1022,10 +1030,11 @@ class CaseworkerCreateBundleTest {
         when(clock.instant()).thenReturn(instant);
         when(clock.getZone()).thenReturn(zoneId);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
-            caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
+            caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CriminalInjuriesCompensationData,
+                State>builder().build());
 
-        final CaseData responseData = response.getData();
+        final CriminalInjuriesCompensationData responseData = response.getData();
 
         assertThat(responseData.getCaseBundles()).hasSize(1);
         assertThat(responseData.getCaseBundles().getFirst().getValue().getDateAndTime())

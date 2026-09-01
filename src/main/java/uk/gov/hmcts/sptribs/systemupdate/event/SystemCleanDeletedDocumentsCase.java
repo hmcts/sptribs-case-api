@@ -7,10 +7,9 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.util.List;
@@ -37,7 +36,8 @@ public class SystemCleanDeletedDocumentsCase implements CCDConfig<CriminalInjuri
             .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE);
     }
 
-    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(CaseDetails<CriminalInjuriesCompensationData, State> caseDetails,
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+        State> aboutToSubmit(CaseDetails<CriminalInjuriesCompensationData, State> caseDetails,
                                                                        CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
 
         Long caseId = caseDetails.getId();
@@ -96,7 +96,8 @@ public class SystemCleanDeletedDocumentsCase implements CCDConfig<CriminalInjuri
         );
     }
 
-    private AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> returnEarly(CaseDetails<CriminalInjuriesCompensationData, State> caseDetails,
+    private AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> returnEarly(CaseDetails<CriminalInjuriesCompensationData,
+        State> caseDetails,
                                                                                              CriminalInjuriesCompensationData caseData) {
         log.info("Clean deleted documents event found no further documents to clean for caseId = {}", caseDetails.getId());
 

@@ -26,6 +26,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingDate;
@@ -85,8 +86,8 @@ public class TestDataHelper {
 
     }
 
-    public static CaseData caseData() {
-        return CaseData.builder()
+    public static CriminalInjuriesCompensationData caseData() {
+        return CriminalInjuriesCompensationData.builder()
             .build();
     }
 
@@ -96,7 +97,7 @@ public class TestDataHelper {
     }
 
     public static CaseData closedCaseData() {
-        return CaseData.builder()
+        return CriminalInjuriesCompensationData.builder()
             .caseStatus(State.CaseManagement)
             .build();
     }
@@ -107,13 +108,13 @@ public class TestDataHelper {
         closeCase.setCloseCaseReason(CloseReason.Rejected);
         closeCase.setAdditionalDetail("case rejected");
 
-        return CaseData.builder()
+        return CriminalInjuriesCompensationData.builder()
             .caseStatus(State.AwaitingOutcome)
             .closeCase(closeCase)
             .build();
     }
 
-    public static CallbackRequest callbackRequest(CaseData caseData) {
+    public static CallbackRequest callbackRequest(CriminalInjuriesCompensationData caseData) {
         OBJECT_MAPPER.registerModule(new JavaTimeModule());
 
         return CallbackRequest
@@ -129,7 +130,7 @@ public class TestDataHelper {
             .build();
     }
 
-    public static CallbackRequest callbackRequest(final CaseData caseData,
+    public static CallbackRequest callbackRequest(final CriminalInjuriesCompensationData caseData,
                                                   final String eventId) {
         OBJECT_MAPPER.registerModule(new JavaTimeModule());
         return CallbackRequest
@@ -148,7 +149,7 @@ public class TestDataHelper {
             .build();
     }
 
-    public static CallbackRequest callbackRequest(final CaseData caseData, String eventId, String state) {
+    public static CallbackRequest callbackRequest(final CriminalInjuriesCompensationData caseData, String eventId, String state) {
         OBJECT_MAPPER.registerModule(new JavaTimeModule());
         return CallbackRequest
             .builder()
@@ -167,7 +168,7 @@ public class TestDataHelper {
             .build();
     }
 
-    public static CallbackRequest callbackRequest(final CaseData caseData, final CaseData caseDataBefore, final String eventId) {
+    public static CallbackRequest callbackRequest(final CriminalInjuriesCompensationData caseData, final CaseData caseDataBefore, final String eventId) {
         OBJECT_MAPPER.registerModule(new JavaTimeModule());
         return CallbackRequest
             .builder()
@@ -200,9 +201,9 @@ public class TestDataHelper {
         );
     }
 
-    public static uk.gov.hmcts.ccd.sdk.api.CaseDetails<CaseData, State> getApiCaseDetailsBefore() {
-        final uk.gov.hmcts.ccd.sdk.api.CaseDetails<CaseData, State> caseDetails = new uk.gov.hmcts.ccd.sdk.api.CaseDetails<>();
-        final CaseData caseData = CaseData.builder().build();
+    public static uk.gov.hmcts.ccd.sdk.api.CaseDetails<CriminalInjuriesCompensationData, State> getApiCaseDetailsBefore() {
+        final uk.gov.hmcts.ccd.sdk.api.CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new uk.gov.hmcts.ccd.sdk.api.CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         caseDetails.setData(caseData);
         return caseDetails;
     }
@@ -226,7 +227,7 @@ public class TestDataHelper {
             .build();
     }
 
-    private static CaseDetails caseDetailsBefore(CaseData caseData) {
+    private static CaseDetails caseDetailsBefore(CriminalInjuriesCompensationData caseData) {
         return CaseDetails
             .builder()
             .data(OBJECT_MAPPER.convertValue(caseData, TYPE_REFERENCE))

@@ -19,8 +19,8 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
@@ -110,7 +110,7 @@ public class CaseworkerCreateHearingSummaryIT {
 
     @Test
     void shouldPopulateHearingListAndJudgeListOnAboutToStart() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setHearingList(getHearingList());
 
         final CICUser user = new CICUser(
@@ -149,7 +149,7 @@ public class CaseworkerCreateHearingSummaryIT {
 
     @Test
     void shouldSuccessfullyCreateHearingSummaryOnAboutToSubmit() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final HearingSummary hearingSummary = HearingSummary.builder()
             .judge(getDynamicList())
             .memberList(getMembers())

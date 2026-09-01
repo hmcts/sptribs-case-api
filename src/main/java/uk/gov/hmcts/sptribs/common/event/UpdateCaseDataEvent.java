@@ -10,9 +10,9 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.service.CaseDataFieldService;
 
@@ -62,7 +62,8 @@ public class UpdateCaseDataEvent implements CCDConfig<CriminalInjuriesCompensati
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> midEvent(CaseDetails<CriminalInjuriesCompensationData, State> details,
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> midEvent(CaseDetails<CriminalInjuriesCompensationData,
+        State> details,
                                                                   CaseDetails<CriminalInjuriesCompensationData, State> detailsBefore) {
         final CriminalInjuriesCompensationData caseData = details.getData();
         final List<String> errors = new ArrayList<>();
@@ -83,8 +84,10 @@ public class UpdateCaseDataEvent implements CCDConfig<CriminalInjuriesCompensati
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(final CaseDetails<CriminalInjuriesCompensationData, State> details,
-                                                                        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+        State> aboutToSubmit(final CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                                        final CaseDetails<CriminalInjuriesCompensationData,
+                                                                            State> beforeDetails) {
         final CriminalInjuriesCompensationData caseData = details.getData();
         final List<String> errors = new ArrayList<>();
 

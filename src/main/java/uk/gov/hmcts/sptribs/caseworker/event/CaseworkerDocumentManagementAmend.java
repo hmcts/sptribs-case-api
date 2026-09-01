@@ -15,11 +15,10 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.DocumentManagementAmendDocuments;
 import uk.gov.hmcts.sptribs.caseworker.event.page.DocumentManagementSelectDocuments;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
@@ -98,7 +97,8 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CriminalInju
         amendDocuments.addTo(pageBuilder);
     }
 
-    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStart(CaseDetails<CriminalInjuriesCompensationData, State> details) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStart(CaseDetails<CriminalInjuriesCompensationData,
+        State> details) {
         var caseData = details.getData();
         var cicCase = caseData.getCicCase();
 

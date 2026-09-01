@@ -19,10 +19,10 @@ import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil;
 import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.ApplicantDetails;
@@ -117,7 +117,8 @@ public class CreateCase implements CCDConfig<CriminalInjuriesCompensationData, S
 
 
     @SneakyThrows
-    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(CaseDetails<CriminalInjuriesCompensationData, State> details,
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+        State> aboutToSubmit(CaseDetails<CriminalInjuriesCompensationData, State> details,
                                                                        CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
 
         final CaseDetails<CriminalInjuriesCompensationData, State> submittedDetails = submissionService.submitApplication(details);

@@ -20,6 +20,7 @@ import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ListingCreatedNotification;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
@@ -130,7 +131,7 @@ public class CaseworkerRecordListingIT {
 
     @Test
     void shouldPopulateHearingVenueOnMidEvent() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final Listing listing = new Listing();
         listing.setHearingFormat(HearingFormat.FACE_TO_FACE);
         listing.setRegionList(getMockedRegionData());
@@ -161,7 +162,7 @@ public class CaseworkerRecordListingIT {
 
     @Test
     void shouldPopulateRecordListingDataOnAboutToSubmit() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final Listing listing = new Listing();
         listing.setHearingFormat(HearingFormat.FACE_TO_FACE);
         listing.setRegionList(getMockedRegionData());
@@ -211,7 +212,7 @@ public class CaseworkerRecordListingIT {
 
     @Test
     void shouldSuccessfullyDispatchNotificationsOnSubmitted() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         caseData.setCicCase(
             CicCase.builder()

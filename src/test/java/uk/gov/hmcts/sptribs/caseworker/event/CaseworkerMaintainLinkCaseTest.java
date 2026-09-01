@@ -16,6 +16,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseUnlinkedNotification;
 
 import java.util.Set;
@@ -44,7 +45,7 @@ class CaseworkerMaintainLinkCaseTest {
     @Test
     void shouldAddConfigurationToConfigBuilder() {
         //Given
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
         //When
         caseWorkerMaintainLinkCase.configure(configBuilder);
         //Then
@@ -56,14 +57,14 @@ class CaseworkerMaintainLinkCaseTest {
     @Test
     void shouldSuccessfullyUnlinkCase() {
         //Given
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         CicCase cicCase = new CicCase();
         cicCase.setSubjectCIC(Set.of(SubjectCIC.SUBJECT));
         cicCase.setApplicantCIC(Set.of(ApplicantCIC.APPLICANT_CIC));
         cicCase.setRepresentativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE));
         caseData.setCicCase(cicCase);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -81,12 +82,12 @@ class CaseworkerMaintainLinkCaseTest {
     @Test
     void shouldHandleNotificationFailureGracefully() {
         // Given
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         CicCase cicCase = new CicCase();
         cicCase.setSubjectCIC(Set.of(SubjectCIC.SUBJECT));
         caseData.setCicCase(cicCase);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);

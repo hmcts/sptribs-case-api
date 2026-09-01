@@ -14,6 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.idam.CICUser;
@@ -87,7 +88,7 @@ public class CicDssUpdateCaseEventIT {
 
     @Test
     void shouldAddDocumentsToCaseDataInAboutToSubmit() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final DssCaseData dssCaseData = DssCaseData.builder()
             .otherInfoDocuments(getDssCaseData().getOtherInfoDocuments())
             .additionalInformation("Additional information added in DDS Update Case")
@@ -126,7 +127,7 @@ public class CicDssUpdateCaseEventIT {
 
     @Test
     void shouldSuccessfullyDispatchNotificationsInSubmitted() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
@@ -156,7 +157,7 @@ public class CicDssUpdateCaseEventIT {
 
     @Test
     void shouldReturnErrorMessageIfNotificationsFailInSubmitted() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
 
         doThrow(NotificationException.class)

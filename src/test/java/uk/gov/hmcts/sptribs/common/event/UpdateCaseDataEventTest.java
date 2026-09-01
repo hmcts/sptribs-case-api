@@ -14,6 +14,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.service.CaseDataFieldService;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,7 +39,7 @@ class UpdateCaseDataEventTest {
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         updateCaseDataEvent.configure(configBuilder);
 
@@ -53,16 +54,16 @@ class UpdateCaseDataEventTest {
         @Test
         void shouldPassValidationWhenNoIsSelected() {
             // Given
-            final CaseData caseData = CaseData.builder()
+            final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
                 .deleteField(YesNo.NO)
                 .build();
 
-            final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+            final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
             caseDetails.setData(caseData);
             caseDetails.setState(State.CaseManagement);
 
             // When
-            final AboutToStartOrSubmitResponse<CaseData, State> response =
+            final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
                 updateCaseDataEvent.midEvent(caseDetails, caseDetails);
 
             // Then
@@ -73,13 +74,13 @@ class UpdateCaseDataEventTest {
         @Test
         void shouldPassValidationWhenYesIsSelectedAndFieldExists() {
             // Given
-            final CaseData caseData = CaseData.builder()
+            final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
                 .hyphenatedCaseRef("1234-5678-9012-3456")
                 .deleteField(YesNo.YES)
                 .deleteFieldName("hyphenatedCaseRef")
                 .build();
 
-            final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+            final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
             caseDetails.setData(caseData);
             caseDetails.setState(State.CaseManagement);
 
@@ -87,7 +88,7 @@ class UpdateCaseDataEventTest {
                 .thenReturn(true);
 
             // When
-            final AboutToStartOrSubmitResponse<CaseData, State> response =
+            final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
                 updateCaseDataEvent.midEvent(caseDetails, caseDetails);
 
             // Then
@@ -98,12 +99,12 @@ class UpdateCaseDataEventTest {
         @Test
         void shouldFailValidationWhenYesIsSelectedAndFieldDoesNotExist() {
             // Given
-            final CaseData caseData = CaseData.builder()
+            final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
                 .deleteField(YesNo.YES)
                 .deleteFieldName("nonExistentField")
                 .build();
 
-            final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+            final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
             caseDetails.setData(caseData);
             caseDetails.setState(State.CaseManagement);
 
@@ -111,7 +112,7 @@ class UpdateCaseDataEventTest {
                 .thenReturn(false);
 
             // When
-            final AboutToStartOrSubmitResponse<CaseData, State> response =
+            final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
                 updateCaseDataEvent.midEvent(caseDetails, caseDetails);
 
             // Then
@@ -123,17 +124,17 @@ class UpdateCaseDataEventTest {
         @Test
         void shouldFailValidationWhenYesIsSelectedAndFieldNameIsEmpty() {
             // Given
-            final CaseData caseData = CaseData.builder()
+            final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
                 .deleteField(YesNo.YES)
                 .deleteFieldName("")
                 .build();
 
-            final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+            final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
             caseDetails.setData(caseData);
             caseDetails.setState(State.CaseManagement);
 
             // When
-            final AboutToStartOrSubmitResponse<CaseData, State> response =
+            final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
                 updateCaseDataEvent.midEvent(caseDetails, caseDetails);
 
             // Then
@@ -145,17 +146,17 @@ class UpdateCaseDataEventTest {
         @Test
         void shouldFailValidationWhenYesIsSelectedAndFieldNameIsBlank() {
             // Given
-            final CaseData caseData = CaseData.builder()
+            final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
                 .deleteField(YesNo.YES)
                 .deleteFieldName("   ")
                 .build();
 
-            final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+            final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
             caseDetails.setData(caseData);
             caseDetails.setState(State.CaseManagement);
 
             // When
-            final AboutToStartOrSubmitResponse<CaseData, State> response =
+            final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
                 updateCaseDataEvent.midEvent(caseDetails, caseDetails);
 
             // Then
@@ -166,17 +167,17 @@ class UpdateCaseDataEventTest {
         @Test
         void shouldFailValidationWhenYesIsSelectedAndFieldNameIsNull() {
             // Given
-            final CaseData caseData = CaseData.builder()
+            final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
                 .deleteField(YesNo.YES)
                 .deleteFieldName(null)
                 .build();
 
-            final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+            final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
             caseDetails.setData(caseData);
             caseDetails.setState(State.CaseManagement);
 
             // When
-            final AboutToStartOrSubmitResponse<CaseData, State> response =
+            final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
                 updateCaseDataEvent.midEvent(caseDetails, caseDetails);
 
             // Then
@@ -187,16 +188,16 @@ class UpdateCaseDataEventTest {
         @Test
         void shouldPassValidationWhenDeleteFieldIsNull() {
             // Given
-            final CaseData caseData = CaseData.builder()
+            final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
                 .deleteField(null)
                 .build();
 
-            final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+            final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
             caseDetails.setData(caseData);
             caseDetails.setState(State.CaseManagement);
 
             // When
-            final AboutToStartOrSubmitResponse<CaseData, State> response =
+            final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
                 updateCaseDataEvent.midEvent(caseDetails, caseDetails);
 
             // Then
@@ -207,12 +208,12 @@ class UpdateCaseDataEventTest {
         @Test
         void shouldPassValidationForNestedCicCaseField() {
             // Given
-            final CaseData caseData = CaseData.builder()
+            final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
                 .deleteField(YesNo.YES)
                 .deleteFieldName("cicCaseFullName")
                 .build();
 
-            final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+            final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
             caseDetails.setData(caseData);
             caseDetails.setState(State.CaseManagement);
 
@@ -220,7 +221,7 @@ class UpdateCaseDataEventTest {
                 .thenReturn(true);
 
             // When
-            final AboutToStartOrSubmitResponse<CaseData, State> response =
+            final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
                 updateCaseDataEvent.midEvent(caseDetails, caseDetails);
 
             // Then
@@ -230,12 +231,12 @@ class UpdateCaseDataEventTest {
         @Test
         void shouldFailValidationForInvalidNestedField() {
             // Given
-            final CaseData caseData = CaseData.builder()
+            final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
                 .deleteField(YesNo.YES)
                 .deleteFieldName("cicCaseInvalidField")
                 .build();
 
-            final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+            final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
             caseDetails.setData(caseData);
             caseDetails.setState(State.CaseManagement);
 
@@ -243,7 +244,7 @@ class UpdateCaseDataEventTest {
                 .thenReturn(false);
 
             // When
-            final AboutToStartOrSubmitResponse<CaseData, State> response =
+            final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
                 updateCaseDataEvent.midEvent(caseDetails, caseDetails);
 
             // Then
@@ -258,13 +259,13 @@ class UpdateCaseDataEventTest {
         @Test
         void shouldDeleteFieldWhenYesSelectedAndFieldExists() throws Exception {
             // Given
-            final CaseData caseData = CaseData.builder()
+            final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
                 .hyphenatedCaseRef("1234-5678-9012-3456")
                 .deleteField(YesNo.YES)
                 .deleteFieldName("hyphenatedCaseRef")
                 .build();
 
-            final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+            final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
             caseDetails.setData(caseData);
             caseDetails.setId(TEST_CASE_ID);
             caseDetails.setState(State.CaseManagement);
@@ -273,7 +274,7 @@ class UpdateCaseDataEventTest {
                 .thenReturn(true);
 
             // When
-            final AboutToStartOrSubmitResponse<CaseData, State> response =
+            final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
                 updateCaseDataEvent.aboutToSubmit(caseDetails, caseDetails);
 
             // Then
@@ -286,19 +287,19 @@ class UpdateCaseDataEventTest {
         @Test
         void shouldNotDeleteFieldWhenNoSelected() throws Exception {
             // Given
-            final CaseData caseData = CaseData.builder()
+            final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
                 .hyphenatedCaseRef("1234-5678-9012-3456")
                 .deleteField(YesNo.NO)
                 .deleteFieldName("hyphenatedCaseRef")
                 .build();
 
-            final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+            final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
             caseDetails.setData(caseData);
             caseDetails.setId(TEST_CASE_ID);
             caseDetails.setState(State.CaseManagement);
 
             // When
-            final AboutToStartOrSubmitResponse<CaseData, State> response =
+            final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
                 updateCaseDataEvent.aboutToSubmit(caseDetails, caseDetails);
 
             // Then
@@ -312,19 +313,19 @@ class UpdateCaseDataEventTest {
         @Test
         void shouldNotDeleteFieldWhenDeleteFieldIsNull() throws Exception {
             // Given
-            final CaseData caseData = CaseData.builder()
+            final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
                 .hyphenatedCaseRef("1234-5678-9012-3456")
                 .deleteField(null)
                 .deleteFieldName("hyphenatedCaseRef")
                 .build();
 
-            final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+            final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
             caseDetails.setData(caseData);
             caseDetails.setId(TEST_CASE_ID);
             caseDetails.setState(State.CaseManagement);
 
             // When
-            final AboutToStartOrSubmitResponse<CaseData, State> response =
+            final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
                 updateCaseDataEvent.aboutToSubmit(caseDetails, caseDetails);
 
             // Then
@@ -336,12 +337,12 @@ class UpdateCaseDataEventTest {
         @Test
         void shouldReturnErrorWhenFieldNotFound() throws Exception {
             // Given
-            final CaseData caseData = CaseData.builder()
+            final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
                 .deleteField(YesNo.YES)
                 .deleteFieldName("nonExistentField")
                 .build();
 
-            final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+            final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
             caseDetails.setData(caseData);
             caseDetails.setId(TEST_CASE_ID);
             caseDetails.setState(State.CaseManagement);
@@ -350,7 +351,7 @@ class UpdateCaseDataEventTest {
                 .thenReturn(false);
 
             // When
-            final AboutToStartOrSubmitResponse<CaseData, State> response =
+            final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
                 updateCaseDataEvent.aboutToSubmit(caseDetails, caseDetails);
 
             // Then
@@ -361,12 +362,12 @@ class UpdateCaseDataEventTest {
         @Test
         void shouldReturnErrorWhenExceptionOccurs() throws Exception {
             // Given
-            final CaseData caseData = CaseData.builder()
+            final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
                 .deleteField(YesNo.YES)
                 .deleteFieldName("someField")
                 .build();
 
-            final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+            final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
             caseDetails.setData(caseData);
             caseDetails.setId(TEST_CASE_ID);
             caseDetails.setState(State.CaseManagement);
@@ -375,7 +376,7 @@ class UpdateCaseDataEventTest {
                 .thenThrow(new IllegalAccessException("Access denied"));
 
             // When
-            final AboutToStartOrSubmitResponse<CaseData, State> response =
+            final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
                 updateCaseDataEvent.aboutToSubmit(caseDetails, caseDetails);
 
             // Then
@@ -386,13 +387,13 @@ class UpdateCaseDataEventTest {
         @Test
         void shouldClearTemporaryFieldsAfterSubmit() throws Exception {
             // Given
-            final CaseData caseData = CaseData.builder()
+            final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
                 .deleteField(YesNo.YES)
                 .deleteFieldName("note")
                 .note("Test note to delete")
                 .build();
 
-            final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+            final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
             caseDetails.setData(caseData);
             caseDetails.setId(TEST_CASE_ID);
             caseDetails.setState(State.CaseManagement);
@@ -401,7 +402,7 @@ class UpdateCaseDataEventTest {
                 .thenReturn(true);
 
             // When
-            final AboutToStartOrSubmitResponse<CaseData, State> response =
+            final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
                 updateCaseDataEvent.aboutToSubmit(caseDetails, caseDetails);
 
             // Then
@@ -412,19 +413,19 @@ class UpdateCaseDataEventTest {
         @Test
         void shouldNotAttemptDeleteWhenFieldNameIsBlank() throws Exception {
             // Given
-            final CaseData caseData = CaseData.builder()
+            final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
                 .hyphenatedCaseRef("1234-5678-9012-3456")
                 .deleteField(YesNo.YES)
                 .deleteFieldName("   ")
                 .build();
 
-            final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+            final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
             caseDetails.setData(caseData);
             caseDetails.setId(TEST_CASE_ID);
             caseDetails.setState(State.CaseManagement);
 
             // When
-            final AboutToStartOrSubmitResponse<CaseData, State> response =
+            final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
                 updateCaseDataEvent.aboutToSubmit(caseDetails, caseDetails);
 
             // Then
@@ -436,19 +437,19 @@ class UpdateCaseDataEventTest {
         @Test
         void shouldNotAttemptDeleteWhenFieldNameIsNull() throws Exception {
             // Given
-            final CaseData caseData = CaseData.builder()
+            final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
                 .hyphenatedCaseRef("1234-5678-9012-3456")
                 .deleteField(YesNo.YES)
                 .deleteFieldName(null)
                 .build();
 
-            final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+            final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
             caseDetails.setData(caseData);
             caseDetails.setId(TEST_CASE_ID);
             caseDetails.setState(State.CaseManagement);
 
             // When
-            final AboutToStartOrSubmitResponse<CaseData, State> response =
+            final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
                 updateCaseDataEvent.aboutToSubmit(caseDetails, caseDetails);
 
             // Then
@@ -460,13 +461,13 @@ class UpdateCaseDataEventTest {
         @Test
         void shouldPreserveStateAfterDeletion() throws Exception {
             // Given
-            final CaseData caseData = CaseData.builder()
+            final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
                 .note("Test note")
                 .deleteField(YesNo.YES)
                 .deleteFieldName("note")
                 .build();
 
-            final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+            final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
             caseDetails.setData(caseData);
             caseDetails.setId(TEST_CASE_ID);
             caseDetails.setState(State.AwaitingHearing);
@@ -475,7 +476,7 @@ class UpdateCaseDataEventTest {
                 .thenReturn(true);
 
             // When
-            final AboutToStartOrSubmitResponse<CaseData, State> response =
+            final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
                 updateCaseDataEvent.aboutToSubmit(caseDetails, caseDetails);
 
             // Then

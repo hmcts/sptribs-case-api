@@ -16,8 +16,8 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundleResponse;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundlingClient;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundlingService;
@@ -107,11 +107,11 @@ public class BundlingServiceTest {
     @Mock
     private Clock clock;
 
-    private CaseData caseData;
+    private CriminalInjuriesCompensationData caseData;
 
-    private CaseDetails<CaseData, State> updatedCaseDetails;
+    private CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails;
 
-    private CaseDetails<CaseData, State> beforeCaseDetails;
+    private CaseDetails<CriminalInjuriesCompensationData, State> beforeCaseDetails;
 
     private static final Instant instant = Instant.now();
     private static final ZoneId zoneId = ZoneId.systemDefault();

@@ -12,8 +12,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
@@ -76,7 +76,7 @@ public class CaseworkerLinkCaseIT {
 
     @Test
     void shouldReturnConfirmationMessageIfNotificationsDispatchedOnSubmitted() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         caseData.setCicCase(CicCase.builder()
                 .notifyPartySubject(Set.of(SUBJECT))
@@ -123,7 +123,7 @@ public class CaseworkerLinkCaseIT {
 
     @Test
     void shouldReturnErrorMessageIfNotificationsFailOnSubmitted() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         caseData.setCicCase(CicCase.builder()
                 .notifyPartySubject(Set.of(SUBJECT))

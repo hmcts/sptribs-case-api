@@ -13,8 +13,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
@@ -64,7 +64,7 @@ public class IssueDecisionSelectTemplateIT {
             .issueDecisionTemplate(DecisionTemplate.ELIGIBILITY)
             .build();
 
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .caseIssueDecision(caseIssueDecision)
             .build();
 

@@ -20,7 +20,6 @@ import uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssMessage;
@@ -30,6 +29,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
@@ -106,7 +106,8 @@ public class CicSubmitCaseEvent implements CCDConfig<CriminalInjuriesCompensatio
                 .publishToCamunda();
     }
 
-    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(CaseDetails<CriminalInjuriesCompensationData, State> details,
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+        State> aboutToSubmit(CaseDetails<CriminalInjuriesCompensationData, State> details,
                                                                        CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
         final CriminalInjuriesCompensationData data = details.getData();
         final DssCaseData dssData = details.getData().getDssCaseData();

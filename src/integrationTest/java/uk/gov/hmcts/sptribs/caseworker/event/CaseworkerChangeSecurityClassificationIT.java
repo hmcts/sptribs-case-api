@@ -15,8 +15,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.sptribs.caseworker.service.ExtendedCaseDataApi;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.ExtendedCaseDetails;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
@@ -92,7 +92,7 @@ public class CaseworkerChangeSecurityClassificationIT {
 
     @Test
     void shouldNotReturnErrorsInMidEventIfUserHasPermittedRoles() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setSecurityClass(PRIVATE);
         final CICUser user = new CICUser(
             TEST_AUTHORIZATION_TOKEN,
@@ -126,7 +126,7 @@ public class CaseworkerChangeSecurityClassificationIT {
 
     @Test
     void shouldReturnErrorsInMidEventIfUserDoesNotHavePermittedRoles() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setSecurityClass(PRIVATE);
         final CICUser user = new CICUser(
             TEST_AUTHORIZATION_TOKEN,
@@ -153,7 +153,7 @@ public class CaseworkerChangeSecurityClassificationIT {
 
     @Test
     void shouldSetDataAndSecurityClassificationsOnAboutToSubmit() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setSecurityClass(PUBLIC);
         final CICUser user = new CICUser(
             TEST_AUTHORIZATION_TOKEN,

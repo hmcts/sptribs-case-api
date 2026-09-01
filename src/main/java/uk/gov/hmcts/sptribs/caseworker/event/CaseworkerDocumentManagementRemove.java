@@ -17,10 +17,10 @@ import uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.OrderDocumentListUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
@@ -84,7 +84,8 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CriminalInj
         showRemovedCaseDocuments.addTo(pageBuilder);
     }
 
-    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStart(CaseDetails<CriminalInjuriesCompensationData, State> details) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStart(CaseDetails<CriminalInjuriesCompensationData,
+        State> details) {
         final CriminalInjuriesCompensationData caseData = details.getData();
         final CicCase cicCase = caseData.getCicCase();
 

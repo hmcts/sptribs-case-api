@@ -7,9 +7,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.VenueNotListed;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -31,7 +31,7 @@ class HearingVenuesTest {
     void whenMidEvent_thenShouldValidateNoSpecialCharacters() {
 
         //given
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
 
         final Listing listing = new Listing();
         listing.setAddlInstr("Instruct");
@@ -39,14 +39,15 @@ class HearingVenuesTest {
         listing.setVenueNotListedOption(Set.of(VenueNotListed.VENUE_NOT_LISTED));
         listing.setReadOnlyHearingVenueName("readOnly");
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .listing(listing)
             .build();
 
         caseDetails.setData(caseData);
 
         //when
-        final AboutToStartOrSubmitResponse<CaseData, State> response = hearingVenues.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = hearingVenues.midEvent(caseDetails,
+            caseDetails);
 
         //then
         assertThat(response.getErrors()).isEmpty();
@@ -58,7 +59,7 @@ class HearingVenuesTest {
      void givenHearingVenueWithSpecialCharacter_whenMidEvent_thenShouldReturnError() {
 
         //given
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
 
         final Listing listing = new Listing();
         listing.setAddlInstr("Instruct");
@@ -66,14 +67,15 @@ class HearingVenuesTest {
         listing.setVenueNotListedOption(Set.of(VenueNotListed.VENUE_NOT_LISTED));
         listing.setReadOnlyHearingVenueName("readOnly");
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .listing(listing)
             .build();
 
         caseDetails.setData(caseData);
 
         //when
-        final AboutToStartOrSubmitResponse<CaseData, State> response = hearingVenues.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = hearingVenues.midEvent(caseDetails,
+            caseDetails);
 
         //then
         assertThat(response.getErrors()).contains(HEARING_VENUE);
@@ -84,7 +86,7 @@ class HearingVenuesTest {
      void givenAdditionalInfoWithSpecialCharacter_whenMidEvent_thenShouldReturnError() {
 
         //given
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
 
         final Listing listing = new Listing();
         listing.setAddlInstr("Instruct&&");
@@ -92,14 +94,15 @@ class HearingVenuesTest {
         listing.setVenueNotListedOption(Set.of(VenueNotListed.VENUE_NOT_LISTED));
         listing.setReadOnlyHearingVenueName("readOnly");
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .listing(listing)
             .build();
 
         caseDetails.setData(caseData);
 
         //when
-        final AboutToStartOrSubmitResponse<CaseData, State> response = hearingVenues.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = hearingVenues.midEvent(caseDetails,
+            caseDetails);
 
         //then
         assertThat(response.getErrors()).contains(ADDITIONAL_INFO);
@@ -110,7 +113,7 @@ class HearingVenuesTest {
      void shouldSetHearingVenueBasedOffDynamicList() {
 
         //given
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
 
         final Listing listing = new Listing();
         listing.setAddlInstr("Instruct");
@@ -119,14 +122,15 @@ class HearingVenuesTest {
         listing.setHearingVenues(getMockedHearingVenueData());
         listing.setReadOnlyHearingVenueName("readOnly");
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .listing(listing)
             .build();
 
         caseDetails.setData(caseData);
 
         //when
-        final AboutToStartOrSubmitResponse<CaseData, State> response = hearingVenues.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = hearingVenues.midEvent(caseDetails,
+            caseDetails);
 
         //then
         assertThat(response.getErrors()).isEmpty();
@@ -137,20 +141,21 @@ class HearingVenuesTest {
     @Test
     void shouldContainErrorFromInvalidHearingVenue() {
         //given
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         final Listing listing = new Listing();
         listing.setVenueNotListedOption(Set.of(VenueNotListed.VENUE_NOT_LISTED));
         listing.setHearingVenueNameAndAddress("");
         listing.setReadOnlyHearingVenueName("");
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .listing(listing)
             .build();
 
         caseDetails.setData(caseData);
 
         //when
-        final AboutToStartOrSubmitResponse<CaseData, State> response = hearingVenues.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = hearingVenues.midEvent(caseDetails,
+            caseDetails);
 
         //then
         assertThat(response.getErrors()).contains("Please enter valid Hearing venue");

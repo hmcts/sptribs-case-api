@@ -3,10 +3,9 @@ package uk.gov.hmcts.sptribs.systemupdate.event;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Draft;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Expired;

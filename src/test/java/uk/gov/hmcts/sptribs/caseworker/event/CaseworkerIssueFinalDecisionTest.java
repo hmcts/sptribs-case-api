@@ -21,6 +21,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionUpload;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
@@ -137,15 +138,15 @@ class CaseworkerIssueFinalDecisionTest {
     @Test
     void shouldShowCorrectMessageWhenSubmitted() {
         //Given
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
 
         final CicCase cicCase = CicCase.builder().notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
             .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
             .build();
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setCicCase(cicCase);
         details.setData(caseData);
 
@@ -160,11 +161,11 @@ class CaseworkerIssueFinalDecisionTest {
     @Test
     void shouldIssueCaseFinalDecisionWhenUploadedFromComputer() {
         //Given
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         details.setId(TEST_CASE_ID);
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setId(TEST_CASE_ID);
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final CaseIssueFinalDecision caseIssueFinalDecision = new CaseIssueFinalDecision();
         final CICDocument document = CICDocument.builder()
             .documentLink(Document.builder().binaryUrl("url").url("url").filename("file.txt").build())
@@ -176,7 +177,7 @@ class CaseworkerIssueFinalDecisionTest {
         details.setData(caseData);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response = issueFinalDecision.aboutToSubmit(details, beforeDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = issueFinalDecision.aboutToSubmit(details, beforeDetails);
 
         //Then
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
@@ -194,11 +195,11 @@ class CaseworkerIssueFinalDecisionTest {
     @Test
     void shouldIssueCaseFinalDecisionWhenCreatedFromTemplate() {
         //Given
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         details.setId(TEST_CASE_ID);
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setId(TEST_CASE_ID);
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final CaseIssueFinalDecision caseIssueFinalDecision = new CaseIssueFinalDecision();
         final Document document = Document.builder().binaryUrl("url").url("url").filename("file.txt").categoryId("TD").build();
         caseIssueFinalDecision.setFinalDecisionDraft(document);
@@ -207,7 +208,7 @@ class CaseworkerIssueFinalDecisionTest {
         details.setData(caseData);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response = issueFinalDecision.aboutToSubmit(details, beforeDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = issueFinalDecision.aboutToSubmit(details, beforeDetails);
 
         //Then
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
@@ -224,14 +225,14 @@ class CaseworkerIssueFinalDecisionTest {
         //Given
         final CaseIssueFinalDecision caseIssueFinalDecision = new CaseIssueFinalDecision();
         caseIssueFinalDecision.setDecisionTemplate(DecisionTemplate.ELIGIBILITY);
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder()
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .caseIssueFinalDecision(caseIssueFinalDecision)
             .build();
         caseDetails.setData(caseData);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response = issueFinalDecisionSelectTemplate.midEvent(caseDetails, caseDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = issueFinalDecisionSelectTemplate.midEvent(caseDetails, caseDetails);
 
         //Then
         Assertions.assertEquals(DocmosisTemplateConstants.ELIGIBILITY_MAIN_CONTENT, response.getData().getDecisionMainContent());
@@ -240,15 +241,15 @@ class CaseworkerIssueFinalDecisionTest {
     @Test
     void shouldRunAboutToStart() {
         //Given
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder().build();
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .build();
         updatedCaseDetails.setData(caseData);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response = issueFinalDecision.aboutToStart(updatedCaseDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = issueFinalDecision.aboutToStart(updatedCaseDetails);
 
         //Then
         assertThat(response).isNotNull();
@@ -257,11 +258,11 @@ class CaseworkerIssueFinalDecisionTest {
 
     @Test
     void shouldStoreErrorsWhenBuildAndSaveNewDocumentEntityThrowsRuntimeException() {
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         details.setId(TEST_CASE_ID);
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setId(TEST_CASE_ID);
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final CaseIssueFinalDecision caseIssueFinalDecision = new CaseIssueFinalDecision();
         final CICDocument document = CICDocument.builder()
             .documentLink(Document.builder().binaryUrl("url").url("url").filename("file.txt").build())
@@ -278,7 +279,7 @@ class CaseworkerIssueFinalDecisionTest {
             .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(DocumentType.TRIBUNAL_DIRECTION),
                 eq(CaseDocumentType.FINAL_DECISION));
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = issueFinalDecision.aboutToSubmit(details, beforeDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = issueFinalDecision.aboutToSubmit(details, beforeDetails);
 
         assertThat(response.getErrors()).hasSize(1);
         assertThat(response.getErrors()).contains("Error saving document with filename: " + document.getDocumentLink().getFilename());
@@ -292,7 +293,7 @@ class CaseworkerIssueFinalDecisionTest {
         caseData.setCaseIssueFinalDecision(caseIssueFinalDecision);
         details.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> nullFilenameResponse = issueFinalDecision.aboutToSubmit(details, beforeDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> nullFilenameResponse = issueFinalDecision.aboutToSubmit(details, beforeDetails);
 
         assertThat(nullFilenameResponse.getErrors()).hasSize(1);
         assertThat(nullFilenameResponse.getErrors()).contains("Error saving document with no filename");
@@ -302,7 +303,7 @@ class CaseworkerIssueFinalDecisionTest {
         caseData.setCaseIssueFinalDecision(caseIssueFinalDecision);
         details.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> emptyFilenameResponse = issueFinalDecision.aboutToSubmit(details, beforeDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> emptyFilenameResponse = issueFinalDecision.aboutToSubmit(details, beforeDetails);
 
         assertThat(emptyFilenameResponse.getErrors()).hasSize(1);
         assertThat(emptyFilenameResponse.getErrors()).contains("Error saving document with no filename");
@@ -310,9 +311,9 @@ class CaseworkerIssueFinalDecisionTest {
 
     @Test
     void shouldNotSaveDecisionDocumentToDBWhenFinalDecisionDocumentIsNull() {
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        final CaseData caseData = caseData();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final CaseIssueFinalDecision caseIssueFinalDecision = new CaseIssueFinalDecision();
         caseData.setCaseIssueFinalDecision(caseIssueFinalDecision);
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);

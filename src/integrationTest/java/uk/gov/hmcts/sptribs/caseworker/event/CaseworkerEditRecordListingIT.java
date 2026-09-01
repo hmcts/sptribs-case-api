@@ -21,6 +21,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
@@ -126,7 +127,7 @@ public class CaseworkerEditRecordListingIT {
 
     @Test
     void shouldAddRegionInfoOnMidEvent() throws Exception {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .fullName("Test Name")
                 .schemeCic(Year2012)
@@ -173,7 +174,7 @@ public class CaseworkerEditRecordListingIT {
 
     @Test
     void shouldEditRecordListingOnAboutToSubmit() throws Exception {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .fullName("Test Name")
                 .schemeCic(Year2012)
@@ -207,7 +208,7 @@ public class CaseworkerEditRecordListingIT {
 
     @Test
     void shouldStartEditRecordListingEventOnAboutToStart() throws Exception {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .build();
 
         final CICUser user = new CICUser(
@@ -250,7 +251,7 @@ public class CaseworkerEditRecordListingIT {
 
     @Test
     void shouldSuccessfullyDispatchNotificationsOnSubmitted() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         caseData.setCicCase(
             CicCase.builder()

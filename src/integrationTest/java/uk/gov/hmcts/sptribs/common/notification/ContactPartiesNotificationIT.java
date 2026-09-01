@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
@@ -164,7 +165,7 @@ public class ContactPartiesNotificationIT {
                 CASE_DOCUMENT + 2, EMPTY_PLACEHOLDER
             );
 
-            final CaseData data = CaseData.builder()
+            final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
                 .cicCase(CicCase.builder()
                     .contactPreferenceType(EMAIL)
                     .fullName("Subject Name")
@@ -208,7 +209,7 @@ public class ContactPartiesNotificationIT {
                 "DOC", "Test-Doc"
             );
 
-            final CaseData data = CaseData.builder()
+            final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
                 .cicCase(CicCase.builder()
                     .contactPreferenceType(POST)
                     .fullName("Subject Name")
@@ -254,7 +255,7 @@ public class ContactPartiesNotificationIT {
             );
 
 
-            final CaseData data = CaseData.builder()
+            final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
                 .cicCase(CicCase.builder()
                     .applicantContactDetailsPreference(EMAIL)
                     .fullName("Subject Name")
@@ -298,7 +299,7 @@ public class ContactPartiesNotificationIT {
                 "DOC", "Test-Doc"
             );
 
-            final CaseData data = CaseData.builder()
+            final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
                 .cicCase(CicCase.builder()
                     .applicantContactDetailsPreference(POST)
                     .fullName("Subject Name")
@@ -346,7 +347,7 @@ public class ContactPartiesNotificationIT {
                 CASE_DOCUMENT + 2, EMPTY_PLACEHOLDER
             );
 
-            final CaseData data = CaseData.builder()
+            final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
                 .cicCase(CicCase.builder()
                     .fullName("Subject Name")
                     .representativeContactDetailsPreference(EMAIL)
@@ -391,7 +392,7 @@ public class ContactPartiesNotificationIT {
                 "DOC", "Test-Doc"
             );
 
-            final CaseData data = CaseData.builder()
+            final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
                 .cicCase(CicCase.builder()
                     .fullName("Subject Name")
                     .representativeContactDetailsPreference(POST)
@@ -430,7 +431,7 @@ public class ContactPartiesNotificationIT {
 
         @Test
         void shouldSendEmailToRespondentWithoutDocumentsAttached() {
-            final CaseData data = CaseData.builder()
+            final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
                 .cicCase(CicCase.builder()
                     .fullName("Subject Name")
                     .respondentName("Respondent Name")
@@ -475,7 +476,7 @@ public class ContactPartiesNotificationIT {
                 CASE_DOCUMENT + 2, EMPTY_PLACEHOLDER
             );
 
-            final CaseData data = CaseData.builder()
+            final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
                 .cicCase(CicCase.builder()
                     .fullName("Subject Name")
                     .respondentName("Respondent Name")
@@ -515,7 +516,7 @@ public class ContactPartiesNotificationIT {
 
         @Test
         void shouldSendEmailToTribunalWithoutDocumentsAttached() {
-            final CaseData data = CaseData.builder()
+            final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
                 .cicCase(CicCase.builder()
                     .fullName("Subject Name")
                     .respondentName("Respondent Name")
@@ -557,7 +558,7 @@ public class ContactPartiesNotificationIT {
                 CASE_DOCUMENT + 2, EMPTY_PLACEHOLDER
             );
 
-            final CaseData data = CaseData.builder()
+            final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
                 .cicCase(CicCase.builder()
                     .fullName("Subject Name")
                     .respondentName("Respondent Name")
@@ -618,7 +619,7 @@ public class ContactPartiesNotificationIT {
                 CASE_DOCUMENT + 2, EMPTY_PLACEHOLDER
             );
 
-            final CaseData data = CaseData.builder()
+            final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
                 .cicCase(CicCase.builder()
                     .contactPreferenceType(EMAIL)
                     .fullName("Subject Name")
@@ -666,7 +667,7 @@ public class ContactPartiesNotificationIT {
             );
 
 
-            final CaseData data = CaseData.builder()
+            final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
                 .cicCase(CicCase.builder()
                     .applicantContactDetailsPreference(EMAIL)
                     .fullName("Subject Name")
@@ -714,7 +715,7 @@ public class ContactPartiesNotificationIT {
                 CASE_DOCUMENT + 2, EMPTY_PLACEHOLDER
             );
 
-            final CaseData data = CaseData.builder()
+            final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
                 .cicCase(CicCase.builder()
                     .fullName("Subject Name")
                     .representativeContactDetailsPreference(EMAIL)

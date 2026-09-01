@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
 import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.common.service.AuditEventService;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundleResponse;
@@ -142,7 +143,7 @@ class RespondentDocumentManagementBundleIT {
         when(auditEventService.hasCaseEvent(anyString(), eq(RESPONDENT_DOCUMENT_MANAGEMENT)))
             .thenReturn(false, true);
 
-        CaseData caseData = prepareInitialCaseData();
+        CriminalInjuriesCompensationData caseData = prepareInitialCaseData();
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
 
         caseData.getNewDocManagement().setCaseworkerCICDocumentUpload(
@@ -220,13 +221,13 @@ class RespondentDocumentManagementBundleIT {
     }
 
     private CaseData prepareInitialCaseData() {
-        CaseData data = caseData();
+        CriminalInjuriesCompensationData data = caseData();
         data.setNewBundleOrderEnabled(YesNo.YES);
         ensureDocumentManagementCollections(data);
         return data;
     }
 
-    private CaseData triggerAboutToSubmit(String eventId, CaseData data) throws Exception {
+    private CaseData triggerAboutToSubmit(String eventId, CriminalInjuriesCompensationData data) throws Exception {
         String response = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
                 .contentType(APPLICATION_JSON)
                 .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
@@ -242,12 +243,12 @@ class RespondentDocumentManagementBundleIT {
         @SuppressWarnings("unchecked")
         Map<String, Object> dataMap = (Map<String, Object>) responseMap.get("data");
 
-        CaseData updatedCaseData = objectMapper.convertValue(dataMap, CaseData.class);
+        CriminalInjuriesCompensationData updatedCaseData = objectMapper.convertValue(dataMap, CaseData.class);
         ensureDocumentManagementCollections(updatedCaseData);
         return updatedCaseData;
     }
 
-    private void ensureDocumentManagementCollections(CaseData data) {
+    private void ensureDocumentManagementCollections(CriminalInjuriesCompensationData data) {
         if (data.getAllDocManagement() == null) {
             data.setAllDocManagement(new DocumentManagement());
         }
@@ -274,7 +275,7 @@ class RespondentDocumentManagementBundleIT {
         }
     }
 
-    private BundleResponse buildBundleResponse(CaseData caseData) {
+    private BundleResponse buildBundleResponse(CriminalInjuriesCompensationData caseData) {
         LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put(CASE_BUNDLES, buildCaseBundlesResponse(caseData));
         return BundleResponse.builder()
@@ -284,7 +285,7 @@ class RespondentDocumentManagementBundleIT {
             .build();
     }
 
-    private List<LinkedHashMap<String, Object>> buildCaseBundlesResponse(CaseData caseData) {
+    private List<LinkedHashMap<String, Object>> buildCaseBundlesResponse(CriminalInjuriesCompensationData caseData) {
         LinkedHashMap<String, Object> bundleValue = new LinkedHashMap<>();
         bundleValue.put(ID, "bundle-1");
         bundleValue.put(TITLE, "CIC Bundle");
@@ -300,7 +301,7 @@ class RespondentDocumentManagementBundleIT {
         return List.of(bundleEntry);
     }
 
-    private List<LinkedHashMap<String, Object>> buildResponseFolders(CaseData caseData) {
+    private List<LinkedHashMap<String, Object>> buildResponseFolders(CriminalInjuriesCompensationData caseData) {
         Map<String, List<Map<String, Object>>> folderDocuments = new LinkedHashMap<>();
         FOLDER_ORDER.forEach(folder -> folderDocuments.put(folder, new ArrayList<>()));
 

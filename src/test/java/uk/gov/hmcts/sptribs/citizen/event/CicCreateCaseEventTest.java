@@ -7,8 +7,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,14 +28,14 @@ class CicCreateCaseEventTest {
 
     @Test
     void shouldChangeCaseStateWhenAboutToSubmit() {
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
 
         details.setId(TEST_CASE_ID);
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         details.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = cicCreateCaseEvent.aboutToSubmit(
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = cicCreateCaseEvent.aboutToSubmit(
             details,
             beforeDetails
             );
@@ -45,9 +45,9 @@ class CicCreateCaseEventTest {
 
     @Test
     void shouldSubmitSupplementaryDataToCcdWhenSubmittedEventTriggered() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
 
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
         caseDetails.setState(DSS_Draft);
         caseDetails.setId(TEST_CASE_ID);

@@ -16,11 +16,11 @@ import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.service.OrderService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.CreateDraftOrder;
@@ -95,7 +95,8 @@ public class CaseworkerCreateDraftOrder implements CCDConfig<CriminalInjuriesCom
 
     }
 
-    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> midEvent(CaseDetails<CriminalInjuriesCompensationData, State> details,
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> midEvent(CaseDetails<CriminalInjuriesCompensationData,
+        State> details,
                                                                   CaseDetails<CriminalInjuriesCompensationData, State> detailsBefore) {
         Calendar cal = Calendar.getInstance();
         String date = simpleDateFormat.format(cal.getTime());
@@ -106,8 +107,10 @@ public class CaseworkerCreateDraftOrder implements CCDConfig<CriminalInjuriesCom
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(final CaseDetails<CriminalInjuriesCompensationData, State> details,
-                                                                       final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+        State> aboutToSubmit(final CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                                       final CaseDetails<CriminalInjuriesCompensationData,
+                                                                           State> beforeDetails) {
         final CriminalInjuriesCompensationData caseData = details.getData();
         final OrderTemplate orderTemplate = caseData.getDraftOrderContentCIC().getOrderTemplate();
 

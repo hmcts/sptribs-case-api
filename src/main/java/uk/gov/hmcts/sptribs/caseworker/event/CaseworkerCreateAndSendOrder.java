@@ -30,11 +30,11 @@ import uk.gov.hmcts.sptribs.caseworker.util.DynamicListUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.CreateNewOrder;
@@ -127,7 +127,8 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CriminalInjuriesC
         previewOrder.addTo(pageBuilder);
     }
 
-    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStart(CaseDetails<CriminalInjuriesCompensationData, State> details) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStart(CaseDetails<CriminalInjuriesCompensationData,
+        State> details) {
         final CriminalInjuriesCompensationData caseData = details.getData();
         final CicCase cicCase = caseData.getCicCase();
 
@@ -152,7 +153,8 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CriminalInjuriesC
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(CaseDetails<CriminalInjuriesCompensationData, State> details,
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+        State> aboutToSubmit(CaseDetails<CriminalInjuriesCompensationData, State> details,
                                                                        CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
         final CriminalInjuriesCompensationData caseData = details.getData();
         final CicCase cicCase = caseData.getCicCase();

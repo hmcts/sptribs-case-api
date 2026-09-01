@@ -6,10 +6,9 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 
 import static uk.gov.hmcts.sptribs.caseworker.model.YesNo.YES;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -36,7 +35,8 @@ public class SystemTriggerCompleteHearingOutcome implements CCDConfig<CriminalIn
             .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
     }
 
-    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(CaseDetails<CriminalInjuriesCompensationData, State> caseDetails,
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+        State> aboutToSubmit(CaseDetails<CriminalInjuriesCompensationData, State> caseDetails,
                                                                        CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
         final CriminalInjuriesCompensationData caseData = caseDetails.getData();
         caseData.setCompleteHearingOutcomeTask(YES);

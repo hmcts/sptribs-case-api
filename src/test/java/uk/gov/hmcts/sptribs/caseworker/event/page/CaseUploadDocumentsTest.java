@@ -9,9 +9,9 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.event.page.CaseUploadDocuments;
 import uk.gov.hmcts.sptribs.document.DocumentUtil;
 
@@ -29,7 +29,7 @@ public class CaseUploadDocumentsTest {
     @InjectMocks
     private CaseUploadDocuments caseUploadDocuments;
 
-    private CaseDetails<CaseData, State> caseDetails;
+    private CaseDetails<CriminalInjuriesCompensationData, State> caseDetails;
 
     @BeforeEach
     void setUp() {
@@ -37,7 +37,7 @@ public class CaseUploadDocumentsTest {
         final CicCase cicCase = CicCase.builder()
             .caseDocumentsUpload(getCaseworkerCICDocumentUploadList("file.pdf"))
             .build();
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .build();
         caseDetails.setData(caseData);
@@ -45,7 +45,8 @@ public class CaseUploadDocumentsTest {
 
     @Test
     void midEventReturnsNoErrorsWithUploadedDocuments() {
-        final AboutToStartOrSubmitResponse<CaseData, State> response = caseUploadDocuments.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = caseUploadDocuments.midEvent(caseDetails,
+            caseDetails);
         assertThat(response.getData().getCicCase().getCaseDocumentsUpload()).isNotNull();
         assertTrue(response.getErrors().isEmpty());
     }

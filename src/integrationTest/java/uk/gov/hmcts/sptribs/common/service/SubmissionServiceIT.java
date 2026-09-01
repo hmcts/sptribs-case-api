@@ -7,8 +7,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
@@ -25,13 +25,13 @@ public class SubmissionServiceIT {
 
     @Test
     void shouldSubmitApplicationAndRunCaseTask() {
-        final CaseData caseData = CaseData.builder().build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
 
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setId(TEST_CASE_ID);
         caseDetails.setData(caseData);
 
-        final CaseDetails<CaseData, State> caseDetailsOutput = submissionService.submitApplication(caseDetails);
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetailsOutput = submissionService.submitApplication(caseDetails);
 
         assertThat(caseDetailsOutput.getData().getHyphenatedCaseRef()).isEqualTo(TEST_CASE_ID_HYPHENATED);
         assertThat(caseDetailsOutput.getState()).isEqualTo(Submitted);

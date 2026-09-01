@@ -10,9 +10,9 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.caseworker.service.ExtendedCaseDataService;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 
 import java.util.HashMap;
@@ -49,7 +49,7 @@ public class SystemMigrateGlobalSearchFieldsTest {
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         systemMigrateGlobalSearchFields.configure(configBuilder);
 
@@ -60,8 +60,8 @@ public class SystemMigrateGlobalSearchFieldsTest {
 
     @Test
     void shouldPopulateAllGlobalSearchFieldsInAboutToSubmitCallback() {
-        final CaseData caseData = new CaseData();
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
         caseDetails.setId(TEST_CASE_ID);
 
@@ -70,7 +70,7 @@ public class SystemMigrateGlobalSearchFieldsTest {
         when(extendedCaseDataService.getDataClassification(TEST_CASE_ID.toString()))
             .thenReturn(dataClassificationMap);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             systemMigrateGlobalSearchFields.aboutToSubmit(caseDetails, caseDetails);
 
         assertTrue(response.getDataClassification().containsKey(CASE_MANAGEMENT_CATEGORY));
@@ -87,7 +87,7 @@ public class SystemMigrateGlobalSearchFieldsTest {
 
     @Test
     void shouldCallSupplementaryDataEndpointInSubmittedCallback() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setId(TEST_CASE_ID);
 
         systemMigrateGlobalSearchFields.submitted(caseDetails, caseDetails);

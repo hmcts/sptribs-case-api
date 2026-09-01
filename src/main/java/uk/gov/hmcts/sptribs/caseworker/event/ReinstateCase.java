@@ -15,10 +15,10 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.ReinstateUploadDocuments;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ReinstateWarning;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
@@ -65,7 +65,8 @@ public class ReinstateCase implements CCDConfig<CriminalInjuriesCompensationData
         notifyParties.addTo(pageBuilder);
     }
 
-    public PageBuilder<CriminalInjuriesCompensationData> reinstateCase(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+    public PageBuilder<CriminalInjuriesCompensationData> reinstateCase(final ConfigBuilder<CriminalInjuriesCompensationData, State,
+        UserRole> configBuilder) {
         return new PageBuilder<>(configBuilder
             .event(CASEWORKER_REINSTATE_CASE)
             .forStates(CaseClosed)
@@ -82,7 +83,8 @@ public class ReinstateCase implements CCDConfig<CriminalInjuriesCompensationData
         );
     }
 
-    private AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStart(CaseDetails<CriminalInjuriesCompensationData, State> details) {
+    private AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+        State> aboutToStart(CaseDetails<CriminalInjuriesCompensationData, State> details) {
         final CriminalInjuriesCompensationData caseData = details.getData();
         List<ListValue<CaseworkerCICDocument>> documents = caseData.getCicCase().getReinstateDocuments();
         List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = convertToCaseworkerCICDocument(documents);

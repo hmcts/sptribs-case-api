@@ -18,6 +18,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.service.OrderService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -91,10 +92,10 @@ class CaseworkerCreateDraftOrderTest {
         //Given
         final CicCase cicCase = CicCase.builder()
             .orderTemplateIssued(Document.builder().filename("a--b--02-02-2002 11:11:11.pdf").build()).build();
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setCicCase(cicCase);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
 
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         updatedCaseDetails.setData(caseData);
@@ -110,7 +111,7 @@ class CaseworkerCreateDraftOrderTest {
             .build();
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerCreateDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse draftCreatedResponse = caseworkerCreateDraftOrder.submitted(updatedCaseDetails, beforeDetails);
 
@@ -141,17 +142,17 @@ class CaseworkerCreateDraftOrderTest {
 
         final CicCase cicCase = CicCase.builder()
             .orderTemplateIssued(Document.builder().filename("a--b--02-02-2002 11:11:11.pdf").build()).build();
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .draftOrderContentCIC(orderContentCIC)
             .build();
         caseData.setCicCase(cicCase);
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setId(TEST_CASE_ID);
 
         caseDetails.setData(caseData);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerCreateDraftOrder.midEvent(caseDetails, caseDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = caseworkerCreateDraftOrder.midEvent(caseDetails, caseDetails);
 
         //Then
         assertThat(response.getErrors()).isNull();
@@ -163,10 +164,10 @@ class CaseworkerCreateDraftOrderTest {
         //Given
         final CicCase cicCase = CicCase.builder()
             .orderTemplateIssued(Document.builder().filename("a--b--02-02-2002 11:11:11.pdf").build()).build();
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setCicCase(cicCase);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         final DraftOrderContentCIC orderContentCIC = DraftOrderContentCIC.builder()
             .orderTemplate(OrderTemplate.CIC7_ME_DMI_REPORTS).build();
         caseData.setDraftOrderContentCIC(orderContentCIC);
@@ -176,7 +177,7 @@ class CaseworkerCreateDraftOrderTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerCreateDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
         assertThat(response).isNotNull();
 
@@ -191,7 +192,7 @@ class CaseworkerCreateDraftOrderTest {
         caseData.setCicCase(cicCase2);
         updatedCaseDetails.setData(caseData);
         caseData.setDraftOrderContentCIC(orderContentCIC);
-        AboutToStartOrSubmitResponse<CaseData, State> response2 =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response2 =
             caseworkerCreateDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //  Then
@@ -211,10 +212,10 @@ class CaseworkerCreateDraftOrderTest {
     void shouldHandlePreExistingDraftOrderList() {
         final CicCase cicCase = CicCase.builder()
                 .orderTemplateIssued(Document.builder().filename("a--b--02-02-2002 11:11:11.pdf").build()).build();
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setCicCase(cicCase);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         final DraftOrderContentCIC orderContentCIC = DraftOrderContentCIC.builder()
                 .orderTemplate(OrderTemplate.CIC7_ME_DMI_REPORTS).build();
         caseData.setDraftOrderContentCIC(orderContentCIC);
@@ -241,7 +242,7 @@ class CaseworkerCreateDraftOrderTest {
         existingOrderDynamicList.add(existingOrder);
         cicCase.setDraftOrderDynamicList(DynamicList.builder().listItems(existingOrderDynamicList).build());
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
                 caseworkerCreateDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
@@ -267,10 +268,10 @@ class CaseworkerCreateDraftOrderTest {
     void shouldStoreErrorsWhenBuildAndSaveNewDocumentEntityThrowsRuntimeException() {
         final CicCase cicCase = CicCase.builder()
             .orderTemplateIssued(Document.builder().filename("a--b--02-02-2002 11:11:11.pdf").build()).build();
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setCicCase(cicCase);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
 
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         caseData.setDraftOrderContentCIC(DraftOrderContentCIC.builder()
@@ -284,7 +285,7 @@ class CaseworkerCreateDraftOrderTest {
             .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID),
                 eq(DocumentType.TRIBUNAL_DIRECTION), eq(CaseDocumentType.DRAFT_ORDER));
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerCreateDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         assertThat(response.getErrors()).hasSize(1);
@@ -301,7 +302,7 @@ class CaseworkerCreateDraftOrderTest {
             .orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build());
         updatedCaseDetails.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> nullFilenameResponse =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> nullFilenameResponse =
             caseworkerCreateDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         assertThat(nullFilenameResponse.getErrors()).hasSize(1);
@@ -313,7 +314,7 @@ class CaseworkerCreateDraftOrderTest {
             .orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build());
         updatedCaseDetails.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> emptyFilenameResponse =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> emptyFilenameResponse =
             caseworkerCreateDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         assertThat(emptyFilenameResponse.getErrors()).hasSize(1);

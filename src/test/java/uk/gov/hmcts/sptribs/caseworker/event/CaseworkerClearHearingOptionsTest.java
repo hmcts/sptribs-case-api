@@ -9,9 +9,9 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 
 import java.util.Set;
 
@@ -34,7 +34,7 @@ public class CaseworkerClearHearingOptionsTest {
     @Test
     void shouldAddConfigurationToConfigBuilder() {
         //Given
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         //When
         caseworkerClearHearingOptions.configure(configBuilder);
@@ -57,14 +57,14 @@ public class CaseworkerClearHearingOptionsTest {
             .hearingFormat(HYBRID)
             .shortNotice(YES)
             .build();
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .listing(listing)
             .build();
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> result =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> result =
             caseworkerClearHearingOptions.aboutToSubmit(caseDetails, caseDetails);
 
         //Then

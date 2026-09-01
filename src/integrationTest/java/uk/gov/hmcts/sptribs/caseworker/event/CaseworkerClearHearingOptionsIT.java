@@ -13,7 +13,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
@@ -67,7 +67,7 @@ public class CaseworkerClearHearingOptionsIT {
 
     @Test
     void shouldClearPreviouslyPopulatedHearingOptionsOnAboutToSubmit() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final Listing listing = Listing.builder()
             .regionList(getMockedRegionData())
             .hearingVenues(getMockedHearingVenueData())

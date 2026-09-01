@@ -17,6 +17,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.IntegrationTestBase;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleIdAndTimestamp;
@@ -102,7 +103,7 @@ public class CaseworkerRemoveBundlesIT extends IntegrationTestBase {
             .filename("3-cicBundle.pdf")
             .build();
 
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         List<ListValue<Bundle>> existingBundles = new ArrayList<>();
         existingBundles.add(ListValue.<Bundle>builder()
             .id("1")
@@ -243,7 +244,7 @@ public class CaseworkerRemoveBundlesIT extends IntegrationTestBase {
             .filename("3-cicBundle.pdf")
             .build();
 
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         List<ListValue<Bundle>> existingBundles = new ArrayList<>();
         existingBundles.add(ListValue.<Bundle>builder()
             .id("1")

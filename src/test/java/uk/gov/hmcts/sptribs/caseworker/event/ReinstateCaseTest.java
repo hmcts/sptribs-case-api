@@ -15,13 +15,13 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ReinstateUploadDocuments;
 import uk.gov.hmcts.sptribs.caseworker.model.ReinstateReason;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseReinstatedNotification;
@@ -60,7 +60,7 @@ class ReinstateCaseTest {
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         reinstateCase.configure(configBuilder);
 
@@ -71,7 +71,7 @@ class ReinstateCaseTest {
 
     @Test
     void shouldSuccessfullyReinstateTheCaseEmail() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final CaseworkerCICDocumentUpload document = CaseworkerCICDocumentUpload.builder()
             .documentLink(Document.builder().build())
             .documentEmailContent("content")
@@ -99,13 +99,13 @@ class ReinstateCaseTest {
             .reinstateDocumentsUpload(List.of(documentListValue))
             .build();
         caseData.setCicCase(cicCase);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             reinstateCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse responseReinstate =
             reinstateCase.submitted(updatedCaseDetails, beforeDetails);
@@ -131,7 +131,7 @@ class ReinstateCaseTest {
 
     @Test
     void shouldSuccessfullyReinstateTheCasePost() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final CaseworkerCICDocumentUpload document = CaseworkerCICDocumentUpload.builder()
             .documentLink(Document.builder().build())
             .documentEmailContent("content")
@@ -159,13 +159,13 @@ class ReinstateCaseTest {
             .reinstateDocumentsUpload(List.of(documentListValue))
             .build();
         caseData.setCicCase(cicCase);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             reinstateCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse responseReinstate =
             reinstateCase.submitted(updatedCaseDetails, beforeDetails);
@@ -191,7 +191,7 @@ class ReinstateCaseTest {
 
     @Test
     void shouldReturnErrorsIfNoDescriptionOnDocument() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         CaseworkerCICDocumentUpload document = new CaseworkerCICDocumentUpload();
         document.setDocumentCategory(DocumentType.CARE_PLAN);
         document.setDocumentLink(Document.builder().binaryUrl("url").filename("file.xml").build());
@@ -200,12 +200,13 @@ class ReinstateCaseTest {
         CicCase cicCase = CicCase.builder()
             .reinstateDocumentsUpload(List.of(documentListValue))
             .build();
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .build();
         caseDetails.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = reinstateUploadDocuments.midEvent(caseDetails, caseDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = reinstateUploadDocuments.midEvent(caseDetails,
+            caseDetails);
 
         assertThat(response.getErrors()).hasSize(2);
     }

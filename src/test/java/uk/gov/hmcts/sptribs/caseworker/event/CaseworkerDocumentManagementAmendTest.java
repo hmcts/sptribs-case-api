@@ -17,6 +17,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.DocumentManagementAmendDocumen
 import uk.gov.hmcts.sptribs.caseworker.event.page.DocumentManagementSelectDocuments;
 import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -91,14 +92,14 @@ class CaseworkerDocumentManagementAmendTest {
     @Test
     void shouldSuccessfullyAmendCaseDocument() {
         //Given
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final CicCase cicCase = CicCase.builder()
             .applicantDocumentsUploaded(getCaseworkerCICDocumentList("test.pdf", APPLICATION_FORM))
             .build();
         caseData.setCicCase(cicCase);
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.CaseManagement);
@@ -106,12 +107,12 @@ class CaseworkerDocumentManagementAmendTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> aboutToStartResponse =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStartResponse =
             caseworkerDocumentManagementAmend.aboutToStart(updatedCaseDetails);
 
         cicCase.getAmendDocumentList().setValue(getDynamicListItems());
         cicCase.getApplicantDocumentsUploaded().getFirst().setValue(getCaseworkerCICDocument());
-        AboutToStartOrSubmitResponse<CaseData, State> midResponse =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> midResponse =
             selectCaseDocuments.midEvent(updatedCaseDetails, beforeDetails);
 
         assertThat(midResponse.getData().getCicCase().getSelectedDocumentLink()).isNotNull();
@@ -120,7 +121,7 @@ class CaseworkerDocumentManagementAmendTest {
 
         updatedCaseDetails.getData().getCicCase().setSelectedDocumentCategory(HOSPITAL_RECORDS);
 
-        AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmitResponse =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmitResponse =
             caseworkerDocumentManagementAmend.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse documentMgmtResponse = caseworkerDocumentManagementAmend.submitted(updatedCaseDetails, beforeDetails);
 
@@ -142,14 +143,14 @@ class CaseworkerDocumentManagementAmendTest {
     @Test
     void shouldSuccessfullyAmendReinstateCaseDocument() {
         //Given
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final CicCase cicCase = CicCase.builder()
             .reinstateDocuments(getCaseworkerCICDocumentList())
             .build();
         caseData.setCicCase(cicCase);
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.CaseManagement);
@@ -164,7 +165,7 @@ class CaseworkerDocumentManagementAmendTest {
         cicCase.getSelectedDocumentLink().setCategoryId(OTHER_GENERAL_EVIDENCE.getCategory());
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmitResponse =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmitResponse =
             caseworkerDocumentManagementAmend.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse documentMgmtResponse = caseworkerDocumentManagementAmend.submitted(updatedCaseDetails, beforeDetails);
 
@@ -183,13 +184,13 @@ class CaseworkerDocumentManagementAmendTest {
     @Test
     void shouldSuccessfullyAmendDocumentMgmtFiles() {
         //Given
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.getAllDocManagement().setCaseworkerCICDocument(getCaseworkerCICDocumentList());
         final CicCase cicCase = CicCase.builder().build();
         caseData.setCicCase(cicCase);
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.CaseManagement);
@@ -204,7 +205,7 @@ class CaseworkerDocumentManagementAmendTest {
         cicCase.getSelectedDocumentLink().setCategoryId(OTHER_GENERAL_EVIDENCE.getCategory());
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmitResponse =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmitResponse =
             caseworkerDocumentManagementAmend.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse documentMgmtResponse = caseworkerDocumentManagementAmend.submitted(updatedCaseDetails, beforeDetails);
 
@@ -223,13 +224,13 @@ class CaseworkerDocumentManagementAmendTest {
     @Test
     void shouldSuccessfullyAmendCloseCaseDocuments() {
         //Given
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.getCloseCase().setDocuments(getCaseworkerCICDocumentList());
         final CicCase cicCase = CicCase.builder().build();
         caseData.setCicCase(cicCase);
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.CaseManagement);
@@ -244,7 +245,7 @@ class CaseworkerDocumentManagementAmendTest {
         cicCase.getSelectedDocumentLink().setCategoryId(OTHER_GENERAL_EVIDENCE.getCategory());
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmitResponse =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmitResponse =
             caseworkerDocumentManagementAmend.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse documentMgmtResponse = caseworkerDocumentManagementAmend.submitted(updatedCaseDetails, beforeDetails);
 
@@ -263,13 +264,13 @@ class CaseworkerDocumentManagementAmendTest {
     @Test
     void shouldSuccessfullyAmendHearingSummaryDocuments() {
         //Given
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.getListing().getSummary().setRecFile(getCaseworkerCICDocumentList("file.pdf"));
         final CicCase cicCase = CicCase.builder().build();
         caseData.setCicCase(cicCase);
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.CaseManagement);
@@ -284,7 +285,7 @@ class CaseworkerDocumentManagementAmendTest {
         cicCase.getSelectedDocumentLink().setCategoryId(OTHER_GENERAL_EVIDENCE.getCategory());
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmitResponse =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmitResponse =
             caseworkerDocumentManagementAmend.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse documentMgmtResponse = caseworkerDocumentManagementAmend.submitted(updatedCaseDetails, beforeDetails);
 
@@ -303,7 +304,7 @@ class CaseworkerDocumentManagementAmendTest {
     @Test
     void shouldUpdateInitialCicaDocumentsAndFurtherUploadedDocumentsWhenNewBundleOrderEnabled() {
         //Given
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setNewBundleOrderEnabled(YesNo.YES);
 
         // Create documents with matching URLs for the update to work
@@ -322,8 +323,8 @@ class CaseworkerDocumentManagementAmendTest {
         final CicCase cicCase = CicCase.builder().build();
         caseData.setCicCase(cicCase);
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.CaseManagement);
@@ -338,7 +339,7 @@ class CaseworkerDocumentManagementAmendTest {
         testDocument.setCategoryId(OTHER_GENERAL_EVIDENCE.getCategory());
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmitResponse =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmitResponse =
             caseworkerDocumentManagementAmend.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //Then
@@ -371,7 +372,7 @@ class CaseworkerDocumentManagementAmendTest {
     @Test
     void shouldNotUpdateInitialCicaDocumentsAndFurtherUploadedDocumentsWhenNewBundleOrderDisabled() {
         //Given
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setNewBundleOrderEnabled(YesNo.NO);
 
         // Create documents with matching URLs for the update to work
@@ -390,8 +391,8 @@ class CaseworkerDocumentManagementAmendTest {
         final CicCase cicCase = CicCase.builder().build();
         caseData.setCicCase(cicCase);
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.CaseManagement);
@@ -406,7 +407,7 @@ class CaseworkerDocumentManagementAmendTest {
         testDocument.setCategoryId(OTHER_GENERAL_EVIDENCE.getCategory());
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmitResponse =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmitResponse =
             caseworkerDocumentManagementAmend.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //Then
@@ -433,14 +434,14 @@ class CaseworkerDocumentManagementAmendTest {
     @Test
     void shouldNotCallDatabaseWhenOnlyDocumentEmailContentIsUpdated() {
         //Given
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final CicCase cicCase = CicCase.builder()
             .applicantDocumentsUploaded(getCaseworkerCICDocumentList("test.pdf", APPLICATION_FORM))
             .build();
         caseData.setCicCase(cicCase);
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.CaseManagement);
@@ -448,14 +449,14 @@ class CaseworkerDocumentManagementAmendTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> aboutToStartResponse =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStartResponse =
             caseworkerDocumentManagementAmend.aboutToStart(updatedCaseDetails);
         assertThat(aboutToStartResponse.getData().getCicCase().getAmendDocumentList().getListItems()).isNotEmpty();
 
         cicCase.getAmendDocumentList().setValue(getDynamicListItems());
         cicCase.getApplicantDocumentsUploaded().getFirst().setValue(getCaseworkerCICDocument());
         cicCase.getApplicantDocumentsUploaded().getFirst().getValue().getDocumentLink().setCategoryId(APPLICATION_FORM.getCategory());
-        AboutToStartOrSubmitResponse<CaseData, State> midResponse =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> midResponse =
             selectCaseDocuments.midEvent(updatedCaseDetails, beforeDetails);
 
         assertThat(midResponse.getData().getCicCase().getSelectedDocumentLink()).isNotNull();
@@ -467,7 +468,7 @@ class CaseworkerDocumentManagementAmendTest {
 
         updatedCaseDetails.getData().getCicCase().setSelectedDocumentEmailContent("new updated email content");
 
-        AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmitResponse =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmitResponse =
             caseworkerDocumentManagementAmend.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //Then
@@ -484,14 +485,14 @@ class CaseworkerDocumentManagementAmendTest {
 
     @Test
     void shouldStoreErrorsWhenSetNewDocumentTypeNameThrowsRuntimeException() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final CicCase cicCase = CicCase.builder()
             .applicantDocumentsUploaded(getCaseworkerCICDocumentList("test.pdf", APPLICATION_FORM))
             .build();
         caseData.setCicCase(cicCase);
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.CaseManagement);
@@ -510,7 +511,7 @@ class CaseworkerDocumentManagementAmendTest {
         doThrow(new RuntimeException("Error updating document type name"))
             .when(documentsService).setNewDocumentTypeName("http://url/",HOSPITAL_RECORDS.name());
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerDocumentManagementAmend.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         assertThat(response.getErrors()).hasSize(1);

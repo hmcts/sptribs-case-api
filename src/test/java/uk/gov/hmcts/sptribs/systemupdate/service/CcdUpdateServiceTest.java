@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.task.CaseTask;
 import uk.gov.hmcts.sptribs.idam.CICUser;
@@ -61,10 +62,10 @@ class CcdUpdateServiceTest {
 
         final CICUser user = systemUpdateUser();
         final Map<String, Object> caseData = new HashMap<>();
-        final uk.gov.hmcts.ccd.sdk.api.CaseDetails<CaseData, State> caseDetails =
+        final uk.gov.hmcts.ccd.sdk.api.CaseDetails<CriminalInjuriesCompensationData, State> caseDetails =
                 new uk.gov.hmcts.ccd.sdk.api.CaseDetails<>();
         caseDetails.setId(TEST_CASE_ID);
-        caseDetails.setData(CaseData.builder().build());
+        caseDetails.setData(CriminalInjuriesCompensationData.builder().build());
 
         final StartEventResponse startEventResponse = getStartEventResponse();
 
@@ -138,10 +139,10 @@ class CcdUpdateServiceTest {
     void shouldSubmitEventWithRetry() {
 
         final CICUser user = systemUpdateUser();
-        final uk.gov.hmcts.ccd.sdk.api.CaseDetails<CaseData, State> caseDetails =
+        final uk.gov.hmcts.ccd.sdk.api.CaseDetails<CriminalInjuriesCompensationData, State> caseDetails =
             new uk.gov.hmcts.ccd.sdk.api.CaseDetails<>();
         caseDetails.setId(TEST_CASE_ID);
-        caseDetails.setData(CaseData.builder().build());
+        caseDetails.setData(CriminalInjuriesCompensationData.builder().build());
 
         final StartEventResponse startEventResponse = getStartEventResponse();
         final CaseTask caseTask = new MigrateRetiredFields();

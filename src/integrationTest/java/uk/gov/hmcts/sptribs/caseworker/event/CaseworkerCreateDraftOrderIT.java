@@ -15,8 +15,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.document.DocAssemblyService;
 import uk.gov.hmcts.sptribs.document.model.DocumentInfo;
@@ -98,7 +98,7 @@ public class CaseworkerCreateDraftOrderIT {
 
     @Test
     void shouldGenerateOrderFileOnMidEvent() throws Exception {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .fullName("Test Name")
                 .schemeCic(Year2012)
@@ -170,7 +170,7 @@ public class CaseworkerCreateDraftOrderIT {
 
     @Test
     void shouldUpdateDraftOrderListOnAboutToSubmit() throws Exception {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .fullName("Test Name")
                 .schemeCic(Year2012)

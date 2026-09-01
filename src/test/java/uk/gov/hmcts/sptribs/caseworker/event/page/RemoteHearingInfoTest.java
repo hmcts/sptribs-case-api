@@ -7,8 +7,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,13 +26,13 @@ class RemoteHearingInfoTest {
     void whenMidEvent_thenShouldValidateNoSpecialCharacters() {
 
         //given
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
 
         final Listing listing = new Listing();
         listing.setVideoCallLink("link");
         listing.setConferenceCallNumber("123333");
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .listing(listing)
             .build();
 
@@ -40,7 +40,8 @@ class RemoteHearingInfoTest {
 
         //when
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = remoteHearingInfo.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = remoteHearingInfo.midEvent(caseDetails,
+            caseDetails);
 
         //then
 
@@ -52,13 +53,13 @@ class RemoteHearingInfoTest {
     void givenVideoLinkWithSpecialCharacter_whenMidEvent_thenShouldReturnError() {
 
         //given
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
 
         final Listing listing = new Listing();
         listing.setVideoCallLink("link&");
         listing.setConferenceCallNumber("123333");
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .listing(listing)
             .build();
 
@@ -66,7 +67,8 @@ class RemoteHearingInfoTest {
 
         //when
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = remoteHearingInfo.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = remoteHearingInfo.midEvent(caseDetails,
+            caseDetails);
 
         //then
 
@@ -78,13 +80,13 @@ class RemoteHearingInfoTest {
     void givenConferenceCallNumberWithSpecialCharacter_whenMidEvent_thenShouldReturnError() {
 
         //given
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
 
         final Listing listing = new Listing();
         listing.setVideoCallLink("link");
         listing.setConferenceCallNumber("1233&33");
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .listing(listing)
             .build();
 
@@ -92,7 +94,8 @@ class RemoteHearingInfoTest {
 
         //when
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = remoteHearingInfo.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = remoteHearingInfo.midEvent(caseDetails,
+            caseDetails);
 
         //then
 

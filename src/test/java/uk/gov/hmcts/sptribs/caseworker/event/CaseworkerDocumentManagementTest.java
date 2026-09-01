@@ -16,6 +16,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.UploadCaseDocuments;
 import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
 import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
@@ -83,9 +84,9 @@ public class CaseworkerDocumentManagementTest {
 
     @Test
     void shouldSuccessfullyCheckUploadedDocumentsInMidEvent() {
-        final CaseData caseData = caseData();
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = caseData();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         DocumentManagement documentManagement = DocumentManagement.builder()
             .caseworkerCICDocumentUpload(getCaseworkerCICDocumentUploadList("file.pdf"))
             .build();
@@ -93,7 +94,7 @@ public class CaseworkerDocumentManagementTest {
         beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             uploadCaseDocuments.midEvent(updatedCaseDetails, beforeDetails);
 
         assertThat(response.getErrors()).isEmpty();
@@ -101,9 +102,9 @@ public class CaseworkerDocumentManagementTest {
 
     @Test
     void shouldSuccessfullyAddDocumentInAboutToSubmit() {
-        final CaseData caseData = caseData();
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = caseData();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         DocumentManagement documentManagement = DocumentManagement.builder()
             .caseworkerCICDocumentUpload(getCaseworkerCICDocumentUploadList("file.pdf"))
             .build();
@@ -115,7 +116,7 @@ public class CaseworkerDocumentManagementTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerDocumentManagement.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         assertThat(response.getData().getNewDocManagement().getCaseworkerCICDocument()).isEmpty();
@@ -145,8 +146,8 @@ public class CaseworkerDocumentManagementTest {
 
     @Test
     void shouldSuccessfullySubmit() {
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
 
         SubmittedCallbackResponse response = caseworkerDocumentManagement.submitted(updatedCaseDetails, beforeDetails);
         assertThat(response.getConfirmationHeader()).isEqualTo("# Case Updated");
@@ -154,10 +155,10 @@ public class CaseworkerDocumentManagementTest {
 
     @Test
     void shouldAddDocumentsToFurtherUploadedDocumentsWhenNewBundleOrderEnabled() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setNewBundleOrderEnabled(YesNo.YES);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         DocumentManagement documentManagement = DocumentManagement.builder()
             .caseworkerCICDocumentUpload(getCaseworkerCICDocumentUploadList("file.pdf"))
             .build();
@@ -169,7 +170,7 @@ public class CaseworkerDocumentManagementTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerDocumentManagement.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         assertThat(response.getData().getFurtherUploadedDocuments()).hasSize(1);
@@ -188,13 +189,13 @@ public class CaseworkerDocumentManagementTest {
 
     @Test
     void shouldAddDocumentsToExistingFurtherUploadedDocumentsWhenNewBundleOrderEnabled() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setNewBundleOrderEnabled(YesNo.YES);
         // Pre-populate with existing documents
         caseData.setFurtherUploadedDocuments(getCaseworkerCICDocumentList("existing.pdf"));
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         DocumentManagement documentManagement = DocumentManagement.builder()
             .caseworkerCICDocumentUpload(getCaseworkerCICDocumentUploadList("new-file.pdf"))
             .build();
@@ -206,7 +207,7 @@ public class CaseworkerDocumentManagementTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerDocumentManagement.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         assertThat(response.getData().getFurtherUploadedDocuments()).hasSize(2);
@@ -227,10 +228,10 @@ public class CaseworkerDocumentManagementTest {
 
     @Test
     void shouldNotAddDocumentsToFurtherUploadedDocumentsWhenNewBundleOrderDisabled() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setNewBundleOrderEnabled(YesNo.NO);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         DocumentManagement documentManagement = DocumentManagement.builder()
             .caseworkerCICDocumentUpload(getCaseworkerCICDocumentUploadList("file.pdf"))
             .build();
@@ -242,7 +243,7 @@ public class CaseworkerDocumentManagementTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerDocumentManagement.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         assertThat(response.getData().getFurtherUploadedDocuments()).isNull();
@@ -259,10 +260,10 @@ public class CaseworkerDocumentManagementTest {
 
     @Test
     void shouldStoreErrorsWhenBuildAndSaveNewDocumentEntityThrowsRuntimeException() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         DocumentManagement documentManagement = DocumentManagement.builder()
             .caseworkerCICDocumentUpload(getCaseworkerCICDocumentUploadList("file.pdf"))
             .build();
@@ -278,7 +279,7 @@ public class CaseworkerDocumentManagementTest {
             .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID),
                 eq(DocumentType.LINKED_DOCS), eq(CaseDocumentType.DOCUMENT_MANAGEMENT));
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerDocumentManagement.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         assertThat(response.getErrors()).hasSize(1);
@@ -294,7 +295,7 @@ public class CaseworkerDocumentManagementTest {
             .build());
         updatedCaseDetails.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> emptyFilenameResponse =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> emptyFilenameResponse =
             caseworkerDocumentManagement.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         assertThat(emptyFilenameResponse.getErrors()).hasSize(1);
@@ -305,7 +306,7 @@ public class CaseworkerDocumentManagementTest {
             .build());
         updatedCaseDetails.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> nullFilenameResponse =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> nullFilenameResponse =
             caseworkerDocumentManagement.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         assertThat(nullFilenameResponse.getErrors()).hasSize(1);
@@ -314,10 +315,10 @@ public class CaseworkerDocumentManagementTest {
 
     @Test
     void shouldStoreErrorsWhenBuildAndSaveNewDocumentEntityThrowsRuntimeExceptionForMultipleDocuments() {
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
 
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         updatedCaseDetails.setId(TEST_CASE_ID);
 
@@ -347,7 +348,7 @@ public class CaseworkerDocumentManagementTest {
             argThat(doc -> "happy_file.pdf".equals(doc.getFilename())),
             eq(TEST_CASE_ID), eq(DocumentType.LINKED_DOCS), eq(CaseDocumentType.DOCUMENT_MANAGEMENT));
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerDocumentManagement.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         assertThat(response.getErrors()).hasSize(2);

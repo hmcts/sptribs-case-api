@@ -10,9 +10,9 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 
 import java.util.ArrayList;
@@ -45,8 +45,10 @@ public class SystemMigrateCaseFlags implements CCDConfig<CriminalInjuriesCompens
             .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE);
     }
 
-    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(final CaseDetails<CriminalInjuriesCompensationData, State> details,
-                                                                       final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+        State> aboutToSubmit(final CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                                       final CaseDetails<CriminalInjuriesCompensationData,
+                                                                           State> beforeDetails) {
 
         log.info("Migrating case flags for case Id: {}", details.getId());
         CriminalInjuriesCompensationData data = details.getData();

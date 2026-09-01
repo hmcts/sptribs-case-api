@@ -18,6 +18,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.ShowDraftOrders;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -63,9 +64,9 @@ class CaseworkerDeleteDraftOrderTest {
     @Test
     void shouldRemoveDraftOrderSuccessfully() {
         //Given
-        final CaseData caseData = caseData();
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = caseData();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
 
         final Document document = Document.builder()
             .url("test/documents/a57d1138-1f8d-4aeb-b5ad-3681aba68747")
@@ -117,12 +118,12 @@ class CaseworkerDeleteDraftOrderTest {
         updatedCaseDetails.setData(newData);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> midResponse =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> midResponse =
             showDraftOrders.midEvent(updatedCaseDetails, beforeDetails);
 
         assertThat(midResponse.getData().getCicCase().getRemovedDraftList().size()).isEqualTo(1);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerDeleteDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse deleteDraftOrderResponse = caseworkerDeleteDraftOrder.submitted(updatedCaseDetails, beforeDetails);
 

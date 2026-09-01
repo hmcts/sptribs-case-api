@@ -6,10 +6,9 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 
 import static uk.gov.hmcts.sptribs.caseworker.model.YesNo.YES;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -36,8 +35,10 @@ public class SystemTriggerStitchCollateHearingBundle implements CCDConfig<Crimin
 
     }
 
-    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(final CaseDetails<CriminalInjuriesCompensationData, State> details,
-                                                                       final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+        State> aboutToSubmit(final CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                                       final CaseDetails<CriminalInjuriesCompensationData,
+                                                                           State> beforeDetails) {
         CriminalInjuriesCompensationData caseData = details.getData();
         caseData.setStitchHearingBundleTask(YES);
 

@@ -8,11 +8,11 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingState;
 import uk.gov.hmcts.sptribs.ciccase.model.SchemeCic;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -36,7 +36,7 @@ public class FinalDecisionTemplateContentTest {
     @Test
     public void shouldSuccessfullyApplyFinalDecisionContent() {
         //Given
-        CaseData caseData = buildCaseData();
+        CriminalInjuriesCompensationData caseData = buildCaseData();
         HearingSummary summary = HearingSummary.builder()
             .memberList(getMembers())
             .subjectName("John Smith")
@@ -61,7 +61,7 @@ public class FinalDecisionTemplateContentTest {
     @Test
     public void shouldSuccessfullyApplyFinalDecisionContentNoMembers() {
         //Given
-        CaseData caseData = buildCaseData();
+        CriminalInjuriesCompensationData caseData = buildCaseData();
         HearingSummary summary = HearingSummary.builder()
             .build();
         Listing listing = Listing.builder().date(LocalDate.now())
@@ -83,7 +83,7 @@ public class FinalDecisionTemplateContentTest {
     @Test
     void shouldSuccessfullyApplyFinalDecisionContentWithFatalSubcategory() {
         //Given
-        CaseData caseData = buildCaseDataWithSubcategory(CaseSubcategory.FATAL, true);
+        CriminalInjuriesCompensationData caseData = buildCaseDataWithSubcategory(CaseSubcategory.FATAL, true);
         HearingSummary summary = HearingSummary.builder()
             .memberList(getMembers())
             .subjectName("John Smith")
@@ -108,7 +108,7 @@ public class FinalDecisionTemplateContentTest {
     @Test
     void shouldSuccessfullyApplyFinalDecisionContentWithMinorSubcategory() {
         //Given
-        CaseData caseData = buildCaseDataWithSubcategory(CaseSubcategory.MINOR, true);
+        CriminalInjuriesCompensationData caseData = buildCaseDataWithSubcategory(CaseSubcategory.MINOR, true);
         HearingSummary summary = HearingSummary.builder()
             .memberList(getMembers())
             .subjectName("John Smith")
@@ -133,7 +133,7 @@ public class FinalDecisionTemplateContentTest {
     @Test
     void shouldSuccessfullyApplyFinalDecisionContentWithFatalSubcategoryNoApplicant() {
         //Given
-        CaseData caseData = buildCaseDataWithSubcategory(CaseSubcategory.FATAL, false);
+        CriminalInjuriesCompensationData caseData = buildCaseDataWithSubcategory(CaseSubcategory.FATAL, false);
         HearingSummary summary = HearingSummary.builder()
             .memberList(getMembers())
             .subjectName("John Smith")
@@ -158,7 +158,7 @@ public class FinalDecisionTemplateContentTest {
     @Test
     void shouldSuccessfullyApplyFinalDecisionContentWithMinorSubcategoryNoApplicant() {
         //Given
-        CaseData caseData = buildCaseDataWithSubcategory(CaseSubcategory.MINOR, false);
+        CriminalInjuriesCompensationData caseData = buildCaseDataWithSubcategory(CaseSubcategory.MINOR, false);
         HearingSummary summary = HearingSummary.builder()
             .memberList(getMembers())
             .subjectName("John Smith")
@@ -182,7 +182,7 @@ public class FinalDecisionTemplateContentTest {
 
     @Test
     void shouldSuccessfullyApplyAnonymityOnFinalDecision() {
-        CaseData caseData = buildCaseData();
+        CriminalInjuriesCompensationData caseData = buildCaseData();
         caseData.getCicCase().setAnonymiseYesOrNo(YesOrNo.YES);
         caseData.getCicCase().setAnonymisedAppellantName("Anonymised Name");
         HearingSummary summary = HearingSummary.builder()
@@ -209,7 +209,7 @@ public class FinalDecisionTemplateContentTest {
 
     @Test
     void shouldNotUseAnonymisedNameOnFinalDecision() {
-        CaseData caseData = buildCaseData();
+        CriminalInjuriesCompensationData caseData = buildCaseData();
         caseData.getCicCase().setAnonymiseYesOrNo(YesOrNo.NO);
         caseData.getCicCase().setAnonymisedAppellantName("Anonymised Name");
         HearingSummary summary = HearingSummary.builder()
@@ -234,15 +234,15 @@ public class FinalDecisionTemplateContentTest {
             .contains(entry(SUBJECT_FULL_NAME, "John Smith"));
     }
 
-    private CaseData buildCaseData() {
+    private CriminalInjuriesCompensationData buildCaseData() {
         final CicCase cicCase = CicCase.builder().schemeCic(SchemeCic.Year1996).build();
 
-        return CaseData.builder()
+        return CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .build();
     }
 
-    private CaseData buildCaseDataWithSubcategory(CaseSubcategory caseSubcategory, boolean applicant) {
+    private CriminalInjuriesCompensationData buildCaseDataWithSubcategory(CaseSubcategory caseSubcategory, boolean applicant) {
         if (applicant) {
             final CicCase cicCase = CicCase.builder()
                 .fullName("John Smith")
@@ -250,7 +250,7 @@ public class FinalDecisionTemplateContentTest {
                 .caseSubcategory(caseSubcategory)
                 .schemeCic(SchemeCic.Year1996).build();
 
-            return CaseData.builder()
+            return CriminalInjuriesCompensationData.builder()
                 .cicCase(cicCase)
                 .build();
         } else {
@@ -259,7 +259,7 @@ public class FinalDecisionTemplateContentTest {
                 .caseSubcategory(caseSubcategory)
                 .schemeCic(SchemeCic.Year1996).build();
 
-            return CaseData.builder()
+            return CriminalInjuriesCompensationData.builder()
                 .cicCase(cicCase)
                 .build();
         }

@@ -29,6 +29,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ListingCreatedNotification;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 
@@ -76,7 +77,7 @@ class CaseworkerRecordListingTest {
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
 
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         caseworkerRecordListing.configure(configBuilder);
 
@@ -114,10 +115,10 @@ class CaseworkerRecordListingTest {
             .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
             .hearingNotificationParties(parties)
             .build();
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setCicCase(cicCase);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         final Listing listing = getRecordListing();
         caseData.setListing(listing);
 
@@ -132,7 +133,7 @@ class CaseworkerRecordListingTest {
         when(recordListHelper.checkAndUpdateVenueInformation(any())).thenReturn(listing);
 
         //When
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerRecordListing.aboutToSubmit(updatedCaseDetails, beforeDetails);
         final SubmittedCallbackResponse stayedResponse = caseworkerRecordListing.submitted(updatedCaseDetails, beforeDetails);
 
@@ -167,8 +168,8 @@ class CaseworkerRecordListingTest {
 
     @Test
     void aboutToStartMethodShouldSuccessfullyPopulateRegionData() {
-        final CaseData caseData = caseData();
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = caseData();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -180,9 +181,9 @@ class CaseworkerRecordListingTest {
 
     @Test
     void midEventMethodShouldSuccessfullyPopulateHearingVenueDataWhenNotPresent() {
-        final CaseData caseData = caseData();
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = caseData();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         final Listing listing = new Listing();
         listing.setHearingFormat(HearingFormat.FACE_TO_FACE);
         listing.setRegionList(getMockedRegionData());
@@ -198,9 +199,9 @@ class CaseworkerRecordListingTest {
 
     @Test
     void shouldNotPopulateHearingVenueDataInMidEventCallbackIfAlreadyPresent() {
-        final CaseData caseData = caseData();
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = caseData();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         final Listing recordListing = new Listing();
         recordListing.setHearingFormat(HearingFormat.FACE_TO_FACE);
         recordListing.setRegionList(getMockedRegionData());
@@ -221,15 +222,15 @@ class CaseworkerRecordListingTest {
         final CicCase cicCaseSubject = CicCase.builder()
             .hearingNotificationParties(Set.of(notificationParty))
             .build();
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(cicCaseSubject)
             .hyphenatedCaseRef("1234-5678-3456")
             .build();
 
         final Exception sendToException = new NotificationException(new Exception("Failed to send"));
 
-        final CaseDetails<CaseData, State> beforeCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         switch (notificationParty) {
             case SUBJECT ->
@@ -256,13 +257,13 @@ class CaseworkerRecordListingTest {
         final CicCase cicCaseSubject = CicCase.builder()
             .hearingNotificationParties(Set.of(notificationParty))
             .build();
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(cicCaseSubject)
             .hyphenatedCaseRef("1234-5678-3456")
             .build();
 
-        final CaseDetails<CaseData, State> beforeCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         switch (notificationParty) {
             case SUBJECT ->

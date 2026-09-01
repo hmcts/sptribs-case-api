@@ -20,6 +20,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseStayedNotification;
 
 import java.time.LocalDate;
@@ -50,7 +51,7 @@ class CaseworkerStayTheCaseTest {
     @Test
     void shouldAddConfigurationToConfigBuilder() {
         //Given
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         //When
         caseworkerStayTheCase.configure(configBuilder);
@@ -64,21 +65,21 @@ class CaseworkerStayTheCaseTest {
     @Test
     void shouldSuccessfullyClearPreviousRemoveStayFromCase() {
         //Given
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         CaseStay caseStay = new CaseStay();
         caseStay.setStayReason(StayReason.AWAITING_OUTCOME_OF_LINKED_CASE);
         caseStay.setAdditionalDetail("some detail");
         caseStay.setFlagType(null);
         caseStay.setExpirationDate(LocalDate.now());
         caseData.setCaseStay(caseStay);
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setState(State.CaseManagement);
         caseDetails.setData(caseData);
         caseDetails.setId(TEST_CASE_ID);
         caseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerStayTheCase.aboutToStart(caseDetails);
 
 
@@ -89,7 +90,7 @@ class CaseworkerStayTheCaseTest {
     @Test
     void shouldSuccessfullyStayTheCase() {
         //Given
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         CicCase cicCase = new CicCase();
         cicCase.setSubjectCIC(Set.of(SubjectCIC.SUBJECT));
         cicCase.setApplicantCIC(Set.of(ApplicantCIC.APPLICANT_CIC));
@@ -102,8 +103,8 @@ class CaseworkerStayTheCaseTest {
         caseStay.setFlagType(null);
         caseStay.setExpirationDate(LocalDate.now());
         caseData.setCaseStay(caseStay);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -113,7 +114,7 @@ class CaseworkerStayTheCaseTest {
         doNothing().when(caseStayedNotification).sendToApplicant(any(CaseData.class), eq(null));
         doNothing().when(caseStayedNotification).sendToRepresentative(any(CaseData.class), eq(null));
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerStayTheCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse stayedResponse = caseworkerStayTheCase.submitted(updatedCaseDetails, beforeDetails);
 
@@ -130,11 +131,11 @@ class CaseworkerStayTheCaseTest {
     @Test
     void shouldNotSendNotificationIfApplicantSubjectRepresentativeSetIsEmpty() {
         //Given
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.getCicCase().setSubjectCIC(emptySet());
         caseData.getCicCase().setSubjectCIC(emptySet());
         caseData.getCicCase().setSubjectCIC(emptySet());
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         details.setData(caseData);
 
         //When
@@ -147,11 +148,11 @@ class CaseworkerStayTheCaseTest {
     @Test
     void shouldNotSendNotificationIfApplicantSubjectRepresentativeSetIsNull() {
         //Given
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.getCicCase().setSubjectCIC(null);
         caseData.getCicCase().setSubjectCIC(null);
         caseData.getCicCase().setSubjectCIC(null);
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         details.setData(caseData);
 
         //When

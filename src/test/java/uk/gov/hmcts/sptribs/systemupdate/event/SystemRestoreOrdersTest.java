@@ -11,10 +11,10 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.repositories.exception.CaseEventRepositoryException;
 import uk.gov.hmcts.sptribs.common.service.CaseDataRestoreService;
 
@@ -49,7 +49,7 @@ class SystemRestoreOrdersTest {
     @Test
     void shouldAddConfigurationToConfigBuilder() {
         //Given
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         //When
         systemRestoreOrders.configure(configBuilder);
@@ -62,13 +62,13 @@ class SystemRestoreOrdersTest {
 
     @Test
     void shouldCallRestoreServiceWithCorrectArguments() {
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .orderList(List.of())
                 .build())
             .build();
 
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setId(12345L);
         caseDetails.setData(caseData);
 
@@ -89,24 +89,24 @@ class SystemRestoreOrdersTest {
             .value(Order.builder().build())
             .build();
 
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .orderList(new ArrayList<>())
                 .build())
             .build();
 
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setId(12345L);
         caseDetails.setData(caseData);
 
         // simulate service mutating caseData directly
         doAnswer(invocation -> {
-            CaseData data = invocation.getArgument(1);
+            CriminalInjuriesCompensationData data = invocation.getArgument(1);
             data.getCicCase().setOrderList(List.of(restoredOrder));
             return null;
         }).when(caseDataRestoreService).restoreOrdersList(any(), any(), any(), any());
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             systemRestoreOrders.aboutToSubmit(caseDetails, null);
 
         assertThat(response.getData()).isEqualTo(caseData);
@@ -123,13 +123,13 @@ class SystemRestoreOrdersTest {
             .value(Order.builder().build())
             .build();
 
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .orderList(new ArrayList<>(List.of(existingOrder)))
                 .build())
             .build();
 
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setId(12345L);
         caseDetails.setData(caseData);
 
@@ -137,7 +137,7 @@ class SystemRestoreOrdersTest {
         doNothing().when(caseDataRestoreService)
             .restoreOrdersList(any(), any(), any(), any());
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             systemRestoreOrders.aboutToSubmit(caseDetails, null);
 
         assertThat(response.getData().getCicCase().getOrderList())
@@ -148,11 +148,11 @@ class SystemRestoreOrdersTest {
 
     @Test
     void shouldPropagateExceptionWhenServiceThrows() {
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder().build())
             .build();
 
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setId(12345L);
         caseDetails.setData(caseData);
 

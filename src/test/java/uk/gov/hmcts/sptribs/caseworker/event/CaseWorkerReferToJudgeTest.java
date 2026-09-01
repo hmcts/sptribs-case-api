@@ -13,10 +13,10 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.ReferToJudge;
 import uk.gov.hmcts.sptribs.caseworker.model.ReferralReason;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
@@ -36,7 +36,7 @@ public class CaseWorkerReferToJudgeTest {
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
 
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         caseWorkerReferToJudge.configure(configBuilder);
 
@@ -62,10 +62,10 @@ public class CaseWorkerReferToJudgeTest {
     @Test
     void shouldAlwaysInitiateReferToJudgeWithEmptyObject() {
         //Given
-        final CaseDetails<CaseData, State> existingCaseDetails = getCaseDetails();
+        final CaseDetails<CriminalInjuriesCompensationData, State> existingCaseDetails = getCaseDetails();
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> aboutToStartResponse =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStartResponse =
             caseWorkerReferToJudge.aboutToStart(existingCaseDetails);
 
         //Then
@@ -79,11 +79,11 @@ public class CaseWorkerReferToJudgeTest {
     @Test
     void shouldReferToJudge() {
         //Given
-        final CaseDetails<CaseData, State> updatedCaseDetails = getCaseDetails();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = getCaseDetails();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response1 =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response1 =
             caseWorkerReferToJudge.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse response2 =
             caseWorkerReferToJudge.submitted(updatedCaseDetails, beforeDetails);
@@ -98,22 +98,22 @@ public class CaseWorkerReferToJudgeTest {
     @ParameterizedTest
     @EnumSource(ReferralReason.class)
     void shouldSetReferralTypeForWA(ReferralReason referralReason) {
-        final CaseDetails<CaseData, State> updatedCaseDetails = getCaseDetails();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = getCaseDetails();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         final ReferToJudge referToJudge = ReferToJudge.builder()
                 .referralReason(referralReason).build();
         updatedCaseDetails.getData().setReferToJudge(referToJudge);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response1 =
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response1 =
                 caseWorkerReferToJudge.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         assertThat(response1).isNotNull();
         assertThat(response1.getData().getCicCase().getReferralTypeForWA()).isEqualTo(referralReason.getLabel());
     }
 
-    private CaseDetails<CaseData, State> getCaseDetails() {
-        CaseData caseData = caseData();
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+    private CaseDetails<CriminalInjuriesCompensationData, State> getCaseDetails() {
+        CriminalInjuriesCompensationData caseData = caseData();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
 
         caseDetails.setData(caseData);
         caseDetails.setId(TEST_CASE_ID);

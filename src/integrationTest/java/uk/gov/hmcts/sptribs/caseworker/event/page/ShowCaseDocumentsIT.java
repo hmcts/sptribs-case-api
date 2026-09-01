@@ -13,8 +13,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
@@ -63,7 +63,7 @@ public class ShowCaseDocumentsIT {
 
     @Test
     void shouldValidateRemoveDocumentSelectedInMidEvent() throws Exception {
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .allDocManagement(DocumentManagement.builder()
                 .caseworkerCICDocument(new ArrayList<>())
                 .build())
@@ -74,7 +74,7 @@ public class ShowCaseDocumentsIT {
                 .build())
             .build();
 
-        CaseData caseDataBefore = CaseData.builder()
+        CriminalInjuriesCompensationData caseDataBefore = CriminalInjuriesCompensationData.builder()
             .allDocManagement(DocumentManagement.builder()
                 .caseworkerCICDocument(getCaseworkerCICDocumentList())
                 .build())

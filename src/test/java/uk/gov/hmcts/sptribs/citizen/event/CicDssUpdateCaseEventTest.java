@@ -14,6 +14,7 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssMessage;
@@ -115,7 +116,7 @@ class CicDssUpdateCaseEventTest {
         final List<ListValue<DssMessage>> messages = new ArrayList<>();
         messages.add(new ListValue<>("1", message));
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(
                 CicCase.builder()
                     .applicantDocumentsUploaded(applicantDocumentsUploaded)
@@ -125,13 +126,13 @@ class CicDssUpdateCaseEventTest {
             .dssCaseData(getDssCaseData())
             .build();
 
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         details.setData(caseData);
 
         when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             cicDssUpdateCaseEvent.aboutToSubmit(details, details);
 
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotEmpty();
@@ -176,7 +177,7 @@ class CicDssUpdateCaseEventTest {
         final List<ListValue<DssMessage>> messages = new ArrayList<>();
         messages.add(new ListValue<>("1", message));
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(
                 CicCase.builder()
                     .applicantDocumentsUploaded(applicantDocumentsUploaded)
@@ -187,10 +188,10 @@ class CicDssUpdateCaseEventTest {
             .build();
         caseData.getDssCaseData().setAdditionalInformation("");
 
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         details.setData(caseData);
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             cicDssUpdateCaseEvent.aboutToSubmit(details, details);
 
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotEmpty();
@@ -235,7 +236,7 @@ class CicDssUpdateCaseEventTest {
         final List<ListValue<DssMessage>> messages = new ArrayList<>();
         messages.add(new ListValue<>("1", message));
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(
                 CicCase.builder()
                     .applicantDocumentsUploaded(applicantDocumentsUploaded)
@@ -246,10 +247,10 @@ class CicDssUpdateCaseEventTest {
             .build();
         caseData.getDssCaseData().setAdditionalInformation(null);
 
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         details.setData(caseData);
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             cicDssUpdateCaseEvent.aboutToSubmit(details, details);
 
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotEmpty();
@@ -280,7 +281,7 @@ class CicDssUpdateCaseEventTest {
 
     @Test
     void shouldCreateNewApplicantDocumentsUploadedAndMessagesListIfEmptyInAboutToSubmitCallback() {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(
                 CicCase.builder()
                     .applicantDocumentsUploaded(new ArrayList<>())
@@ -290,14 +291,14 @@ class CicDssUpdateCaseEventTest {
             .dssCaseData(getDssCaseData())
             .build();
 
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         details.setData(caseData);
 
         when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             cicDssUpdateCaseEvent.aboutToSubmit(details, details);
 
         verify(documentsService, times(2)).buildAndSaveNewDocumentEntity(
@@ -330,8 +331,8 @@ class CicDssUpdateCaseEventTest {
 
     @Test
     void shouldSendEmailNotifications() {
-        final CaseData caseData = CaseData.builder().build();
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         details.setId(TEST_CASE_ID);
         details.setData(caseData);
 
@@ -352,8 +353,8 @@ class CicDssUpdateCaseEventTest {
 
     @Test
     void shouldCatchErrorIfSendEmailNotificationFails() {
-        final CaseData caseData = CaseData.builder().build();
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         details.setId(TEST_CASE_ID);
         details.setData(caseData);
 
@@ -387,7 +388,7 @@ class CicDssUpdateCaseEventTest {
         final List<ListValue<CaseworkerCICDocument>> applicantDocumentsUploaded = new ArrayList<>();
         applicantDocumentsUploaded.add(new ListValue<>("3", caseworkerCICDocument));
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(
                 CicCase.builder()
                     .applicantDocumentsUploaded(applicantDocumentsUploaded)
@@ -396,7 +397,7 @@ class CicDssUpdateCaseEventTest {
             .dssCaseData(dssCaseData)
             .build();
 
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         details.setData(caseData);
 
@@ -404,7 +405,7 @@ class CicDssUpdateCaseEventTest {
             .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID),
                 eq(DocumentType.DSS_OTHER),  eq(CaseDocumentType.APPLICATION));
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             cicDssUpdateCaseEvent.aboutToSubmit(details, details);
 
         assertThat(response.getErrors()).hasSize(1);
@@ -421,7 +422,7 @@ class CicDssUpdateCaseEventTest {
         dssCaseData.setOtherInfoDocuments(List.of(otherInfoDocListValue));
         details.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> nullFilenameResponse =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> nullFilenameResponse =
             cicDssUpdateCaseEvent.aboutToSubmit(details, details);
 
         assertThat(nullFilenameResponse.getErrors()).hasSize(1);
@@ -433,7 +434,7 @@ class CicDssUpdateCaseEventTest {
         dssCaseData.setOtherInfoDocuments(List.of(otherInfoDocListValue));
         details.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> emptyFilenameResponse =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> emptyFilenameResponse =
             cicDssUpdateCaseEvent.aboutToSubmit(details, details);
 
         assertThat(emptyFilenameResponse.getErrors()).hasSize(1);
@@ -477,7 +478,7 @@ class CicDssUpdateCaseEventTest {
         final List<ListValue<CaseworkerCICDocument>> applicantDocumentsUploaded = new ArrayList<>();
         applicantDocumentsUploaded.add(new ListValue<>("3", caseworkerCICDocument));
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(
                 CicCase.builder()
                     .applicantDocumentsUploaded(applicantDocumentsUploaded)
@@ -488,13 +489,13 @@ class CicDssUpdateCaseEventTest {
 
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         updatedCaseDetails.setData(caseData);
 
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
 
         doThrow(new RuntimeException("Error saving document entity to database"))
             .when(documentsService).buildAndSaveNewDocumentEntity(
@@ -506,7 +507,7 @@ class CicDssUpdateCaseEventTest {
             argThat(doc -> "happy_file.pdf".equals(doc.getFilename())),
             eq(TEST_CASE_ID), eq(DocumentType.DSS_OTHER), eq(CaseDocumentType.APPLICATION));
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             cicDssUpdateCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         assertThat(response.getErrors()).hasSize(2);

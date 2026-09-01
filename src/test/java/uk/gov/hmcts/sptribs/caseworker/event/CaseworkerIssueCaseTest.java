@@ -23,11 +23,11 @@ import uk.gov.hmcts.sptribs.bankholidays.model.BankHolidayResponse;
 import uk.gov.hmcts.sptribs.bankholidays.service.BankHolidayService;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueCaseSelectDocument;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseIssuedNotification;
@@ -96,7 +96,7 @@ class CaseworkerIssueCaseTest {
 
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         caseworkerIssueCase.configure(configBuilder);
 
@@ -121,7 +121,7 @@ class CaseworkerIssueCaseTest {
 
     @Test
     void shouldSuccessfullyIssueTheCase() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final CicCase cicCase = CicCase.builder()
             .fullName(TEST_FIRST_NAME)
             .address(SUBJECT_ADDRESS)
@@ -138,16 +138,16 @@ class CaseworkerIssueCaseTest {
         caseData.setCaseIssue(caseIssue);
         caseData.setHyphenatedCaseRef("1234-5678-3456");
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
 
         when(bankHolidayService.getScottishBankHolidays(anyString())).thenReturn(testBankHolidayResponse);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerIssueCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         doNothing().when(caseIssuedNotification).sendToSubject(caseData, caseData.getHyphenatedCaseRef());
@@ -166,7 +166,7 @@ class CaseworkerIssueCaseTest {
 
     @Test
     void shouldReturnErrorMessageInSubmittedResponse() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final String hyphenatedCaseRef = caseData.formatCaseRef(TEST_CASE_ID);
         caseData.setHyphenatedCaseRef(hyphenatedCaseRef);
         caseData.getCicCase().setNotifyPartySubject(Set.of(SUBJECT));
@@ -174,7 +174,7 @@ class CaseworkerIssueCaseTest {
         caseData.getCicCase().setNotifyPartyRepresentative(Set.of(REPRESENTATIVE));
         caseData.getCicCase().setNotifyPartyRespondent(Set.of(RESPONDENT));
 
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
 
         doThrow(NotificationException.class)
@@ -201,7 +201,7 @@ class CaseworkerIssueCaseTest {
 
     @Test
     void shouldSendErrorOnTooManyDocuments() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final CicCase cicCase = CicCase.builder()
             .fullName(TEST_FIRST_NAME)
             .address(SUBJECT_ADDRESS)
@@ -220,14 +220,14 @@ class CaseworkerIssueCaseTest {
 
         caseData.setHyphenatedCaseRef("1234-5678-3456");
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             issueCaseSelectDocument.midEvent(updatedCaseDetails, beforeDetails);
 
         assertThat(response.getErrors()).hasSize(1);
@@ -235,7 +235,7 @@ class CaseworkerIssueCaseTest {
 
     @Test
     void shouldCreateDocumentList() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
         CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
             .documentCategory(DocumentType.APPLICATION_FORM)
@@ -260,12 +260,13 @@ class CaseworkerIssueCaseTest {
 
         caseData.setHyphenatedCaseRef("1234-5678-3456");
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerIssueCase.aboutToStart(updatedCaseDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+            State> response = caseworkerIssueCase.aboutToStart(updatedCaseDetails);
 
         assertThat(response).isNotNull();
         DynamicMultiSelectList documentList = response.getData().getCaseIssue().getDocumentList();
@@ -304,10 +305,10 @@ class CaseworkerIssueCaseTest {
 
     @Test
     void shouldCallBankHolidayServiceExactlyOnce() {
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
                 .cicCase(CicCase.builder().build())
                 .build();
-        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         details.setData(caseData);
 
         when(bankHolidayService.getScottishBankHolidays(anyString())).thenReturn(getBankHolidayResponse());

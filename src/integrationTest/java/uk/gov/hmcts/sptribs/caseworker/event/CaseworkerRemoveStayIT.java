@@ -18,10 +18,10 @@ import uk.gov.hmcts.sptribs.caseworker.model.RemoveCaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.StayReason;
 import uk.gov.hmcts.sptribs.caseworker.model.StayRemoveReason;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
@@ -102,7 +102,7 @@ public class CaseworkerRemoveStayIT {
             .stayRemoveOtherDescription("description")
             .build();
 
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .removeCaseStay(removeCaseStay)
             .build();
 
@@ -134,7 +134,7 @@ public class CaseworkerRemoveStayIT {
             .stayRemoveOtherDescription("description")
             .build();
 
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .removeCaseStay(removeCaseStay)
             .build();
 
@@ -168,7 +168,7 @@ public class CaseworkerRemoveStayIT {
             .isCaseStayed(YesOrNo.YES)
             .build();
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .caseStay(caseStay)
             .build();
 
@@ -191,7 +191,7 @@ public class CaseworkerRemoveStayIT {
 
     @Test
     void shouldReturnConfirmationMessageIfNotificationsDispatchedOnSubmitted() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         caseData.setCicCase(
             CicCase.builder()
@@ -239,7 +239,7 @@ public class CaseworkerRemoveStayIT {
 
     @Test
     void shouldReturnErrorMessageIfNotificationsFailOnSubmitted() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         caseData.setCicCase(
             CicCase.builder()

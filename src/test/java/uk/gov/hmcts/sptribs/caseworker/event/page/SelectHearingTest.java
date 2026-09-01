@@ -12,12 +12,12 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingState;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingType;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -45,7 +45,7 @@ class SelectHearingTest {
 
     private Listing initialListing;
 
-    private CaseDetails<CaseData, State> caseDetails;
+    private CaseDetails<CriminalInjuriesCompensationData, State> caseDetails;
     private ListValue<Listing> finalListingListValue;
 
     @BeforeEach
@@ -69,7 +69,7 @@ class SelectHearingTest {
         List<ListValue<Listing>> listValueList = new ArrayList<>();
         listValueList.add(finalListingListValue);
 
-        CaseData caseData = CaseData.builder().build();
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         caseData.setCicCase(cicCase);
         caseData.setListing(initialListing);
         caseData.setHearingList(listValueList);
@@ -82,7 +82,8 @@ class SelectHearingTest {
         when(cicCaseHearingList.getValue()).thenReturn(cicCaseHearingLabel);
         when(cicCase.getHearingList()).thenReturn(cicCaseHearingList);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = selectHearing.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = selectHearing.midEvent(caseDetails,
+            caseDetails);
 
         assertThat(response.getData().getListing()).isEqualTo(finalListingListValue.getValue());
         assertThat(response.getData().getListing()).isNotEqualTo(initialListing);
@@ -94,7 +95,8 @@ class SelectHearingTest {
         when(cicCaseHearingList.getValue()).thenReturn(cicCaseHearingLabel);
         when(cicCase.getHearingList()).thenReturn(cicCaseHearingList);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = selectHearing.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = selectHearing.midEvent(caseDetails,
+            caseDetails);
 
         assertThat(response.getData().getListing()).isEqualTo(initialListing);
         assertThat(response.getData().getListing()).isNotEqualTo(finalListingListValue.getValue());

@@ -17,7 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DueDateOptions;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
@@ -95,7 +95,7 @@ public class SendOrderOrderDueDatesIT {
         listValue.setId("1");
         listValue.setValue(dateModel);
 
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .orderDueDates(List.of(listValue))
             .build();
 
@@ -128,7 +128,7 @@ public class SendOrderOrderDueDatesIT {
         listValue.setId("1");
         listValue.setValue(dateModel);
 
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .orderDueDates(List.of(listValue))
             .build();
 

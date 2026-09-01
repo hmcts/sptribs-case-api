@@ -12,10 +12,10 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseNote;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 
@@ -59,7 +59,7 @@ class CaseworkerAddNoteTest {
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
 
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         caseworkerAddNote.configure(configBuilder);
 
@@ -85,10 +85,10 @@ class CaseworkerAddNoteTest {
     @Test
     public void shouldSuccessfullyAddCaseNoteToCaseDataWhenThereAreNoExistingCaseNotes() {
         //Given
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setNote("This is a test note");
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -105,8 +105,8 @@ class CaseworkerAddNoteTest {
         when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
 
         //When
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
-            caseworkerAddNote.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
+            caseworkerAddNote.aboutToSubmit(updatedCaseDetails, CaseDetails.<CriminalInjuriesCompensationData, State>builder().build());
 
         //Then
         assertThat(response.getData().getNotes())
@@ -127,7 +127,7 @@ class CaseworkerAddNoteTest {
     @Test
     public void shouldSuccessfullyAddCaseNoteToStartOfCaseNotesListWhenThereIsExistingCaseNote() {
         //Given
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setNote("This is a test note 2");
 
         final LocalDate caseNoteAddedDate = LocalDate.of(2021, 1, 1);
@@ -141,7 +141,7 @@ class CaseworkerAddNoteTest {
 
         caseData.setNotes(notes);
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -158,8 +158,8 @@ class CaseworkerAddNoteTest {
         when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
 
         //When
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
-            caseworkerAddNote.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
+            caseworkerAddNote.aboutToSubmit(updatedCaseDetails, CaseDetails.<CriminalInjuriesCompensationData, State>builder().build());
 
         //Then
         assertThat(response.getData().getNotes())

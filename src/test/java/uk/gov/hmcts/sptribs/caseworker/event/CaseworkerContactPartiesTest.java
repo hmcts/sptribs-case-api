@@ -19,6 +19,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.ContactPartiesSelectDocument;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
@@ -112,7 +113,7 @@ class CaseworkerContactPartiesTest {
 
     @Test
     void shouldSuccessfullyPrepareDocumentListInAboutToStartCallback() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
         final CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
             .documentCategory(DocumentType.LINKED_DOCS)
@@ -140,13 +141,13 @@ class CaseworkerContactPartiesTest {
         final CicCase cicCase = CicCase.builder()
             .reinstateDocuments(listValueList)
             .build();
-        final CaseData caseData = CaseData.builder().build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         caseData.setCicCase(cicCase);
         caseDetails.setData(caseData);
 
         ReflectionTestUtils.setField(caseWorkerContactParties, "baseUrl", "http://mocked-url.com/");
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerContactParties.aboutToStart(caseDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = caseWorkerContactParties.aboutToStart(caseDetails);
 
         assertThat(response.getData().getContactPartiesDocuments().getDocumentList()).isNotNull();
         assertThat(response.getData().getContactPartiesDocuments().getDocumentList().getListItems()).hasSize(2);
@@ -166,7 +167,7 @@ class CaseworkerContactPartiesTest {
 
     @Test
     void shouldSuccessfullyMoveToNextPage() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final CicCase cicCase = CicCase.builder()
             .fullName(TEST_FIRST_NAME)
             .representativeFullName(TEST_SOLICITOR_NAME)
@@ -174,13 +175,13 @@ class CaseworkerContactPartiesTest {
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .build();
         caseData.setCicCase(cicCase);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             partiesToContact.midEvent(updatedCaseDetails, beforeDetails);
         assertThat(response).isNotNull();
         assertThat(response.getErrors()).isEmpty();
@@ -189,7 +190,7 @@ class CaseworkerContactPartiesTest {
 
     @Test
     void shouldNotSuccessfullyMoveToNextPageWithError() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final CicCase cicCase = CicCase.builder()
             .fullName(TEST_FIRST_NAME)
             .applicantEmailAddress(TEST_APPLICANT_EMAIL)
@@ -197,13 +198,13 @@ class CaseworkerContactPartiesTest {
             .build();
         caseData.setCicCase(cicCase);
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             partiesToContact.midEvent(updatedCaseDetails, beforeDetails);
 
         assertThat(response).isNotNull();
@@ -225,7 +226,7 @@ class CaseworkerContactPartiesTest {
             .documentList(documentList)
             .build();
 
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setContactPartiesDocuments(contactPartiesDocuments);
         caseData.setHyphenatedCaseRef(String.valueOf(TEST_CASE_ID));
 
@@ -241,8 +242,8 @@ class CaseworkerContactPartiesTest {
             .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
         caseData.setCicCase(cicCase);
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -282,7 +283,7 @@ class CaseworkerContactPartiesTest {
             .documentList(documentList)
             .build();
 
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setContactPartiesDocuments(contactPartiesDocuments);
         caseData.setHyphenatedCaseRef(String.valueOf(TEST_CASE_ID));
 
@@ -298,8 +299,8 @@ class CaseworkerContactPartiesTest {
             .build();
         caseData.setCicCase(cicCase);
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -338,7 +339,7 @@ class CaseworkerContactPartiesTest {
             .documentList(documentList)
             .build();
 
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setContactPartiesDocuments(contactPartiesDocuments);
 
         final CicCase cicCase = CicCase.builder()
@@ -348,8 +349,8 @@ class CaseworkerContactPartiesTest {
             .build();
         caseData.setCicCase(cicCase);
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -375,14 +376,14 @@ class CaseworkerContactPartiesTest {
 
     @Test
     void shouldDisplayTheCorrectFailureMessageIfExceptionThrownByNotification() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final CicCase cicCase = CicCase.builder()
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .build();
         caseData.setCicCase(cicCase);
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -400,7 +401,7 @@ class CaseworkerContactPartiesTest {
     @Test
     void shouldSuccessfullyMoveToNextPageWithOutError() {
         //Given
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final CicCase cicCase = CicCase.builder()
             .fullName(TEST_FIRST_NAME)
             .address(SUBJECT_ADDRESS)
@@ -412,13 +413,13 @@ class CaseworkerContactPartiesTest {
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
         caseData.setCicCase(cicCase);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             partiesToContact.midEvent(updatedCaseDetails, beforeDetails);
 
         assertThat(response).isNotNull();
@@ -427,7 +428,7 @@ class CaseworkerContactPartiesTest {
 
     @Test
     void shouldRunAboutToStart() {
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
 
         List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
         CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
@@ -440,14 +441,14 @@ class CaseworkerContactPartiesTest {
         CicCase cicCase = CicCase.builder()
             .reinstateDocuments(listValueList)
             .build();
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .build();
         updatedCaseDetails.setData(caseData);
 
         ReflectionTestUtils.setField(caseWorkerContactParties, "baseUrl", "http://mocked-url.com/");
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerContactParties.aboutToStart(updatedCaseDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = caseWorkerContactParties.aboutToStart(updatedCaseDetails);
 
         assertThat(response).isNotNull();
         assertThat(response.getData().getContactPartiesDocuments().getDocumentList().getListItems()).hasSize(1);
@@ -456,7 +457,7 @@ class CaseworkerContactPartiesTest {
 
     @Test
     void shouldPopulateEventMetaDataForSummaryAndDescription() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final CicCase cicCase = CicCase.builder()
             .build();
 
@@ -474,12 +475,12 @@ class CaseworkerContactPartiesTest {
 
         caseData.setContactPartiesDocuments(contactPartiesDocuments);
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
 
-        AboutToStartOrSubmitResponse<CaseData, State> contactPartiesResponse = caseWorkerContactParties
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> contactPartiesResponse = caseWorkerContactParties
             .aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         assertThat(contactPartiesResponse.getEventMetadata().getSummary()).isEqualTo("1 Selected documents sent");

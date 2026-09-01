@@ -12,10 +12,9 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseManagementLocation;
 import uk.gov.hmcts.sptribs.caseworker.service.ExtendedCaseDataService;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 
 import java.util.ArrayList;
@@ -63,8 +62,10 @@ public class SystemMigrateGlobalSearchFields implements CCDConfig<CriminalInjuri
             .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE);
     }
 
-    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(final CaseDetails<CriminalInjuriesCompensationData, State> details,
-                                                                       final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+        State> aboutToSubmit(final CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                                       final CaseDetails<CriminalInjuriesCompensationData,
+                                                                           State> beforeDetails) {
         final Long caseId = details.getId();
         final CriminalInjuriesCompensationData caseData = details.getData();
         final Map<String, Object> dataClassification = setDataClassification(caseId);

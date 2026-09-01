@@ -17,6 +17,7 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SelectBundles;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
@@ -50,9 +51,9 @@ class CaseworkerRemoveBundlesTest {
     @Mock
     private DocumentsService documentsService;
 
-    private CaseData caseData;
+    private CriminalInjuriesCompensationData caseData;
 
-    private CaseDetails<CaseData, State> updatedCaseDetails;
+    private CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails;
 
     @BeforeEach
     void setUp() {
@@ -149,7 +150,7 @@ class CaseworkerRemoveBundlesTest {
 
     @Test
     void shouldSuccessfullyPrepareBundleLabelsOnAboutToStart() {
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerRemoveBundles.aboutToStart(updatedCaseDetails);
 
         assertThat(response.getData().getCicCase().getRemoveBundlesList().getListItems())
@@ -168,7 +169,7 @@ class CaseworkerRemoveBundlesTest {
         updatedCaseDetails.getData().getCaseBundles().getFirst().getValue().setStitchedDocument(null);
         updatedCaseDetails.getData().getCaseBundles().get(1).getValue().setStitchedDocument(null);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerRemoveBundles.aboutToStart(updatedCaseDetails);
 
         assertThat(response.getData().getCicCase().getRemoveBundlesList().getListItems())
@@ -222,8 +223,8 @@ class CaseworkerRemoveBundlesTest {
 
         String bundleUUID3 = caseData.getCaseBundles().get(2).getValue().getId();
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
-            caseworkerRemoveBundles.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
+            caseworkerRemoveBundles.aboutToSubmit(updatedCaseDetails, CaseDetails.<CriminalInjuriesCompensationData, State>builder().build());
 
         //Stitched Document isn't generated yet so binary will always be null
         verify(documentsService, times(2)).removeEntryFromDocumentTableByBinaryURL(null);
@@ -239,7 +240,7 @@ class CaseworkerRemoveBundlesTest {
 
     @Test
     void shouldSuccessfullySubmit() {
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
 
         SubmittedCallbackResponse response = caseworkerRemoveBundles.submitted(updatedCaseDetails, beforeDetails);
         assertThat(response.getConfirmationHeader()).isEqualTo("# Case Updated");
@@ -247,7 +248,7 @@ class CaseworkerRemoveBundlesTest {
 
     @Test
     void shouldReturnErrorWhenNoBundlesSelectedForDeletion() {
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
 
         UUID dynamicListElementCode1 = UUID.randomUUID();
         UUID dynamicListElementCode2 = UUID.randomUUID();
@@ -274,7 +275,7 @@ class CaseworkerRemoveBundlesTest {
 
         updatedCaseDetails.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             selectBundles.midEvent(updatedCaseDetails, beforeDetails);
 
         assertThat(response.getErrors()).hasSize(1);
@@ -285,7 +286,7 @@ class CaseworkerRemoveBundlesTest {
             .value(removeBundleLabels)
             .build());
 
-        AboutToStartOrSubmitResponse<CaseData, State> successResponse =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> successResponse =
             selectBundles.midEvent(updatedCaseDetails, beforeDetails);
 
         assertThat(successResponse.getErrors()).isEmpty();

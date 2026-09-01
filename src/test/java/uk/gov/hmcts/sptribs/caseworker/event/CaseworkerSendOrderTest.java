@@ -26,7 +26,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.caseworker.util.DynamicListUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
@@ -36,6 +35,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
@@ -102,7 +102,7 @@ class CaseworkerSendOrderTest {
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
 
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         caseworkerSendOrder.configure(configBuilder);
 
@@ -167,17 +167,17 @@ class CaseworkerSendOrderTest {
             .orderReminderDays(ReminderDays.DAY_COUNT_1)
             .orderIssuingType(ISSUE_AND_SEND_AN_EXISTING_DRAFT)
             .build();
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setOrderDueDates(List.of(dates));
         caseData.setCicCase(cicCase);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerSendOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
         final SubmittedCallbackResponse submitted = caseworkerSendOrder.submitted(updatedCaseDetails, beforeDetails);
 
@@ -231,17 +231,17 @@ class CaseworkerSendOrderTest {
             .orderReminderDays(ReminderDays.DAY_COUNT_1)
             .orderIssuingType(ISSUE_AND_SEND_AN_EXISTING_DRAFT)
             .build();
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setOrderDueDates(List.of(dates));
         caseData.setCicCase(cicCase);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerSendOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
         final SubmittedCallbackResponse submitted = caseworkerSendOrder.submitted(updatedCaseDetails, beforeDetails);
 
@@ -296,17 +296,17 @@ class CaseworkerSendOrderTest {
             .orderReminderDays(ReminderDays.DAY_COUNT_1)
             .orderIssuingType(ISSUE_AND_SEND_AN_EXISTING_DRAFT)
             .build();
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setOrderDueDates(List.of(dates));
         caseData.setCicCase(cicCase);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerSendOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
         final SubmittedCallbackResponse submitted = caseworkerSendOrder.submitted(updatedCaseDetails, beforeDetails);
 
@@ -353,17 +353,17 @@ class CaseworkerSendOrderTest {
             .draftOrderDynamicList(getDraftOrderList())
             .orderFile(documentList)
             .build();
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setOrderDueDates(List.of(dates));
         caseData.setCicCase(cicCase);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerSendOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
         final SubmittedCallbackResponse submitted = caseworkerSendOrder.submitted(updatedCaseDetails, beforeDetails);
 
@@ -408,17 +408,17 @@ class CaseworkerSendOrderTest {
             .orderReminderDays(ReminderDays.DAY_COUNT_1)
             .orderFile(documentList)
             .build();
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setCicCase(cicCase);
         caseData.setOrderDueDates(List.of(dates));
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerSendOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
         final SubmittedCallbackResponse submitted = caseworkerSendOrder.submitted(updatedCaseDetails, beforeDetails);
 
@@ -474,21 +474,21 @@ class CaseworkerSendOrderTest {
             .orderReminderDays(ReminderDays.DAY_COUNT_1)
             .orderFile(documentList)
             .build();
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setOrderDueDates(List.of(dates));
         caseData.setCicCase(cicCase);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerSendOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
         final SubmittedCallbackResponse submitted = caseworkerSendOrder.submitted(updatedCaseDetails, beforeDetails);
         updatedCaseDetails.setData(caseData);
-        final AboutToStartOrSubmitResponse<CaseData, State> response2 =
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response2 =
             caseworkerSendOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //Then
@@ -499,10 +499,10 @@ class CaseworkerSendOrderTest {
 
     @Test
     void aboutToStartShouldSetOrderIssuingTypes() {
-        CaseDetails<CaseData, State> caseDetails = CaseDetails.<CaseData, State>builder()
-                .data(CaseData.builder().build())
+        CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = CaseDetails.<CriminalInjuriesCompensationData, State>builder()
+                .data(CriminalInjuriesCompensationData.builder().build())
                 .build();
-        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerSendOrder.aboutToStart(caseDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = caseworkerSendOrder.aboutToStart(caseDetails);
 
         EnumSet<OrderIssuingType> expectedOrderIssuingTypes = EnumSet.of(
                 OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER,
@@ -585,17 +585,17 @@ class CaseworkerSendOrderTest {
                 .orderReminderDays(ReminderDays.DAY_COUNT_1)
                 .orderIssuingType(ISSUE_AND_SEND_AN_EXISTING_DRAFT)
                 .build();
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setOrderDueDates(List.of(dates));
         caseData.setCicCase(cicCase);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
                 caseworkerSendOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
         final SubmittedCallbackResponse submitted = caseworkerSendOrder.submitted(updatedCaseDetails, beforeDetails);
 
@@ -616,7 +616,7 @@ class CaseworkerSendOrderTest {
     @Test
     void shouldSetSendOrderTemplatesFromSelectedDraftOrder() {
         // Given
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         final DynamicListElement element = DynamicListElement.builder()
             .code(UUID.randomUUID())
             .build();
@@ -647,13 +647,14 @@ class CaseworkerSendOrderTest {
             .draftOrderCICList(draftOrderCICList)
             .orderFile(documentList)
             .build();
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .build();
         caseDetails.setData(caseData);
 
         // When
-        final AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerSendOrder.aboutToSubmit(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+            State> response = caseworkerSendOrder.aboutToSubmit(caseDetails, caseDetails);
 
         // Then
         assertThat(response.getData().getCicCase().getDraftOrderCICList()).isEqualTo(draftOrderCICList);
@@ -662,11 +663,11 @@ class CaseworkerSendOrderTest {
     @Test
     void shouldSendOrderSuccessFully() {
         // Given
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder()
             .build();
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .build();
         caseDetails.setData(caseData);

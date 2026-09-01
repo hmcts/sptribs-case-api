@@ -24,10 +24,10 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseWithdrawalDetails;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
@@ -91,7 +91,8 @@ public class CaseworkerCloseTheCase implements CCDConfig<CriminalInjuriesCompens
         closeCaseSelectRecipients.addTo(pageBuilder);
     }
 
-    public PageBuilder<CriminalInjuriesCompensationData> closeCase(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+    public PageBuilder<CriminalInjuriesCompensationData> closeCase(final ConfigBuilder<CriminalInjuriesCompensationData, State,
+        UserRole> configBuilder) {
         Event.EventBuilder<CriminalInjuriesCompensationData, UserRole, State> eventBuilder =
             configBuilder.event(CASEWORKER_CLOSE_THE_CASE)
                 .forStates(CaseManagement, ReadyToList)
@@ -133,7 +134,8 @@ public class CaseworkerCloseTheCase implements CCDConfig<CriminalInjuriesCompens
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> midEvent(CaseDetails<CriminalInjuriesCompensationData, State> details,
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> midEvent(CaseDetails<CriminalInjuriesCompensationData,
+        State> details,
                                                                   CaseDetails<CriminalInjuriesCompensationData, State> detailsBefore) {
 
         final CriminalInjuriesCompensationData data = details.getData();
@@ -146,7 +148,8 @@ public class CaseworkerCloseTheCase implements CCDConfig<CriminalInjuriesCompens
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStart(CaseDetails<CriminalInjuriesCompensationData, State> details) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStart(CaseDetails<CriminalInjuriesCompensationData,
+        State> details) {
         final CriminalInjuriesCompensationData caseData = details.getData();
         caseData.setCurrentEvent(CASEWORKER_CLOSE_THE_CASE);
 
@@ -163,7 +166,8 @@ public class CaseworkerCloseTheCase implements CCDConfig<CriminalInjuriesCompens
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(CaseDetails<CriminalInjuriesCompensationData, State> details,
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+        State> aboutToSubmit(CaseDetails<CriminalInjuriesCompensationData, State> details,
                                                                        CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
 
         final CriminalInjuriesCompensationData caseData = details.getData();

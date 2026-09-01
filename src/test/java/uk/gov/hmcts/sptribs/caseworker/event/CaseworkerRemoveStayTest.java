@@ -19,6 +19,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseUnstayedNotification;
 
 import java.util.Collections;
@@ -47,7 +48,7 @@ class CaseworkerRemoveStayTest {
     @Test
     void shouldAddConfigurationToConfigBuilder() {
         //Given
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         //When
         caseworkerRemoveStay.configure(configBuilder);
@@ -61,19 +62,19 @@ class CaseworkerRemoveStayTest {
     @Test
     void shouldSuccessfullyClearPreviousRemoveStayFromCase() {
         //Given
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         RemoveCaseStay removeCaseStay = new RemoveCaseStay();
         removeCaseStay.setStayRemoveReason(StayRemoveReason.OTHER);
         removeCaseStay.setAdditionalDetail("some detail");
         caseData.setRemoveCaseStay(removeCaseStay);
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setState(State.CaseStayed);
         caseDetails.setData(caseData);
         caseDetails.setId(TEST_CASE_ID);
         caseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerRemoveStay.aboutToStart(caseDetails);
 
 
@@ -84,7 +85,7 @@ class CaseworkerRemoveStayTest {
     @Test
     void shouldSuccessfullyRemoveStayFromCase() {
         //Given
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setNote("This is a test note");
         final CicCase cicCase = new CicCase();
         cicCase.setSubjectCIC(Collections.emptySet());
@@ -95,14 +96,14 @@ class CaseworkerRemoveStayTest {
         removeCaseStay.setStayRemoveReason(StayRemoveReason.OTHER);
         removeCaseStay.setAdditionalDetail("some detail");
         caseData.setRemoveCaseStay(removeCaseStay);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerRemoveStay.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse stayedResponse = caseworkerRemoveStay.submitted(updatedCaseDetails, beforeDetails);
 
@@ -115,7 +116,7 @@ class CaseworkerRemoveStayTest {
     @Test
     void shouldSuccessfullyRemoveStayFromCaseWithNotify() {
         //Given
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setNote("This is a test note");
         final CicCase cicCase = new CicCase();
         cicCase.setSubjectCIC(Set.of(SubjectCIC.SUBJECT));
@@ -126,8 +127,8 @@ class CaseworkerRemoveStayTest {
         removeCaseStay.setStayRemoveReason(StayRemoveReason.OTHER);
         removeCaseStay.setAdditionalDetail("some detail");
         caseData.setRemoveCaseStay(removeCaseStay);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -137,7 +138,7 @@ class CaseworkerRemoveStayTest {
         doNothing().when(caseUnstayedNotification).sendToApplicant(any(CaseData.class), eq(null));
         doNothing().when(caseUnstayedNotification).sendToRepresentative(any(CaseData.class), eq(null));
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerRemoveStay.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse stayedResponse = caseworkerRemoveStay.submitted(updatedCaseDetails, beforeDetails);
 

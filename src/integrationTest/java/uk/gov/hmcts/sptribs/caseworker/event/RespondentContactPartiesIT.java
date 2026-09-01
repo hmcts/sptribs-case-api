@@ -22,6 +22,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
@@ -160,7 +161,7 @@ public class RespondentContactPartiesIT extends IntegrationTestBase {
 
     @Test
     void shouldClearContactPartiesAndPrepareContactPartiesDocumentsOnAboutToStart() throws Exception {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .applicantDocumentsUploaded(getCaseworkerCICDocumentList())
                 .build()
@@ -207,7 +208,7 @@ public class RespondentContactPartiesIT extends IntegrationTestBase {
             .value(elements)
             .listItems(elements)
             .build());
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         caseData.setCicCase(
             CicCase.builder()
@@ -292,7 +293,7 @@ public class RespondentContactPartiesIT extends IntegrationTestBase {
 
     @Test
     void shouldReturnErrorMessageIfNotificationsFailToSendOnSubmitted() throws Exception {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .contactParties(ContactParties.builder()
                 .subjectContactParties(Set.of(SUBJECT))
                 .tribunal(Set.of(TRIBUNAL))

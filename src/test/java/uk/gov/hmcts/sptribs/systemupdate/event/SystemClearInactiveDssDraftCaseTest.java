@@ -6,9 +6,9 @@ import org.mockito.InjectMocks;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.Event;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.systemupdate.event.SystemClearInactiveDssDraftCase.SYSTEM_CLEAR_INACTIVE_DSS_DRAFT_CASE;
@@ -23,7 +23,7 @@ public class SystemClearInactiveDssDraftCaseTest {
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         systemClearInactiveDssDraftCase.configure(configBuilder);
 

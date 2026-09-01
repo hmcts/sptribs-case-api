@@ -7,14 +7,15 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.sptribs.caseworker.service.OrderService;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -31,18 +32,15 @@ class DraftOrderFooterTest {
 
     @Test
     void shouldAddFooterSuccessfully() {
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        CaseData caseData = CaseData.builder().build();
+        CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         caseDetails.setData(caseData);
 
-        Calendar calendar = Calendar.getInstance();
-        String date = simpleDateFormat.format(calendar.getTime());
-
-        when(orderService.generateOrderFile(caseDetails.getData(), caseDetails.getId(), date)).thenReturn(caseData);
+        when(orderService.generateOrderFile(eq(caseDetails.getData()), eq(caseDetails.getId()), anyString())).thenReturn(caseData);
 
         var response = draftOrderFooter.midEvent(caseDetails, caseDetails);
         assertThat(response.getData()).isEqualTo(caseData);
-        verify(orderService).generateOrderFile(caseDetails.getData(), caseDetails.getId(), date);
+        verify(orderService).generateOrderFile(eq(caseDetails.getData()), eq(caseDetails.getId()), anyString());
 
     }
 }

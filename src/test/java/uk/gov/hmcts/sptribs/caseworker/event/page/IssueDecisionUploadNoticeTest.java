@@ -10,8 +10,8 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.document.DocumentUtil;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 
@@ -35,37 +35,39 @@ public class IssueDecisionUploadNoticeTest {
 
     @Test
     void midEventReturnsErrorForInvalidDocumentType() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         final CICDocument doc = CICDocument.builder().documentLink(invalidDocumentType).build();
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .caseIssueDecision(CaseIssueDecision.builder().decisionDocument(doc).build())
             .build();
         caseDetails.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = issueDecisionUploadNotice.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+            State> response = issueDecisionUploadNotice.midEvent(caseDetails, caseDetails);
 
         assertThat(response.getErrors()).contains(DOCUMENT_VALIDATION_MESSAGE);
     }
 
     @Test
     void midEventReturnsNoErrorsForValidDocumentType() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         final CICDocument doc = CICDocument.builder().documentLink(validDocumentType).build();
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .caseIssueDecision(CaseIssueDecision.builder().decisionDocument(doc).build())
             .build();
         caseDetails.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = issueDecisionUploadNotice.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+            State> response = issueDecisionUploadNotice.midEvent(caseDetails, caseDetails);
 
         assertThat(response.getErrors()).isEmpty();
     }
 
     @Test
     void midEventValidatesDecisionDocumentFormat() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         final CICDocument doc = CICDocument.builder().documentLink(validDocumentType).build();
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .caseIssueDecision(CaseIssueDecision.builder().decisionDocument(doc).build())
             .build();
         caseDetails.setData(caseData);

@@ -26,6 +26,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.notification.dispatcher.HearingPostponedNotification;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
@@ -113,7 +114,7 @@ public class CaseworkerPostponeHearingIT {
 
     @Test
     void shouldPopulateHearingListOnAboutToStart() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setHearingList(getHearingList());
 
         String response = mockMvc.perform(post(ABOUT_TO_START_URL)
@@ -139,7 +140,7 @@ public class CaseworkerPostponeHearingIT {
     @ParameterizedTest
     @EnumSource(PostponeReason.class)
     void shouldSuccessfullyPostponeHearingForAnyValidPostponeReason(PostponeReason postponeReason) throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
 
         final Set<NotificationParties> parties = new HashSet<>();
         final CicCase cicCase = CicCase.builder()
@@ -198,7 +199,7 @@ public class CaseworkerPostponeHearingIT {
 
     @Test
     void shouldSuccessfullyDispatchNotificationsOnSubmitted() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         caseData.setCicCase(
             CicCase.builder()

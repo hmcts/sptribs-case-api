@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -41,7 +42,7 @@ class CaseDetailsConverterTest {
     @Test
     void shouldConvertToCaseDetailsFromReformModel() {
 
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final CicCase cicCase = CicCase.builder()
             .fullName(TEST_FIRST_NAME)
             .applicantFullName(TEST_FIRST_NAME)

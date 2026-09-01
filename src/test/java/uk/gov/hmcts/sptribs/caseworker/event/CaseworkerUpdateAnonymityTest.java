@@ -16,6 +16,7 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ApplyAnonymity;
 import uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -74,8 +75,8 @@ class CaseworkerUpdateAnonymityTest {
 
     @Test
     void shouldSuccessfullyUpdateAnonymityWithYesAndNoExistingFlag() {
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        CaseData caseData = CaseData.builder().build();
+        CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         CicCase cicCase = CicCase.builder()
             .anonymiseYesOrNo(YesOrNo.YES)
             .partiesCIC(Collections.emptySet())
@@ -86,7 +87,7 @@ class CaseworkerUpdateAnonymityTest {
         doReturn(1L).when(anonymisationRepository).getNextSequenceValue();
 
         var response = caseworkerUpdateAnonymity.aboutToSubmit(caseDetails,
-            CaseDetails.<CaseData, State>builder().build());
+            CaseDetails.<CriminalInjuriesCompensationData, State>builder().build());
 
         assertThat(response.getData().getCicCase().getAnonymiseYesOrNo()).isEqualTo(YesOrNo.YES);
         assertThat(response.getData().getCicCase().getAnonymityAlreadyApplied()).isEqualTo(YesOrNo.YES);
@@ -103,8 +104,8 @@ class CaseworkerUpdateAnonymityTest {
 
     @Test
     void shouldSuccessfullyUpdateAnonymityWithYesAndExistingFlag() {
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        CaseData caseData = CaseData.builder().build();
+        CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         CicCase cicCase = CicCase.builder()
             .anonymiseYesOrNo(YesOrNo.YES)
             .partiesCIC(Collections.emptySet())
@@ -125,7 +126,7 @@ class CaseworkerUpdateAnonymityTest {
         doReturn(1L).when(anonymisationRepository).getNextSequenceValue();
 
         var response = caseworkerUpdateAnonymity.aboutToSubmit(caseDetails,
-            CaseDetails.<CaseData, State>builder().data(caseData).build());
+            CaseDetails.<CriminalInjuriesCompensationData, State>builder().data(caseData).build());
 
         assertThat(response.getData().getCicCase().getAnonymiseYesOrNo()).isEqualTo(YesOrNo.YES);
         assertThat(response.getData().getCaseFlags().getDetails()).hasSize(1);
@@ -135,7 +136,7 @@ class CaseworkerUpdateAnonymityTest {
 
     @Test
     void shouldSendAnonymityNotificationWhenAnonymityIsNewlyApplied() {
-        CaseData caseDataAfter = CaseData.builder()
+        CaseData caseDataAfter = CriminalInjuriesCompensationData.builder()
             .hyphenatedCaseRef("1234-5678-9012-3456")
             .cicCase(CicCase.builder()
                 .anonymiseYesOrNo(YesOrNo.YES)
@@ -143,7 +144,7 @@ class CaseworkerUpdateAnonymityTest {
                 .build())
             .build();
 
-        CaseData caseDataBefore = CaseData.builder()
+        CaseData caseDataBefore = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .anonymiseYesOrNo(YesOrNo.NO)
                 .anonymityAlreadyApplied(YesOrNo.NO)
@@ -151,9 +152,9 @@ class CaseworkerUpdateAnonymityTest {
                 .build())
             .build();
 
-        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         details.setData(caseDataAfter);
-        CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(caseDataBefore);
 
         caseworkerUpdateAnonymity.submitted(details, beforeDetails);
@@ -164,7 +165,7 @@ class CaseworkerUpdateAnonymityTest {
 
     @Test
     void shouldNotSendAnonymityNotificationWhenAlreadyAppliedBefore() {
-        CaseData caseDataAfter = CaseData.builder()
+        CaseData caseDataAfter = CriminalInjuriesCompensationData.builder()
             .hyphenatedCaseRef("1234-5678-9012-3456")
             .cicCase(CicCase.builder()
                 .anonymiseYesOrNo(YesOrNo.YES)
@@ -172,7 +173,7 @@ class CaseworkerUpdateAnonymityTest {
                 .build())
             .build();
 
-        CaseData caseDataBefore = CaseData.builder()
+        CaseData caseDataBefore = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .anonymiseYesOrNo(YesOrNo.YES)
                 .anonymityAlreadyApplied(YesOrNo.YES)
@@ -180,9 +181,9 @@ class CaseworkerUpdateAnonymityTest {
                 .build())
             .build();
 
-        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         details.setData(caseDataAfter);
-        CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(caseDataBefore);
 
         caseworkerUpdateAnonymity.submitted(details, beforeDetails);
@@ -193,8 +194,8 @@ class CaseworkerUpdateAnonymityTest {
 
     @Test
     void shouldSuccessfullyUpdateAnonymityWithNoAndExistingFlag() {
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        CaseData caseData = CaseData.builder().build();
+        CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         CicCase cicCase = CicCase.builder()
             .anonymiseYesOrNo(YesOrNo.NO)
             .partiesCIC(Collections.emptySet())
@@ -213,7 +214,7 @@ class CaseworkerUpdateAnonymityTest {
         caseDetails.setData(caseData);
 
         var response = caseworkerUpdateAnonymity.aboutToSubmit(caseDetails,
-            CaseDetails.<CaseData, State>builder().data(caseData).build());
+            CaseDetails.<CriminalInjuriesCompensationData, State>builder().data(caseData).build());
 
         assertThat(response.getData().getCicCase().getAnonymiseYesOrNo()).isEqualTo(YesOrNo.NO);
         assertThat(response.getData().getCicCase().getAnonymityAlreadyApplied()).isEqualTo(YesOrNo.NO);

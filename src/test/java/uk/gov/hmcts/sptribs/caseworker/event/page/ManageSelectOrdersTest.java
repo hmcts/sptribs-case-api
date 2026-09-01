@@ -13,9 +13,9 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 
 import java.util.Collections;
 import java.util.List;
@@ -41,8 +41,8 @@ public class ManageSelectOrdersTest {
 
     @Test
     void midEventCompletesSuccessfully() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder().build();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         final Order order = Order.builder()
             .dueDateList(List.of(mockListValueDateModel))
             .draftOrder(new DraftOrderCIC())
@@ -57,7 +57,8 @@ public class ManageSelectOrdersTest {
         caseData.setCicCase(cicCase);
         caseDetails.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = manageSelectOrders.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = manageSelectOrders.midEvent(caseDetails,
+            caseDetails);
         assertNotNull(caseData.getOrderDueDates());
         assertThat(caseData.getOrderDueDates()).isEqualTo(List.of(mockListValueDateModel));
         assertThat(response.getErrors()).isEmpty();
@@ -65,8 +66,8 @@ public class ManageSelectOrdersTest {
 
     @Test
     void midEventReturnsErrorWhenNoSelectedOrder() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder().build();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         final Order order = Order.builder()
             .dueDateList(List.of(mockListValueDateModel))
             .draftOrder(new DraftOrderCIC())
@@ -81,15 +82,16 @@ public class ManageSelectOrdersTest {
         caseData.setCicCase(cicCase);
         caseDetails.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = manageSelectOrders.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = manageSelectOrders.midEvent(caseDetails,
+            caseDetails);
         assertThat(response.getErrors()).hasSize(1);
         assertThat(response.getErrors()).contains("Please select an order to manage");
     }
 
     @Test
     void midEventReturnsCorrectErrorWhenOrderListIsNull() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder().build();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         final CicCase cicCase = CicCase.builder()
             .orderList(null)
             .orderDynamicList(dynamicListUnlabelled)
@@ -97,15 +99,16 @@ public class ManageSelectOrdersTest {
         caseData.setCicCase(cicCase);
         caseDetails.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = manageSelectOrders.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = manageSelectOrders.midEvent(caseDetails,
+            caseDetails);
         assertThat(response.getErrors()).hasSize(1);
         assertThat(response.getErrors()).contains("Please select an order to manage");
     }
 
     @Test
     void midEventReturnsCorrectErrorWhenDynamicOrderLabelIsNull() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder().build();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         final Order order = Order.builder()
             .dueDateList(List.of(mockListValueDateModel))
             .draftOrder(new DraftOrderCIC())
@@ -120,15 +123,16 @@ public class ManageSelectOrdersTest {
         caseData.setCicCase(cicCase);
         caseDetails.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = manageSelectOrders.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = manageSelectOrders.midEvent(caseDetails,
+            caseDetails);
         assertThat(response.getErrors()).hasSize(1);
         assertThat(response.getErrors()).contains("Please select an order to manage");
     }
 
     @Test
     void midEventReturnsCorrectErrorWhenOrderListIsEmpty() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder().build();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         final CicCase cicCase = CicCase.builder()
             .orderList(Collections.emptyList())
             .orderDynamicList(dynamicListUnlabelled)
@@ -136,15 +140,16 @@ public class ManageSelectOrdersTest {
         caseData.setCicCase(cicCase);
         caseDetails.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = manageSelectOrders.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = manageSelectOrders.midEvent(caseDetails,
+            caseDetails);
         assertThat(response.getErrors()).hasSize(1);
         assertThat(response.getErrors()).contains("Please select an order to manage");
     }
 
     @Test
     void midEventReturnsNoErrorsForNoMatchingId() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder().build();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         final Order order = Order.builder()
             .dueDateList(List.of(mockListValueDateModel))
             .draftOrder(new DraftOrderCIC())
@@ -159,7 +164,8 @@ public class ManageSelectOrdersTest {
         caseData.setCicCase(cicCase);
         caseDetails.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = manageSelectOrders.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = manageSelectOrders.midEvent(caseDetails,
+            caseDetails);
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotNull();
         assertThat(response.getErrors()).isEmpty();

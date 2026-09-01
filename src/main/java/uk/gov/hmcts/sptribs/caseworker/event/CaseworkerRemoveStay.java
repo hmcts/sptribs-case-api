@@ -13,10 +13,10 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.RemoveStay;
 import uk.gov.hmcts.sptribs.caseworker.util.EventUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseUnstayedNotification;
@@ -50,7 +50,8 @@ public class CaseworkerRemoveStay implements CCDConfig<CriminalInjuriesCompensat
         removeStay.addTo(pageBuilder);
     }
 
-    public PageBuilder<CriminalInjuriesCompensationData> remove(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+    public PageBuilder<CriminalInjuriesCompensationData> remove(final ConfigBuilder<CriminalInjuriesCompensationData, State,
+        UserRole> configBuilder) {
         return new PageBuilder<>(configBuilder
             .event(CASEWORKER_REMOVE_STAY)
             .forStates(CaseStayed, ReadyToList)
@@ -67,7 +68,8 @@ public class CaseworkerRemoveStay implements CCDConfig<CriminalInjuriesCompensat
                 ST_CIC_JUDGE));
     }
 
-    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStart(CaseDetails<CriminalInjuriesCompensationData, State> details) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStart(CaseDetails<CriminalInjuriesCompensationData,
+        State> details) {
         final CriminalInjuriesCompensationData caseData = details.getData();
         if (details.getState() == CaseStayed) {
             caseData.getRemoveCaseStay().setStayRemoveReason(null);
@@ -80,8 +82,10 @@ public class CaseworkerRemoveStay implements CCDConfig<CriminalInjuriesCompensat
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(final CaseDetails<CriminalInjuriesCompensationData, State> details,
-                                                                       final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+        State> aboutToSubmit(final CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                                       final CaseDetails<CriminalInjuriesCompensationData,
+                                                                           State> beforeDetails) {
 
         final CriminalInjuriesCompensationData caseData = details.getData();
         caseData.getCaseStay().setIsCaseStayed(YesOrNo.NO);

@@ -16,6 +16,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.HearingCancellationReason;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.model.PostponeReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingState;
 import uk.gov.hmcts.sptribs.ciccase.model.RetiredFields;
@@ -53,12 +54,12 @@ class HearingServiceTest {
 
     @Test
     void shouldPopulateListedHearingDateDynamicList() {
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         ListValue<Listing> listingListValue = new ListValue<>();
         listingListValue.setValue(getRecordListing());
         List<ListValue<Listing>> listValueList = new ArrayList<>();
         listValueList.add(listingListValue);
-        final CaseData caseData = CaseData.builder().hearingList(listValueList).build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().hearingList(listValueList).build();
         details.setData(caseData);
 
         DynamicList hearingList = hearingService.getListedHearingDynamicList(caseData);
@@ -68,8 +69,8 @@ class HearingServiceTest {
 
     @Test
     void shouldAddOldListingIfNotExists() {
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder()
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .listing(getRecordListing())
             .retiredFields(new RetiredFields())
             .build();
@@ -82,8 +83,8 @@ class HearingServiceTest {
 
     @Test
     void shouldNotAddOldListingIfNotExists() {
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder()
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .listing(Listing.builder().build())
             .build();
         details.setData(caseData);
@@ -99,8 +100,8 @@ class HearingServiceTest {
         retiredFields.setCicCaseCancelHearingAdditionalDetail("cancelAddlDetail");
         retiredFields.setCicCaseHearingCancellationReason(HearingCancellationReason.CASE_REJECTED);
 
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder()
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .listing(getRecordListing())
             .retiredFields(retiredFields)
             .build();
@@ -120,8 +121,8 @@ class HearingServiceTest {
         retiredFields.setCicCasePostponeReason(PostponeReason.BEREAVEMENT);
         retiredFields.setCicCasePostponeAdditionalInformation("postponeInfo");
 
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder()
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .listing(getRecordListing())
             .retiredFields(retiredFields)
             .build();
@@ -138,14 +139,14 @@ class HearingServiceTest {
 
     @Test
     void shouldPopulateCompletedHearingDynamicList() {
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         ListValue<Listing> listingListValue = new ListValue<>();
         Listing listing = getRecordListing();
         listing.setHearingStatus(HearingState.Complete);
         listingListValue.setValue(listing);
         List<ListValue<Listing>> listValueList = new ArrayList<>();
         listValueList.add(listingListValue);
-        final CaseData caseData = CaseData.builder().hearingList(listValueList).build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().hearingList(listValueList).build();
         details.setData(caseData);
 
         DynamicList hearingList = hearingService.getCompletedHearingDynamicList(caseData);
@@ -155,7 +156,7 @@ class HearingServiceTest {
 
     @Test
     void shouldAddListingToCaseData() {
-        CaseData caseData = CaseData.builder().build();
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         Listing listing = getRecordListing();
         assertThat(caseData.getHearingList()).isEmpty();
 
@@ -168,7 +169,7 @@ class HearingServiceTest {
     void shouldUpdateHearingList() throws JsonProcessingException {
         final Listing listing = getRecordListing();
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .hearingList(List.of(ListValue.<Listing>builder().id("1").value(listing).build()))
             .build();
 
@@ -200,7 +201,7 @@ class HearingServiceTest {
         final Listing completedListing = getRecordListing();
         completedListing.setHearingStatus(HearingState.Complete);
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .hearingList(List.of(listingListValue))
             .build();
 
@@ -214,7 +215,7 @@ class HearingServiceTest {
     @Test
     void shouldSetHearingDateOnAddListing() {
         // Given
-        CaseData caseData = CaseData.builder().build();
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         Listing listing = getRecordListing(); // status Listed, date 2023-04-21
 
         // When
@@ -228,7 +229,7 @@ class HearingServiceTest {
     void shouldUpdateHearingDateOnUpdateHearingList() throws JsonProcessingException {
         // Given
         Listing listing = getRecordListing(); // status Listed, date 2023-04-21
-        CaseData caseData = CaseData.builder().build();
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         hearingService.addListing(caseData, listing);
 
         Listing updatedListing = getRecordListing();
@@ -252,7 +253,7 @@ class HearingServiceTest {
     @Test
     void shouldClearHearingDateWhenNoListedHearing() {
         // Given
-        CaseData caseData = CaseData.builder().build();
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         Listing listing = getRecordListing();
         listing.setHearingStatus(HearingState.Complete);
 
@@ -267,7 +268,7 @@ class HearingServiceTest {
     void shouldClearHearingDateWhenHearingIsPostponedAndNoOtherListedHearingsExist() throws JsonProcessingException {
         // Given
         Listing listing = getRecordListing(); // status Listed, date 2023-04-21
-        CaseData caseData = CaseData.builder().build();
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         hearingService.addListing(caseData, listing);
 
         Listing updatedListing = getRecordListing();
@@ -292,7 +293,7 @@ class HearingServiceTest {
     void shouldClearHearingDateWhenHearingIsCancelledAndNoOtherListedHearingsExist() throws JsonProcessingException {
         // Given
         Listing listing = getRecordListing(); // status Listed, date 2023-04-21
-        CaseData caseData = CaseData.builder().build();
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         hearingService.addListing(caseData, listing);
 
         Listing updatedListing = getRecordListing();
@@ -317,7 +318,7 @@ class HearingServiceTest {
     void shouldUpdateHearingDateToNextEarliestListedWhenOneHearingIsPostponed() throws JsonProcessingException {
         // Given
         Listing listing1 = getRecordListing(); // status Listed, date 2023-04-21
-        CaseData caseData = CaseData.builder().build();
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         hearingService.addListing(caseData, listing1);
 
         Listing listing2 = getRecordListing(); // status Listed, date 2023-04-21
@@ -351,7 +352,7 @@ class HearingServiceTest {
         Listing laterListing = getRecordListing();
         laterListing.setDate(LocalDate.of(2023, 6, 15));
 
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .hearingList(new ArrayList<>(List.of(
                 ListValue.<Listing>builder().id("1").value(earliestListing).build(),
                 ListValue.<Listing>builder().id("2").value(laterListing).build()
@@ -380,7 +381,7 @@ class HearingServiceTest {
         Listing laterListing = getRecordListing();
         laterListing.setDate(LocalDate.of(2023, 6, 15));
 
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .hearingList(new ArrayList<>(List.of(
                 ListValue.<Listing>builder().id("1").value(earliestListing).build(),
                 ListValue.<Listing>builder().id("2").value(laterListing).build()
@@ -419,7 +420,7 @@ class HearingServiceTest {
         completeHearing.setDate(LocalDate.of(2023, 1, 1));
         completeHearing.setHearingStatus(HearingState.Complete);
 
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .listing(Listing.builder().build())
             .hearingDate(LocalDate.of(2024, 1, 1))
             .hearingList(new ArrayList<>(List.of(
@@ -441,7 +442,7 @@ class HearingServiceTest {
         Listing laterListing = getRecordListing();
         laterListing.setDate(LocalDate.of(2023, 6, 15));
 
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .hearingList(new ArrayList<>(List.of(
                 ListValue.<Listing>builder().id("1").value(earliestListing).build(),
                 ListValue.<Listing>builder().id("2").value(laterListing).build()

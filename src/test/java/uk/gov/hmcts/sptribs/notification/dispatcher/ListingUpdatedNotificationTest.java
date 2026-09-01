@@ -8,10 +8,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
@@ -41,7 +41,7 @@ public class ListingUpdatedNotificationTest {
     @Test
     void shouldNotifySubjectOfListingUpdatedCitizenWithEmail() {
         //Given
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setEmail("testSubject@outlook.com");
 
@@ -61,7 +61,7 @@ public class ListingUpdatedNotificationTest {
     @Test
     void shouldNotifySubjectOfListingUpdatedCitizenWithEmailWithFullRecordListing() {
         //Given
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setEmail("testSubject@outlook.com");
         final Listing listing = Listing.builder().hearingVenueNameAndAddress("London Centre - London")
@@ -87,7 +87,7 @@ public class ListingUpdatedNotificationTest {
     @Test
     void shouldNotifySubjectOfListingUpdatedCitizenWithPost() {
         //Given
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
         data.getCicCase().setAddress(new AddressGlobalUK("11", "JOHN", "STREET", "WINCHESTER", "COUNTY", "TW4 5BH", "UK"));
 
@@ -107,7 +107,7 @@ public class ListingUpdatedNotificationTest {
     @Test
     void shouldNotifyRepresentativeOfListingUpdatedCitizenWithEmail() {
         //Given
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
         data.getCicCase().setRepresentativeEmailAddress("testrepr@outlook.com");
@@ -128,7 +128,7 @@ public class ListingUpdatedNotificationTest {
     @Test
     void shouldNotifyRepresentativeOfListingUpdatedCitizenWithPost() {
         //Given
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.POST);
         data.getCicCase().setRepresentativeAddress(new AddressGlobalUK("11", "JOHN", "STREET", "WINCHESTER", "COUNTY", "TW4 5BH", "UK"));
@@ -148,7 +148,7 @@ public class ListingUpdatedNotificationTest {
     @Test
     void shouldNotifyRespondentOfListingUpdatedCitizenWithEmail() {
         //Given
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("respFullName");
         data.getCicCase().setRespondentEmail("testRespondent@outlook.com");
 
@@ -165,10 +165,10 @@ public class ListingUpdatedNotificationTest {
             TemplateName.HEARING_UPDATED_EMAIL);
     }
 
-    private CaseData getMockCaseData() {
+    private CriminalInjuriesCompensationData getMockCaseData() {
         CicCase cicCase = CicCase.builder().fullName("fullName").caseNumber(TEST_CASE_ID.toString()).build();
 
-        return CaseData.builder()
+        return CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .build();
     }

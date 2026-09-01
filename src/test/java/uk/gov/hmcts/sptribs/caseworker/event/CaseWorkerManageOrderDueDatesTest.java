@@ -17,11 +17,11 @@ import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DueDateOptions;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.service.OrderService;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -66,7 +66,7 @@ class CaseWorkerManageOrderDueDatesTest {
 
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         caseWorkerManageOrderDueDate.configure(configBuilder);
 
@@ -92,9 +92,9 @@ class CaseWorkerManageOrderDueDatesTest {
     @Test
     void shouldSuccessfullySaveDraftOrder() {
         //Given
-        final CaseData caseData = caseData();
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = caseData();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         final Order order = new Order();
         ListValue<Order> listValue = new ListValue<>();
         listValue.setValue(order);
@@ -109,7 +109,7 @@ class CaseWorkerManageOrderDueDatesTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseWorkerManageOrderDueDate.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         SubmittedCallbackResponse draftCreatedResponse =
@@ -123,9 +123,9 @@ class CaseWorkerManageOrderDueDatesTest {
     @Test
     void whenAboutToSubmit_thenShouldSuccessfullyUpdateDueDateWithNewRadioListOption() {
         //Given
-        final CaseData caseData = caseData();
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = caseData();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         List<ListValue<DateModel>> dueDatesListValues = new ArrayList<>();
 
         buildDueDateList(dueDatesListValues);
@@ -145,7 +145,7 @@ class CaseWorkerManageOrderDueDatesTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseWorkerManageOrderDueDate.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         // Then
@@ -189,14 +189,15 @@ class CaseWorkerManageOrderDueDatesTest {
     @Test
     void shouldRunAboutToStart() {
         //Given
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder().build();
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .build();
         updatedCaseDetails.setData(caseData);
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerManageOrderDueDate.aboutToStart(updatedCaseDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+            State> response = caseWorkerManageOrderDueDate.aboutToStart(updatedCaseDetails);
 
         //Then
         assertThat(response).isNotNull();

@@ -12,8 +12,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CancelHearingNotification;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
@@ -54,7 +54,7 @@ public class CancelHearingNotificationIT {
 
     @Test
     void shouldSendEmailToSubject() throws Exception {
-        final CaseData data = CaseData.builder()
+        final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .contactPreferenceType(EMAIL)
                 .fullName("Subject Name")
@@ -93,7 +93,7 @@ public class CancelHearingNotificationIT {
 
     @Test
     void shouldSendLetterToSubject() throws Exception {
-        final CaseData data = CaseData.builder()
+        final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .contactPreferenceType(POST)
                 .fullName("Subject Name")
@@ -136,7 +136,7 @@ public class CancelHearingNotificationIT {
 
     @Test
     void shouldSendEmailToRepresentative() {
-        final CaseData data = CaseData.builder()
+        final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .fullName("Subject Name")
                 .representativeContactDetailsPreference(EMAIL)
@@ -176,7 +176,7 @@ public class CancelHearingNotificationIT {
 
     @Test
     void shouldSendLetterToRepresentative() {
-        final CaseData data = CaseData.builder()
+        final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .fullName("Subject Name")
                 .representativeContactDetailsPreference(POST)
@@ -221,7 +221,7 @@ public class CancelHearingNotificationIT {
 
     @Test
     void shouldSendEmailToRespondent() {
-        final CaseData data = CaseData.builder()
+        final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .fullName("Subject Name")
                 .respondentName("Respondent Name")
@@ -260,7 +260,7 @@ public class CancelHearingNotificationIT {
 
     @Test
     void shouldSendEmailToApplicant() {
-        final CaseData data = CaseData.builder()
+        final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .applicantContactDetailsPreference(EMAIL)
                 .fullName("Subject Name")
@@ -300,7 +300,7 @@ public class CancelHearingNotificationIT {
 
     @Test
     void shouldSendLetterToApplicant() {
-        final CaseData data = CaseData.builder()
+        final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .applicantContactDetailsPreference(POST)
                 .fullName("Subject Name")

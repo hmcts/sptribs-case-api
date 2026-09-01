@@ -12,6 +12,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.StayReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
@@ -44,7 +45,7 @@ class CaseStayedNotificationTest {
     void shouldNotifySubjectOfCaseStayedWithEmail() {
         //Given
         final LocalDate expDate = LocalDate.now();
-        final CaseData data = getMockCaseData(expDate);
+        final CriminalInjuriesCompensationData data = getMockCaseData(expDate);
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setEmail("testSubject@outlook.com");
 
@@ -69,7 +70,7 @@ class CaseStayedNotificationTest {
     void shouldNotifySubjectOfCaseStayedWithEmailWithoutAdditionalDetail() {
         //Given
         final LocalDate expDate = LocalDate.now();
-        final CaseData data = getMockCaseData(expDate);
+        final CriminalInjuriesCompensationData data = getMockCaseData(expDate);
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setEmail("testSubject@outlook.com");
         data.getCaseStay().setAdditionalDetail("");
@@ -95,7 +96,7 @@ class CaseStayedNotificationTest {
     void shouldNotifySubjectOfCaseStayedWithPost() {
         //Given
         final LocalDate expDate = LocalDate.now();
-        final CaseData data = getMockCaseData(expDate);
+        final CriminalInjuriesCompensationData data = getMockCaseData(expDate);
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
         data.getCicCase().setAddress(AddressGlobalUK.builder().build());
 
@@ -120,7 +121,7 @@ class CaseStayedNotificationTest {
     void shouldNotifyApplicantOfCaseStayedWithEmail() {
         //Given
         final LocalDate expDate = LocalDate.now();
-        final CaseData data = getMockCaseData(expDate);
+        final CriminalInjuriesCompensationData data = getMockCaseData(expDate);
         data.getCicCase().setApplicantFullName("appFullName");
         data.getCicCase().setApplicantContactDetailsPreference(ContactPreferenceType.EMAIL);
         data.getCicCase().setApplicantEmailAddress("testApplicant@outlook.com");
@@ -146,7 +147,7 @@ class CaseStayedNotificationTest {
     void shouldNotifyApplicantOfCaseStayedWithPost() {
         //Given
         final LocalDate expDate = LocalDate.now();
-        final CaseData data = getMockCaseData(expDate);
+        final CriminalInjuriesCompensationData data = getMockCaseData(expDate);
         data.getCicCase().setApplicantFullName("appFullName");
         data.getCicCase().setApplicantContactDetailsPreference(ContactPreferenceType.POST);
         data.getCicCase().setApplicantAddress(AddressGlobalUK.builder().build());
@@ -172,7 +173,7 @@ class CaseStayedNotificationTest {
     void shouldNotifyRepresentativeOfCaseStayedWithEmail() {
         //Given
         final LocalDate expDate = LocalDate.now();
-        final CaseData data = getMockCaseData(expDate);
+        final CriminalInjuriesCompensationData data = getMockCaseData(expDate);
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
         data.getCicCase().setRepresentativeEmailAddress("testrepr@outlook.com");
@@ -198,7 +199,7 @@ class CaseStayedNotificationTest {
     void shouldNotifyRepresentativeOfCaseStayedWithPost() {
         //Given
         final LocalDate expDate = LocalDate.now();
-        final CaseData data = getMockCaseData(expDate);
+        final CriminalInjuriesCompensationData data = getMockCaseData(expDate);
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.POST);
         data.getCicCase().setRepresentativeAddress(AddressGlobalUK.builder().build());
@@ -220,7 +221,7 @@ class CaseStayedNotificationTest {
             TemplateName.CASE_STAYED_POST);
     }
 
-    private CaseData getMockCaseData(LocalDate stayCaseExpDate) {
+    private CriminalInjuriesCompensationData getMockCaseData(LocalDate stayCaseExpDate) {
         final CicCase cicCase = CicCase.builder()
             .fullName("fullName").caseNumber(TEST_CASE_ID.toString())
             .build();
@@ -230,7 +231,7 @@ class CaseStayedNotificationTest {
             .additionalDetail("addlDetail")
             .build();
 
-        return CaseData.builder()
+        return CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .caseStay(caseStay)
             .build();

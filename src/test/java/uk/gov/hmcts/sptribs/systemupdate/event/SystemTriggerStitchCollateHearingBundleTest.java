@@ -8,10 +8,10 @@ import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.caseworker.model.YesNo.YES;
@@ -28,7 +28,7 @@ class SystemTriggerStitchCollateHearingBundleTest {
 
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         systemTriggerStitchCollateHearingBundle.configure(configBuilder);
 
@@ -53,11 +53,11 @@ class SystemTriggerStitchCollateHearingBundleTest {
 
     @Test
     void shouldSetStitchHearingBundleTaskToYesInAboutToSubmit() {
-        final CaseData caseData = new CaseData();
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = systemTriggerStitchCollateHearingBundle
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = systemTriggerStitchCollateHearingBundle
             .aboutToSubmit(caseDetails, caseDetails);
 
         assertThat(response.getData().getStitchHearingBundleTask()).isEqualTo(YES);

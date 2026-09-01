@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.External;
@@ -80,7 +81,7 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder(toBuilder = true)
+@SuperBuilder(toBuilder = true)
 public class CaseData {
 
     @CCD(access = {CaseLinksDefaultAccess.class},

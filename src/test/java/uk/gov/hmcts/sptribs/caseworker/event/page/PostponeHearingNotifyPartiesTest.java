@@ -9,10 +9,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 
 import java.util.Set;
 
@@ -30,38 +30,41 @@ class PostponeHearingNotifyPartiesTest {
 
     @Test
     void testMidEventReturnsErrorForNoRecipients() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder().build();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         caseDetails.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = postponeHearingNotifyParties.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+            State> response = postponeHearingNotifyParties.midEvent(caseDetails, caseDetails);
         assertFalse(response.getErrors().isEmpty());
         assertThat(response.getErrors()).contains("At least one party must be selected.");
     }
 
     @Test
     void midEventIsSuccessfulForValidRecipients() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder()
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .build();
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .build();
         caseDetails.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = postponeHearingNotifyParties.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+            State> response = postponeHearingNotifyParties.midEvent(caseDetails, caseDetails);
         assertTrue(response.getErrors().isEmpty());
     }
 
     @Test
     void midEventIsInvalidIfNoRecipientsSelected() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder().build();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         caseDetails.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = postponeHearingNotifyParties.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+            State> response = postponeHearingNotifyParties.midEvent(caseDetails, caseDetails);
 
         assertNull(response.getData().getCicCase().getNotifyPartySubject());
         assertNull(response.getData().getCicCase().getNotifyPartyRepresentative());
@@ -73,12 +76,12 @@ class PostponeHearingNotifyPartiesTest {
 
     @Test
     void validateCheckNullRepresentativeRespondedIsCalledOnce() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder()
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .build();
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .build();
         caseDetails.setData(caseData);

@@ -15,6 +15,7 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
@@ -86,16 +87,16 @@ class CreateCaseTest {
 
     @Test
     void shouldSuccessfullyTriggerAboutToSubmitEventOnCreateCase() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.getCicCase().setFullName("Test Full Name");
 
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
         caseDetails.setState(Submitted);
 
         when(submissionService.submitApplication(caseDetails)).thenReturn(caseDetails);
 
-        AboutToStartOrSubmitResponse<CaseData, State> result =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> result =
             createCase.aboutToSubmit(caseDetails, caseDetails);
 
         verifyNoInteractions(documentsService);
@@ -109,7 +110,7 @@ class CreateCaseTest {
 
     @Test
     void shouldSuccessfullyUploadAndSaveApplicantDocumentsWhenAboutToSubmitEventTriggeredOnCreateCase() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         caseData.getCicCase().setFullName("Test Full Name");
 
@@ -161,13 +162,13 @@ class CreateCaseTest {
         testExpectedListValueCaseworkerCICDocument2.setValue(testExpectedCaseworkerCICDocument2);
         expectedDocuments.add(testExpectedListValueCaseworkerCICDocument2);
 
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
         caseDetails.setState(Submitted);
 
         when(submissionService.submitApplication(caseDetails)).thenReturn(caseDetails);
 
-        AboutToStartOrSubmitResponse<CaseData, State> result =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> result =
             createCase.aboutToSubmit(caseDetails, caseDetails);
 
         assertThat(result.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(2);
@@ -181,16 +182,16 @@ class CreateCaseTest {
 
     @Test
     void shouldSetIsRepresentativePresentToYesWhenAboutToSubmitEventTriggered() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.getCicCase().setRepresentativeFullName("Test Representative Full Name");
 
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
         caseDetails.setState(Submitted);
 
         when(submissionService.submitApplication(caseDetails)).thenReturn(caseDetails);
 
-        AboutToStartOrSubmitResponse<CaseData, State> result =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> result =
             createCase.aboutToSubmit(caseDetails, caseDetails);
 
         assertThat(result.getData().getCicCase().getIsRepresentativePresent()).isEqualTo(YES);
@@ -198,16 +199,16 @@ class CreateCaseTest {
 
     @Test
     void shouldSetIsRepresentativePresentToNoWhenAboutToSubmitEventTriggered() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.getCicCase().setRepresentativeFullName(null);
 
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
         caseDetails.setState(Submitted);
 
         when(submissionService.submitApplication(caseDetails)).thenReturn(caseDetails);
 
-        AboutToStartOrSubmitResponse<CaseData, State> result =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> result =
             createCase.aboutToSubmit(caseDetails, caseDetails);
 
         assertThat(result.getData().getCicCase().getIsRepresentativePresent()).isEqualTo(NO);
@@ -215,18 +216,18 @@ class CreateCaseTest {
 
     @Test
     void shouldSuccessfullyPopulateCaseFlagsWhenAboutToSubmitEventTriggered() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.getCicCase().setFullName("Test Full Name");
         caseData.getCicCase().setApplicantFullName("Test Applicant Full Name");
         caseData.getCicCase().setRepresentativeFullName("Test Representative Full Name");
 
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
         caseDetails.setState(Submitted);
 
         when(submissionService.submitApplication(caseDetails)).thenReturn(caseDetails);
 
-        AboutToStartOrSubmitResponse<CaseData, State> result =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> result =
             createCase.aboutToSubmit(caseDetails, caseDetails);
 
         assertThat(result.getData().getCaseFlags()).isNotNull();
@@ -277,11 +278,11 @@ class CreateCaseTest {
         testListValueCaseworkerCICDocument2.setValue(testCaseworkerCICDocument2);
         testDocumentList.add(testListValueCaseworkerCICDocument2);
 
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setHyphenatedCaseRef(caseData.formatCaseRef(TEST_CASE_ID));
         caseData.getCicCase().setApplicantDocumentsUploaded(testDocumentList);
 
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
         caseDetails.setState(Submitted);
         caseDetails.setId(TEST_CASE_ID);
@@ -302,12 +303,12 @@ class CreateCaseTest {
 
     @Test
     void shouldNotSuccessfullyTriggerSubmittedEventOnCreateCaseIfNotificationsFail() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final String hyphenatedCaseRef = caseData.formatCaseRef(TEST_CASE_ID);
         caseData.getCicCase().setSubjectCIC(Set.of(SUBJECT));
         caseData.setHyphenatedCaseRef(hyphenatedCaseRef);
 
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
         caseDetails.setState(Submitted);
         caseDetails.setId(TEST_CASE_ID);
@@ -323,9 +324,9 @@ class CreateCaseTest {
 
     @Test
     void shouldSubmitSupplementaryDataToCcdWhenSubmittedEventTriggered() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
 
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
         caseDetails.setState(Submitted);
         caseDetails.setId(TEST_CASE_ID);
@@ -337,14 +338,14 @@ class CreateCaseTest {
 
     @Test
     void shouldSendApplicationReceivedNotificationsWhenSubmittedEventTriggered() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final String hyphenatedCaseRef = caseData.formatCaseRef(TEST_CASE_ID);
         caseData.setHyphenatedCaseRef(hyphenatedCaseRef);
         caseData.getCicCase().setSubjectCIC(Set.of(SUBJECT));
         caseData.getCicCase().setApplicantCIC(Set.of(APPLICANT_CIC));
         caseData.getCicCase().setRepresentativeCIC(Set.of(REPRESENTATIVE));
 
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
         caseDetails.setState(Submitted);
         caseDetails.setId(TEST_CASE_ID);
@@ -361,14 +362,14 @@ class CreateCaseTest {
 
     @Test
     void shouldNotSendApplicationReceivedNotificationsWhenSubmittedEventTriggered() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final String hyphenatedCaseRef = caseData.formatCaseRef(TEST_CASE_ID);
         caseData.setHyphenatedCaseRef(hyphenatedCaseRef);
         caseData.getCicCase().setSubjectCIC(emptySet());
         caseData.getCicCase().setApplicantCIC(emptySet());
         caseData.getCicCase().setRepresentativeCIC(emptySet());
 
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
         caseDetails.setState(Submitted);
         caseDetails.setId(TEST_CASE_ID);
@@ -380,18 +381,18 @@ class CreateCaseTest {
 
     @Test
     void shouldCalculateAndSetIsCaseInTimeAsYesForInitialCicaDecisionDateEqualToCaseReceivedDate() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.getCicCase().setFullName("Test Full Name");
         caseData.getCicCase().setCaseReceivedDate(LocalDate.now());
         caseData.getCicCase().setInitialCicaDecisionDate(LocalDate.now());
 
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
         caseDetails.setState(Submitted);
 
         when(submissionService.submitApplication(caseDetails)).thenReturn(caseDetails);
 
-        AboutToStartOrSubmitResponse<CaseData, State> result =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> result =
             createCase.aboutToSubmit(caseDetails, caseDetails);
 
         assertThat(result.getData().getCicCase().getInitialCicaDecisionDate()).isEqualTo(LocalDate.now());
@@ -400,18 +401,18 @@ class CreateCaseTest {
 
     @Test
     void shouldCalculateAndSetIsCaseInTimeAsYesForCaseReceivedDateEqualTo90DaysFromInitialCicaDecisionDate() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.getCicCase().setFullName("Test Full Name");
         caseData.getCicCase().setCaseReceivedDate(LocalDate.now().plusDays(90));
         caseData.getCicCase().setInitialCicaDecisionDate(LocalDate.now());
 
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
         caseDetails.setState(Submitted);
 
         when(submissionService.submitApplication(caseDetails)).thenReturn(caseDetails);
 
-        AboutToStartOrSubmitResponse<CaseData, State> result =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> result =
             createCase.aboutToSubmit(caseDetails, caseDetails);
 
         assertThat(result.getData().getCicCase().getInitialCicaDecisionDate()).isEqualTo(LocalDate.now());
@@ -420,18 +421,18 @@ class CreateCaseTest {
 
     @Test
     void shouldCalculateAndSetIsCaseInTimeAsNoForCaseReceivedDateGreaterThan90DaysFromInitialCicaDecisionDate() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.getCicCase().setFullName("Test Full Name");
         caseData.getCicCase().setCaseReceivedDate(LocalDate.now().plusDays(91));
         caseData.getCicCase().setInitialCicaDecisionDate(LocalDate.now());
 
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
         caseDetails.setState(Submitted);
 
         when(submissionService.submitApplication(caseDetails)).thenReturn(caseDetails);
 
-        AboutToStartOrSubmitResponse<CaseData, State> result =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> result =
             createCase.aboutToSubmit(caseDetails, caseDetails);
 
         assertThat(result.getData().getCicCase().getInitialCicaDecisionDate()).isEqualTo(LocalDate.now());
@@ -455,11 +456,11 @@ class CreateCaseTest {
         testListValueCaseworkerCICDocument1.setValue(testCaseworkerCICDocument1);
         testDocumentList.add(testListValueCaseworkerCICDocument1);
 
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setHyphenatedCaseRef(caseData.formatCaseRef(TEST_CASE_ID));
         caseData.getCicCase().setApplicantDocumentsUploaded(testDocumentList);
 
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
         caseDetails.setState(Submitted);
         caseDetails.setId(TEST_CASE_ID);

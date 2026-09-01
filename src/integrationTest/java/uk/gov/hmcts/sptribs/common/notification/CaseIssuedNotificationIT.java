@@ -16,8 +16,8 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
@@ -66,7 +66,7 @@ public class CaseIssuedNotificationIT {
 
     @Test
     void shouldSendEmailToSubject() {
-        final CaseData data = CaseData.builder()
+        final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .contactPreferenceType(EMAIL)
                 .fullName("Subject Name")
@@ -97,7 +97,7 @@ public class CaseIssuedNotificationIT {
 
     @Test
     void shouldSendLetterToSubject() {
-        final CaseData data = CaseData.builder()
+        final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .contactPreferenceType(POST)
                 .fullName("Subject Name")
@@ -132,7 +132,7 @@ public class CaseIssuedNotificationIT {
 
     @Test
     void shouldSendEmailToApplicant() {
-        final CaseData data = CaseData.builder()
+        final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .applicantContactDetailsPreference(EMAIL)
                 .fullName("Subject Name")
@@ -164,7 +164,7 @@ public class CaseIssuedNotificationIT {
 
     @Test
     void shouldSendLetterToApplicant() {
-        final CaseData data = CaseData.builder()
+        final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .applicantContactDetailsPreference(POST)
                 .fullName("Subject Name")
@@ -200,7 +200,7 @@ public class CaseIssuedNotificationIT {
 
     @Test
     void shouldSendEmailToRepresentative() {
-        final CaseData data = CaseData.builder()
+        final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .representativeContactDetailsPreference(EMAIL)
                 .fullName("Subject Name")
@@ -232,7 +232,7 @@ public class CaseIssuedNotificationIT {
 
     @Test
     void shouldSendLetterToRepresentative() {
-        final CaseData data = CaseData.builder()
+        final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .representativeContactDetailsPreference(POST)
                 .fullName("Subject Name")
@@ -272,7 +272,7 @@ public class CaseIssuedNotificationIT {
         LocalDate today = LocalDate.now();
         String todayFormatted = today.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
-        final CaseData data = CaseData.builder()
+        final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .fullName("Subject Name")
                 .respondentName("Respondent Name")
@@ -314,7 +314,7 @@ public class CaseIssuedNotificationIT {
         LocalDate today = LocalDate.now();
         String todayFormatted = today.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
-        final CaseData data = CaseData.builder()
+        final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .fullName("Subject Name")
                 .respondentName("Respondent Name")
@@ -386,7 +386,7 @@ public class CaseIssuedNotificationIT {
         LocalDate today = LocalDate.now();
         String todayFormatted = today.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
-        final CaseData data = CaseData.builder()
+        final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .fullName("Subject Name")
                 .respondentName("Respondent Name")
@@ -462,7 +462,7 @@ public class CaseIssuedNotificationIT {
         LocalDate today = LocalDate.now();
         String todayFormatted = today.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
-        final CaseData data = CaseData.builder()
+        final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .fullName("Subject Name")
                 .respondentName("Respondent Name")

@@ -16,6 +16,7 @@ import uk.gov.hmcts.sptribs.caseworker.util.DocumentRemoveListUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.SendOrderUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.dto.RemoveEventWithPrecedingData;
 import uk.gov.hmcts.sptribs.common.repositories.CaseEventRepository;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
@@ -316,7 +317,7 @@ class CaseDataRestoreServiceTest {
 
             List<ListValue<CaseworkerCICDocument>> allDocuments = List.of(doc1, doc2);
 
-            CaseData caseDataBefore = CaseData.builder().build();
+            CriminalInjuriesCompensationData caseDataBefore = CriminalInjuriesCompensationData.builder().build();
             CaseData currentCaseData = CaseData.builder().build();
 
             when(caseEventRepository.getFirstEventDataForCase(REFERENCE, RESPONDENT_DOCUMENT_MANAGEMENT))
@@ -380,7 +381,7 @@ class CaseDataRestoreServiceTest {
 
         @Test
         void shouldSetEmptyListWhenNoDocumentsAtRespondentUpload() {
-            CaseData caseDataBefore = CaseData.builder().build();
+            CriminalInjuriesCompensationData caseDataBefore = CriminalInjuriesCompensationData.builder().build();
             CaseData currentCaseData = CaseData.builder().build();
 
             when(caseEventRepository.getFirstEventDataForCase(REFERENCE, RESPONDENT_DOCUMENT_MANAGEMENT))
@@ -429,11 +430,11 @@ class CaseDataRestoreServiceTest {
         }
     }
 
-    private CaseData buildCaseDataWithOrders(List<ListValue<Order>> orders) {
+    private CriminalInjuriesCompensationData buildCaseDataWithOrders(List<ListValue<Order>> orders) {
         CicCase cicCase = CicCase.builder()
             .orderList(new ArrayList<>(orders))
             .build();
-        return CaseData.builder()
+        return CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .build();
     }

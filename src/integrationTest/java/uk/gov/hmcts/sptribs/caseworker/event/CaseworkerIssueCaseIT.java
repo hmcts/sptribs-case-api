@@ -15,8 +15,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
@@ -94,7 +94,7 @@ class CaseworkerIssueCaseIT {
 
     @Test
     void shouldSuccessfullyIssueCase() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setCaseIssue(new CaseIssue());
 
         stubForIdamDetails(TEST_AUTHORIZATION_TOKEN, CASEWORKER_USER_ID, ST_CIC_CASEWORKER);
@@ -118,7 +118,7 @@ class CaseworkerIssueCaseIT {
 
     @Test
     void shouldCreateDocumentListInAboutToStart() throws Exception {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .applicantDocumentsUploaded(getDocument())
                 .build()
@@ -143,7 +143,7 @@ class CaseworkerIssueCaseIT {
 
     @Test
     void shouldReturnConfirmationMessageIfNotificationsDispatchedOnSubmitted() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         caseData.setCicCase(
             CicCase.builder()
@@ -194,7 +194,7 @@ class CaseworkerIssueCaseIT {
 
     @Test
     void shouldReturnErrorMessageIfNotificationsFailOnSubmitted() throws Exception {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .notifyPartySubject(Set.of(SUBJECT))
                 .notifyPartyRepresentative(Set.of(REPRESENTATIVE))

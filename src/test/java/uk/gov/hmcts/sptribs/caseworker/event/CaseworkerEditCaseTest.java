@@ -12,7 +12,6 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
@@ -22,6 +21,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
 import uk.gov.hmcts.sptribs.document.service.DocumentDownloadStatusService;
 import uk.gov.hmcts.sptribs.notification.model.Party;
@@ -64,7 +64,7 @@ class CaseworkerEditCaseTest {
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
 
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         caseworkerEditCase.configure(configBuilder);
 
@@ -90,10 +90,10 @@ class CaseworkerEditCaseTest {
     @Test
     void shouldSuccessfullyEditDssCase() {
         //Given
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setNote("This is a test note");
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(caseData);
         beforeDetails.setState(State.DSS_Submitted);
         Set<PartiesCIC> parties = new HashSet<>();
@@ -103,10 +103,10 @@ class CaseworkerEditCaseTest {
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        when(submissionService.submitApplication(any())).thenReturn(updatedCaseDetails);
+        when(submissionService.<CriminalInjuriesCompensationData>submitApplication(any())).thenReturn(updatedCaseDetails);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerEditCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //Then
@@ -117,10 +117,10 @@ class CaseworkerEditCaseTest {
     @Test
     void shouldSuccessfullyEditCase() {
         //Given
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setNote("This is a test note");
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(caseData);
         Set<PartiesCIC> parties = new HashSet<>();
         parties.add(PartiesCIC.SUBJECT);
@@ -130,10 +130,10 @@ class CaseworkerEditCaseTest {
         updatedCaseDetails.setState(State.CaseClosed);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        when(submissionService.submitApplication(any())).thenReturn(updatedCaseDetails);
+        when(submissionService.<CriminalInjuriesCompensationData>submitApplication(any())).thenReturn(updatedCaseDetails);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerEditCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse stayedResponse = caseworkerEditCase.submitted(updatedCaseDetails, beforeDetails);
 
@@ -146,8 +146,8 @@ class CaseworkerEditCaseTest {
     @Test
     void shouldSuccessfullyEditCaseRemoveRepresentative() {
         //Given
-        final CaseData afterData = caseData();
-        final CaseData beforeData = caseData();
+        final CriminalInjuriesCompensationData afterData = caseData();
+        final CriminalInjuriesCompensationData beforeData = caseData();
         Set<NotificationParties> beforeNotificationParties = new HashSet<>();
         beforeNotificationParties.add(NotificationParties.SUBJECT);
         beforeNotificationParties.add(NotificationParties.REPRESENTATIVE);
@@ -170,16 +170,16 @@ class CaseworkerEditCaseTest {
         afterData.setCicCase(newCicCase);
         beforeData.setCicCase(beforeCicCase);
         afterData.setNote("This is a test note");
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(beforeData);
         updatedCaseDetails.setData(afterData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        when(submissionService.submitApplication(any())).thenReturn(updatedCaseDetails);
+        when(submissionService.<CriminalInjuriesCompensationData>submitApplication(any())).thenReturn(updatedCaseDetails);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerEditCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse editedResponse = caseworkerEditCase.submitted(updatedCaseDetails, beforeDetails);
 
@@ -191,8 +191,8 @@ class CaseworkerEditCaseTest {
     @Test
     void shouldSuccessfullyEditCaseRemoveApplicant() {
         //Given
-        final CaseData afterData = caseData();
-        final CaseData beforeData = caseData();
+        final CriminalInjuriesCompensationData afterData = caseData();
+        final CriminalInjuriesCompensationData beforeData = caseData();
         Set<NotificationParties> beforeNotificationParties = new HashSet<>();
         beforeNotificationParties.add(NotificationParties.SUBJECT);
         beforeNotificationParties.add(NotificationParties.APPLICANT);
@@ -214,16 +214,16 @@ class CaseworkerEditCaseTest {
         afterData.setCicCase(newCicCase);
         beforeData.setCicCase(beforeCicCase);
         afterData.setNote("This is a test note");
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(beforeData);
         updatedCaseDetails.setData(afterData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        when(submissionService.submitApplication(any())).thenReturn(updatedCaseDetails);
+        when(submissionService.<CriminalInjuriesCompensationData>submitApplication(any())).thenReturn(updatedCaseDetails);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerEditCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse stayedResponse = caseworkerEditCase.submitted(updatedCaseDetails, beforeDetails);
 
@@ -235,8 +235,8 @@ class CaseworkerEditCaseTest {
     @Test
     void shouldSuccessfullyEditCaseUpdateRegion() {
         //Given
-        final CaseData afterData = caseData();
-        final CaseData beforeData = caseData();
+        final CriminalInjuriesCompensationData afterData = caseData();
+        final CriminalInjuriesCompensationData beforeData = caseData();
 
         final CicCase beforeCicCase = CicCase.builder()
             .regionCIC(RegionCIC.SCOTLAND)
@@ -252,16 +252,16 @@ class CaseworkerEditCaseTest {
         afterData.setCicCase(newCicCase);
         beforeData.setCicCase(beforeCicCase);
         afterData.setNote("This is a test note");
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(beforeData);
         updatedCaseDetails.setData(afterData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        when(submissionService.submitApplication(any())).thenReturn(updatedCaseDetails);
+        when(submissionService.<CriminalInjuriesCompensationData>submitApplication(any())).thenReturn(updatedCaseDetails);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerEditCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse editedResponse = caseworkerEditCase.submitted(updatedCaseDetails, beforeDetails);
 
@@ -274,8 +274,8 @@ class CaseworkerEditCaseTest {
     @Test
     void shouldSuccessfullyInitialiseFlagsWithNullCaseFlags() {
         //Given
-        final CaseData afterData = caseData();
-        final CaseData beforeData = caseData();
+        final CriminalInjuriesCompensationData afterData = caseData();
+        final CriminalInjuriesCompensationData beforeData = caseData();
 
         final CicCase beforeCicCase = CicCase.builder()
             .build();
@@ -291,16 +291,16 @@ class CaseworkerEditCaseTest {
         afterData.setCaseFlags(null);
         beforeData.setCicCase(beforeCicCase);
         afterData.setNote("This is a test note");
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(beforeData);
         updatedCaseDetails.setData(afterData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        when(submissionService.submitApplication(any())).thenReturn(updatedCaseDetails);
+        when(submissionService.<CriminalInjuriesCompensationData>submitApplication(any())).thenReturn(updatedCaseDetails);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerEditCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //Then
@@ -314,8 +314,8 @@ class CaseworkerEditCaseTest {
     @Test
     void shouldSuccessfullyInitialiseFlagsWithApplicant() {
         //Given
-        final CaseData afterData = caseData();
-        final CaseData beforeData = caseData();
+        final CriminalInjuriesCompensationData afterData = caseData();
+        final CriminalInjuriesCompensationData beforeData = caseData();
 
         final CicCase beforeCicCase = CicCase.builder()
             .build();
@@ -331,16 +331,16 @@ class CaseworkerEditCaseTest {
         afterData.setCicCase(newCicCase);
         beforeData.setCicCase(beforeCicCase);
         afterData.setNote("This is a test note");
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(beforeData);
         updatedCaseDetails.setData(afterData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        when(submissionService.submitApplication(any())).thenReturn(updatedCaseDetails);
+        when(submissionService.<CriminalInjuriesCompensationData>submitApplication(any())).thenReturn(updatedCaseDetails);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerEditCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //Then
@@ -354,8 +354,8 @@ class CaseworkerEditCaseTest {
     @Test
     void shouldSuccessfullyInitialiseFlagsWithNullApplicantDetails() {
         //Given
-        final CaseData afterData = caseData();
-        final CaseData beforeData = caseData();
+        final CriminalInjuriesCompensationData afterData = caseData();
+        final CriminalInjuriesCompensationData beforeData = caseData();
 
         final CicCase beforeCicCase = CicCase.builder()
             .build();
@@ -372,16 +372,16 @@ class CaseworkerEditCaseTest {
         afterData.setCicCase(newCicCase);
         beforeData.setCicCase(beforeCicCase);
         afterData.setNote("This is a test note");
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(beforeData);
         updatedCaseDetails.setData(afterData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        when(submissionService.submitApplication(any())).thenReturn(updatedCaseDetails);
+        when(submissionService.<CriminalInjuriesCompensationData>submitApplication(any())).thenReturn(updatedCaseDetails);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerEditCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //Then
@@ -395,8 +395,8 @@ class CaseworkerEditCaseTest {
     @Test
     void shouldSuccessfullyInitialiseFlagsScenarioWithRepresentative() {
         //Given
-        final CaseData afterData = caseData();
-        final CaseData beforeData = caseData();
+        final CriminalInjuriesCompensationData afterData = caseData();
+        final CriminalInjuriesCompensationData beforeData = caseData();
 
         final CicCase beforeCicCase = CicCase.builder()
             .build();
@@ -416,16 +416,16 @@ class CaseworkerEditCaseTest {
         afterData.setRepresentativeFlags(Flags.builder().build());
 
         beforeData.setCicCase(beforeCicCase);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(beforeData);
         updatedCaseDetails.setData(afterData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        when(submissionService.submitApplication(any())).thenReturn(updatedCaseDetails);
+        when(submissionService.<CriminalInjuriesCompensationData>submitApplication(any())).thenReturn(updatedCaseDetails);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerEditCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //Then
@@ -439,8 +439,8 @@ class CaseworkerEditCaseTest {
     @Test
     void shouldSuccessfullyInitialiseFlagsWithNullRepresentativeAndApplicant() {
         //Given
-        final CaseData afterData = caseData();
-        final CaseData beforeData = caseData();
+        final CriminalInjuriesCompensationData afterData = caseData();
+        final CriminalInjuriesCompensationData beforeData = caseData();
 
         final CicCase beforeCicCase = CicCase.builder()
             .build();
@@ -460,16 +460,16 @@ class CaseworkerEditCaseTest {
         afterData.setRepresentativeFlags(null);
 
         beforeData.setCicCase(beforeCicCase);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(beforeData);
         updatedCaseDetails.setData(afterData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        when(submissionService.submitApplication(any())).thenReturn(updatedCaseDetails);
+        when(submissionService.<CriminalInjuriesCompensationData>submitApplication(any())).thenReturn(updatedCaseDetails);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerEditCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //Then
@@ -483,8 +483,8 @@ class CaseworkerEditCaseTest {
     @Test
     void shouldSuccessfullyInitialiseFlagsWithOnlySubject() {
         //Given
-        final CaseData afterData = caseData();
-        final CaseData beforeData = caseData();
+        final CriminalInjuriesCompensationData afterData = caseData();
+        final CriminalInjuriesCompensationData beforeData = caseData();
 
         final CicCase beforeCicCase = CicCase.builder()
             .build();
@@ -503,16 +503,16 @@ class CaseworkerEditCaseTest {
 
         beforeData.setCicCase(beforeCicCase);
         afterData.setNote("This is a test note");
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(beforeData);
         updatedCaseDetails.setData(afterData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        when(submissionService.submitApplication(any())).thenReturn(updatedCaseDetails);
+        when(submissionService.<CriminalInjuriesCompensationData>submitApplication(any())).thenReturn(updatedCaseDetails);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerEditCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //Then
@@ -526,8 +526,8 @@ class CaseworkerEditCaseTest {
     @Test
     void shouldSuccessfullyInitialiseFlagsWithNullSubjectFlags() {
         //Given
-        final CaseData afterData = caseData();
-        final CaseData beforeData = caseData();
+        final CriminalInjuriesCompensationData afterData = caseData();
+        final CriminalInjuriesCompensationData beforeData = caseData();
 
         final CicCase beforeCicCase = CicCase.builder()
             .build();
@@ -546,16 +546,16 @@ class CaseworkerEditCaseTest {
 
         beforeData.setCicCase(beforeCicCase);
         afterData.setNote("This is a test note");
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(beforeData);
         updatedCaseDetails.setData(afterData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        when(submissionService.submitApplication(any())).thenReturn(updatedCaseDetails);
+        when(submissionService.<CriminalInjuriesCompensationData>submitApplication(any())).thenReturn(updatedCaseDetails);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerEditCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //Then
@@ -569,8 +569,8 @@ class CaseworkerEditCaseTest {
     @Test
     void shouldSuccessfullyInitialiseFlagsWithSubjectFlagsPresent() {
         //Given
-        final CaseData afterData = caseData();
-        final CaseData beforeData = caseData();
+        final CriminalInjuriesCompensationData afterData = caseData();
+        final CriminalInjuriesCompensationData beforeData = caseData();
 
         final CicCase beforeCicCase = CicCase.builder()
             .build();
@@ -589,16 +589,16 @@ class CaseworkerEditCaseTest {
 
         beforeData.setCicCase(beforeCicCase);
         afterData.setNote("This is a test note");
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(beforeData);
         updatedCaseDetails.setData(afterData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        when(submissionService.submitApplication(any())).thenReturn(updatedCaseDetails);
+        when(submissionService.<CriminalInjuriesCompensationData>submitApplication(any())).thenReturn(updatedCaseDetails);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerEditCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //Then

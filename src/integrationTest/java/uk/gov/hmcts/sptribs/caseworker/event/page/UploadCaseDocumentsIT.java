@@ -13,7 +13,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
@@ -60,7 +60,7 @@ public class UploadCaseDocumentsIT {
 
     @Test
     void shouldValidateUploadedDocumentsInMidEvent() throws Exception {
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .newDocManagement(DocumentManagement.builder()
                 .caseworkerCICDocumentUpload(getCaseworkerCICDocumentUploadList("file.pdf"))
                 .build())

@@ -18,6 +18,7 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundleResponse;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundlingClient;
@@ -112,7 +113,7 @@ public class CaseworkerCreateBundleIT {
 
     @Test
     void shouldMakeCallToEvidenceManagementToCreateBundleInAboutToSubmit() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         populateCaseDocuments(caseData);
         final BundleResponse bundleResponse = mock(BundleResponse.class);
 
@@ -154,7 +155,7 @@ public class CaseworkerCreateBundleIT {
         String existingOldBundleUUID1 = UUID.randomUUID().toString();
         String existingOldBundleUUID2 = UUID.randomUUID().toString();
 
-        final CaseData caseDataBefore = caseData();
+        final CriminalInjuriesCompensationData caseDataBefore = caseData();
         List<ListValue<Bundle>> existingBundles = new ArrayList<>();
         existingBundles.add(ListValue.<Bundle>builder()
             .id("1")
@@ -166,7 +167,7 @@ public class CaseworkerCreateBundleIT {
             .build());
         caseDataBefore.setCaseBundles(existingBundles);
 
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setCaseBundleIdsAndTimestamps(new ArrayList<>());
         populateCaseDocuments(caseData);
 
@@ -251,7 +252,7 @@ public class CaseworkerCreateBundleIT {
     void shouldHandleNullBundleIdsAndTimestampsGracefully() throws Exception {
         String newBundleUUID = UUID.randomUUID().toString();
 
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setCaseBundleIdsAndTimestamps(null);
         populateCaseDocuments(caseData);
 

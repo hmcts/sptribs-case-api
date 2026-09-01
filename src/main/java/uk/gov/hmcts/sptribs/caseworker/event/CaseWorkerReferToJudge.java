@@ -11,10 +11,9 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ReferToJudgeAdditionalInfo;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ReferToJudgeReason;
 import uk.gov.hmcts.sptribs.caseworker.model.ReferToJudge;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import java.time.LocalDate;
@@ -74,7 +73,8 @@ public class CaseWorkerReferToJudge implements CCDConfig<CriminalInjuriesCompens
         referToJudgeAdditionalInfo.addTo(pageBuilder);
     }
 
-    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStart(CaseDetails<CriminalInjuriesCompensationData, State> details) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStart(CaseDetails<CriminalInjuriesCompensationData,
+        State> details) {
         CriminalInjuriesCompensationData caseData = details.getData();
         caseData.setReferToJudge(new ReferToJudge());
 
@@ -83,7 +83,8 @@ public class CaseWorkerReferToJudge implements CCDConfig<CriminalInjuriesCompens
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(CaseDetails<CriminalInjuriesCompensationData, State> details,
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+        State> aboutToSubmit(CaseDetails<CriminalInjuriesCompensationData, State> details,
                                                                        CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
 
         CriminalInjuriesCompensationData caseData = details.getData();

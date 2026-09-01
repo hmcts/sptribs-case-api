@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.SecurityClass;
 import uk.gov.hmcts.sptribs.caseworker.service.ExtendedCaseDataService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.idam.CICUser;
@@ -59,15 +60,15 @@ class CaseWorkerChangeSecurityClassTest {
 
     @Test
     void shouldAdd2LinksToCase() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setSecurityClass(SecurityClass.PRIVATE);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerChangeSecurityClassification.aboutToSubmit(updatedCaseDetails, beforeDetails);
         final SubmittedCallbackResponse submitted = caseworkerChangeSecurityClassification.submitted(updatedCaseDetails, beforeDetails);
 
@@ -79,10 +80,10 @@ class CaseWorkerChangeSecurityClassTest {
 
     @Test
     void shouldCheckRolesSuccessfully() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setSecurityClass(SecurityClass.PRIVATE);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -90,7 +91,7 @@ class CaseWorkerChangeSecurityClassTest {
         when(request.getHeader(any())).thenReturn("listing");
         when(idamService.retrieveUser(any())).thenReturn(user);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerChangeSecurityClassification.midEvent(updatedCaseDetails, beforeDetails);
 
         assertThat(response.getErrors()).isEmpty();
@@ -98,10 +99,10 @@ class CaseWorkerChangeSecurityClassTest {
 
     @Test
     void shouldFailIfInsufficientRolesForSecurityClass() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setSecurityClass(SecurityClass.PRIVATE);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -109,7 +110,7 @@ class CaseWorkerChangeSecurityClassTest {
         when(request.getHeader(any())).thenReturn("listing");
         when(idamService.retrieveUser(any())).thenReturn(user);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response1 =
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response1 =
             caseworkerChangeSecurityClassification.midEvent(updatedCaseDetails, beforeDetails);
 
         assertThat(response1.getErrors()).hasSize(1);

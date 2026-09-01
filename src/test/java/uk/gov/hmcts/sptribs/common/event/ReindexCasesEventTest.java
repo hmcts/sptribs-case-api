@@ -11,9 +11,9 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 
 import java.time.LocalDate;
 
@@ -37,7 +37,7 @@ class ReindexCasesEventTest {
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         reindexCasesEvent.configure(configBuilder);
 
@@ -48,10 +48,10 @@ class ReindexCasesEventTest {
 
     @Test
     void shouldReturnErrorWhenDateMissingOnMidEvent() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        caseDetails.setData(new CaseData());
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setData(new CriminalInjuriesCompensationData());
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             reindexCasesEvent.midEvent(caseDetails, caseDetails);
 
         assertThat(response.getErrors()).containsExactly("Enter a date.");
@@ -60,15 +60,15 @@ class ReindexCasesEventTest {
     @Test
     void shouldPopulateMatchingCountOnMidEvent() {
         final LocalDate since = LocalDate.now().minusDays(3);
-        final CaseData caseData = new CaseData();
+        final CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
         caseData.setReindexCasesModifiedSince(since);
 
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
 
         when(reindexQueueService.countCasesModifiedSince(since)).thenReturn(12L);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             reindexCasesEvent.midEvent(caseDetails, caseDetails);
 
         assertThat(response.getErrors()).isNullOrEmpty();
@@ -78,10 +78,10 @@ class ReindexCasesEventTest {
 
     @Test
     void shouldReturnErrorWhenDateMissingOnAboutToSubmit() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        caseDetails.setData(new CaseData());
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setData(new CriminalInjuriesCompensationData());
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             reindexCasesEvent.aboutToSubmit(caseDetails, caseDetails);
 
         assertThat(response.getErrors()).containsExactly("Enter a date.");
@@ -91,13 +91,13 @@ class ReindexCasesEventTest {
     @Test
     void shouldEnqueueCasesOnAboutToSubmit() {
         final LocalDate since = LocalDate.of(2024, 1, 1);
-        final CaseData caseData = new CaseData();
+        final CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
         caseData.setReindexCasesModifiedSince(since);
 
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             reindexCasesEvent.aboutToSubmit(caseDetails, caseDetails);
 
         assertThat(response.getErrors()).isNullOrEmpty();
@@ -106,8 +106,8 @@ class ReindexCasesEventTest {
 
     @Test
     void shouldReturnSubmittedHeaderWhenDateMissing() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        caseDetails.setData(new CaseData());
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setData(new CriminalInjuriesCompensationData());
 
         SubmittedCallbackResponse response = reindexCasesEvent.submitted(caseDetails, caseDetails);
 
@@ -118,10 +118,10 @@ class ReindexCasesEventTest {
     @Test
     void shouldReturnSubmittedHeaderWithCount() {
         final LocalDate since = LocalDate.of(2024, 1, 2);
-        final CaseData caseData = new CaseData();
+        final CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
         caseData.setReindexCasesModifiedSince(since);
 
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
 
         when(reindexQueueService.countCasesModifiedSince(since)).thenReturn(5L);
