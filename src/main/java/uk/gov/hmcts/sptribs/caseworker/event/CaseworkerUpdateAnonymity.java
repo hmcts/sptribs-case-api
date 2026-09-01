@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ApplyAnonymity;
 import uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
@@ -42,15 +43,15 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class CaseworkerUpdateAnonymity implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerUpdateAnonymity implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     private final ApplyAnonymity applyAnonymity;
     private final AnonymityAppliedNotification anonymityAppliedNotification;
     private final AnonymisationService anonymisationService;
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
+    public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+        Event.EventBuilder<CriminalInjuriesCompensationData, UserRole, State> eventBuilder =
             configBuilder
                 .event(CASEWORKER_UPDATE_ANONYMITY)
                 .forAllStates()
@@ -64,15 +65,15 @@ public class CaseworkerUpdateAnonymity implements CCDConfig<CaseData, State, Use
                 .grantHistoryOnly(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_JUDGE, ST_CIC_SENIOR_JUDGE)
                 .publishToCamunda();
 
-        PageBuilder pageBuilder = new PageBuilder(eventBuilder);
+        PageBuilder<CriminalInjuriesCompensationData> pageBuilder = new PageBuilder<>(eventBuilder);
         applyAnonymity.addTo(pageBuilder);
 
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
-                                                                       final CaseDetails<CaseData, State> beforeDetails) {
-        CaseData data = details.getData();
-        CaseData beforeData = beforeDetails == null ? null : beforeDetails.getData();
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(final CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                                       final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
+        CriminalInjuriesCompensationData data = details.getData();
+        CriminalInjuriesCompensationData beforeData = beforeDetails == null ? null : beforeDetails.getData();
         List<String> errors = new ArrayList<>();
 
         anonymisationService.applyAnonymitySelection(data.getCicCase(), errors, true);
@@ -86,14 +87,14 @@ public class CaseworkerUpdateAnonymity implements CCDConfig<CaseData, State, Use
             data.setCaseStatus(details.getState());
         }
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(data)
             .errors(errors)
             .build();
     }
 
-    public SubmittedCallbackResponse submitted(final CaseDetails<CaseData, State> details,
-                                               final CaseDetails<CaseData, State> beforeDetails) {
+    public SubmittedCallbackResponse submitted(final CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                               final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
         try {
             anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(
                 details.getData(),
@@ -108,7 +109,7 @@ public class CaseworkerUpdateAnonymity implements CCDConfig<CaseData, State, Use
         return SubmittedCallbackResponse.builder().build();
     }
 
-    private void updateAnonymityCaseFlag(CaseData data, ListValue<FlagDetail> existingAnonymityFlag) {
+    private void updateAnonymityCaseFlag(CriminalInjuriesCompensationData data, ListValue<FlagDetail> existingAnonymityFlag) {
         if (YesOrNo.YES.equals(data.getCicCase().getAnonymiseYesOrNo())) {
             applyAnonymityCaseFlag(data, existingAnonymityFlag);
         } else {

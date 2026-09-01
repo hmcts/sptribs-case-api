@@ -8,7 +8,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 public class RemoveStay implements CcdPageConfiguration {
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
         pageBuilder
             .page("removeStay")
             .pageLabel("Remove stay from this case")

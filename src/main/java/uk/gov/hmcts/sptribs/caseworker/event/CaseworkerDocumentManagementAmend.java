@@ -16,6 +16,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.DocumentManagementAmendDocumen
 import uk.gov.hmcts.sptribs.caseworker.event.page.DocumentManagementSelectDocuments;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -59,14 +60,14 @@ import static uk.gov.hmcts.sptribs.document.DocumentConstants.REINSTATE_TYPE;
 @Slf4j
 @Setter
 @RequiredArgsConstructor
-public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerDocumentManagementAmend implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     private static final CcdPageConfiguration selectDocuments = new DocumentManagementSelectDocuments();
     private static final CcdPageConfiguration amendDocuments = new DocumentManagementAmendDocuments();
     private final DocumentsService documentsService;
 
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
+    public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+        Event.EventBuilder<CriminalInjuriesCompensationData, UserRole, State> eventBuilder =
             configBuilder
                 .event(CASEWORKER_DOCUMENT_MANAGEMENT_AMEND)
                 .forStates(Withdrawn,
@@ -92,29 +93,29 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
                 .submittedCallback(this::submitted)
                 .publishToCamunda();
 
-        PageBuilder pageBuilder = new PageBuilder(eventBuilder);
+        PageBuilder<CriminalInjuriesCompensationData> pageBuilder = new PageBuilder<>(eventBuilder);
         selectDocuments.addTo(pageBuilder);
         amendDocuments.addTo(pageBuilder);
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStart(CaseDetails<CriminalInjuriesCompensationData, State> details) {
         var caseData = details.getData();
         var cicCase = caseData.getCicCase();
 
         DynamicList documentList = DocumentListUtil.prepareCICDocumentListWithAllDocuments(caseData);
         cicCase.setAmendDocumentList(documentList);
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .build();
 
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
-        final CaseDetails<CaseData, State> details,
-        final CaseDetails<CaseData, State> beforeDetails
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(
+        final CaseDetails<CriminalInjuriesCompensationData, State> details,
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails
     ) {
-        final CaseData data = details.getData();
+        final CriminalInjuriesCompensationData data = details.getData();
         final CicCase cicCase = data.getCicCase();
 
         final DocumentType selectedDocumentCategory = cicCase.getSelectedDocumentCategory();
@@ -199,15 +200,15 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
         cicCase.setSelectedDocumentCategory(null);
         cicCase.setSelectedDocumentEmailContent(null);
         cicCase.setSelectedDocumentLink(null);
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(data)
             .errors(errors)
             .build();
 
     }
 
-    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                               CaseDetails<CaseData, State> beforeDetails) {
+    public SubmittedCallbackResponse submitted(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                               CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
             .confirmationHeader("# Document Updated")
             .build();

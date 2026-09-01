@@ -14,6 +14,7 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseManagementLocation;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
@@ -34,7 +35,7 @@ import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_WA_CASE_REGI
 @Component
 @Slf4j
 @Setter
-public class CicCreateCaseEvent implements CCDConfig<CaseData, State, UserRole> {
+public class CicCreateCaseEvent implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     private final AppsConfig appsConfig;
     private final CcdSupplementaryDataService ccdSupplementaryDataService;
@@ -46,7 +47,7 @@ public class CicCreateCaseEvent implements CCDConfig<CaseData, State, UserRole> 
     }
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
         configBuilder
             .event(AppsUtil.getExactAppsDetailsByCaseType(appsConfig, CcdCaseType.CIC.getCaseTypeName()).getEventIds()
                 .getCreateEvent())
@@ -59,22 +60,22 @@ public class CicCreateCaseEvent implements CCDConfig<CaseData, State, UserRole> 
             .retries(120, 120);
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
-                                                                       CaseDetails<CaseData, State> beforeDetails) {
-        final CaseData caseData = details.getData();
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                                       CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
+        final CriminalInjuriesCompensationData caseData = details.getData();
 
         caseData.setHyphenatedCaseRef(details.getData().formatCaseRef(details.getId()));
         setIsRepresentativePresent(caseData);
         setDefaultCaseDetails(caseData);
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .state(State.DSS_Draft)
             .build();
     }
 
-    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                               CaseDetails<CaseData, State> beforeDetails) {
+    public SubmittedCallbackResponse submitted(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                               CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
         ccdSupplementaryDataService.submitSupplementaryDataRequestToCcd(details.getId().toString());
 
         return SubmittedCallbackResponse.builder()

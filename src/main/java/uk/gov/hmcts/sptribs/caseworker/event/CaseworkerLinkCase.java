@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -34,7 +35,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 @Setter
-public class CaseworkerLinkCase implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerLinkCase implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     private static final String ALWAYS_HIDE = "LinkedCasesComponentLauncher = \"DONOTSHOW\"";
 
@@ -46,8 +47,8 @@ public class CaseworkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
     }
 
     @Override
-    public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        new PageBuilder(configBuilder
+    public void configure(ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+        new PageBuilder<>(configBuilder
             .event(CASEWORKER_LINK_CASE)
             .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome, ReadyToList)
             .name("Link cases")
@@ -66,9 +67,9 @@ public class CaseworkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
                 null, null, null, null, "#ARGUMENT(CREATE,LinkedCases)");
     }
 
-    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                               CaseDetails<CaseData, State> beforeDetails) {
-        CaseData data = details.getData();
+    public SubmittedCallbackResponse submitted(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                               CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
+        CriminalInjuriesCompensationData data = details.getData();
         try {
             linkedCaseNotification(data.getHyphenatedCaseRef(), data);
         } catch (Exception notificationException) {

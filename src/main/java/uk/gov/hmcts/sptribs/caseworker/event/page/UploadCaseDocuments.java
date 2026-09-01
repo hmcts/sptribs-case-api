@@ -19,7 +19,7 @@ public class UploadCaseDocuments implements CcdPageConfiguration {
     private static final String ALWAYS_HIDE = "newCaseworkerCICDocumentUpload=\"NEVER_SHOW\"";
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
         pageBuilder
             .page("uploadCaseDocuments", this::midEvent)
             .pageLabel("Upload case documents")
@@ -45,14 +45,14 @@ public class UploadCaseDocuments implements CcdPageConfiguration {
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                  CaseDetails<CaseData, State> detailsBefore) {
-        final CaseData data = details.getData();
+    public <T extends CaseData> AboutToStartOrSubmitResponse<T, State> midEvent(CaseDetails<T, State> details,
+                                                                  CaseDetails<T, State> detailsBefore) {
+        final T data = details.getData();
 
         List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = data.getNewDocManagement().getCaseworkerCICDocumentUpload();
         List<String> errors = validateCaseworkerCICDocumentFormat(uploadedDocuments);
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<T, State>builder()
             .data(data)
             .errors(errors)
             .build();

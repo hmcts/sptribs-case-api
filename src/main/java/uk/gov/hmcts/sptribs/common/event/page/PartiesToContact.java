@@ -26,7 +26,7 @@ public class PartiesToContact implements CcdPageConfiguration {
     private static final String RECIPIENT_LABEL = "Contact parties recipient";
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
         pageBuilder
             .page("partiesToContact", this::midEvent)
             .pageLabel("Contact Parties")
@@ -48,9 +48,9 @@ public class PartiesToContact implements CcdPageConfiguration {
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                  CaseDetails<CaseData, State> detailsBefore) {
-        final CaseData data = details.getData();
+    public <T extends CaseData> AboutToStartOrSubmitResponse<T, State> midEvent(CaseDetails<T, State> details,
+                                                                  CaseDetails<T, State> detailsBefore) {
+        final T data = details.getData();
         final CicCase cicCase = data.getCicCase();
         final List<String> errors = new ArrayList<>();
 
@@ -67,7 +67,7 @@ public class PartiesToContact implements CcdPageConfiguration {
             }
         }
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<T, State>builder()
             .data(data)
             .errors(errors)
             .build();

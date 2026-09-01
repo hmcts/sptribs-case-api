@@ -30,6 +30,7 @@ import uk.gov.hmcts.sptribs.caseworker.util.DynamicListUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -78,7 +79,7 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToDocumen
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerCreateAndSendOrder implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     private static final CcdPageConfiguration orderIssueSelect = new SendOrderOrderIssuingSelect();
     private static final CcdPageConfiguration createNewOrder = new CreateNewOrder();
@@ -97,8 +98,8 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
 
 
     @Override
-    public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
+    public void configure(ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+        Event.EventBuilder<CriminalInjuriesCompensationData, UserRole, State> eventBuilder =
             configBuilder
                 .event(CASEWORKER_CREATE_AND_SEND_ORDER)
                 .forStates(CaseManagement, ReadyToList, AwaitingHearing, CaseStayed, CaseClosed)
@@ -113,7 +114,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
                 .grantHistoryOnly(ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER)
                 .publishToCamunda();
 
-        PageBuilder pageBuilder = new PageBuilder(eventBuilder);
+        PageBuilder<CriminalInjuriesCompensationData> pageBuilder = new PageBuilder<>(eventBuilder);
         applyAnonymitySelect.addTo(pageBuilder);
         orderIssueSelect.addTo(pageBuilder);
         createNewOrder.addTo(pageBuilder);
@@ -126,8 +127,8 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
         previewOrder.addTo(pageBuilder);
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-        final CaseData caseData = details.getData();
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStart(CaseDetails<CriminalInjuriesCompensationData, State> details) {
+        final CriminalInjuriesCompensationData caseData = details.getData();
         final CicCase cicCase = caseData.getCicCase();
 
         updateAnonymityAlreadyApplied(caseData);
@@ -146,16 +147,16 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
             caseData.getDraftOrderContentCIC().getOrderTemplate());
         caseData.getCicCase().setTemplateDynamicList(orderTemplateOptions);
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
-                                                                       CaseDetails<CaseData, State> beforeDetails) {
-        final CaseData caseData = details.getData();
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                                       CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
+        final CriminalInjuriesCompensationData caseData = details.getData();
         final CicCase cicCase = caseData.getCicCase();
-        final CaseData beforeData = beforeDetails == null ? null : beforeDetails.getData();
+        final CriminalInjuriesCompensationData beforeData = beforeDetails == null ? null : beforeDetails.getData();
         final ListValue<FlagDetail> mergedAnonymityFlag =
             CaseFlagsUtil.mergeAnonymityFlagsPreserveOriginalId(caseData, beforeData);
 
@@ -175,14 +176,14 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
             caseData.setCaseStatus(details.getState());
         }
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .state(details.getState())
             .errors(errors)
             .build();
     }
 
-    private Order buildOrder(CaseData caseData, CicCase cicCase, List<String> errors, long caseReferenceNumber) {
+    private Order buildOrder(CriminalInjuriesCompensationData caseData, CicCase cicCase, List<String> errors, long caseReferenceNumber) {
         Order.OrderBuilder orderBuilder = Order.builder()
             .dueDateList(caseData.getOrderDueDates())
             .parties(getRecipients(cicCase))
@@ -194,7 +195,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
         return orderBuilder.build();
     }
 
-    private void populateDraftOrder(Order.OrderBuilder orderBuilder, CaseData caseData, CicCase cicCase, List<String> errors,
+    private void populateDraftOrder(Order.OrderBuilder orderBuilder, CriminalInjuriesCompensationData caseData, CicCase cicCase, List<String> errors,
                                     long caseReferenceNumber) {
         if (!CREATE_AND_SEND_NEW_ORDER.equals(cicCase.getOrderIssuingType())) {
             return;
@@ -250,7 +251,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
             && cicCase.getAnonymisedAppellantName() != null;
     }
 
-    private static void resetOrderJourneyFields(CaseData caseData, CicCase cicCase) {
+    private static void resetOrderJourneyFields(CriminalInjuriesCompensationData caseData, CicCase cicCase) {
         cicCase.setOrderIssuingType(null);
         cicCase.setOrderFile(null);
         cicCase.setOrderTemplateIssued(null);
@@ -259,7 +260,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
         cicCase.setFirstOrderDueDate(CicCaseFieldsUtil.calculateFirstDueDate(cicCase.getOrderList()));
     }
 
-    private static void updateAnonymityAlreadyApplied(CaseData caseData) {
+    private static void updateAnonymityAlreadyApplied(CriminalInjuriesCompensationData caseData) {
         CicCase cicCase = caseData.getCicCase();
         if (YesOrNo.YES.equals(cicCase.getAnonymityAlreadyApplied())) {
             return;
@@ -273,8 +274,8 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
         cicCase.setAnonymityAlreadyApplied(YesOrNo.NO);
     }
 
-    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                               CaseDetails<CaseData, State> beforeDetails) {
+    public SubmittedCallbackResponse submitted(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                               CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
         try {
             sendOrderNotification(details.getData().getHyphenatedCaseRef(), details.getData());
             anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(
@@ -294,7 +295,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
             .build();
     }
 
-    private void sendOrderNotification(String caseNumber, CaseData caseData) {
+    private void sendOrderNotification(String caseNumber, CriminalInjuriesCompensationData caseData) {
         if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartySubject())) {
             newOrderIssuedNotification.sendToSubject(caseData, caseNumber);
         }

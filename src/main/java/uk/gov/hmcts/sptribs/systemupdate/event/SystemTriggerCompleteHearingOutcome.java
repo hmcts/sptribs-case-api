@@ -7,6 +7,7 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
@@ -18,13 +19,13 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
 
 @Component
-public class SystemTriggerCompleteHearingOutcome implements CCDConfig<CaseData, State, UserRole> {
+public class SystemTriggerCompleteHearingOutcome implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     public static final String SYSTEM_TRIGGER_COMPLETE_HEARING_OUTCOME = "system-trigger-complete-hearing-outcome";
 
     @Override
-    public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        Event.EventBuilder<CaseData, UserRole, State> eventBuilder = configBuilder
+    public void configure(ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+        Event.EventBuilder<CriminalInjuriesCompensationData, UserRole, State> eventBuilder = configBuilder
             .event(SYSTEM_TRIGGER_COMPLETE_HEARING_OUTCOME)
             .forState(AwaitingHearing)
             .name("Trigger hearing outcome")
@@ -35,12 +36,12 @@ public class SystemTriggerCompleteHearingOutcome implements CCDConfig<CaseData, 
             .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> caseDetails,
-                                                                       CaseDetails<CaseData, State> beforeDetails) {
-        final CaseData caseData = caseDetails.getData();
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(CaseDetails<CriminalInjuriesCompensationData, State> caseDetails,
+                                                                       CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
+        final CriminalInjuriesCompensationData caseData = caseDetails.getData();
         caseData.setCompleteHearingOutcomeTask(YES);
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
                 .data(caseData)
                 .build();
     }

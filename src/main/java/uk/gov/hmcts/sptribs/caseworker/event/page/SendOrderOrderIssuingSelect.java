@@ -14,7 +14,7 @@ public class SendOrderOrderIssuingSelect implements CcdPageConfiguration {
 
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
         pageBuilder.page("caseworkerSendOrderSelectOrderIssuingType", this::midEvent)
             .pageLabel("Select order")
             .label("LabelCaseworkerSendOrderSelectOrderIssuingType","")
@@ -24,9 +24,9 @@ public class SendOrderOrderIssuingSelect implements CcdPageConfiguration {
                 .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                  CaseDetails<CaseData, State> detailsBefore) {
-        CaseData caseData = details.getData();
+    public <T extends CaseData> AboutToStartOrSubmitResponse<T, State> midEvent(CaseDetails<T, State> details,
+                                                                  CaseDetails<T, State> detailsBefore) {
+        T caseData = details.getData();
         CicCase cicCase = caseData.getCicCase();
 
         if (cicCase.getOrderIssuingDynamicRadioList() != null) {
@@ -36,7 +36,7 @@ public class SendOrderOrderIssuingSelect implements CcdPageConfiguration {
             cicCase.setOrderIssuingType(selectedValue);
         }
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<T, State>builder()
             .data(caseData)
             .build();
     }

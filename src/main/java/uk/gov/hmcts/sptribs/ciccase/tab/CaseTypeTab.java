@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
@@ -71,10 +72,10 @@ import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.SUBJECT_PH
 
 @Component
 @Setter
-public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
+public class CaseTypeTab implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
         buildSummaryTab(configBuilder);
         buildStateTab(configBuilder);
         buildNotesTab(configBuilder);
@@ -93,7 +94,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
         buildCaseLinkTab(configBuilder);
     }
 
-    private void buildCaseFlagTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    private void buildCaseFlagTab(ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
         configBuilder.tab("caseFlags", "Case Flags")
             .forRoles(CASEWORKER)
             .field(CaseData::getFlagLauncher, null, "#ARGUMENT(READ)")
@@ -103,7 +104,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field(CaseData::getRepresentativeFlags, COND_ALWAYS_HIDE_STAY_REASON);
     }
 
-    private void buildCaseLinkTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    private void buildCaseLinkTab(ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
         configBuilder.tab("caseLinks", "Linked cases")
             .forRoles(CASEWORKER)
             .field(CaseData::getLinkedCasesComponentLauncher, null, "#ARGUMENT(LinkedCases)")
@@ -111,13 +112,13 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field(CaseData::getCaseLinks, "LinkedCasesComponentLauncher!=\"\"", "#ARGUMENT(LinkedCases)");
     }
 
-    private void buildCaseFileViewTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    private void buildCaseFileViewTab(ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
         configBuilder.tab("caseFileView", "Case file view")
             .forRoles(CASEWORKER)
             .field(CaseData::getCaseFileView1, null, "#ARGUMENT(CaseFileView)");
     }
 
-    private void buildSummaryTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    private void buildSummaryTab(ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
         configBuilder.tab("summary", "Summary")
             .forRoles(CASEWORKER)
             .label(CASE_STATE_LABEL, null, "#### Case Status:  ${[STATE]}")
@@ -147,31 +148,31 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field(REMOVE_STAY_ADDITIONAL_DETAIL, COND_IS_NOT_CASE_STAYED);
     }
 
-    private void buildStateTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    private void buildStateTab(ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
         configBuilder.tab("state", "State")
             .forRoles(CASEWORKER)
             .label(CASE_STATE_LABEL, null, "#### Case State:  ${[STATE]}");
     }
 
-    private void buildNotesTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    private void buildNotesTab(ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
         configBuilder.tab("notes", "Notes")
             .forRoles(NON_RESPONDENT_USER)
             .field(CaseData::getNotes);
     }
 
-    private void buildBundlesTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    private void buildBundlesTab(ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
         configBuilder.tab("bundles", "Bundles")
             .forRoles(CASEWORKER)
             .field(CaseData::getCaseBundles);
     }
 
-    private void buildMessagesTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    private void buildMessagesTab(ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
         configBuilder.tab("messages", "Messages")
             .forRoles(CASEWORKER)
             .field(CaseData::getMessages);
     }
 
-    private void buildCaseDetailsTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    private void buildCaseDetailsTab(ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
         configBuilder.tab("caseDetails", "Case Details")
             .forRoles(CASEWORKER)
             .label(CASE_DETAILS, null, "### Case details")
@@ -215,7 +216,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field(ANONYMISATION_DATE);
     }
 
-    private void buildCasePartiesTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    private void buildCasePartiesTab(ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
         configBuilder.tab("caseParties", "Case Parties")
             .forRoles(CASEWORKER)
             .label("Subject's details", null, "### Subject's details")
@@ -248,7 +249,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("cicCaseRespondentEmail");
     }
 
-    private void buildOrderTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    private void buildOrderTab(ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
         configBuilder.tab("orders", "Orders & Decisions")
             .forRoles(CASEWORKER)
             .label("Orders", null, "### Orders")
@@ -263,7 +264,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("caseIssueFinalDecisionFinalDecisionDraft", "caseIssueFinalDecisionFinalDecisionDraft!=\"\"");
     }
 
-    private void buildCaseDocumentTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    private void buildCaseDocumentTab(ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
         configBuilder.tab("caseDocuments", "Case Documents")
             .forRoles(CASEWORKER)
             .label("Case Documents", null, "#### Case Documents")
@@ -271,13 +272,13 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("allCaseworkerCICDocument");
     }
 
-    private void buildCorrespondenceTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    private void buildCorrespondenceTab(ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
         configBuilder.tab("correspondence", "Correspondence")
             .forRoles(NON_RESPONDENT_USER)
             .field(CaseData::getCorrespondence);
     }
 
-    private void buildCicaDetails(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    private void buildCicaDetails(ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
         configBuilder.tab("cicaDetails", "CICA Details")
             .forRoles(CASEWORKER)
             .label("CICA Details", null, "#### CICA Details")
@@ -286,7 +287,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("cicCaseRespondentBundleDueDate");
     }
 
-    private void buildHearing(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    private void buildHearing(ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
         configBuilder.tab("hearings", "Hearings")
             .forRoles(CASEWORKER)
             .label("Listing details", COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY, "#### Listing details")
@@ -343,7 +344,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field(CaseData::getHearingList);
     }
 
-    private void buildCaseReferralTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    private void buildCaseReferralTab(ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
         configBuilder.tab("caseReferrals", "Case Referrals")
             .forRoles(CASEWORKER)
             .label("Referral to Judge", null, "#### Referral to Judge")

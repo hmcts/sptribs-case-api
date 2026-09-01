@@ -95,7 +95,7 @@ public class RecordListHelper {
         return errors;
     }
 
-    public void addOtherInformation(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addOtherInformation(PageBuilder<T> pageBuilder) {
         pageBuilder.page("otherInformation")
             .pageLabel("Other information")
             .label("LabelOtherInfo", "")

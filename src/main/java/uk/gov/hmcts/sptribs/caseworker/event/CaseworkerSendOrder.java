@@ -27,6 +27,7 @@ import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.SendOrderUtil;
 import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -70,7 +71,7 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToDocumen
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerSendOrder implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
     private static final CcdPageConfiguration orderIssuingSelect = new SendOrderOrderIssuingSelect();
     private static final CcdPageConfiguration uploadOrder = new SendOrderUploadOrder();
     private static final CcdPageConfiguration draftOrder = new SendOrderAddDraftOrder();
@@ -84,8 +85,8 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
     private final DocumentsService documentsService;
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        final PageBuilder pageBuilder = send(configBuilder);
+    public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+        final PageBuilder<CriminalInjuriesCompensationData> pageBuilder = send(configBuilder);
         orderIssuingSelect.addTo(pageBuilder);
         draftOrder.addTo(pageBuilder);
         uploadOrder.addTo(pageBuilder);
@@ -94,8 +95,8 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         sendReminder.addTo(pageBuilder);
     }
 
-    public PageBuilder send(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
+    public PageBuilder<CriminalInjuriesCompensationData> send(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+        Event.EventBuilder<CriminalInjuriesCompensationData, UserRole, State> eventBuilder =
                 configBuilder
                     .event(CASEWORKER_SEND_ORDER)
                     .forStates(CaseManagement, ReadyToList, AwaitingHearing, CaseClosed, CaseStayed)
@@ -110,11 +111,11 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
                     .grantHistoryOnly(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_JUDGE, ST_CIC_SENIOR_JUDGE)
                     .publishToCamunda();
 
-        return new PageBuilder(eventBuilder);
+        return new PageBuilder<>(eventBuilder);
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> caseDetails) {
-        CaseData data = caseDetails.getData();
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStart(CaseDetails<CriminalInjuriesCompensationData, State> caseDetails) {
+        CriminalInjuriesCompensationData data = caseDetails.getData();
         CicCase cicCase = data.getCicCase();
 
         DynamicList availableOptions = DynamicListUtil.createDynamicListFromEnumSet(
@@ -124,15 +125,15 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
 
         cicCase.setOrderIssuingDynamicRadioList(availableOptions);
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(data)
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
-                                                                       final CaseDetails<CaseData, State> beforeDetails) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(final CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                                       final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
 
-        final CaseData caseData = details.getData();
+        final CriminalInjuriesCompensationData caseData = details.getData();
         if (caseData.getCicCase().getOrderFile() != null) {
             updateCategoryToDocument(caseData.getCicCase().getOrderFile(), DocumentType.TRIBUNAL_DIRECTION.getCategory());
         }
@@ -234,15 +235,15 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         caseData.setOrderDueDates(new ArrayList<>());
         caseData.getCicCase().setFirstOrderDueDate(CicCaseFieldsUtil.calculateFirstDueDate(caseData.getCicCase().getOrderList()));
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .state(details.getState())
             .errors(errors)
             .build();
     }
 
-    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                          CaseDetails<CaseData, State> beforeDetails) {
+    public SubmittedCallbackResponse submitted(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                          CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
         try {
             sendOrderNotification(details.getData().getHyphenatedCaseRef(), details.getData());
         } catch (Exception notificationException) {

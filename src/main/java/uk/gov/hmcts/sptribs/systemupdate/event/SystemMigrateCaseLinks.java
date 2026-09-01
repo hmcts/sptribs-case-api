@@ -8,6 +8,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
@@ -17,12 +18,12 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 @Setter
-public class SystemMigrateCaseLinks implements CCDConfig<CaseData, State, UserRole> {
+public class SystemMigrateCaseLinks implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     public static final String SYSTEM_MIGRATE_CASE_LINKS = "system-migrate-case-links";
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
         configBuilder
             .event(SYSTEM_MIGRATE_CASE_LINKS)
             .forAllStates()
@@ -32,14 +33,14 @@ public class SystemMigrateCaseLinks implements CCDConfig<CaseData, State, UserRo
             .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE);
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
-                                                                       final CaseDetails<CaseData, State> beforeDetails) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(final CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                                       final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
         log.info("Migrating case links for case Id: {}", details.getId());
 
-        final CaseData data = details.getData();
+        final CriminalInjuriesCompensationData data = details.getData();
         data.setCaseNameHmctsInternal(data.getCicCase().getFullName());
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(details.getData())
             .build();
     }

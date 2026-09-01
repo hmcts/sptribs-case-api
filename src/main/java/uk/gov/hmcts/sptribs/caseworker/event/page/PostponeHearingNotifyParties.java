@@ -19,7 +19,7 @@ public class PostponeHearingNotifyParties implements CcdPageConfiguration {
     private static final String RECIPIENT_LABEL = "Postpone information recipient";
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
 
         pageBuilder.page("caseworkerPostponeHearingNotifyParties", this::midEvent)
             .pageLabel("Notify parties")
@@ -38,15 +38,15 @@ public class PostponeHearingNotifyParties implements CcdPageConfiguration {
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                  CaseDetails<CaseData, State> detailsBefore) {
-        final CaseData data = details.getData();
+    public <T extends CaseData> AboutToStartOrSubmitResponse<T, State> midEvent(CaseDetails<T, State> details,
+                                                                  CaseDetails<T, State> detailsBefore) {
+        final T data = details.getData();
         final List<String> errors = new ArrayList<>();
 
         if (checkNullSubjectRepresentativeRespondent(data)) {
             errors.add("At least one party must be selected.");
         }
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<T, State>builder()
             .data(data)
             .errors(errors)
             .build();

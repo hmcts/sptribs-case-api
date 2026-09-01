@@ -8,6 +8,7 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
@@ -21,12 +22,12 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 
 @Component
 @Slf4j
-public class SystemCleanDeletedDocumentsCase implements CCDConfig<CaseData, State, UserRole> {
+public class SystemCleanDeletedDocumentsCase implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     public static final String SYSTEM_CLEAN_DELETED_DOCUMENTS = "system-clean-deleted-documents";
 
     @Override
-    public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    public void configure(ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
         configBuilder
             .event(SYSTEM_CLEAN_DELETED_DOCUMENTS)
             .forAllStates()
@@ -36,13 +37,13 @@ public class SystemCleanDeletedDocumentsCase implements CCDConfig<CaseData, Stat
             .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE);
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> caseDetails,
-                                                                       CaseDetails<CaseData, State> beforeDetails) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(CaseDetails<CriminalInjuriesCompensationData, State> caseDetails,
+                                                                       CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
 
         Long caseId = caseDetails.getId();
         log.info("Clean deleted documents event about to clear stuck documents for caseId = {}", caseId);
 
-        CaseData caseData = caseDetails.getData();
+        CriminalInjuriesCompensationData caseData = caseDetails.getData();
         List<ListValue<CaseworkerCICDocument>> furtherDocs = caseData.getFurtherUploadedDocuments();
 
         if (furtherDocs == null || furtherDocs.isEmpty()) {
@@ -63,7 +64,7 @@ public class SystemCleanDeletedDocumentsCase implements CCDConfig<CaseData, Stat
 
         furtherDocs.removeAll(docsToRemove);
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .build();
     }
@@ -95,10 +96,11 @@ public class SystemCleanDeletedDocumentsCase implements CCDConfig<CaseData, Stat
         );
     }
 
-    private AboutToStartOrSubmitResponse<CaseData, State> returnEarly(CaseDetails<CaseData, State> caseDetails, CaseData caseData) {
+    private AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> returnEarly(CaseDetails<CriminalInjuriesCompensationData, State> caseDetails,
+                                                                                             CriminalInjuriesCompensationData caseData) {
         log.info("Clean deleted documents event found no further documents to clean for caseId = {}", caseDetails.getId());
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .build();
     }

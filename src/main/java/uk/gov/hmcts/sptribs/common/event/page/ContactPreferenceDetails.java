@@ -19,7 +19,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAS
 
 public class ContactPreferenceDetails implements CcdPageConfiguration {
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
         pageBuilder
             .page("objectContacts", this::midEvent)
             .pageLabel("Who should receive information about the case?")
@@ -35,9 +35,9 @@ public class ContactPreferenceDetails implements CcdPageConfiguration {
     }
 
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                  CaseDetails<CaseData, State> detailsBefore) {
-        final CaseData data = details.getData();
+    public <T extends CaseData> AboutToStartOrSubmitResponse<T, State> midEvent(CaseDetails<T, State> details,
+                                                                  CaseDetails<T, State> detailsBefore) {
+        final T data = details.getData();
         final List<String> errors = new ArrayList<>();
 
 
@@ -51,7 +51,7 @@ public class ContactPreferenceDetails implements CcdPageConfiguration {
             errors.add(MINOR_FATAL_SUBJECT_ERROR_MESSAGE);
         }
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<T, State>builder()
             .data(data)
             .errors(errors)
             .build();

@@ -25,7 +25,7 @@ public class ShowCaseDocuments implements CcdPageConfiguration {
 
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
         pageBuilder
             .page("showCaseDocuments", this::midEvent)
             .pageLabel("Show case documents")
@@ -49,21 +49,21 @@ public class ShowCaseDocuments implements CcdPageConfiguration {
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                  CaseDetails<CaseData, State> detailsBefore) {
-        final CaseData data = details.getData();
+    public <T extends CaseData> AboutToStartOrSubmitResponse<T, State> midEvent(CaseDetails<T, State> details,
+                                                                  CaseDetails<T, State> detailsBefore) {
+        final T data = details.getData();
         final CaseData oldData = detailsBefore.getData();
         if (ObjectUtils.isEmpty(data.getCicCase().getRemovedDocumentList())) {
             List<ListValue<CaseworkerCICDocument>> removedDocumentList = new ArrayList<>();
             data.getCicCase().setRemovedDocumentList(removedDocumentList);
         }
-        final CaseData newCaseData = setDocumentsListForRemoval(data, oldData);
+        final T newCaseData = setDocumentsListForRemoval(data, oldData);
         final List<String> errors = new ArrayList<>();
         if (CollectionUtils.isEmpty(newCaseData.getCicCase().getRemovedDocumentList())) {
             errors.add("Please remove at least one document to continue");
         }
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<T, State>builder()
             .data(newCaseData)
             .errors(errors)
             .build();

@@ -19,7 +19,7 @@ public class IssueCaseSelectDocument implements CcdPageConfiguration {
     private static final int MAX_DOCUMENT_COUNT = 5;
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
 
         pageBuilder.page("issueCaseSelectDocument", this::midEvent)
             .pageLabel("Select additional documents")
@@ -30,9 +30,9 @@ public class IssueCaseSelectDocument implements CcdPageConfiguration {
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                  CaseDetails<CaseData, State> detailsBefore) {
-        final CaseData data = details.getData();
+    public <T extends CaseData> AboutToStartOrSubmitResponse<T, State> midEvent(CaseDetails<T, State> details,
+                                                                  CaseDetails<T, State> detailsBefore) {
+        final T data = details.getData();
         final List<String> errors = new ArrayList<>();
         DynamicMultiSelectList list = data.getCaseIssue().getDocumentList();
         if (ObjectUtils.isEmpty(list)
@@ -42,7 +42,7 @@ public class IssueCaseSelectDocument implements CcdPageConfiguration {
             errors.add("Select up to 5 documents");
         }
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<T, State>builder()
             .data(data)
             .errors(errors)
             .build();

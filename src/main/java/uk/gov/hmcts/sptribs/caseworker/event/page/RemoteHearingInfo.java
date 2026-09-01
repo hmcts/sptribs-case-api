@@ -17,7 +17,7 @@ public class RemoteHearingInfo implements CcdPageConfiguration {
     private static final String CONFERENCE_CALL = "Conference call number";
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
         pageBuilder.page("remoteHearingInformation", this::midEvent)
             .pageLabel("Remote hearing information")
             .label("LabelRemoteHearingInfoObj", "")
@@ -26,9 +26,9 @@ public class RemoteHearingInfo implements CcdPageConfiguration {
             .optionalWithLabel(Listing::getConferenceCallNumber, "Conference call number - Please do not enter the '&' character.");
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                  CaseDetails<CaseData, State> detailsBefore) {
-        CaseData caseData = details.getData();
+    public <T extends CaseData> AboutToStartOrSubmitResponse<T, State> midEvent(CaseDetails<T, State> details,
+                                                                  CaseDetails<T, State> detailsBefore) {
+        T caseData = details.getData();
         List<String> errors = new ArrayList<>();
         Listing listing = caseData.getListing();
 
@@ -36,7 +36,7 @@ public class RemoteHearingInfo implements CcdPageConfiguration {
         validateNoSpecialCharacter(listing.getConferenceCallNumber(), CONFERENCE_CALL, errors);
 
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<T, State>builder()
             .data(caseData)
             .errors(errors)
             .build();

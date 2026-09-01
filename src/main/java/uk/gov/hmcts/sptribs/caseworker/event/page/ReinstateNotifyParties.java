@@ -17,7 +17,7 @@ public class ReinstateNotifyParties implements CcdPageConfiguration {
     private static final String RECIPIENT_LABEL = "Reinstate information recipient";
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
         pageBuilder.page("reinstateCaseNotifyParties", this::midEvent)
             .pageLabel("Contact parties")
             .label("LabelReinstateCaseNotifyParties", "")
@@ -38,12 +38,12 @@ public class ReinstateNotifyParties implements CcdPageConfiguration {
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                  CaseDetails<CaseData, State> detailsBefore) {
+    public <T extends CaseData> AboutToStartOrSubmitResponse<T, State> midEvent(CaseDetails<T, State> details,
+                                                                  CaseDetails<T, State> detailsBefore) {
 
-        final CaseData data = details.getData();
+        final T data = details.getData();
         final List<String> errors = EventUtil.checkRecipient(data);
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<T, State>builder()
             .data(data)
             .errors(errors)
             .build();

@@ -21,7 +21,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getId;
 public class SelectHearing implements CcdPageConfiguration {
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
         pageBuilder
             .page("selectHearing", this::midEvent)
             .pageLabel("Select hearing")
@@ -30,10 +30,10 @@ public class SelectHearing implements CcdPageConfiguration {
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                  CaseDetails<CaseData, State> detailsBefore) {
+    public <T extends CaseData> AboutToStartOrSubmitResponse<T, State> midEvent(CaseDetails<T, State> details,
+                                                                  CaseDetails<T, State> detailsBefore) {
 
-        final CaseData data = details.getData();
+        final T data = details.getData();
         final String selectedHearing = data.getCicCase().getHearingList().getValue().getLabel();
         final String id = getId(selectedHearing);
         final List<ListValue<Listing>> hearingList = data.getHearingList();
@@ -45,7 +45,7 @@ public class SelectHearing implements CcdPageConfiguration {
             }
         }
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<T, State>builder()
             .data(data)
             .build();
     }

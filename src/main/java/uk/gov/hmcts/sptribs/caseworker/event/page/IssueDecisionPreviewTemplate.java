@@ -10,7 +10,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.PageShowConditionsUtil.issueD
 public class IssueDecisionPreviewTemplate implements CcdPageConfiguration {
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
         pageBuilder.page("issueDecisionPreviewTemplate")
             .pageLabel("Decision notice preview")
             .pageShowConditions(issueDecisionShowConditions())

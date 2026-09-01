@@ -15,7 +15,7 @@ public class EditHearingLoadingPage implements CcdPageConfiguration {
     private static final String SHOW = "hearingSummaryExists != \"YES\"";
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
         pageBuilder
             .page("editHearingSummary")
             .pageLabel("Edit hearing summary")

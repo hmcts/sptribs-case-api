@@ -8,6 +8,7 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
@@ -33,14 +34,14 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 
 @Component
 @RequiredArgsConstructor
-public class CaseworkerManageCaseFlag implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerManageCaseFlag implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     private static final String ALWAYS_HIDE = "flagLauncher = \"ALWAYS_HIDE\"";
     private final AnonymisationService anonymisationService;
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        new PageBuilder(configBuilder
+    public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+        new PageBuilder<>(configBuilder
             .event(CASEWORKER_MANAGE_CASE_FLAG)
             .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome, ReadyToList)
             .name("Manage Flags")
@@ -64,22 +65,22 @@ public class CaseworkerManageCaseFlag implements CCDConfig<CaseData, State, User
                 null, null, null, null, "#ARGUMENT(UPDATE)");
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
-                                                                       CaseDetails<CaseData, State> beforeDetails) {
-        CaseData caseData = details.getData() == null ? CaseData.builder().build() : details.getData();
-        CaseData beforeData = beforeDetails == null ? null : beforeDetails.getData();
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                                       CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
+        CriminalInjuriesCompensationData caseData = details.getData() == null ? CriminalInjuriesCompensationData.builder().build() : details.getData();
+        CriminalInjuriesCompensationData beforeData = beforeDetails == null ? null : beforeDetails.getData();
         List<String> errors = new ArrayList<>();
 
         anonymisationService.processAnonymityFlag(caseData, beforeData, errors);
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .errors(errors)
             .build();
     }
 
-    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                               CaseDetails<CaseData, State> beforeDetails) {
+    public SubmittedCallbackResponse submitted(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                               CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
             .confirmationHeader("# Flag updated")
             .build();

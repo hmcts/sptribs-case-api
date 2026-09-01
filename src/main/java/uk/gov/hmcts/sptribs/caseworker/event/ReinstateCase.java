@@ -15,6 +15,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.ReinstateUploadDocuments;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ReinstateWarning;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -44,7 +45,7 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateUploadedDocumentC
 
 @Component
 @Slf4j
-public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
+public class ReinstateCase implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     private static final CcdPageConfiguration reinstateWarning = new ReinstateWarning();
     private static final CcdPageConfiguration reinstateReason = new ReinstateReasonSelect();
@@ -55,17 +56,17 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
     private CaseReinstatedNotification caseReinstatedNotification;
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
 
-        final PageBuilder pageBuilder = reinstateCase(configBuilder);
+        final PageBuilder<CriminalInjuriesCompensationData> pageBuilder = reinstateCase(configBuilder);
         reinstateWarning.addTo(pageBuilder);
         reinstateReason.addTo(pageBuilder);
         reinstateDocuments.addTo(pageBuilder);
         notifyParties.addTo(pageBuilder);
     }
 
-    public PageBuilder reinstateCase(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        return new PageBuilder(configBuilder
+    public PageBuilder<CriminalInjuriesCompensationData> reinstateCase(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+        return new PageBuilder<>(configBuilder
             .event(CASEWORKER_REINSTATE_CASE)
             .forStates(CaseClosed)
             .name("Case: Reinstate case")
@@ -81,36 +82,36 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
         );
     }
 
-    private AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-        final CaseData caseData = details.getData();
+    private AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStart(CaseDetails<CriminalInjuriesCompensationData, State> details) {
+        final CriminalInjuriesCompensationData caseData = details.getData();
         List<ListValue<CaseworkerCICDocument>> documents = caseData.getCicCase().getReinstateDocuments();
         List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = convertToCaseworkerCICDocument(documents);
         caseData.getCicCase().setReinstateDocumentsUpload(uploadedDocuments);
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
-        final CaseDetails<CaseData, State> details,
-        final CaseDetails<CaseData, State> beforeDetails
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(
+        final CaseDetails<CriminalInjuriesCompensationData, State> details,
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails
     ) {
 
-        final CaseData caseData = details.getData();
+        final CriminalInjuriesCompensationData caseData = details.getData();
         List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = caseData.getCicCase().getReinstateDocumentsUpload();
         List<ListValue<CaseworkerCICDocument>> documents = updateUploadedDocumentCategory(uploadedDocuments, false);
         caseData.getCicCase().setReinstateDocumentsUpload(new ArrayList<>());
         caseData.getCicCase().setReinstateDocuments(documents);
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .state(CaseManagement)
             .build();
     }
 
-    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                               CaseDetails<CaseData, State> beforeDetails) {
+    public SubmittedCallbackResponse submitted(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                               CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
         try {
             sendCaseReinstatedNotification(details.getData().getHyphenatedCaseRef(), details.getData());
         } catch (Exception notificationException) {

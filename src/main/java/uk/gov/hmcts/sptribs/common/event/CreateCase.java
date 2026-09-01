@@ -19,6 +19,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil;
 import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -66,7 +67,7 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateUploadedDocumentC
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
+public class CreateCase implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     private static final CcdPageConfiguration categorisationDetails = new CaseCategorisationDetails();
     private static final CcdPageConfiguration cicaCaseDetails = new EditCicaCaseDetailsPage();
@@ -89,8 +90,8 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
     private final DocumentsService documentsService;
 
     @Override
-    public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        PageBuilder pageBuilder = new PageBuilder(configBuilder
+    public void configure(ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+        PageBuilder<CriminalInjuriesCompensationData> pageBuilder = new PageBuilder<>(configBuilder
             .event(CASEWORKER_CREATE_CASE)
             .initialState(Draft)
             .name("Create Case")
@@ -116,11 +117,11 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
 
 
     @SneakyThrows
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
-                                                                       CaseDetails<CaseData, State> beforeDetails) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                                       CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
 
-        final CaseDetails<CaseData, State> submittedDetails = submissionService.submitApplication(details);
-        final CaseData caseData = submittedDetails.getData();
+        final CaseDetails<CriminalInjuriesCompensationData, State> submittedDetails = submissionService.submitApplication(details);
+        final CriminalInjuriesCompensationData caseData = submittedDetails.getData();
 
         List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = caseData.getCicCase().getCaseDocumentsUpload();
         List<ListValue<CaseworkerCICDocument>> documents = updateUploadedDocumentCategory(uploadedDocuments, false);
@@ -136,16 +137,16 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
         CaseFlagsUtil.initialiseFlags(caseData);
         setDefaultCaseDetails(caseData);
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .state(submittedDetails.getState())
             .build();
     }
 
-    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                               CaseDetails<CaseData, State> beforeDetails) {
+    public SubmittedCallbackResponse submitted(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                               CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
 
-        final CaseData caseData = details.getData();
+        final CriminalInjuriesCompensationData caseData = details.getData();
         setSupplementaryData(details.getId());
         final String caseReference = caseData.getHyphenatedCaseRef();
 
@@ -181,7 +182,7 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
             .build();
     }
 
-    private void setDefaultCaseDetails(CaseData data) {
+    private void setDefaultCaseDetails(CriminalInjuriesCompensationData data) {
         data.setCaseManagementLocation(
             CaseManagementLocation
                 .builder()
@@ -210,7 +211,7 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
         }
     }
 
-    private void sendApplicationReceivedNotification(String caseNumber, CaseData data) {
+    private void sendApplicationReceivedNotification(String caseNumber, CriminalInjuriesCompensationData data) {
         final CicCase cicCase = data.getCicCase();
 
         if (isNotEmpty(cicCase.getSubjectCIC())) {
@@ -226,7 +227,7 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
         }
     }
 
-    private void setIsRepresentativePresent(CaseData data) {
+    private void setIsRepresentativePresent(CriminalInjuriesCompensationData data) {
         data.getCicCase().setIsRepresentativePresent(
             data.getCicCase().getRepresentativeFullName() != null
                 ? YesOrNo.YES

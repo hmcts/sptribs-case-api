@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil;
 import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -49,7 +50,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
 @Component
-public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerEditCase implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     private final CcdPageConfiguration editCaseCategorisationDetails = new CaseCategorisationDetails();
     private final CcdPageConfiguration editCicaCaseDetailsPage = new EditCicaCaseDetailsPage();
@@ -72,8 +73,8 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
     }
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        final PageBuilder pageBuilder = addEventConfig(configBuilder);
+    public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+        final PageBuilder<CriminalInjuriesCompensationData> pageBuilder = addEventConfig(configBuilder);
         editCaseCategorisationDetails.addTo(pageBuilder);
         editCicaCaseDetailsPage.addTo(pageBuilder);
         dateOfInitialCicaDecision.addTo(pageBuilder);
@@ -86,10 +87,10 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
         editFurtherDetails.addTo(pageBuilder);
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
-                                                                       CaseDetails<CaseData, State> beforeDetails) {
-        CaseData data = details.getData();
-        CaseData beforeData = beforeDetails.getData();
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                                       CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
+        CriminalInjuriesCompensationData data = details.getData();
+        CriminalInjuriesCompensationData beforeData = beforeDetails.getData();
 
         if (checkNull(beforeData) && beforeData.getCicCase().getPartiesCIC().contains(PartiesCIC.REPRESENTATIVE)
             && checkNull(data) && !data.getCicCase().getPartiesCIC().contains(PartiesCIC.REPRESENTATIVE)) {
@@ -113,7 +114,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
             documentDownloadStatusService.deleteDocumentDownloadStatusesForCaseAndParty(details.getId(), Party.REPRESENTATIVE);
         }
 
-        CaseDetails<CaseData, State> submittedDetails = submissionService.submitApplication(details);
+        CaseDetails<CriminalInjuriesCompensationData, State> submittedDetails = submissionService.submitApplication(details);
         data = submittedDetails.getData();
         State state = beforeDetails.getState();
         if (state == DSS_Submitted) {
@@ -123,21 +124,21 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
         CaseFlagsUtil.updateOrInitialiseFlags(data);
         CicCaseFieldsUtil.calculateAndSetIsCaseInTime(data);
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(data)
             .state(state)
             .build();
     }
 
-    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                               CaseDetails<CaseData, State> beforeDetails) {
+    public SubmittedCallbackResponse submitted(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                               CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
             .confirmationHeader("# Case Updated")
             .build();
     }
 
-    private PageBuilder addEventConfig(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        Event.EventBuilder<CaseData, UserRole, State> eventBuilder = configBuilder
+    private PageBuilder addEventConfig(ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+        Event.EventBuilder<CriminalInjuriesCompensationData, UserRole, State> eventBuilder = configBuilder
             .event(CASEWORKER_EDIT_CASE)
             .forStates(DSS_Submitted, Submitted, CaseManagement, ReadyToList, AwaitingHearing, AwaitingOutcome)
             .name("Case: Edit case")
@@ -151,10 +152,10 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
             .submittedCallback(this::submitted)
             .publishToCamunda();
 
-        return new PageBuilder(eventBuilder);
+        return new PageBuilder<>(eventBuilder);
     }
 
-    private boolean checkNull(CaseData data) {
+    private boolean checkNull(CriminalInjuriesCompensationData data) {
         return null != data.getCicCase() && null != data.getCicCase().getPartiesCIC();
     }
 

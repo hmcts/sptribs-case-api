@@ -7,7 +7,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 public class CloseCaseConsentOrder implements CcdPageConfiguration {
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
         pageBuilder.page("closeCaseConsentOrder")
             .pageLabel("Consent order details")
             .complex(CaseData::getCloseCase)

@@ -65,7 +65,7 @@ public class ReferToLegalOfficerReason implements CcdPageConfiguration {
 
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
 
         pageBuilder.page("referToLegalOfficer", this::midEvent)
             .pageLabel("Referral reasons")
@@ -77,9 +77,9 @@ public class ReferToLegalOfficerReason implements CcdPageConfiguration {
 
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                  CaseDetails<CaseData, State> detailsBefore) {
-        final CaseData data = details.getData();
+    public <T extends CaseData> AboutToStartOrSubmitResponse<T, State> midEvent(CaseDetails<T, State> details,
+                                                                  CaseDetails<T, State> detailsBefore) {
+        final T data = details.getData();
         final List<String> errors = new ArrayList<>();
         final State caseState = details.getState();
 
@@ -87,7 +87,7 @@ public class ReferToLegalOfficerReason implements CcdPageConfiguration {
         if (!emptyIfNull(permittedStatesByReason.get(data.getReferToLegalOfficer().getReferralReason())).contains(caseState)) {
             errors.add(INCOMPATIBLE_REFERRAL_REASON);
         }
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<T, State>builder()
             .data(data)
             .errors(errors)
             .build();

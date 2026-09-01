@@ -5,6 +5,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.SearchField;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
@@ -23,7 +24,7 @@ import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.LAST_STATE
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.SUBJECT_NAME;
 
 @Component
-public class SearchResultFields implements CCDConfig<CaseData, State, UserRole> {
+public class SearchResultFields implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     public static final List<SearchField<UserRole>> SEARCH_RESULT_FIELD_LIST = of(
         SearchField.<UserRole>builder().id(CCD_REFERENCE).label("Case Number").build(),
@@ -38,7 +39,7 @@ public class SearchResultFields implements CCDConfig<CaseData, State, UserRole> 
     );
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
         configBuilder
             .searchResultFields()
             .fields(SEARCH_RESULT_FIELD_LIST);

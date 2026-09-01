@@ -19,6 +19,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionSelectTemplate;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionUploadNotice;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -53,7 +54,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class CaseworkerIssueDecision implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerIssueDecision implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     private static final CcdPageConfiguration issueDecisionNotice = new IssueDecisionNotice();
     private static final CcdPageConfiguration issueDecisionSelectTemplate = new IssueDecisionSelectTemplate();
@@ -68,8 +69,8 @@ public class CaseworkerIssueDecision implements CCDConfig<CaseData, State, UserR
     private final DocumentsService documentsService;
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
+    public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+        Event.EventBuilder<CriminalInjuriesCompensationData, UserRole, State> eventBuilder =
             configBuilder
                 .event(CASEWORKER_ISSUE_DECISION)
                 .forStates(AwaitingOutcome)
@@ -84,7 +85,7 @@ public class CaseworkerIssueDecision implements CCDConfig<CaseData, State, UserR
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_WA_CONFIG_USER)
                 .publishToCamunda();
 
-        final PageBuilder pageBuilder = new PageBuilder(eventBuilder);
+        final PageBuilder<CriminalInjuriesCompensationData> pageBuilder = new PageBuilder<>(eventBuilder);
         issueDecisionNotice.addTo(pageBuilder);
         issueDecisionSelectTemplate.addTo(pageBuilder);
         issueDecisionMainContent.addTo(pageBuilder);
@@ -95,19 +96,19 @@ public class CaseworkerIssueDecision implements CCDConfig<CaseData, State, UserR
 
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-        final CaseData caseData = details.getData();
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStart(CaseDetails<CriminalInjuriesCompensationData, State> details) {
+        final CriminalInjuriesCompensationData caseData = details.getData();
 
         caseData.setDecisionSignature("");
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
-                                                                       CaseDetails<CaseData, State> beforeDetails) {
-        final CaseData caseData = details.getData();
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                                       CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
+        final CriminalInjuriesCompensationData caseData = details.getData();
         final CICDocument decisionDocument = caseData.getCaseIssueDecision().getDecisionDocument();
         final Document decisionDocumentCreatedFromTemplate = caseData.getCaseIssueDecision().getIssueDecisionDraft();
 
@@ -122,15 +123,15 @@ public class CaseworkerIssueDecision implements CCDConfig<CaseData, State, UserR
 
         caseData.getCaseIssueDecision().setDecisionDate(LocalDate.now(this.clock));
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .state(CaseManagement)
             .errors(errors)
             .build();
     }
 
-    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                               CaseDetails<CaseData, State> beforeDetails) {
+    public SubmittedCallbackResponse submitted(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                               CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
         try {
             sendIssueDecisionNotification(details.getData().getHyphenatedCaseRef(), details.getData());
         } catch (Exception notificationException) {
@@ -146,7 +147,7 @@ public class CaseworkerIssueDecision implements CCDConfig<CaseData, State, UserR
             .build();
     }
 
-    private void sendIssueDecisionNotification(String caseNumber, CaseData data) {
+    private void sendIssueDecisionNotification(String caseNumber, CriminalInjuriesCompensationData data) {
 
         if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartySubject())) {
             decisionIssuedNotification.sendToSubject(data, caseNumber);

@@ -31,7 +31,7 @@ public class IssueFinalDecisionFooter implements CcdPageConfiguration {
     private final HttpServletRequest request;
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
         pageBuilder.page("issueFinalDecisionAddDocumentFooter", this::midEvent)
             .pageLabel("Document footer")
             .label("LabelIssueFinalDecisionAddDocumentFooter",
@@ -47,9 +47,9 @@ public class IssueFinalDecisionFooter implements CcdPageConfiguration {
     }
 
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                  CaseDetails<CaseData, State> detailsBefore) {
-        final CaseData caseData = details.getData();
+    public <T extends CaseData> AboutToStartOrSubmitResponse<T, State> midEvent(CaseDetails<T, State> details,
+                                                                  CaseDetails<T, State> detailsBefore) {
+        final T caseData = details.getData();
         final CaseIssueFinalDecision finalDecision = caseData.getCaseIssueFinalDecision();
         final Long caseId = details.getId();
         final String filename = FINAL_DECISION_FILE + LocalDateTime.now().format(formatter);
@@ -66,7 +66,7 @@ public class IssueFinalDecisionFooter implements CcdPageConfiguration {
         finalDecision.setFinalDecisionDraft(generalOrderDocument);
         caseData.setCaseIssueFinalDecision(finalDecision);
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<T, State>builder()
             .data(caseData)
             .build();
     }

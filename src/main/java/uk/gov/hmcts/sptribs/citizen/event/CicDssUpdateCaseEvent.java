@@ -14,6 +14,7 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssMessage;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -59,7 +60,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 
 @Slf4j
 @Component
-public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRole> {
+public class CicDssUpdateCaseEvent implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     private static final EnumSet<State> DSS_UPDATE_CASE_AVAILABLE_STATES = EnumSet.complementOf(EnumSet.of(Draft, DSS_Draft, DSS_Expired));
 
@@ -79,8 +80,8 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
     private DocumentsService documentsService;
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
+    public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+        Event.EventBuilder<CriminalInjuriesCompensationData, UserRole, State> eventBuilder =
             configBuilder
                 .event(CITIZEN_DSS_UPDATE_CASE_SUBMISSION)
                 .forStates(DSS_UPDATE_CASE_AVAILABLE_STATES)
@@ -104,19 +105,19 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
                 .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
-                                                                       CaseDetails<CaseData, State> beforeDetails) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                                       CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
         final List<String> errors = new ArrayList<>();
 
-        final CaseData caseData = addDocumentsToCaseData(details.getData(), details.getData().getDssCaseData(), errors);
+        final CriminalInjuriesCompensationData caseData = addDocumentsToCaseData(details.getData(), details.getData().getDssCaseData(), errors);
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
                 .data(caseData)
                 .errors(errors)
                 .build();
     }
 
-    private CaseData addDocumentsToCaseData(final CaseData caseData, final DssCaseData dssCaseData, List<String> errors)
+    private CaseData addDocumentsToCaseData(final CriminalInjuriesCompensationData caseData, final DssCaseData dssCaseData, List<String> errors)
         throws RuntimeException {
         final List<CaseworkerCICDocument> documentList = new ArrayList<>();
         final List<ListValue<DssMessage>> messagesList = new ArrayList<>();
@@ -189,8 +190,8 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
         return caseData;
     }
 
-    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                               CaseDetails<CaseData, State> beforeDetails) {
+    public SubmittedCallbackResponse submitted(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                               CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
         try {
             dssUpdateCaseSubmissionNotification.sendToApplicant(details.getData(), String.valueOf(details.getId()));
             dssUpdateCaseSubmissionNotification.sendToTribunal(details.getData(), String.valueOf(details.getId()));

@@ -21,6 +21,7 @@ import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -47,7 +48,7 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.uploadRecFile;
 
 @Component
 @Slf4j
-public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State, UserRole> {
+public class CaseWorkerCreateHearingSummary implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     private static final CcdPageConfiguration createHearingSummary = new SelectHearing();
     private static final CcdPageConfiguration hearingTypeAndFormat = new HearingTypeAndFormat();
@@ -67,8 +68,8 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
     private JudicialService judicialService;
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
+    public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+        Event.EventBuilder<CriminalInjuriesCompensationData, UserRole, State> eventBuilder =
             configBuilder
                 .event(CASEWORKER_CREATE_HEARING_SUMMARY)
                 .forStates(AwaitingHearing)
@@ -90,7 +91,7 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
                     ST_CIC_JUDGE)
                 .publishToCamunda();
 
-        PageBuilder pageBuilder = new PageBuilder(eventBuilder);
+        PageBuilder<CriminalInjuriesCompensationData> pageBuilder = new PageBuilder<>(eventBuilder);
         createHearingSummary.addTo(pageBuilder);
         hearingTypeAndFormat.addTo(pageBuilder);
         hearingVenues.addTo(pageBuilder);
@@ -100,8 +101,8 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
         hearingRecordingUploadPage.addTo(pageBuilder);
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-        final CaseData caseData = details.getData();
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStart(CaseDetails<CriminalInjuriesCompensationData, State> details) {
+        final CriminalInjuriesCompensationData caseData = details.getData();
         caseData.setCurrentEvent(CASEWORKER_CREATE_HEARING_SUMMARY);
 
         DynamicList hearingDateDynamicList = hearingService.getListedHearingDynamicList(caseData);
@@ -111,16 +112,16 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
         caseData.getListing().getSummary().setJudge(judicialUsersDynamicList);
         caseData.getListing().getSummary().setMemberList(getPanelMembers(judicialUsersDynamicList));
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
-        final CaseDetails<CaseData, State> details,
-        final CaseDetails<CaseData, State> beforeDetails
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(
+        final CaseDetails<CriminalInjuriesCompensationData, State> details,
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails
     ) {
-        final CaseData caseData = details.getData();
+        final CriminalInjuriesCompensationData caseData = details.getData();
 
         caseData.getListing().setHearingStatus(Complete);
         caseData.setJudicialId(judicialService.populateJudicialId(caseData));
@@ -133,14 +134,14 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
 
         hearingService.updateHearingList(caseData, hearingName);
         caseData.getListing().getSummary().setRecFile(new ArrayList<>());
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .state(AwaitingOutcome)
             .build();
     }
 
-    public SubmittedCallbackResponse summaryCreated(CaseDetails<CaseData, State> details,
-                                                    CaseDetails<CaseData, State> beforeDetails) {
+    public SubmittedCallbackResponse summaryCreated(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                    CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(MessageUtil.generateSimpleMessage(
                 "Hearing summary created",

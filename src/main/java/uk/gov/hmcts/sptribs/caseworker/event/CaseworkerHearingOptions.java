@@ -10,6 +10,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
@@ -26,14 +27,14 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORK
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
 @Component
-public class CaseworkerHearingOptions implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerHearingOptions implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     @Autowired
     private RecordListHelper recordListHelper;
 
     @Override
-    public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        new PageBuilder(configBuilder
+    public void configure(ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+        new PageBuilder<>(configBuilder
             .event(CASEWORKER_HEARING_OPTIONS)
             .forStates(CaseManagement, ReadyToList)
             .name("Case: Hearing Options")
@@ -61,29 +62,29 @@ public class CaseworkerHearingOptions implements CCDConfig<CaseData, State, User
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-        final CaseData caseData = details.getData();
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStart(CaseDetails<CriminalInjuriesCompensationData, State> details) {
+        final CriminalInjuriesCompensationData caseData = details.getData();
 
         if (isNull(caseData.getListing().getRegionList())) {
             recordListHelper.regionData(caseData);
         }
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                  CaseDetails<CaseData, State> detailsBefore) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> midEvent(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                                  CaseDetails<CriminalInjuriesCompensationData, State> detailsBefore) {
 
-        final CaseData caseData = details.getData();
+        final CriminalInjuriesCompensationData caseData = details.getData();
         final CaseData caseDataBefore = detailsBefore.getData();
 
         if (isNull(caseData.getListing().getRegionList())) {
             caseData.getListing().setHearingVenues(resetHearingVenuesDynamicList());
             caseData.getListing().setHearingVenuesMessage(null);
 
-            return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
                 .data(caseData)
                 .build();
         }
@@ -99,21 +100,21 @@ public class CaseworkerHearingOptions implements CCDConfig<CaseData, State, User
             recordListHelper.populateVenuesData(caseData);
         }
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
-                                                                       final CaseDetails<CaseData, State> beforeDetails) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(final CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                                       final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
 
-        final CaseData caseData = details.getData();
+        final CriminalInjuriesCompensationData caseData = details.getData();
 
         if (!caseData.getListing().getVenueNotListedOption().isEmpty()) {
             caseData.getListing().setHearingVenues(resetHearingVenuesDynamicList());
         }
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .state(ReadyToList)
             .build();

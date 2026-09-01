@@ -8,6 +8,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.service.CaseDataRestoreService;
@@ -20,7 +21,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @RequiredArgsConstructor
 @Component
 @Slf4j
-public class SystemRestoreOrders implements CCDConfig<CaseData, State, UserRole> {
+public class SystemRestoreOrders implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     public static final String SYSTEM_RESTORE_ORDERS = "system-restore-orders";
 
@@ -31,7 +32,7 @@ public class SystemRestoreOrders implements CCDConfig<CaseData, State, UserRole>
     private final CaseDataRestoreService caseDataRestoreService;
 
     @Override
-    public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    public void configure(ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
         configBuilder
             .event(SYSTEM_RESTORE_ORDERS)
             .forAllStates()
@@ -41,14 +42,14 @@ public class SystemRestoreOrders implements CCDConfig<CaseData, State, UserRole>
             .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE);
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> caseDetails,
-                                                                       CaseDetails<CaseData, State> beforeDetails) {
-        CaseData caseData = caseDetails.getData();
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(CaseDetails<CriminalInjuriesCompensationData, State> caseDetails,
+                                                                       CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
+        CriminalInjuriesCompensationData caseData = caseDetails.getData();
         Long reference = caseDetails.getId();
 
         caseDataRestoreService.restoreOrdersList(reference, caseData, START_FROM_DATE, END_TO_DATE);
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .build();
     }

@@ -10,7 +10,7 @@ public class DocumentManagementAmendDocuments implements CcdPageConfiguration {
     private static final String ALWAYS_HIDE = "cicCaseAmendDocumentList=\"NEVER_SHOW\"";
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
 
         pageBuilder.page("amendCaseDocuments")
             .pageLabel("Amend case documents")

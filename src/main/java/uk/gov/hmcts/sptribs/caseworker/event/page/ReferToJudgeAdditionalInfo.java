@@ -11,7 +11,7 @@ public class ReferToJudgeAdditionalInfo implements CcdPageConfiguration {
     private static final String NEVER_SHOW = "referToJudgeAdditionalInformation=\"NEVER_SHOW\"";
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
         pageBuilder.page("referToJudgeAdditionalInfo")
             .pageLabel("Additional information")
             .complex(CaseData::getReferToJudge)

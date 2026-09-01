@@ -22,7 +22,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.GetAmendDateAsCompleted.MARKASC
 public class AmendOrderDueDates implements CcdPageConfiguration {
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
         pageBuilder.page("caseworkerAmendDueDateEditDueDate", this::midEvent)
             .pageLabel("Amend due dates")
             .list(CaseData::getOrderDueDates)
@@ -32,8 +32,8 @@ public class AmendOrderDueDates implements CcdPageConfiguration {
             .optional(DateModel::getOrderMarkAsCompleted);
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                  CaseDetails<CaseData, State> detailsBefore) {
+    public <T extends CaseData> AboutToStartOrSubmitResponse<T, State> midEvent(CaseDetails<T, State> details,
+                                                                  CaseDetails<T, State> detailsBefore) {
 
         List<ListValue<DateModel>> dueDates = details.getData().getOrderDueDates();
         final List<String> errors = new ArrayList<>();
@@ -65,11 +65,11 @@ public class AmendOrderDueDates implements CcdPageConfiguration {
         }
     }
 
-    private AboutToStartOrSubmitResponse<CaseData, State> buildResponse(
-        CaseDetails<CaseData, State> details,
+    private <T extends CaseData> AboutToStartOrSubmitResponse<T, State> buildResponse(
+        CaseDetails<T, State> details,
         List<String> errors) {
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<T, State>builder()
             .data(details.getData())
             .errors(errors)
             .build();

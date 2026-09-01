@@ -25,7 +25,7 @@ public class DraftOrderFooter implements CcdPageConfiguration {
     private final OrderService orderService;
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
         pageBuilder.page("draftOrderDocumentFooter", this::midEvent)
             .pageLabel("Document footer")
             .pageShowConditions(PageShowConditionsUtil.createAndSendOrderConditions())
@@ -41,13 +41,13 @@ public class DraftOrderFooter implements CcdPageConfiguration {
     }
 
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                  CaseDetails<CaseData, State> detailsBefore) {
+    public <T extends CaseData> AboutToStartOrSubmitResponse<T, State> midEvent(CaseDetails<T, State> details,
+                                                                  CaseDetails<T, State> detailsBefore) {
         Calendar cal = Calendar.getInstance();
         String date = simpleDateFormat.format(cal.getTime());
-        final CaseData caseData = orderService.generateOrderFile(details.getData(), details.getId(), date);
+        final T caseData = orderService.generateOrderFile(details.getData(), details.getId(), date);
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<T, State>builder()
                 .data(caseData)
                 .build();
     }

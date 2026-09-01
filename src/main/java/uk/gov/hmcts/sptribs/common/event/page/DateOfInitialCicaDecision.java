@@ -7,7 +7,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 public class DateOfInitialCicaDecision implements CcdPageConfiguration {
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
         pageBuilder
             .page("initialDecisionDateObjects")
             .pageLabel("Date of CICA initial review decision letter")

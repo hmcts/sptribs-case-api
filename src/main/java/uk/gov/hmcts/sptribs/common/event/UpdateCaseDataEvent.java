@@ -10,6 +10,7 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
@@ -26,7 +27,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class UpdateCaseDataEvent implements CCDConfig<CaseData, State, UserRole> {
+public class UpdateCaseDataEvent implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     private static final String DELETE_FIELD_NOT_FOUND = "The field '%s' was not found in case data. "
         + "Please check the field name and try again.";
@@ -34,8 +35,8 @@ public class UpdateCaseDataEvent implements CCDConfig<CaseData, State, UserRole>
     private final CaseDataFieldService caseDataFieldService;
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
+    public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+        Event.EventBuilder<CriminalInjuriesCompensationData, UserRole, State> eventBuilder =
             configBuilder
                 .event(CASEWORKER_UPDATE_CASE_DATA)
                 .forAllStates()
@@ -46,11 +47,11 @@ public class UpdateCaseDataEvent implements CCDConfig<CaseData, State, UserRole>
                 .retries(120, 120)
                 .grant(CREATE_READ_UPDATE_DELETE, SUPER_USER, SYSTEM_UPDATE);
 
-        final PageBuilder pageBuilder = new PageBuilder(eventBuilder);
+        final PageBuilder<CriminalInjuriesCompensationData> pageBuilder = new PageBuilder<>(eventBuilder);
         addDeleteFieldPage(pageBuilder);
     }
 
-    private void addDeleteFieldPage(PageBuilder pageBuilder) {
+    private void addDeleteFieldPage(PageBuilder<CriminalInjuriesCompensationData> pageBuilder) {
         pageBuilder.page("updateCaseDataDeleteField", this::midEvent)
             .pageLabel("Delete Field from Case Data")
             .label("LabelUpdateCaseDataDeleteField",
@@ -61,9 +62,9 @@ public class UpdateCaseDataEvent implements CCDConfig<CaseData, State, UserRole>
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                  CaseDetails<CaseData, State> detailsBefore) {
-        final CaseData caseData = details.getData();
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> midEvent(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                                  CaseDetails<CriminalInjuriesCompensationData, State> detailsBefore) {
+        final CriminalInjuriesCompensationData caseData = details.getData();
         final List<String> errors = new ArrayList<>();
 
         if (YesNo.YES.equals(caseData.getDeleteField())) {
@@ -76,15 +77,15 @@ public class UpdateCaseDataEvent implements CCDConfig<CaseData, State, UserRole>
             }
         }
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .errors(errors)
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
-                                                                        final CaseDetails<CaseData, State> beforeDetails) {
-        final CaseData caseData = details.getData();
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(final CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                                        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
+        final CriminalInjuriesCompensationData caseData = details.getData();
         final List<String> errors = new ArrayList<>();
 
         if (YesNo.YES.equals(caseData.getDeleteField())) {
@@ -111,7 +112,7 @@ public class UpdateCaseDataEvent implements CCDConfig<CaseData, State, UserRole>
         caseData.setDeleteField(null);
         caseData.setDeleteFieldName(null);
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .state(details.getState())
             .errors(errors)

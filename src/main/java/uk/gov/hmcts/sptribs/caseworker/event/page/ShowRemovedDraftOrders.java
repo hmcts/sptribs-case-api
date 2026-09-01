@@ -9,7 +9,7 @@ public class ShowRemovedDraftOrders implements CcdPageConfiguration {
 
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
         pageBuilder
             .page("showRemovedDraftOrders")
             .pageLabel("Removed draft orders")
