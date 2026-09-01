@@ -27,7 +27,7 @@ spring:
     allow-bean-definition-overriding: true
   servlet:
     multipart:
-      max-file-size: 512MB
+      max-file-size: 1024MB
       max-request-size: 10250MB
   datasource:
     url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:6432}/${POSTGRES_NAME:sptribs}${POSTGRES_CONNECTION_OPTIONS:}
