@@ -223,6 +223,13 @@ class CaseworkerCancelHearingTest {
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.AwaitingOutcome);
 
+        when(cancelHearingNotification.buildCorrespondenceParties(any()))
+            .thenReturn(Set.of(
+                NotificationParties.SUBJECT,
+                NotificationParties.REPRESENTATIVE,
+                NotificationParties.RESPONDENT
+            ));
+
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerCancelHearing.aboutToSubmit(updatedCaseDetails, beforeDetails);

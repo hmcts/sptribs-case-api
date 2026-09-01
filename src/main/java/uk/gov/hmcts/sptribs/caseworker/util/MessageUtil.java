@@ -110,6 +110,10 @@ public final class MessageUtil {
     public static String generateSimpleErrorMessage(final List<String> errors) {
         final StringBuilder message = new StringBuilder(100);
 
+        if (errors.isEmpty()) {
+            message.append("No notification recipients found");
+            return message.toString();
+        }
         message.append("A notification could not be sent to: ");
         errors.stream()
             .sorted()

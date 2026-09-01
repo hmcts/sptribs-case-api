@@ -191,7 +191,7 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
 
         notificationDispatcher.sendToCorrespondenceParties(notificationContext);
 
-        if (isEmpty(notificationContext.getErrors())) {
+        if (isEmpty(notificationContext.getErrors()) && !isEmpty(notificationContext.getCorrespondenceParties())) {
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Listing record updated %n## If any changes are made to this hearing,"
                         + " %n## remember to make those changes in this listing record. %n## %s",

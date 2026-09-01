@@ -102,6 +102,6 @@ public class MessageUtilTest {
         String result = generateSimpleErrorMessage(errors);
 
         assertThat(result)
-            .isEqualTo("A notification could not be sent to");
+            .isEqualTo("No notification recipients found");
     }
 }

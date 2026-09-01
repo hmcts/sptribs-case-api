@@ -140,6 +140,10 @@ public class ListingCreatedNotification implements PartiesNotification {
         Set<NotificationParties> correspondenceParties = new HashSet<>();
         CicCase cicCase = request.getCaseData().getCicCase();
 
+        if (cicCase.getHearingNotificationParties() == null) {
+            return correspondenceParties;
+        }
+
         if (cicCase.getHearingNotificationParties().contains(SUBJECT)) {
             correspondenceParties.add(SUBJECT);
         }

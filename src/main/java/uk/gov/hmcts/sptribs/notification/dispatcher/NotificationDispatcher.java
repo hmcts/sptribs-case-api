@@ -11,6 +11,8 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -18,6 +20,9 @@ public class NotificationDispatcher {
     private final ContactPartiesService contactPartiesService;
 
     public void sendToCorrespondenceParties(NotificationContext notificationContext) {
+        if (isEmpty(notificationContext.getCorrespondenceParties())) {
+            return;
+        }
 
         notificationContext.getCorrespondenceParties().forEach(party -> {
             try {

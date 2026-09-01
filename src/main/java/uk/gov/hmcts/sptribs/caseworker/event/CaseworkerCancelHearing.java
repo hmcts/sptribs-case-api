@@ -138,7 +138,7 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
 
         notificationDispatcher.sendToCorrespondenceParties(notificationContext);
 
-        if (isEmpty(notificationContext.getErrors())) {
+        if (isEmpty(notificationContext.getErrors()) && !isEmpty(notificationContext.getCorrespondenceParties())) {
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Hearing cancelled %n## %s",
                     generateSimpleMessageFromCorrespondenceParties(notificationContext.getCorrespondenceParties())))
