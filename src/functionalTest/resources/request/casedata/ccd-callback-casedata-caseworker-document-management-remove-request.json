@@ -13,9 +13,9 @@
         "documentCategory": "ApplicationForm",
         "documentEmailContent": "EDITED TEXT",
         "documentLink": {
-          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/467d1fd1-75bd-4760-b993-51be259daebe",
+          "document_url": "http://dm-store.service.core-compute.internal/documents/467d1fd1-75bd-4760-b993-51be259daebe",
           "document_filename": "mockFile.pdf",
-          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/467d1fd1-75bd-4760-b993-51be259daebe/binary",
+          "document_binary_url": "http://dm-store.service.core-compute.internal/documents/467d1fd1-75bd-4760-b993-51be259daebe/binary",
           "category_id": "A"
         }
       },

@@ -1,0 +1,10 @@
+{
+  "caseIssueFinalDecisionDocument": {
+    "documentEmailContent": "Lorem ipsum case issue decision",
+    "documentLink": {
+      "document_url": "http://dm-store.service.core-compute.internal/documents/d06c860a-030a-4d23-933b-0d16042e6c45",
+      "document_filename": "pdf.pdf",
+      "document_binary_url": "http://dm-store.service.core-compute.internal/documents/d06c860a-030a-4d23-933b-0d16042e6c45/binary"
+    }
+  }
+}

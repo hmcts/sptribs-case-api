@@ -8,7 +8,7 @@
     "dssCaseDataSubjectFullName": "Test Name",
     "cicCaseDateOfBirth": "1990-01-01",
     "dssCaseDataIsRepresentativePresent": "No",
-    "hyphenatedCaseRef": "${json-unit.any-string}",
+    "hyphenatedCaseRef": "${json-unit.regex}^\\d{4}-\\d{4}-\\d{4}-\\d{4}",
     "dssHeaderDetails": "Subject of this case",
     "dssCaseDataSubjectEmailAddress": "test@email.com",
     "cicCaseRespondentName": "Appeals team",

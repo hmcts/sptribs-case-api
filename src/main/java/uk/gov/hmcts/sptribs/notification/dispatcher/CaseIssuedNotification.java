@@ -6,6 +6,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
+import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
@@ -105,6 +106,9 @@ public class CaseIssuedNotification implements PartiesNotification {
         templateVarsRespondent.put(CommonConstants.CIC_CASE_RESPONDENT_NAME, caseData.getCicCase().getRespondentName());
 
         LocalDate dueDate = cicCase.getRespondentBundleDueDate();
+        if (cicCase.getIsCaseInTime() == null) {
+            CicCaseFieldsUtil.calculateAndSetIsCaseInTime(caseData);
+        }
         templateVarsRespondent.put(CommonConstants.CIC_BUNDLE_DUE_DATE_TEXT,
             cicCase.getIsCaseInTime().toBoolean() ? buildTimeString(true, dueDate) : buildTimeString(false, dueDate));
 
@@ -143,7 +147,7 @@ public class CaseIssuedNotification implements PartiesNotification {
             notificationHelper.buildEmailNotificationRequest(toEmail,
                 templateVars,
                 emailTemplateName),
-            caseReferenceNumber);
+            caseReferenceNumber, null);
     }
 
     private NotificationResponse sendEmailNotificationWithAttachment(String toEmail,
@@ -158,7 +162,7 @@ public class CaseIssuedNotification implements PartiesNotification {
                 templateVars,
                 TemplateName.CASE_ISSUED_RESPONDENT_EMAIL),
             selectedDocuments,
-            caseReferenceNumber);
+            caseReferenceNumber, null);
     }
 
     private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter, String caseReferenceNumber) {
