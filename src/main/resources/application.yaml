@@ -47,6 +47,8 @@ spring:
         client-id: 34df67df-77f4-4c8d-9e89-d59a86ef9ffe
   autoconfigure:
     exclude: com.azure.spring.cloud.autoconfigure.implementation.context.AzureTokenCredentialAutoConfiguration
+  flyway:
+    out-of-order: true
 logging:
   level:
     root: info
