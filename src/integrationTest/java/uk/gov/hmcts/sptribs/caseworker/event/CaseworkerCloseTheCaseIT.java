@@ -41,7 +41,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -312,7 +311,7 @@ public class CaseworkerCloseTheCaseIT {
             .contains(
                 """
                     # Case closed\s
-                    ## A notification has been sent to: Subject, Respondent, Representative, Applicant\s
+                    ## A notification has been sent to: Applicant, Representative, Respondent, Subject\s
                     ## Use 'Reinstate case' if this case needs to be reopened in the future."""
             );
 
@@ -325,7 +324,6 @@ public class CaseworkerCloseTheCaseIT {
         final CaseData caseData = CaseData.builder()
             .cicCase(CicCase.builder()
                 .notifyPartySubject(Set.of(SUBJECT))
-                .notifyPartyRespondent(Set.of(RESPONDENT))
                 .notifyPartyRepresentative(Set.of(REPRESENTATIVE))
                 .notifyPartyApplicant(Set.of(APPLICANT_CIC))
                 .build()
@@ -350,9 +348,9 @@ public class CaseworkerCloseTheCaseIT {
         assertThatJson(response)
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Case close notification failed \n## Please resend the notification");
-
-        verifyNoInteractions(notificationServiceCIC);
+            .contains("# Case close notification failed")
+            .contains("## A notification could not be sent to: Applicant, Representative, Subject")
+            .contains("## Please resend the notification.");
     }
 
     private List<UserProfileRefreshResponse> getUserProfiles() {

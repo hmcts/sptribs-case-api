@@ -21,10 +21,11 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
-import uk.gov.hmcts.sptribs.notification.dispatcher.ListingCreatedNotification;
+import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -33,11 +34,10 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -83,7 +83,7 @@ public class CaseworkerRecordListingIT {
     private HearingService hearingService;
 
     @MockitoBean
-    private ListingCreatedNotification listingCreatedNotification;
+    private NotificationServiceCIC notificationServiceCIC;
 
     private static final String CASEWORKER_RECORD_LISTING_ABOUT_TO_START_RESPONSE =
         "classpath:responses/caseworker-record-listing-about-to-start-response.json";
@@ -211,6 +211,52 @@ public class CaseworkerRecordListingIT {
 
     @Test
     void shouldSuccessfullyDispatchNotificationsOnSubmitted() throws Exception {
+        final CaseData caseData = CaseData.builder()
+            .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
+            .listing(Listing.builder()
+                .date(LocalDate.now())
+                .build())
+            .cicCase(CicCase.builder()
+                .contactPreferenceType(EMAIL)
+                .representativeContactDetailsPreference(EMAIL)
+                .applicantContactDetailsPreference(EMAIL)
+                .fullName("Test Name")
+                .email("test@test.com")
+                .representativeFullName("Rep Name")
+                .representativeEmailAddress("representative@test.com")
+                .respondentName("Respondent Name")
+                .respondentEmail("respondent@test.com")
+                .applicantFullName("Applicant Name")
+                .applicantEmailAddress("applicant@test.com")
+                .hearingNotificationParties(Set.of(SUBJECT, REPRESENTATIVE, APPLICANT, RESPONDENT))
+                .build())
+            .build();
+
+        String response = mockMvc.perform(post(SUBMITTED_URL)
+            .contentType(APPLICATION_JSON)
+            .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+            .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+            .content(objectMapper.writeValueAsString(
+                callbackRequest(
+                    caseData,
+                    CASEWORKER_RECORD_LISTING)))
+            .accept(APPLICATION_JSON))
+            .andExpect(
+                status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        assertThatJson(response)
+            .inPath(CONFIRMATION_HEADER)
+            .isString()
+            .contains("# Listing record created \n## A notification has been sent to: Applicant, Representative, Respondent, Subject");
+
+        verify(notificationServiceCIC, times(4)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
+    }
+
+    @Test
+    void shouldReturnErrorMessageIfNotificationsFailOnSubmitted() throws Exception {
         final CaseData caseData = caseData();
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         caseData.setCicCase(
@@ -249,38 +295,9 @@ public class CaseworkerRecordListingIT {
         assertThatJson(response)
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Listing record created \n## A notification has been sent to: Subject, Respondent, Representative, Applicant");
-
-        verify(listingCreatedNotification, times(1)).sendToSubject((CaseData) any(), anyString());
-        verify(listingCreatedNotification, times(1)).sendToRespondent(any(), anyString());
-        verify(listingCreatedNotification, times(1)).sendToRepresentative((CaseData) any(), anyString());
-        verify(listingCreatedNotification, times(1)).sendToApplicant(any(), anyString());
-        verifyNoMoreInteractions(listingCreatedNotification);
-    }
-
-    @Test
-    void shouldReturnErrorMessageIfNotificationsFailOnSubmitted() throws Exception {
-        String response = mockMvc.perform(post(SUBMITTED_URL)
-            .contentType(APPLICATION_JSON)
-            .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
-            .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
-            .content(objectMapper.writeValueAsString(
-                callbackRequest(
-                    caseData(),
-                    CASEWORKER_RECORD_LISTING)))
-            .accept(APPLICATION_JSON))
-            .andExpect(
-                status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-        assertThatJson(response)
-            .inPath(CONFIRMATION_HEADER)
-            .isString()
-            .contains("# Create listing notification failed \n## Please resend the notification");
-
-        verifyNoInteractions(listingCreatedNotification);
+            .contains("# Create listing notification failed")
+            .contains("## A notification could not be sent to: Applicant, Representative, Respondent, Subject")
+            .contains("## Please resend the notification.");
     }
 
     private DynamicList getRegionDynamicList() {

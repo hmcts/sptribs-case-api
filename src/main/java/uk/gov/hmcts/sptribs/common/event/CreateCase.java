@@ -41,15 +41,21 @@ import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.notification.NotificationConstantProfiles;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ApplicationReceivedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import static java.lang.String.format;
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_CASE;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Draft;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
@@ -85,6 +91,8 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
     private final CcdSupplementaryDataService ccdSupplementaryDataService;
 
     private final ApplicationReceivedNotification applicationReceivedNotification;
+
+    private final NotificationDispatcher notificationDispatcher;
 
     private final DocumentsService documentsService;
 
@@ -167,18 +175,29 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
             }
         }
 
-        try {
-            sendApplicationReceivedNotification(caseReference, caseData);
-        } catch (Exception notificationException) {
-            log.error("Create case notification failed with exception : {}", notificationException.getMessage());
-            return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Create case notification failed %n## Please resend the notification"))
-                .build();
-        }
-
-        return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Case Created %n## Case reference number: %n## %s", caseReference))
+        NotificationContextRequest request = NotificationContextRequest.builder()
+            .caseData(caseData)
+            .caseReference(caseReference)
+            .notification(applicationReceivedNotification)
             .build();
+
+        NotificationContext notificationContext = NotificationConstantProfiles.CREATE_CASE
+            .buildContext(request);
+
+        notificationDispatcher.sendToCorrespondenceParties(notificationContext);
+
+        if (isEmpty(notificationContext.getErrors())) {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Case Created %n## Case reference number: %n## %s", caseReference))
+                .build();
+        } else {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(
+                    format("# Create case notification failed %n## %s %n## Please resend the notification.",
+                        generateSimpleErrorMessage(notificationContext.getErrors()))
+                )
+            .build();
+        }
     }
 
     private void setDefaultCaseDetails(CaseData data) {

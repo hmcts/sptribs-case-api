@@ -36,6 +36,7 @@ import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.DecisionIssuedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -49,6 +50,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
@@ -79,6 +81,15 @@ class CaseworkerIssueDecisionTest {
     @Mock
     private IssueDecisionFooter issueDecisionFooter;
 
+    @InjectMocks
+    private CaseworkerIssueDecision issueDecision;
+
+    @Mock
+    private NotificationDispatcher notificationDispatcher;
+
+    @Mock
+    private Clock clock;
+
     private final Clock fixedClock = Clock.fixed(
         LocalDate.of(2026, 5, 15)
             .atStartOfDay(ZoneId.systemDefault())
@@ -86,16 +97,8 @@ class CaseworkerIssueDecisionTest {
         ZoneId.systemDefault()
     );
 
-    private CaseworkerIssueDecision issueDecision;
-
     @BeforeEach
     void setUp() {
-        issueDecision = new CaseworkerIssueDecision(
-            issueDecisionFooter,
-            decisionIssuedNotification,
-            fixedClock,
-            documentsService
-        );
     }
 
     @Test
@@ -143,6 +146,8 @@ class CaseworkerIssueDecisionTest {
         details.setData(caseData);
 
         //When
+        when(clock.instant()).thenReturn(fixedClock.instant());
+        when(clock.getZone()).thenReturn(fixedClock.getZone());
         AboutToStartOrSubmitResponse<CaseData, State> response = issueDecision.aboutToSubmit(details, beforeDetails);
 
         //Then
@@ -173,6 +178,8 @@ class CaseworkerIssueDecisionTest {
         details.setData(caseData);
 
         //When
+        when(clock.instant()).thenReturn(fixedClock.instant());
+        when(clock.getZone()).thenReturn(fixedClock.getZone());
         AboutToStartOrSubmitResponse<CaseData, State> response = issueDecision.aboutToSubmit(details, beforeDetails);
 
         //Then
@@ -268,6 +275,9 @@ class CaseworkerIssueDecisionTest {
             .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(DocumentType.TRIBUNAL_DIRECTION),
                 eq(CaseDocumentType.DECISION));
 
+        when(clock.instant()).thenReturn(fixedClock.instant());
+        when(clock.getZone()).thenReturn(fixedClock.getZone());
+
         AboutToStartOrSubmitResponse<CaseData, State> response = issueDecision.aboutToSubmit(details, beforeDetails);
 
         assertThat(response.getErrors()).hasSize(1);
@@ -308,6 +318,8 @@ class CaseworkerIssueDecisionTest {
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         details.setData(caseData);
 
+        when(clock.instant()).thenReturn(fixedClock.instant());
+        when(clock.getZone()).thenReturn(fixedClock.getZone());
         issueDecision.aboutToSubmit(details, beforeDetails);
 
         verifyNoInteractions(documentsService);

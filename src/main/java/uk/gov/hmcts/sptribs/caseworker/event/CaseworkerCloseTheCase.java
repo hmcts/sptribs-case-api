@@ -1,9 +1,8 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
@@ -24,7 +23,6 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseWithdrawalDetails;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -32,12 +30,18 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
+import uk.gov.hmcts.sptribs.notification.NotificationConstantProfiles;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseWithdrawnNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 
 import java.util.List;
 
 import static java.lang.String.format;
+import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CLOSE_THE_CASE;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
@@ -56,6 +60,7 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateUploadedDocumen
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRole> {
 
     private static final CcdPageConfiguration closeCaseWarning = new CloseCaseWarning();
@@ -68,11 +73,11 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
     private static final CcdPageConfiguration closeCaseRule27 = new CloseCaseRule27();
     private static final CcdPageConfiguration closeCaseSelectRecipients = new CloseCaseSelectRecipients();
 
-    @Autowired
-    private JudicialService judicialService;
+    private final JudicialService judicialService;
 
-    @Autowired
-    private CaseWithdrawnNotification caseWithdrawnNotification;
+    private final CaseWithdrawnNotification caseWithdrawnNotification;
+
+    private final NotificationDispatcher notificationDispatcher;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -179,40 +184,38 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
 
-        String message = MessageUtil.generateSimpleMessage(
-            details.getData().getCicCase(),
+
+        final CaseData caseData = details.getData();
+        final String caseReference = caseData.getHyphenatedCaseRef();
+
+        NotificationContextRequest request = NotificationContextRequest.builder()
+            .caseData(caseData)
+            .caseReference(caseReference)
+            .notification(caseWithdrawnNotification)
+            .build();
+
+        NotificationContext notificationContext = NotificationConstantProfiles.CLOSE_CASE
+            .buildContext(request);
+
+        notificationDispatcher.sendToCorrespondenceParties(notificationContext);
+
+        String message = MessageUtil.generateHeaderFooterMessageFromCorrespondenceParties(
+            notificationContext.getCorrespondenceParties(),
             "Case closed",
             "Use 'Reinstate case' if this case needs to be reopened in the future."
         );
 
-        try {
-            sendCaseWithdrawnNotification(details.getData().getHyphenatedCaseRef(), details.getData());
-        } catch (Exception notificationException) {
-            log.error("Case close notification failed with exception : {}", notificationException.getMessage());
-
+        if (isEmpty(notificationContext.getErrors())) {
             return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Case close notification failed %n## Please resend the notification"))
+                .confirmationHeader(message)
                 .build();
-        }
-
-        return SubmittedCallbackResponse.builder()
-            .confirmationHeader(message)
-            .build();
-    }
-
-    private void sendCaseWithdrawnNotification(String caseNumber, CaseData caseData) {
-        CicCase cicCase = caseData.getCicCase();
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
-            caseWithdrawnNotification.sendToSubject(caseData, caseNumber);
-        }
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
-            caseWithdrawnNotification.sendToRespondent(caseData, caseNumber);
-        }
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
-            caseWithdrawnNotification.sendToRepresentative(caseData, caseNumber);
-        }
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyApplicant())) {
-            caseWithdrawnNotification.sendToApplicant(caseData, caseNumber);
+        } else {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(
+                    format("# Case close notification failed %n## %s %n## Please resend the notification.",
+                        generateSimpleErrorMessage(notificationContext.getErrors()))
+                )
+                .build();
         }
     }
 }

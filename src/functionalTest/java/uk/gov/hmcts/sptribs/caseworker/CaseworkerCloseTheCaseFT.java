@@ -159,6 +159,7 @@ public class CaseworkerCloseTheCaseFT extends FunctionalTestSuite {
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
-            .isEqualTo("# Case close notification failed \\n## Please resend the notification");
+            .isEqualTo("# Case close notification failed \\n## A notification could not be sent to: Subject"
+                + " \\n## Please resend the notification.");
     }
 }

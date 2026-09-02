@@ -1,8 +1,8 @@
 package uk.gov.hmcts.sptribs.citizen.event;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -13,6 +13,7 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil;
+import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssMessage;
@@ -25,7 +26,11 @@ import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.notification.NotificationConstantProfiles;
 import uk.gov.hmcts.sptribs.notification.dispatcher.DssUpdateCaseSubmissionNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -35,10 +40,12 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import static java.lang.String.format;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CITIZEN_DSS_UPDATE_CASE_SUBMISSION;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Draft;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Expired;
@@ -59,24 +66,22 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRole> {
 
     private static final EnumSet<State> DSS_UPDATE_CASE_AVAILABLE_STATES = EnumSet.complementOf(EnumSet.of(Draft, DSS_Draft, DSS_Expired));
 
-    @Autowired
-    private DssUpdateCaseSubmissionNotification dssUpdateCaseSubmissionNotification;
+    private final NotificationDispatcher notificationDispatcher;
 
-    @Autowired
-    private HttpServletRequest request;
+    private final DssUpdateCaseSubmissionNotification dssUpdateCaseSubmissionNotification;
 
-    @Autowired
-    private IdamService idamService;
+    private final HttpServletRequest request;
 
-    @Autowired
-    private Clock clock;
+    private final IdamService idamService;
 
-    @Autowired
-    private DocumentsService documentsService;
+    private final Clock clock;
+
+    private final DocumentsService documentsService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -191,18 +196,33 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
-        try {
-            dssUpdateCaseSubmissionNotification.sendToApplicant(details.getData(), String.valueOf(details.getId()));
-            dssUpdateCaseSubmissionNotification.sendToTribunal(details.getData(), String.valueOf(details.getId()));
-        } catch (Exception notificationException) {
-            log.error("CIC Dss Update Case Event Email notification failed with exception : {}", notificationException.getMessage());
+
+        final CaseData caseData = details.getData();
+        String caseNumber = caseData.getHyphenatedCaseRef();
+
+        NotificationContextRequest request = NotificationContextRequest.builder()
+            .caseData(caseData)
+            .caseReference(caseNumber)
+            .notification(dssUpdateCaseSubmissionNotification)
+            .build();
+
+        NotificationContext notificationContext = NotificationConstantProfiles.DSS_UPDATE_CASE.buildContext(
+            request);
+
+        notificationDispatcher.sendToCorrespondenceParties(notificationContext);
+
+        if (isEmpty(notificationContext.getErrors())) {
             return SubmittedCallbackResponse.builder()
-                .confirmationHeader("# CIC Dss Update Case Event Email notification failed %n## Please resend the notification")
+                .confirmationHeader(format("# CIC Dss Update Case Event Email notifications sent %n## %s",
+                    MessageUtil.generateSimpleMessageFromCorrespondenceParties(notificationContext.getCorrespondenceParties())))
+                .build();
+        } else {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(
+                    format("# CIC Dss Update Case Event Email notification failed. %n## %s %n## Please resend the notification. ",
+                        generateSimpleErrorMessage(notificationContext.getErrors()))
+                )
                 .build();
         }
-
-        return SubmittedCallbackResponse.builder()
-            .confirmationHeader("# CIC Dss Update Case Event Email notifications sent")
-            .build();
     }
 }

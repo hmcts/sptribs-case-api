@@ -186,7 +186,7 @@ class CaseworkerIssueCaseIT {
             .inPath(CONFIRMATION_HEADER)
             .isString()
             .contains("# Case issued \n##  This case has now been issued. \n"
-                + "## A notification has been sent to: Subject, Respondent, Representative, Applicant");
+                + "## A notification has been sent to: Applicant, Representative, Respondent, Subject");
 
         verify(notificationServiceCIC, times(4)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
         verifyNoMoreInteractions(notificationServiceCIC);
@@ -221,11 +221,9 @@ class CaseworkerIssueCaseIT {
         assertThatJson(response)
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("""
-                    # Issue case notification failed\s
-                    ## A notification could not be sent to: Subject, Applicant, Representative\s
-                    ## Please resend the notification"""
-            );
+            .contains("# Issue case notification failed")
+            .contains("## A notification could not be sent to: Applicant, Representative, Subject")
+            .contains("## Please resend the notification.");
 
         verifyNoMoreInteractions(notificationServiceCIC);
     }

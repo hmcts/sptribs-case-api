@@ -319,7 +319,11 @@ public class CaseworkerCreateAndSendOrderIT {
         assertThatJson(response)
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Order sent \n## A notification has been sent to: Subject, Respondent, Representative, Applicant");
+            .contains("# Order sent \n## A notification has been sent to:")
+            .contains("Subject")
+            .contains("Representative")
+            .contains("Respondent")
+            .contains("Applicant");
 
         verify(notificationServiceCIC, times(4)).sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
         verifyNoMoreInteractions(notificationServiceCIC);
@@ -368,9 +372,9 @@ public class CaseworkerCreateAndSendOrderIT {
         assertThatJson(response)
                 .inPath(CONFIRMATION_HEADER)
                 .isString()
-                .contains("# Send order notification failed \n## Please resend the order");
+                .contains("Failed to send order notifications for case");
 
-        verify(notificationServiceCIC, times(1)).sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED),
+        verify(notificationServiceCIC, times(4)).sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED),
             eq(null));
     }
 
@@ -425,7 +429,12 @@ public class CaseworkerCreateAndSendOrderIT {
         assertThatJson(response)
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Order sent \n## A notification has been sent to: Subject, Respondent, Representative, Applicant");
+            .contains("# Order sent \n## A notification has been sent to:")
+            .contains("Subject")
+            .contains("Tribunal")
+            .contains("Representative")
+            .contains("Respondent")
+            .contains("Applicant");
 
         ArgumentCaptor<NotificationRequest> captor =
             ArgumentCaptor.forClass(NotificationRequest.class);
@@ -495,7 +504,11 @@ public class CaseworkerCreateAndSendOrderIT {
         assertThatJson(response)
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Order sent \n## A notification has been sent to: Subject, Respondent, Representative, Applicant");
+            .contains("# Order sent \n## A notification has been sent to:")
+            .contains("Subject")
+            .contains("Representative")
+            .contains("Respondent")
+            .contains("Applicant");
 
         ArgumentCaptor<NotificationRequest> captor =
             ArgumentCaptor.forClass(NotificationRequest.class);

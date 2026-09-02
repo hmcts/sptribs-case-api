@@ -15,6 +15,7 @@ import uk.gov.hmcts.sptribs.notification.NotificationConstants;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.time.LocalDate;
@@ -29,6 +30,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.TRIBUNAL;
 
 @ExtendWith(MockitoExtension.class)
 class AnonymityAppliedNotificationTest {
@@ -40,6 +42,9 @@ class AnonymityAppliedNotificationTest {
 
     @Mock
     private NotificationHelper notificationHelper;
+
+    @Mock
+    private NotificationContextRequest notificationContextRequest;
 
     private AnonymityAppliedNotification anonymityAppliedNotification;
 
@@ -128,7 +133,7 @@ class AnonymityAppliedNotificationTest {
     }
 
     @Test
-    void shouldSendNotificationIfNewlyAppliedAndNoBeforeDetails() {
+    void shouldAddTribunalToCorrespondenceIfNewlyAppliedAndNoBeforeDetails() {
         final CaseData caseData = CaseData.builder()
             .caseStatus(State.AwaitingHearing)
             .hyphenatedCaseRef("1234-5678-9012-3456")
@@ -139,23 +144,14 @@ class AnonymityAppliedNotificationTest {
                 .build())
             .build();
 
-        final Map<String, Object> templateVars = new HashMap<>();
-        when(notificationHelper.getTribunalCommonVars(eq("1234-5678-9012-3456"), eq(caseData))).thenReturn(templateVars);
-        when(notificationHelper.buildEmailNotificationRequest(
-            eq(NotificationConstants.ANONYMITY_RECIPIENT_EMAIL),
-            anyMap(),
-            eq(TemplateName.ANONYMITY_APPLIED_EMAIL)
-        )).thenReturn(NotificationRequest.builder().build());
-        when(notificationServiceCIC.sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456"), eq(null)))
-            .thenReturn(NotificationResponse.builder().id("1").build());
+        when(notificationContextRequest.getCaseData()).thenReturn(caseData);
+        when(notificationContextRequest.getPreviousCaseData()).thenReturn(null);
 
-        anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(caseData, null);
-
-        verify(notificationServiceCIC).sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456"), eq(null));
+        assertThat(anonymityAppliedNotification.buildCorrespondenceParties(notificationContextRequest)).contains(TRIBUNAL);
     }
 
     @Test
-    void shouldSendNotificationIfNewlyAppliedAndBeforeDetailsExistsButAnonymityWasNotApplied() {
+    void shouldAddTribunalToCorrespondenceIfNewlyAppliedAndBeforeDetailsExistsButAnonymityWasNotApplied() {
         final CaseData caseData = CaseData.builder()
             .caseStatus(State.AwaitingHearing)
             .hyphenatedCaseRef("1234-5678-9012-3456")
@@ -173,23 +169,14 @@ class AnonymityAppliedNotificationTest {
                 .build())
             .build();
 
-        final Map<String, Object> templateVars = new HashMap<>();
-        when(notificationHelper.getTribunalCommonVars(eq("1234-5678-9012-3456"), eq(caseData))).thenReturn(templateVars);
-        when(notificationHelper.buildEmailNotificationRequest(
-            eq(NotificationConstants.ANONYMITY_RECIPIENT_EMAIL),
-            anyMap(),
-            eq(TemplateName.ANONYMITY_APPLIED_EMAIL)
-        )).thenReturn(NotificationRequest.builder().build());
-        when(notificationServiceCIC.sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456"), eq(null)))
-            .thenReturn(NotificationResponse.builder().id("1").build());
+        when(notificationContextRequest.getCaseData()).thenReturn(caseData);
+        when(notificationContextRequest.getPreviousCaseData()).thenReturn(beforeData);
 
-        anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(caseData, beforeData);
-
-        verify(notificationServiceCIC).sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456"), eq(null));
+        assertThat(anonymityAppliedNotification.buildCorrespondenceParties(notificationContextRequest)).contains(TRIBUNAL);
     }
 
     @Test
-    void shouldNotSendNotificationIfNotNewlyApplied() {
+    void shouldNotAddTribunalToCorrespondenceIfNotNewlyApplied() {
         final CaseData caseData = CaseData.builder()
             .caseStatus(State.AwaitingHearing)
             .cicCase(CicCase.builder()
@@ -208,13 +195,14 @@ class AnonymityAppliedNotificationTest {
                 .build())
             .build();
 
-        anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(caseData, beforeCaseData);
+        when(notificationContextRequest.getCaseData()).thenReturn(caseData);
+        when(notificationContextRequest.getPreviousCaseData()).thenReturn(beforeCaseData);
 
-        verify(notificationServiceCIC, never()).sendEmail(any(), any(), any());
+        assertThat(anonymityAppliedNotification.buildCorrespondenceParties(notificationContextRequest)).doesNotContain(TRIBUNAL);
     }
 
     @Test
-    void shouldNotSendNotificationIfAnonymiseYesOrNoIsNotYes() {
+    void shouldNotAddTribunalToCorrespondenceIfAnonymiseYesOrNoIsNotYes() {
         final CaseData caseData = CaseData.builder()
             .caseStatus(State.AwaitingHearing)
             .cicCase(CicCase.builder()
@@ -224,13 +212,14 @@ class AnonymityAppliedNotificationTest {
                 .build())
             .build();
 
-        anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(caseData, null);
+        when(notificationContextRequest.getCaseData()).thenReturn(caseData);
+        when(notificationContextRequest.getPreviousCaseData()).thenReturn(null);
 
-        verify(notificationServiceCIC, never()).sendEmail(any(), any(), any());
+        assertThat(anonymityAppliedNotification.buildCorrespondenceParties(notificationContextRequest)).doesNotContain(TRIBUNAL);
     }
 
     @Test
-    void shouldNotSendNotificationIfAnonymisedAppellantNameIsNull() {
+    void shouldNotAddTribunalToCorrespondenceIfAnonymisedAppellantNameIsNull() {
         final CaseData caseData = CaseData.builder()
             .caseStatus(State.AwaitingHearing)
             .cicCase(CicCase.builder()
@@ -240,16 +229,18 @@ class AnonymityAppliedNotificationTest {
                 .build())
             .build();
 
-        anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(caseData, null);
+        when(notificationContextRequest.getCaseData()).thenReturn(caseData);
+        when(notificationContextRequest.getPreviousCaseData()).thenReturn(null);
 
-        verify(notificationServiceCIC, never()).sendEmail(any(), any(), any());
+        assertThat(anonymityAppliedNotification.buildCorrespondenceParties(notificationContextRequest)).doesNotContain(TRIBUNAL);
     }
 
     @Test
-    void shouldNotSendNotificationIfCaseDataIsNull() {
-        anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(null, null);
+    void shouldNotAddTribunalToCorrespondenceNotificationIfCaseDataIsNull() {
+        when(notificationContextRequest.getCaseData()).thenReturn(null);
+        when(notificationContextRequest.getPreviousCaseData()).thenReturn(null);
 
-        verify(notificationServiceCIC, never()).sendEmail(any(), any(), any());
+        assertThat(anonymityAppliedNotification.buildCorrespondenceParties(notificationContextRequest)).doesNotContain(TRIBUNAL);
     }
 
     @Test
@@ -258,9 +249,10 @@ class AnonymityAppliedNotificationTest {
             .cicCase(null)
             .build();
 
-        anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(caseData, null);
+        when(notificationContextRequest.getCaseData()).thenReturn(null);
+        when(notificationContextRequest.getPreviousCaseData()).thenReturn(null);
 
-        verify(notificationServiceCIC, never()).sendEmail(any(), any(), any());
+        assertThat(anonymityAppliedNotification.buildCorrespondenceParties(notificationContextRequest)).doesNotContain(TRIBUNAL);
     }
 
     @Test
@@ -280,7 +272,7 @@ class AnonymityAppliedNotificationTest {
 
         // Should propagate the exception when sendToTribunal throws
         org.junit.jupiter.api.Assertions.assertThrows(RuntimeException.class, () ->
-            anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(caseData, null)
+            anonymityAppliedNotification.sendToTribunal(caseData, caseData.getCaseNumber())
         );
 
         verify(notificationServiceCIC, never()).sendEmail(any(), any(), any());
