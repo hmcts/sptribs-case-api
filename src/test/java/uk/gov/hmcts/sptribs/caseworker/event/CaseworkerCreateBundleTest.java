@@ -171,6 +171,8 @@ class CaseworkerCreateBundleTest {
             .isEqualTo(updatedCaseDetails.getData());
         assertThat(responseData.getCaseBundles()).isNotNull();
 
+        //case documents should remain null so that they are not duplicated
+        //i.e. not in their respective child objects as well (CicCase.applicantDocumentsUploaded)
         assertThat(responseData.getCaseDocuments()).isNull();
         assertThat(responseData.getMultiBundleConfiguration()).isNull();
         assertThat(responseData.getAudioVideoEvidenceBundleDocument()).isNull();

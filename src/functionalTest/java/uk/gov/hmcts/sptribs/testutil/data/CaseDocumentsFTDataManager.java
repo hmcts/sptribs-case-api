@@ -9,7 +9,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,22 +70,7 @@ public class CaseDocumentsFTDataManager extends FunctionalTestDataManager {
 
 
     public void saveTestDocumentEntity(long reference, String docUrlUuid) throws SQLException {
-        saveTestDocumentEntity(
-            reference,
-            "http://dm-store.service.core-compute.internal/documents/" + docUrlUuid,
-            "http://dm-store.service.core-compute.internal/documents/" + docUrlUuid + "/binary",
-            "mockFile.pdf",
-            "HOSPITAL_RECORDS",
-            OffsetDateTime.now()
-        );
-    }
-
-    public void saveTestDocumentEntity(long reference,
-                                       String documentUrl,
-                                       String documentBinaryUrl,
-                                       String documentFilename,
-                                       String documentTypeName,
-                                       OffsetDateTime savedAt) throws SQLException {
+        //always sets case-document type to doc management (2)
         String sql = "INSERT INTO " + TABLE_CASE_DOCUMENTS + " ("
             + KEY_CASE_DOCUMENTS_REFERENCE
             + ", saved_at"
@@ -97,15 +81,16 @@ public class CaseDocumentsFTDataManager extends FunctionalTestDataManager {
             + ", case_document_type_id"
             + ", updated_at"
             + ") VALUES (?, ?, ?, ?, ?, ?, CAST(2 AS bigint), ?)";
-        OffsetDateTime persistedSavedAt = savedAt == null ? OffsetDateTime.now() : savedAt;
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setLong(1, reference);
-            stmt.setTimestamp(2, Timestamp.from(persistedSavedAt.toInstant()));
-            stmt.setString(3, documentUrl);
-            stmt.setString(4, documentBinaryUrl);
-            stmt.setString(5, documentFilename);
-            stmt.setString(6, documentTypeName);
-            stmt.setTimestamp(7, Timestamp.from(persistedSavedAt.toInstant()));
+            stmt.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
+            stmt.setString(3,
+                "http://dm-store.service.core-compute.internal/documents/" + docUrlUuid);
+            stmt.setString(4,
+                "http://dm-store.service.core-compute.internal/documents/" + docUrlUuid + "/binary");
+            stmt.setString(5, "mockFile.pdf");
+            stmt.setString(6, "HOSPITAL_RECORDS");
+            stmt.setTimestamp(7, Timestamp.valueOf(LocalDateTime.now()));
             stmt.executeUpdate();
         }
     }

@@ -167,10 +167,6 @@ public class BundlingServiceTest {
         assertThat(result.getFirst().getDocuments()).isEqualTo(expectedBundle.getDocuments());
         assertThat(result.getFirst().getFolders()).isEqualTo(expectedBundle.getFolders());
         assertThat(result.getFirst().getStitchedDocument()).isEqualTo(expectedBundle.getStitchedDocument());
-        if (result.getFirst().getDocuments() != null) {
-            assertThat(result.getFirst().getDocuments())
-                .allSatisfy(document -> assertThat(document.getValue().getSourceDocument()).isNull());
-        }
     }
 
     @Test
@@ -522,7 +518,6 @@ public class BundlingServiceTest {
         document.put(NAME, name);
         document.put(SORT_INDEX, 1);
         document.put(DESCRIPTION, "some description");
-        document.put("sourceDocument", createStitchedDocMap());
         return document;
     }
 
