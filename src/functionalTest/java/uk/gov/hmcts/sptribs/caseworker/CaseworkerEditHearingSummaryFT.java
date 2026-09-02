@@ -13,6 +13,7 @@ import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_HEARING_SUMMARY;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.testutil.CaseDataUtil.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_START_URL;
@@ -142,7 +143,7 @@ public class CaseworkerEditHearingSummaryFT extends FunctionalTestSuite {
     public void shouldUpdateCategoryToCaseworkerDocumentInAboutToSubmitCallback() throws Exception {
         final Map<String, Object> caseData = caseData(ABOUT_TO_SUBMIT_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_HEARING_SUMMARY, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_HEARING_SUMMARY, ABOUT_TO_SUBMIT_URL, AwaitingOutcome);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())

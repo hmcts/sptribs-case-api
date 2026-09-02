@@ -102,6 +102,7 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
+            .state(details.getState())
             .build();
     }
 
@@ -123,6 +124,7 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
+            .state(details.getState())
             .build();
 
     }
