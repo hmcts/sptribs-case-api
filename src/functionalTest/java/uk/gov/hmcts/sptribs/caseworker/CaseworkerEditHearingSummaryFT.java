@@ -13,6 +13,8 @@ import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_HEARING_SUMMARY;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.testutil.CaseDataUtil.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_START_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
@@ -141,7 +143,7 @@ public class CaseworkerEditHearingSummaryFT extends FunctionalTestSuite {
     public void shouldUpdateCategoryToCaseworkerDocumentInAboutToSubmitCallback() throws Exception {
         final Map<String, Object> caseData = caseData(ABOUT_TO_SUBMIT_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_HEARING_SUMMARY, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_HEARING_SUMMARY, ABOUT_TO_SUBMIT_URL, AwaitingOutcome);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -162,4 +164,86 @@ public class CaseworkerEditHearingSummaryFT extends FunctionalTestSuite {
 
             );
     }
+
+    @Test
+    public void shouldGetHearingSummaryListInAboutToStartCallbackWhenCaseIsCaseClosed() throws Exception {
+        final Map<String, Object> caseData = caseData(ABOUT_TO_START_REQUEST);
+
+        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_HEARING_SUMMARY, ABOUT_TO_START_URL, CaseClosed);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .when(IGNORING_EXTRA_FIELDS)
+            .isEqualTo(json(expectedResponse(ABOUT_TO_START_RESPONSE)));
+    }
+
+    @Test
+    public void shouldValidateHearingVenueInputInMidEventCallbackWhenCaseIsCaseClosed() throws Exception {
+        final Map<String, Object> caseData = caseData(HEARING_VENUES_MID_EVENT_REQUEST);
+
+        final Response response = triggerCallback(
+            caseData,
+            CASEWORKER_EDIT_HEARING_SUMMARY,
+            HEARING_VENUES_MID_EVENT_URL,
+            CaseClosed
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .when(IGNORING_EXTRA_FIELDS)
+            .isEqualTo(json(expectedResponse(HEARING_VENUES_MID_EVENT_RESPONSE)));
+    }
+
+    @Test
+    public void shouldAllowRemovingAndReplacingHearingRecordingWhenCaseIsCaseClosed() throws Exception {
+        final Map<String, Object> caseData = caseData(HEARING_RECORDING_UPLOAD_MID_EVENT_REQUEST);
+
+        final Response response = triggerCallback(
+            caseData,
+            CASEWORKER_EDIT_HEARING_SUMMARY,
+            HEARING_RECORDING_UPLOAD_DOCUMENTS_MID_EVENT_URL,
+            CaseClosed
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .when(IGNORING_EXTRA_FIELDS)
+            .isEqualTo(json(expectedResponse(HEARING_RECORDING_UPLOAD_MID_EVENT_RESPONSE)));
+    }
+
+    @Test
+    public void shouldNotReturnErrorsIfRecFileListIsEmptyWhenCaseIsCaseClosed() throws Exception {
+        final Map<String, Object> caseData = caseData(CALLBACK_CASE_DATA);
+
+        final Response response = triggerCallback(
+            caseData,
+            CASEWORKER_EDIT_HEARING_SUMMARY,
+            HEARING_RECORDING_UPLOAD_DOCUMENTS_MID_EVENT_URL,
+            CaseClosed
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .inPath("$.errors")
+            .isArray()
+            .isEmpty();
+    }
+
+    @Test
+    public void shouldPopulateHearingRecFileUploadAfterHearingSelectedWhenCaseIsCaseClosed() throws Exception {
+        final Map<String, Object> caseData = caseData(EDIT_HEARING_SUMMARY_SELECT_MID_EVENT_REQUEST);
+
+        final Response response = triggerCallback(
+            caseData,
+            CASEWORKER_EDIT_HEARING_SUMMARY,
+            EDIT_HEARING_SUMMARY_SELECT_MID_EVENT_URL,
+            CaseClosed
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .when(IGNORING_EXTRA_FIELDS)
+            .isEqualTo(json(expectedResponse(EDIT_HEARING_SUMMARY_SELECT_MID_EVENT_RESPONSE)));
+    }
+
 }

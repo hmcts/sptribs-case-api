@@ -29,6 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.ccd.sdk.type.YesOrNo.YES;
 import static uk.gov.hmcts.sptribs.ciccase.model.HearingFormat.FACE_TO_FACE;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.testutil.IdamWireMock.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.testutil.IdamWireMock.stubForIdamDetails;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_START_URL;
@@ -116,7 +117,8 @@ public class CaseworkerEditHearingSummaryIT {
                 .content(objectMapper.writeValueAsString(
                     callbackRequest(
                         caseData,
-                        CASEWORKER_EDIT_HEARING_SUMMARY)))
+                        CASEWORKER_EDIT_HEARING_SUMMARY,
+                        AwaitingOutcome.getName())))
                 .accept(APPLICATION_JSON))
             .andExpect(
                 status().isOk())
@@ -163,7 +165,8 @@ public class CaseworkerEditHearingSummaryIT {
                 .content(objectMapper.writeValueAsString(
                     callbackRequest(
                         caseData,
-                        CASEWORKER_EDIT_HEARING_SUMMARY)))
+                        CASEWORKER_EDIT_HEARING_SUMMARY,
+                        AwaitingOutcome.getName())))
                 .accept(APPLICATION_JSON))
             .andExpect(
                 status().isOk())
