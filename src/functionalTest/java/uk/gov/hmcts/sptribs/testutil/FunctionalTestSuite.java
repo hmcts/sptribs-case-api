@@ -33,6 +33,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdJurisdiction;
 import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchService;
@@ -45,6 +46,7 @@ import wiremock.org.eclipse.jetty.util.ajax.JSON;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -57,6 +59,7 @@ import java.util.regex.Pattern;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CONTACT_PARTIES;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_CASE;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.controllers.model.DssCaseDataRequest.convertDssCaseDataToRequest;
@@ -111,12 +114,7 @@ public abstract class FunctionalTestSuite {
     @Autowired
     protected CaseDocumentsFTDataManager caseDocumentsFTDataManager;
 
-    protected static final String EVENT_PARAM = "event";
-    protected static final String UPDATE = "UPDATE";
-    protected static final String UPDATE_CASE = "UPDATE_CASE";
-    protected static final String SUBMIT = "SUBMIT";
-
-    protected CaseDetails createCaseInCcd() {
+    protected CaseDetails createCaseInCcd(boolean createCaseWithIdamAccessEmail) {
         String caseworkerToken = idamTokenGenerator.generateIdamTokenForCaseworker();
         String s2sTokenForCaseApi = serviceAuthenticationGenerator.generate();
         String caseworkerUserId = idamTokenGenerator.getUserInfoFor(caseworkerToken).getUid();
@@ -129,10 +127,20 @@ public abstract class FunctionalTestSuite {
                 .summary("Create draft case")
                 .description("Create draft case for functional tests")
                 .build())
-            .data(Map.of(
-            ))
+            .data(Map.of())
             .build();
-        return submitNewCase(caseDataContent, caseworkerToken, s2sTokenForCaseApi, caseworkerUserId);
+
+        if (createCaseWithIdamAccessEmail) {
+            caseDataContent.setData(Map.of(
+                "cicCaseEmail", "sptribsauto-citizen@mailinator.com",
+                "cicCaseAddress", Map.of("PostCode", "SW1A 1AA")
+            ));
+        }
+
+        CaseDetails createdCase = submitNewCase(caseDataContent, caseworkerToken, s2sTokenForCaseApi, caseworkerUserId);
+        functionalTestDataManager.addReference(createdCase.getId());
+
+        return createdCase;
     }
 
     private StartEventResponse startEventForCreateCase(String caseworkerToken, String s2sToken, String caseworkerUserId) {
@@ -160,15 +168,6 @@ public abstract class FunctionalTestSuite {
         );
     }
 
-    protected Long createPersistedCaseReference(Map<String, Object> caseData) {
-        CaseDetails createdCase = createCaseInCcd();
-        CaseData formatter = CaseData.builder().build();
-        caseData.put("hyphenatedCaseRef", formatter.formatCaseRef(createdCase.getId()));
-
-        functionalTestDataManager.addReference(createdCase.getId());
-        return createdCase.getId();
-    }
-
     protected Response triggerCallback(Map<String, Object> caseData, String eventId, String url, boolean createTestDocument)
         throws IOException, SQLException {
 
@@ -185,12 +184,20 @@ public abstract class FunctionalTestSuite {
         boolean createCaseForSubmittedOrAboutToSubmitEvent =
             createCase && (TestConstants.SUBMITTED_URL.equals(url) || TestConstants.ABOUT_TO_SUBMIT_URL.equals(url));
 
+        CaseDetails createdCase = null;
         if (createTestDocument || createCaseForSubmittedOrAboutToSubmitEvent) {
-            testCaseRef = createPersistedCaseReference(caseData);
+            if (eventId.contains(CASEWORKER_CONTACT_PARTIES)) {
+                createdCase = createCaseInCcd(true);
+            } else {
+                createdCase = createCaseInCcd(false);
+            }
+            CaseData formatter = CaseData.builder().build();
+            testCaseRef = createdCase.getId();
+            caseData.put("hyphenatedCaseRef", formatter.formatCaseRef(testCaseRef));
         }
 
         if (createTestDocument) {
-            generateAndSetUuidInCaseDataAndDB(caseData, testCaseRef);
+            generateAndSetUuidInCaseDataAndDB(caseData, testCaseRef, "2");
         }
 
         if (createCaseForSubmittedOrAboutToSubmitEvent) {
@@ -333,7 +340,6 @@ public abstract class FunctionalTestSuite {
 
     protected CaseDetails createAndSubmitCitizenCaseAndGetCaseDetails() {
         CaseData caseData = getCaseDataWithDssData();
-        AppsConfig.AppsDetails details = AppsUtil.getExactAppsDetails(appsConfig, caseData.getDssCaseData());
         CaseDetails caseDetails = createCitizenCase();
 
         return updateCitizenCase(EventConstants.CITIZEN_CIC_SUBMIT_CASE, caseDetails.getId(),caseData);
@@ -420,18 +426,21 @@ public abstract class FunctionalTestSuite {
         );
     }
 
-    protected void checkAndUpdateDraftOrderDocument(Map<String, Object> caseData) {
-        UploadResponse uploadResponse = uploadTestDocumentIfMissing("5d76ff31-8547-4702-b2c8-34c43a53d220", DRAFT_ORDER_FILE);
+    protected void checkAndUpdateDraftOrderDocument(Map<String, Object> caseData, long caseReference) throws SQLException, IOException {
+        generateAndSetUuidInCaseDataAndDB(caseData, caseReference, "4");
+    }
 
-        if (uploadResponse != null) {
-            log.info("Document uploaded: {}", uploadResponse.getDocuments().getFirst());
-            updateOrderTemplate(uploadResponse.getDocuments().getFirst(), caseData);
-        }
+    protected Long saveTestBundleDocuments(Map<String, Object> caseData) throws SQLException, IOException {
+        final CaseDetails caseDetails = createCaseInCcd(true);
+        final Long appealId = caseDetails.getId();
+        caseDetails.setData(caseData);
+        generateAndSetUuidInCaseDataAndDB(caseData, appealId, "9");
+        return appealId;
     }
 
     protected UploadResponse uploadTestDocumentIfMissing(String documentId, ClassPathResource resource) {
         if (!checkDocumentExists(documentId)) {
-            return uploadTestDocument(resource);
+            return uploadTestDocument(resource, resource.getFilename().split("\\.")[0] + "_" + UUID.randomUUID() + ".pdf");
         }
         return null;
     }
@@ -453,7 +462,7 @@ public abstract class FunctionalTestSuite {
         }
     }
 
-    private UploadResponse uploadTestDocument(ClassPathResource resource) {
+    private UploadResponse uploadTestDocument(ClassPathResource resource, String filename) {
         log.debug("Uploading FT test document");
         final List<AppsConfig.AppsDetails> appDetails = appsConfig.getApps();
         if (!appDetails.isEmpty() && appDetails.getFirst() != null) {
@@ -461,7 +470,7 @@ public abstract class FunctionalTestSuite {
             final String jurisdiction = appsConfig.getApps().getFirst().getJurisdiction();
             try {
                 final InMemoryMultipartFile inMemoryMultipartFile =
-                    new InMemoryMultipartFile(resource.getFilename(), resource.getContentAsByteArray());
+                    new InMemoryMultipartFile(filename, resource.getContentAsByteArray());
 
                 final DocumentUploadRequest documentUploadRequest =
                     new DocumentUploadRequest(Classification.RESTRICTED.toString(),
@@ -507,22 +516,50 @@ public abstract class FunctionalTestSuite {
         caseData.put("cicCaseDraftOrderCICList", draftOrderList);
     }
 
-    private void generateAndSetUuidInCaseDataAndDB(Map<String, Object> caseData, Long testCaseRef) throws SQLException, IOException {
+    private void generateAndSetUuidInCaseDataAndDB(Map<String, Object> caseData, Long testCaseRef,
+                                                   String caseDocumentTypeId) throws SQLException, IOException {
         String caseDataJsonString = JSON.getDefault().toJSON(caseData);
 
         Pattern placeholderPattern = Pattern.compile("\\$\\{UUID(\\d+)}");
         Matcher matcher = placeholderPattern.matcher(caseDataJsonString);
         Map<String, String> placeholdersAndUuids = new HashMap<>();
+        String assignedPlaceholder = "";
+
+        String documentTypeName = getDocumentTypeFromCaseDocumentTypeId(caseDocumentTypeId);
+        ClassPathResource testFileResource = new ClassPathResource("data/sample_file.pdf");
+        String filename = testFileResource.getFilename().split("\\.")[0] + "_" + UUID.randomUUID() + ".pdf";
+        if (caseDocumentTypeId.equals("4")) {
+            testFileResource = DRAFT_ORDER_FILE;
+            filename = testFileResource.getFilename();
+        }
+        Timestamp savedAt = Timestamp.valueOf(LocalDateTime.now());
 
         while (matcher.find()) {
             String placeholder = matcher.group();
+            if (placeholder.equals(assignedPlaceholder)) {
+                continue;
+            }
+
             String uuid = placeholdersAndUuids.get(placeholder);
 
-            if (uuid == null) {
-                uuid = UUID.randomUUID().toString();
-                placeholdersAndUuids.put(placeholder, uuid);
-                caseDocumentsFTDataManager.saveTestDocumentEntity(testCaseRef, uuid);
+            if (caseDocumentTypeId.equals("9")) {
+                Map<String, Timestamp> filenameAndTimestamp = getTimestampAndFilenameForBundleDocument(placeholder);
+                filename = filenameAndTimestamp.keySet().iterator().next();
+                savedAt = filenameAndTimestamp.get(filename);
             }
+
+            if (uuid == null) {
+                Document testDocument = uploadTestDocument(testFileResource, filename).getDocuments().getFirst();
+                uuid = testDocument.links.self.href.split("/documents/")[1];
+                placeholdersAndUuids.put(placeholder, uuid);
+                if (caseDocumentTypeId.equals("4")) {
+                    updateOrderTemplate(testDocument, caseData);
+                }
+                CaseDocumentsFTDataManager.saveTestDocumentEntity(testCaseRef, testDocument.links.self.href,
+                    testDocument.originalDocumentName, documentTypeName, caseDocumentTypeId, savedAt);
+                log.info("Document uploaded: {}", testDocument);
+            }
+            assignedPlaceholder = placeholder;
         }
 
         for (Map.Entry<String, String> placeholderAndUuid : placeholdersAndUuids.entrySet()) {
@@ -536,6 +573,32 @@ public abstract class FunctionalTestSuite {
     @BeforeAll
     void setUpDataManager() {
         functionalTestDataManager.connectToDB();
+    }
+
+    private String getDocumentTypeFromCaseDocumentTypeId(String caseDocumentTypeId) {
+        return switch (caseDocumentTypeId) {
+            case "1", "2" -> DocumentType.APPLICATION_FORM.name();
+            case "3", "4" -> DocumentType.TRIBUNAL_DIRECTION.name();
+            case "9" -> null;
+            default -> "InvalidType";
+        };
+    }
+
+    private Map<String, Timestamp> getTimestampAndFilenameForBundleDocument(String placeholder) {
+        switch (placeholder) {
+            case "${UUID1}" -> {
+                return Map.of("1-cicBundle.pdf", Timestamp.valueOf("2024-06-11 12:00:00.000"));
+            }
+            case "${UUID2}" -> {
+                return Map.of("2-cicBundle.pdf", Timestamp.valueOf("2024-06-10 12:00:00.000"));
+            }
+            case "${UUID3}" -> {
+                return Map.of("3-cicBundle.pdf", Timestamp.valueOf("2024-06-09 12:00:00.000"));
+            }
+            default -> {
+                return Map.of();
+            }
+        }
     }
 
 
