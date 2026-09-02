@@ -44,6 +44,7 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -233,11 +234,14 @@ public class CaseworkerContactPartiesIT extends IntegrationTestBase {
         NotificationResponse notificationResponse3 = NotificationResponse.builder().id(NOTIFICATION_RESPONSE_ID_3).build();
         NotificationResponse notificationResponse4 = NotificationResponse.builder().id(NOTIFICATION_RESPONSE_ID_4).build();
 
-        when(notificationServiceCIC.sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.SUBJECT))).thenReturn(notificationResponse1);
-        when(notificationServiceCIC.sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.RESPONDENT))).thenReturn(notificationResponse2);
-        when(notificationServiceCIC.sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.REPRESENTATIVE))).thenReturn(
-            notificationResponse3);
-        when(notificationServiceCIC.sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.APPLICANT))).thenReturn(notificationResponse4);
+        when(notificationServiceCIC.sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.SUBJECT)))
+            .thenReturn(notificationResponse1);
+        when(notificationServiceCIC.sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.RESPONDENT)))
+            .thenReturn(notificationResponse2);
+        when(notificationServiceCIC.sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.REPRESENTATIVE)))
+            .thenReturn(notificationResponse3);
+        when(notificationServiceCIC.sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.APPLICANT)))
+            .thenReturn(notificationResponse4);
 
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
@@ -260,10 +264,14 @@ public class CaseworkerContactPartiesIT extends IntegrationTestBase {
             .isString()
             .contains("# Message sent \n## A notification has been sent to: Applicant, Representative, Respondent, Subject");
 
-        verify(notificationServiceCIC, times(1)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.SUBJECT));
-        verify(notificationServiceCIC, times(1)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.RESPONDENT));
-        verify(notificationServiceCIC, times(1)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.REPRESENTATIVE));
-        verify(notificationServiceCIC, times(1)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.APPLICANT));
+        verify(notificationServiceCIC, times(1))
+            .sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.SUBJECT));
+        verify(notificationServiceCIC, times(1))
+            .sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.RESPONDENT));
+        verify(notificationServiceCIC, times(1))
+            .sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.REPRESENTATIVE));
+        verify(notificationServiceCIC, times(1))
+            .sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.APPLICANT));
         verifyNoMoreInteractions(notificationServiceCIC);
         verify(contactPartiesService).linkCorrespondenceIdsToDocuments(any(), any(),
             argThat(list -> {

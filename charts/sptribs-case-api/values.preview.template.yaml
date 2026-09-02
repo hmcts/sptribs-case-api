@@ -21,6 +21,7 @@ java:
     POSTGRES_NAME: "{{ .Values.global.databaseNamePrefix }}sptribs-case-api"
     POSTGRES_USERNAME: ${SPTRIBS_POSTGRES_USERNAME_PREVIEW}
     POSTGRES_CONNECTION_OPTIONS: ""
+    CITIZEN_DASHBOARD_ENABLED: false
   keyVaults:
     sptribs:
       secrets:
