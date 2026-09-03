@@ -61,7 +61,20 @@
         "id": "1",
         "value": {
           "date": "2025-02-05",
-          "recFile": [],
+          "recFile": [
+            {
+              "value": {
+                "documentLink": {
+                  "category_id": "L",
+                  "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/2e8f8b50-4e63-4e86-9f87-bb4d3f241c52",
+                  "document_filename": "hearing-record.mp3",
+                  "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/2e8f8b50-4e63-4e86-9f87-bb4d3f241c52/binary"
+                },
+                "documentCategory": "Linked docs",
+                "documentEmailContent": "Hearing recording"
+              }
+            }
+          ],
           "session": "morning",
           "addlInstr": "Updated Lorem Ipsum is simply dummy text of the printing and typesetting industry",
           "memberList": [],

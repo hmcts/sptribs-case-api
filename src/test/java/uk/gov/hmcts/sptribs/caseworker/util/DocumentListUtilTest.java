@@ -20,6 +20,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
@@ -27,6 +28,7 @@ import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -286,6 +288,71 @@ public class DocumentListUtilTest {
         //Then
         assertThat(result).isNotNull();
         assertThat(result.getListItems().size()).isEqualTo(0);
+    }
+
+    @Test
+    void shouldClassifyAudioAndVideoHearingRecordsAndUseHearingDate() {
+        LocalDate hearingDate = LocalDate.of(2025, 2, 5);
+        CaseworkerCICDocument audio = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder()
+                .url("audio-url")
+                .binaryUrl("audio-binary")
+                .filename("hearing.MP3")
+                .build())
+            .build();
+        CaseworkerCICDocument video = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder()
+                .url("video-url")
+                .binaryUrl("video-binary")
+                .filename("hearing.mp4")
+                .build())
+            .build();
+        Listing listing = Listing.builder()
+            .date(hearingDate)
+            .summary(HearingSummary.builder()
+                .recFile(List.of(listValue(audio), listValue(video)))
+                .build())
+            .build();
+        CaseData caseData = CaseData.builder()
+            .hearingList(List.of(new ListValue<>("hearing-1", listing)))
+            .build();
+
+        Map<CaseDocumentType, List<CaseworkerCICDocument>> documents =
+            DocumentListUtil.prepareDocTypeAndDocMap(caseData);
+
+        assertThat(documents.get(CaseDocumentType.HEARING_RECORD))
+            .hasSize(2)
+            .allSatisfy(document -> assertThat(document.getDate()).isEqualTo(hearingDate));
+    }
+
+    @Test
+    void shouldIgnoreUnsupportedHearingRecordFormatsDuringMigrationMapping() {
+        CaseworkerCICDocument document = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder()
+                .url("document-url")
+                .binaryUrl("document-binary")
+                .filename("hearing.pdf")
+                .build())
+            .build();
+        Listing listing = Listing.builder()
+            .date(LocalDate.of(2025, 2, 5))
+            .summary(HearingSummary.builder().recFile(List.of(listValue(document))).build())
+            .build();
+        CaseData caseData = CaseData.builder()
+            .hearingList(List.of(new ListValue<>("hearing-1", listing)))
+            .build();
+
+        Map<CaseDocumentType, List<CaseworkerCICDocument>> documents =
+            DocumentListUtil.prepareDocTypeAndDocMap(caseData);
+
+        assertThat(documents).doesNotContainKey(CaseDocumentType.HEARING_RECORD);
+    }
+
+    private static ListValue<CaseworkerCICDocument> listValue(CaseworkerCICDocument document) {
+        return new ListValue<>("document-1", document);
     }
 
     @Test

@@ -9,16 +9,15 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesAllowedFileTypes;
-import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
-import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -61,8 +60,13 @@ public final class DocumentListUtil {
     }
 
     public static Map<CaseDocumentType, List<CaseworkerCICDocument>> prepareDocTypeAndDocMap(CaseData data) {
-        Map<CaseDocumentType, List<CaseworkerCICDocument>> docTypeAndDocMap = new HashMap<>();
+        Map<CaseDocumentType, List<CaseworkerCICDocument>> docTypeAndDocMap = new LinkedHashMap<>();
 
+        // Hearing records take precedence if the same binary is present in another document list.
+        addDocsToMapIfNotNull(docTypeAndDocMap, CaseDocumentType.HEARING_RECORD,
+            getHearingSummaryDocumentsForMigration(data).stream()
+                .filter(DocumentListUtil::isAudioOrVideo)
+                .toList());
         addDocsToMapIfNotNull(docTypeAndDocMap, ORDER, getOrderDocuments(data.getCicCase()));
         addDocsToMapIfNotNull(docTypeAndDocMap, DRAFT_ORDER, getDraftOrderDocuments(data.getCicCase()));
         addDocsToMapIfNotNull(docTypeAndDocMap, APPLICATION, getApplicantCaseDocs(data.getCicCase()));
@@ -72,7 +76,6 @@ public final class DocumentListUtil {
 
         TODO:
         //docList.addAll(getCloseCaseDocuments(data));
-        //docList.addAll(getHearingSummaryDocuments(data));
 
         return docTypeAndDocMap;
     }
@@ -265,18 +268,48 @@ public final class DocumentListUtil {
     }
 
     private static List<CaseworkerCICDocument> getHearingSummaryDocuments(CaseData caseData) {
+        return extractHearingSummaryDocuments(caseData, false);
+    }
+
+    private static List<CaseworkerCICDocument> getHearingSummaryDocumentsForMigration(CaseData caseData) {
+        return extractHearingSummaryDocuments(caseData, true);
+    }
+
+    private static List<CaseworkerCICDocument> extractHearingSummaryDocuments(CaseData caseData,
+                                                                                boolean includeHearingDate) {
         List<CaseworkerCICDocument> hearingSummaryDocs = new ArrayList<>();
 
         Stream.ofNullable(caseData.getHearingList())
             .flatMap(Collection::stream)
+            .filter(listValue -> listValue != null && listValue.getValue() != null)
             .map(ListValue::getValue)
             .filter(hearing -> !isNull(hearing.getSummary()) && !isEmpty(hearing.getSummary().getRecFile()))
-            .map(Listing::getSummary)
-            .map(HearingSummary::getRecFile)
-            .flatMap(Collection::stream)
-            .forEach(recFile -> hearingSummaryDocs.add(recFile.getValue()));
+            .forEach(hearing -> hearing.getSummary().getRecFile().stream()
+                .filter(recFile -> recFile != null && recFile.getValue() != null)
+                .map(recFile -> includeHearingDate
+                    ? copyWithHearingDate(recFile.getValue(), hearing.getDate())
+                    : recFile.getValue())
+                .forEach(hearingSummaryDocs::add));
 
         return hearingSummaryDocs;
+    }
+
+    private static CaseworkerCICDocument copyWithHearingDate(CaseworkerCICDocument document, LocalDate hearingDate) {
+        return CaseworkerCICDocument.builder()
+            .documentCategory(document.getDocumentCategory())
+            .documentEmailContent(document.getDocumentEmailContent())
+            .documentLink(document.getDocumentLink())
+            .date(hearingDate)
+            .build();
+    }
+
+    private static boolean isAudioOrVideo(CaseworkerCICDocument document) {
+        if (document == null || document.getDocumentLink() == null || document.getDocumentLink().getFilename() == null) {
+            return false;
+        }
+
+        String filename = document.getDocumentLink().getFilename().toLowerCase(java.util.Locale.ROOT);
+        return filename.endsWith(".mp3") || filename.endsWith(".mp4");
     }
 
     public static List<ListValue<CaseworkerCICDocument>> getAllDecisionDocuments(CaseData caseData) {
