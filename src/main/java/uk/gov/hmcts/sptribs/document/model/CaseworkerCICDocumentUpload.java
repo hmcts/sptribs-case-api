@@ -54,7 +54,4 @@ public class CaseworkerCICDocumentUpload {
         return DocumentFileTypes.isValid(this.documentLink.getFilename(), DocumentFileTypes.CASEWORKER_UPLOAD_EXTENSIONS);
     }
 
-    public boolean isDocumentValid(String validExtensions) {
-        return DocumentFileTypes.isValid(this.documentLink.getFilename(), validExtensions);
-    }
 }
