@@ -25,6 +25,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
 import java.util.List;
@@ -32,6 +33,7 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
@@ -53,6 +55,9 @@ class CaseworkerEditHearingSummaryTest {
 
     @Mock
     private JudicialService judicialService;
+
+    @Mock
+    private DocumentsService documentsService;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -138,6 +143,7 @@ class CaseworkerEditHearingSummaryTest {
             .isNull();
         assertThat(response.getData().getListing().getSummary().getRecFileUpload()).hasSize(0);
         assertThat(response.getData().getListing().getSummary().getRecFile()).hasSize(0);
+        verify(documentsService).buildAndSaveNewDocumentEntity(any(), any(), any(), any());
     }
 
     @Test

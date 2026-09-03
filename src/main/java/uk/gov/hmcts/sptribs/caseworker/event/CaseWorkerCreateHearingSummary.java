@@ -19,15 +19,18 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.HearingVenues;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SelectHearing;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
+import uk.gov.hmcts.sptribs.caseworker.util.HearingRecordingDocumentSaver;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_HEARING_SUMMARY;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getPanelMembers;
@@ -65,6 +68,9 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
 
     @Autowired
     private JudicialService judicialService;
+
+    @Autowired
+    private DocumentsService documentsService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -121,6 +127,7 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
         final CaseDetails<CaseData, State> beforeDetails
     ) {
         final CaseData caseData = details.getData();
+        final List<String> errors = new ArrayList<>();
 
         caseData.getListing().setHearingStatus(Complete);
         caseData.setJudicialId(judicialService.populateJudicialId(caseData));
@@ -128,6 +135,12 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
         caseData.setListing(recordListHelper.saveSummary(details.getData()));
         caseData.setCurrentEvent("");
         uploadRecFile(caseData);
+        HearingRecordingDocumentSaver.save(
+            details.getId(),
+            caseData.getListing().getSummary().getRecFile(),
+            documentsService,
+            errors
+        );
 
         final String hearingName = caseData.getCicCase().getHearingList().getValue().getLabel();
 
@@ -136,6 +149,7 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(AwaitingOutcome)
+            .errors(errors)
             .build();
     }
 
