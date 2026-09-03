@@ -309,10 +309,18 @@ public class DocumentListUtilTest {
                 .filename("hearing.mp4")
                 .build())
             .build();
+        CaseworkerCICDocument audioWithAlternativeExtension = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder()
+                .url("alternative-audio-url")
+                .binaryUrl("alternative-audio-binary")
+                .filename("hearing.m4a")
+                .build())
+            .build();
         Listing listing = Listing.builder()
             .date(hearingDate)
             .summary(HearingSummary.builder()
-                .recFile(List.of(listValue(audio), listValue(video)))
+                .recFile(List.of(listValue(audio), listValue(video), listValue(audioWithAlternativeExtension)))
                 .build())
             .build();
         CaseData caseData = CaseData.builder()
@@ -323,7 +331,7 @@ public class DocumentListUtilTest {
             DocumentListUtil.prepareDocTypeAndDocMap(caseData);
 
         assertThat(documents.get(CaseDocumentType.HEARING_RECORD))
-            .hasSize(2)
+            .hasSize(3)
             .allSatisfy(document -> assertThat(document.getDate()).isEqualTo(hearingDate));
     }
 

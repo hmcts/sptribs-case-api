@@ -11,13 +11,14 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesAllowedFileTypes;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.document.DocumentFileTypes;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -60,12 +61,13 @@ public final class DocumentListUtil {
     }
 
     public static Map<CaseDocumentType, List<CaseworkerCICDocument>> prepareDocTypeAndDocMap(CaseData data) {
-        Map<CaseDocumentType, List<CaseworkerCICDocument>> docTypeAndDocMap = new LinkedHashMap<>();
+        Map<CaseDocumentType, List<CaseworkerCICDocument>> docTypeAndDocMap = new HashMap<>();
 
-        // Hearing records take precedence if the same binary is present in another document list.
         addDocsToMapIfNotNull(docTypeAndDocMap, CaseDocumentType.HEARING_RECORD,
             getHearingSummaryDocumentsForMigration(data).stream()
-                .filter(DocumentListUtil::isAudioOrVideo)
+                .filter(document -> document != null
+                    && document.getDocumentLink() != null
+                    && DocumentFileTypes.isAudioOrVideo(document.getDocumentLink().getFilename()))
                 .toList());
         addDocsToMapIfNotNull(docTypeAndDocMap, ORDER, getOrderDocuments(data.getCicCase()));
         addDocsToMapIfNotNull(docTypeAndDocMap, DRAFT_ORDER, getDraftOrderDocuments(data.getCicCase()));
@@ -301,15 +303,6 @@ public final class DocumentListUtil {
             .documentLink(document.getDocumentLink())
             .date(hearingDate)
             .build();
-    }
-
-    private static boolean isAudioOrVideo(CaseworkerCICDocument document) {
-        if (document == null || document.getDocumentLink() == null || document.getDocumentLink().getFilename() == null) {
-            return false;
-        }
-
-        String filename = document.getDocumentLink().getFilename().toLowerCase(java.util.Locale.ROOT);
-        return filename.endsWith(".mp3") || filename.endsWith(".mp4");
     }
 
     public static List<ListValue<CaseworkerCICDocument>> getAllDecisionDocuments(CaseData caseData) {
