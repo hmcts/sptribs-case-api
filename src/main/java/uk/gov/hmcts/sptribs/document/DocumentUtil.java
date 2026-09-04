@@ -14,10 +14,11 @@ import uk.gov.hmcts.sptribs.document.model.DocumentInfo;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import static java.util.Locale.ROOT;
-import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOCUMENT_VALIDATION_MESSAGE;
 
 public final class DocumentUtil {
@@ -196,9 +197,41 @@ public final class DocumentUtil {
         return documentList;
     }
 
+    public static List<ListValue<CaseworkerCICDocument>> getAddedDocuments(
+        List<ListValue<CaseworkerCICDocument>> updatedDocuments,
+        List<ListValue<CaseworkerCICDocument>> existingDocuments
+    ) {
+        return getDocumentsNotIn(updatedDocuments, existingDocuments);
+    }
+
+    public static List<ListValue<CaseworkerCICDocument>> getRemovedDocuments(
+        List<ListValue<CaseworkerCICDocument>> existingDocuments,
+        List<ListValue<CaseworkerCICDocument>> updatedDocuments
+    ) {
+        return getDocumentsNotIn(existingDocuments, updatedDocuments);
+    }
+
+    private static List<ListValue<CaseworkerCICDocument>> getDocumentsNotIn(
+        List<ListValue<CaseworkerCICDocument>> documents,
+        List<ListValue<CaseworkerCICDocument>> documentsToExclude
+    ) {
+        if (CollectionUtils.isEmpty(documents)) {
+            return List.of();
+        }
+
+        Set<String> excludedBinaryUrls = CollectionUtils.isEmpty(documentsToExclude)
+            ? new HashSet<>()
+            : documentsToExclude.stream()
+                .map(document -> document.getValue().getDocumentLink().getBinaryUrl())
+                .collect(Collectors.toSet());
+
+        return documents.stream()
+            .filter(document -> !excludedBinaryUrls.contains(document.getValue().getDocumentLink().getBinaryUrl()))
+            .toList();
+    }
+
     public static boolean isValidDocument(String fileName, String validExtensions) {
-        String fileExtension = substringAfterLast(fileName, ".");
-        return fileExtension != null && validExtensions.contains(fileExtension.toLowerCase(ROOT));
+        return DocumentFileTypes.isValid(fileName, validExtensions);
     }
 
     public static String getDocumentUuidFromCaseworkerCICDocument(CaseworkerCICDocument caseworkerCICDocument) {

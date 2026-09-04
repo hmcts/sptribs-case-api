@@ -22,14 +22,20 @@ import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseReinstatedNotification;
 
 import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.APPLICANT_FIRST_NAME;
@@ -57,6 +63,9 @@ class ReinstateCaseTest {
 
     @Mock
     private CaseReinstatedNotification caseReinstatedNotification;
+
+    @Mock
+    private DocumentsService documentsService;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -126,6 +135,7 @@ class ReinstateCaseTest {
         assertThat(responseReinstate.getConfirmationHeader()).contains("Applicant");
         assertThat(response.getData().getCicCase().getReinstateReason()).isNotNull();
         assertThat(response.getState()).isEqualTo(State.CaseManagement);
+        verify(documentsService).saveDocuments(any(), any(), eq(CaseDocumentType.DOCUMENT_MANAGEMENT));
 
     }
 
@@ -186,6 +196,29 @@ class ReinstateCaseTest {
         assertThat(response.getData().getCicCase().getReinstateDocuments().get(0).getValue().getDate()).isNull();
         assertThat(response.getState()).isEqualTo(State.CaseManagement);
 
+    }
+
+    @Test
+    void shouldNotSaveDocumentLoadedForReinstatingAgain() {
+        final Document document = Document.builder().url("document-url").binaryUrl("document-binary-url").filename("document.pdf").build();
+        final ListValue<CaseworkerCICDocument> existingDocument = ListValue.<CaseworkerCICDocument>builder()
+            .id("document-id")
+            .value(CaseworkerCICDocument.builder().documentLink(document).documentCategory(DocumentType.LINKED_DOCS).build())
+            .build();
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setData(CaseData.builder().cicCase(CicCase.builder()
+            .reinstateDocumentsUpload(List.of(ListValue.<CaseworkerCICDocumentUpload>builder()
+                .id("document-id")
+                .value(CaseworkerCICDocumentUpload.builder().documentLink(document).documentCategory(DocumentType.LINKED_DOCS).build())
+                .build()))
+            .build()).build());
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(CaseData.builder().cicCase(CicCase.builder().reinstateDocuments(List.of(existingDocument)).build()).build());
+
+        reinstateCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        verify(documentsService).saveDocuments(eq(TEST_CASE_ID), eq(List.of()), eq(CaseDocumentType.DOCUMENT_MANAGEMENT));
     }
 
 

@@ -9,13 +9,13 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesAllowedFileTypes;
-import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
-import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.document.DocumentFileTypes;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -63,18 +63,30 @@ public final class DocumentListUtil {
     public static Map<CaseDocumentType, List<CaseworkerCICDocument>> prepareDocTypeAndDocMap(CaseData data) {
         Map<CaseDocumentType, List<CaseworkerCICDocument>> docTypeAndDocMap = new HashMap<>();
 
+        addDocsToMapIfNotNull(docTypeAndDocMap, CaseDocumentType.HEARING_RECORD,
+            getHearingSummaryDocumentsForMigration(data).stream()
+                .filter(document -> document != null
+                    && document.getDocumentLink() != null
+                    && DocumentFileTypes.isAudioOrVideo(document.getDocumentLink().getFilename()))
+                .toList());
         addDocsToMapIfNotNull(docTypeAndDocMap, ORDER, getOrderDocuments(data.getCicCase()));
         addDocsToMapIfNotNull(docTypeAndDocMap, DRAFT_ORDER, getDraftOrderDocuments(data.getCicCase()));
         addDocsToMapIfNotNull(docTypeAndDocMap, APPLICATION, getApplicantCaseDocs(data.getCicCase()));
         addDocsToMapIfNotNull(docTypeAndDocMap, DECISION, getDecisionDocs(data));
         addDocsToMapIfNotNull(docTypeAndDocMap, FINAL_DECISION, getFinalDecisionDocs(data));
-        addDocsToMapIfNotNull(docTypeAndDocMap, DOCUMENT_MANAGEMENT, getDocumentManagementDocs(data));
-
-        TODO:
-        //docList.addAll(getCloseCaseDocuments(data));
-        //docList.addAll(getHearingSummaryDocuments(data));
+        addDocsToMapIfNotNull(docTypeAndDocMap, DOCUMENT_MANAGEMENT, getDocumentManagementDocsForMigration(data));
 
         return docTypeAndDocMap;
+    }
+
+    private static List<CaseworkerCICDocument> getDocumentManagementDocsForMigration(CaseData data) {
+        return Stream.of(
+                getDocumentManagementDocs(data),
+                getCloseCaseDocuments(data),
+                getReinstateDocuments(data.getCicCase())
+            )
+            .flatMap(Collection::stream)
+            .toList();
     }
 
     private static void addDocsToMapIfNotNull(Map<CaseDocumentType, List<CaseworkerCICDocument>> docTypeAndDocMap,
@@ -265,18 +277,39 @@ public final class DocumentListUtil {
     }
 
     private static List<CaseworkerCICDocument> getHearingSummaryDocuments(CaseData caseData) {
+        return extractHearingSummaryDocuments(caseData, false);
+    }
+
+    private static List<CaseworkerCICDocument> getHearingSummaryDocumentsForMigration(CaseData caseData) {
+        return extractHearingSummaryDocuments(caseData, true);
+    }
+
+    private static List<CaseworkerCICDocument> extractHearingSummaryDocuments(CaseData caseData,
+                                                                                boolean includeHearingDate) {
         List<CaseworkerCICDocument> hearingSummaryDocs = new ArrayList<>();
 
         Stream.ofNullable(caseData.getHearingList())
             .flatMap(Collection::stream)
+            .filter(listValue -> listValue != null && listValue.getValue() != null)
             .map(ListValue::getValue)
             .filter(hearing -> !isNull(hearing.getSummary()) && !isEmpty(hearing.getSummary().getRecFile()))
-            .map(Listing::getSummary)
-            .map(HearingSummary::getRecFile)
-            .flatMap(Collection::stream)
-            .forEach(recFile -> hearingSummaryDocs.add(recFile.getValue()));
+            .forEach(hearing -> hearing.getSummary().getRecFile().stream()
+                .filter(recFile -> recFile != null && recFile.getValue() != null)
+                .map(recFile -> includeHearingDate
+                    ? copyWithHearingDate(recFile.getValue(), hearing.getDate())
+                    : recFile.getValue())
+                .forEach(hearingSummaryDocs::add));
 
         return hearingSummaryDocs;
+    }
+
+    private static CaseworkerCICDocument copyWithHearingDate(CaseworkerCICDocument document, LocalDate hearingDate) {
+        return CaseworkerCICDocument.builder()
+            .documentCategory(document.getDocumentCategory())
+            .documentEmailContent(document.getDocumentEmailContent())
+            .documentLink(document.getDocumentLink())
+            .date(hearingDate)
+            .build();
     }
 
     public static List<ListValue<CaseworkerCICDocument>> getAllDecisionDocuments(CaseData caseData) {
