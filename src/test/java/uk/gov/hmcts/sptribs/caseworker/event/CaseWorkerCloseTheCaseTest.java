@@ -45,7 +45,6 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOCUMENT_VALIDATION_MESSAGE;
@@ -171,12 +170,7 @@ class CaseWorkerCloseTheCaseTest {
         assertThat(closedCase).isNotNull();
         assertThat(closedCase.getConfirmationHeader()).contains("Case closed");
         assertThat(response.getState()).isEqualTo(State.CaseClosed);
-        verify(documentsService).buildAndSaveNewDocumentEntity(
-            any(Document.class),
-            eq(TEST_CASE_ID),
-            eq(DocumentType.LINKED_DOCS),
-            eq(CaseDocumentType.DOCUMENT_MANAGEMENT)
-        );
+        verify(documentsService).saveDocuments(any(), any(), eq(CaseDocumentType.DOCUMENT_MANAGEMENT));
     }
 
     @Test
@@ -199,7 +193,7 @@ class CaseWorkerCloseTheCaseTest {
 
         caseworkerCloseTheCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
-        verifyNoInteractions(documentsService);
+        verify(documentsService).saveDocuments(eq(TEST_CASE_ID), eq(List.of()), eq(CaseDocumentType.DOCUMENT_MANAGEMENT));
     }
 
     @Test

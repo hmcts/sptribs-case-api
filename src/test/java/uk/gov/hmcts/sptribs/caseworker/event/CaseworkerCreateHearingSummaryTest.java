@@ -35,9 +35,11 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
+import static uk.gov.hmcts.sptribs.document.model.CaseDocumentType.HEARING_RECORD;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentUploadList;
@@ -152,7 +154,7 @@ class CaseworkerCreateHearingSummaryTest {
             .isNull();
         assertThat(response.getData().getListing().getSummary().getRecFileUpload()).hasSize(0);
         assertThat(response.getData().getListing().getSummary().getRecFile()).hasSize(0);
-        verify(documentsService).buildAndSaveNewDocumentEntity(any(), any(), any(), any());
+        verify(documentsService).saveDocuments(any(), any(), eq(HEARING_RECORD));
     }
 
     @Test

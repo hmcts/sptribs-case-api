@@ -35,12 +35,10 @@ import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseWithdrawnNotification;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CLOSE_THE_CASE;
-import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
@@ -180,32 +178,14 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
         List<ListValue<CaseworkerCICDocument>> existingDocuments = beforeDetails.getData() == null
             ? List.of()
             : beforeDetails.getData().getCloseCase().getDocuments();
-        List<String> errors = saveDocumentsToDocumentsTable(getAddedDocuments(documents, existingDocuments), details.getId());
+        List<String> errors = documentsService.saveDocuments(
+            details.getId(), getAddedDocuments(documents, existingDocuments), DOCUMENT_MANAGEMENT);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(CaseClosed)
             .errors(errors)
             .build();
-    }
-
-    private List<String> saveDocumentsToDocumentsTable(List<ListValue<CaseworkerCICDocument>> documents, Long caseId) {
-        List<String> errors = new ArrayList<>();
-
-        for (ListValue<CaseworkerCICDocument> document : documents) {
-            try {
-                documentsService.buildAndSaveNewDocumentEntity(
-                    document.getValue().getDocumentLink(),
-                    caseId,
-                    document.getValue().getDocumentCategory(),
-                    DOCUMENT_MANAGEMENT
-                );
-            } catch (RuntimeException e) {
-                errors.add(handleDocumentException(document.getValue().getDocumentLink(), e.getMessage()));
-            }
-        }
-
-        return errors;
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,

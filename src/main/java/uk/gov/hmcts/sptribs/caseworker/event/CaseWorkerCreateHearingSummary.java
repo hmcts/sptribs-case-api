@@ -19,7 +19,6 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.HearingVenues;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SelectHearing;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
-import uk.gov.hmcts.sptribs.caseworker.util.HearingRecordingDocumentSaver;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -47,6 +46,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.uploadRecFile;
+import static uk.gov.hmcts.sptribs.document.model.CaseDocumentType.HEARING_RECORD;
 
 @Component
 @Slf4j
@@ -135,12 +135,8 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
         caseData.setListing(recordListHelper.saveSummary(details.getData()));
         caseData.setCurrentEvent("");
         uploadRecFile(caseData);
-        HearingRecordingDocumentSaver.save(
-            details.getId(),
-            caseData.getListing().getSummary().getRecFile(),
-            documentsService,
-            errors
-        );
+        errors.addAll(documentsService.saveDocuments(
+            details.getId(), caseData.getListing().getSummary().getRecFile(), HEARING_RECORD));
 
         final String hearingName = caseData.getCicCase().getHearingList().getValue().getLabel();
 

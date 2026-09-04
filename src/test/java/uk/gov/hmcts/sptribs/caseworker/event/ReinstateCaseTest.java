@@ -36,7 +36,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.APPLICANT_FIRST_NAME;
@@ -136,12 +135,7 @@ class ReinstateCaseTest {
         assertThat(responseReinstate.getConfirmationHeader()).contains("Applicant");
         assertThat(response.getData().getCicCase().getReinstateReason()).isNotNull();
         assertThat(response.getState()).isEqualTo(State.CaseManagement);
-        verify(documentsService).buildAndSaveNewDocumentEntity(
-            any(Document.class),
-            eq(TEST_CASE_ID),
-            eq(DocumentType.APPLICATION_FORM),
-            eq(CaseDocumentType.DOCUMENT_MANAGEMENT)
-        );
+        verify(documentsService).saveDocuments(any(), any(), eq(CaseDocumentType.DOCUMENT_MANAGEMENT));
 
     }
 
@@ -224,7 +218,7 @@ class ReinstateCaseTest {
 
         reinstateCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
-        verifyNoInteractions(documentsService);
+        verify(documentsService).saveDocuments(eq(TEST_CASE_ID), eq(List.of()), eq(CaseDocumentType.DOCUMENT_MANAGEMENT));
     }
 
 

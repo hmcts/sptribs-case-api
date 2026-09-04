@@ -19,7 +19,6 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.HearingTypeAndFormat;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingVenues;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
-import uk.gov.hmcts.sptribs.caseworker.util.HearingRecordingDocumentSaver;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -47,6 +46,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.getAddedDocuments;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.getRemovedDocuments;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.uploadRecFile;
+import static uk.gov.hmcts.sptribs.document.model.CaseDocumentType.HEARING_RECORD;
 
 @Component
 @Slf4j
@@ -132,12 +132,8 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
         final List<ListValue<CaseworkerCICDocument>> existingRecordings = getHearingRecordings(beforeDetails.getData(), hearingName);
         uploadRecFile(caseData);
         final List<ListValue<CaseworkerCICDocument>> recordings = caseData.getListing().getSummary().getRecFile();
-        HearingRecordingDocumentSaver.save(
-            details.getId(),
-            getAddedDocuments(recordings, existingRecordings),
-            documentsService,
-            errors
-        );
+        errors.addAll(documentsService.saveDocuments(
+            details.getId(), getAddedDocuments(recordings, existingRecordings), HEARING_RECORD));
         removeDeletedRecordings(getRemovedDocuments(existingRecordings, recordings), errors);
 
         recordListHelper.saveSummary(details.getData());

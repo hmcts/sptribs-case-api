@@ -32,6 +32,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.getAllCaseDocuments;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
 
 @RequiredArgsConstructor
 @Service
@@ -41,9 +42,8 @@ public class DocumentsService {
     private final DocumentsRepository documentsRepository;
     private final CaseDocumentTypesCache caseDocumentTypesCache;
 
-    @Transactional
     public void buildAndSaveNewDocumentEntity(Document document, Long caseReferenceNumber,
-                                              DocumentType documentType, CaseDocumentType caseDocumentType) {
+                                               DocumentType documentType, CaseDocumentType caseDocumentType) {
         try {
 
             int rowsInserted = documentsRepository.insertIgnoreDuplicate(
@@ -63,6 +63,30 @@ public class DocumentsService {
         } catch (DataAccessException e) {
             throw new DocumentSaveException("Error saving document entity to database", e);
         }
+    }
+
+    public List<String> saveDocuments(Long caseReferenceNumber,
+                                      List<ListValue<CaseworkerCICDocument>> documents,
+                                      CaseDocumentType caseDocumentType) {
+        List<String> errors = new ArrayList<>();
+        if (documents == null) {
+            return errors;
+        }
+
+        for (ListValue<CaseworkerCICDocument> document : documents) {
+            try {
+                buildAndSaveNewDocumentEntity(
+                    document.getValue().getDocumentLink(),
+                    caseReferenceNumber,
+                    document.getValue().getDocumentCategory(),
+                    caseDocumentType
+                );
+            } catch (RuntimeException e) {
+                errors.add(handleDocumentException(document.getValue().getDocumentLink(), e.getMessage()));
+            }
+        }
+
+        return errors;
     }
 
     public List<Long> getDocumentsViaSentByContactParties(CaseData caseData, final Map<String, String> uploadedDocuments) {

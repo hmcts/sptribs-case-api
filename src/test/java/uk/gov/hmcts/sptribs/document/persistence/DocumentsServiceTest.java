@@ -2,6 +2,8 @@ package uk.gov.hmcts.sptribs.document.persistence;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -123,6 +125,41 @@ public class DocumentsServiceTest {
         verify(documentsRepository).insertIgnoreDuplicate(
             eq(TEST_CASE_ID), eq(evidenceDocument.getUrl()), eq(evidenceDocument.getFilename()),
             eq(evidenceDocument.getBinaryUrl()), eq(HOSPITAL_RECORDS.name()), eq(2L), any(OffsetDateTime.class));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"recording.mp3", "recording.m4a", "recording.mp4"})
+    void shouldSaveAudioAndVideoHearingRecords(String filename) {
+        Document recording = buildDocument(HOSPITAL_RECORDS.getCategory());
+        recording.setFilename(filename);
+        List<ListValue<CaseworkerCICDocument>> recordings = List.of(buildCaseworkerDocument(recording));
+        when(caseDocumentTypesCache.getId(CaseDocumentType.HEARING_RECORD)).thenReturn(7L);
+
+        List<String> errors = documentsService.saveDocuments(TEST_CASE_ID, recordings, CaseDocumentType.HEARING_RECORD);
+
+        verify(documentsRepository).insertIgnoreDuplicate(
+            eq(TEST_CASE_ID), eq(recording.getUrl()), eq(filename), eq(recording.getBinaryUrl()),
+            eq(HOSPITAL_RECORDS.name()), eq(7L), any(OffsetDateTime.class));
+        assertThat(errors).isEmpty();
+    }
+
+    @Test
+    void shouldContinueSavingDocumentsWhenOneFails() {
+        Document failedRecording = buildDocument(HOSPITAL_RECORDS.getCategory());
+        Document savedRecording = buildDocument(HOSPITAL_RECORDS.getCategory());
+        savedRecording.setBinaryUrl("example.com/second-document.mp3/binary");
+        List<ListValue<CaseworkerCICDocument>> recordings = List.of(
+            buildCaseworkerDocument(failedRecording), buildCaseworkerDocument(savedRecording));
+        when(caseDocumentTypesCache.getId(CaseDocumentType.HEARING_RECORD)).thenReturn(7L);
+        when(documentsRepository.insertIgnoreDuplicate(any(), any(), any(), any(), any(), any(), any()))
+            .thenThrow(new DataAccessResourceFailureException("database unavailable"))
+            .thenReturn(1);
+
+        List<String> errors = documentsService.saveDocuments(TEST_CASE_ID, recordings, CaseDocumentType.HEARING_RECORD);
+
+        assertThat(errors).hasSize(1);
+        verify(documentsRepository, times(2)).insertIgnoreDuplicate(
+            any(), any(), any(), any(), any(), any(), any());
     }
 
     @Test
@@ -374,6 +411,15 @@ public class DocumentsServiceTest {
             .filename("test-document.pdf")
             .binaryUrl("example.com/test-document.pdf/binary")
             .categoryId(categoryId)
+            .build();
+    }
+
+    private ListValue<CaseworkerCICDocument> buildCaseworkerDocument(Document document) {
+        return ListValue.<CaseworkerCICDocument>builder()
+            .value(CaseworkerCICDocument.builder()
+                .documentLink(document)
+                .documentCategory(HOSPITAL_RECORDS)
+                .build())
             .build();
     }
 }
