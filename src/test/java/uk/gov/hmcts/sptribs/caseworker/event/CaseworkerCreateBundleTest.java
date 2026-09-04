@@ -208,6 +208,38 @@ class CaseworkerCreateBundleTest {
     }
 
     @Test
+    void shouldDeleteAudioVideoEvidenceDocumentWhenBundleCreationFails() {
+        final CaseData caseData = caseData();
+        final CicCase cicCase = CicCase.builder().build();
+        cicCase.setApplicantDocumentsUploaded(getCaseworkerCICDocumentList());
+        caseData.setCicCase(cicCase);
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+
+        Document generatedPdf = Document.builder()
+            .filename("audio-video-evidence-123.pdf")
+            .url("http://dm-store/documents/11111111-1111-1111-1111-111111111111")
+            .binaryUrl("http://dm-store/documents/11111111-1111-1111-1111-111111111111/binary")
+            .build();
+        AudioVideoEvidenceBundleDocument audioVideoBundleDocument = AudioVideoEvidenceBundleDocument.builder()
+            .documentLink(generatedPdf)
+            .build();
+
+        when(audioVideoEvidenceBundleService.createAudioVideoEvidenceBundleDocument(TEST_CASE_ID))
+            .thenReturn(Optional.of(audioVideoBundleDocument));
+        when(bundlingService.createBundle(any(BundleCallback.class), eq(TEST_CASE_ID))).thenReturn(null);
+        when(bundlingService.buildBundleListValues(any())).thenReturn(null);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+
+        assertThat(response.getData().getCaseBundles()).isNull();
+        verify(audioVideoEvidenceBundleService).deleteAudioVideoEvidenceBundleDocument(generatedPdf);
+    }
+
+    @Test
     void shouldReturnCallbackErrorWhenAudioVideoEvidenceGenerationFails() {
         final CaseData caseData = caseData();
         final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList();

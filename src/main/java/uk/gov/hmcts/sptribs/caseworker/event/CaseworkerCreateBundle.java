@@ -149,7 +149,16 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         final BundleCallback bundleCallback = new BundleCallback(callback);
 
         List<ListValue<Bundle>> existingBundles = getExistingBundles(beforeDetails);
-        caseData.setCaseBundles(getConfiguredCaseBundles(caseData, bundleCallback, existingBundles));
+        try {
+            caseData.setCaseBundles(getConfiguredCaseBundles(caseData, bundleCallback, existingBundles));
+        } catch (RuntimeException exception) {
+            deleteAudioVideoEvidenceBundleDocument(caseData);
+            throw exception;
+        }
+
+        if (caseData.getCaseBundles() == null) {
+            deleteAudioVideoEvidenceBundleDocument(caseData);
+        }
 
         clearTemporaryBundleData(caseData);
 
@@ -316,5 +325,13 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         caseData.setCaseDocuments(null);
         caseData.setFurtherCaseDocuments(null);
         caseData.setAudioVideoEvidenceBundleDocument(null);
+    }
+
+    private void deleteAudioVideoEvidenceBundleDocument(CaseData caseData) {
+        if (caseData.getAudioVideoEvidenceBundleDocument() != null) {
+            audioVideoEvidenceBundleService.deleteAudioVideoEvidenceBundleDocument(
+                caseData.getAudioVideoEvidenceBundleDocument().getDocumentLink()
+            );
+        }
     }
 }

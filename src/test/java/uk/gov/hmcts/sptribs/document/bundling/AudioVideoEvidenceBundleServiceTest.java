@@ -10,6 +10,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
@@ -28,13 +29,16 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -324,6 +328,36 @@ class AudioVideoEvidenceBundleServiceTest {
         verifyNoInteractions(pdfServiceClient, caseDocumentClientApi, authTokenGenerator);
         verifyNoInteractions(manageCaseDocumentUrlBuilder);
         verifyNoMoreInteractions(documentsService);
+    }
+
+    @Test
+    void shouldDeleteGeneratedAudioVideoEvidenceDocument() {
+        when(authTokenGenerator.generate()).thenReturn("service-token");
+        when(request.getHeader("Authorization")).thenReturn("Bearer user-token");
+
+        service.deleteAudioVideoEvidenceBundleDocument(Document.builder()
+            .url("http://ccd-case-document-am-api/cases/documents/11111111-1111-1111-1111-111111111111")
+            .build());
+
+        verify(caseDocumentClientApi).deleteDocument(
+            "Bearer user-token",
+            "service-token",
+            UUID.fromString("11111111-1111-1111-1111-111111111111"),
+            true
+        );
+    }
+
+    @Test
+    void shouldNotPropagateGeneratedDocumentDeletionFailure() {
+        when(authTokenGenerator.generate()).thenReturn("service-token");
+        when(request.getHeader("Authorization")).thenReturn("Bearer user-token");
+        doThrow(new RuntimeException("delete failed"))
+            .when(caseDocumentClientApi)
+            .deleteDocument(any(), any(), any(), eq(true));
+
+        assertThatCode(() -> service.deleteAudioVideoEvidenceBundleDocument(Document.builder()
+            .url("http://ccd-case-document-am-api/cases/documents/11111111-1111-1111-1111-111111111111")
+            .build())).doesNotThrowAnyException();
     }
 
     private AudioVideoEvidenceBundleService service() {

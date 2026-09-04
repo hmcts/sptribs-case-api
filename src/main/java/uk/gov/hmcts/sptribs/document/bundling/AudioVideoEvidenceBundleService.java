@@ -23,6 +23,7 @@ import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
@@ -64,6 +66,21 @@ public class AudioVideoEvidenceBundleService {
             return Optional.of(buildBundleDocument(uploadedDocument));
         } catch (RuntimeException exception) {
             throw new AudioVideoEvidenceBundleException(caseId, exception);
+        }
+    }
+
+    public void deleteAudioVideoEvidenceBundleDocument(Document generatedPdf) {
+        try {
+            String documentPath = URI.create(generatedPdf.getUrl()).getPath();
+            UUID documentId = UUID.fromString(StringUtils.substringAfterLast(documentPath, "/"));
+            caseDocumentClientApi.deleteDocument(
+                request.getHeader(AUTHORIZATION),
+                authTokenGenerator.generate(),
+                documentId,
+                true
+            );
+        } catch (RuntimeException exception) {
+            log.error("Unable to delete generated audio/video evidence document", exception);
         }
     }
 
