@@ -42,6 +42,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORK
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.convertToCaseworkerCICDocument;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.getAddedDocuments;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateUploadedDocumentCategory;
 import static uk.gov.hmcts.sptribs.document.model.CaseDocumentType.DOCUMENT_MANAGEMENT;
 
@@ -108,7 +109,10 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
         List<ListValue<CaseworkerCICDocument>> documents = updateUploadedDocumentCategory(uploadedDocuments, false);
         caseData.getCicCase().setReinstateDocumentsUpload(new ArrayList<>());
         caseData.getCicCase().setReinstateDocuments(documents);
-        List<String> errors = saveDocumentsToDocumentsTable(documents, details.getId());
+        List<ListValue<CaseworkerCICDocument>> existingDocuments = beforeDetails.getData() == null
+            ? List.of()
+            : beforeDetails.getData().getCicCase().getReinstateDocuments();
+        List<String> errors = saveDocumentsToDocumentsTable(getAddedDocuments(documents, existingDocuments), details.getId());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

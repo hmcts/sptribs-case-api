@@ -32,6 +32,8 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -60,48 +62,46 @@ public class DocumentsServiceTest {
     @Test
      void shouldBuildAndSaveNewCaseworkerDocumentEntity() {
         Document evidenceDocument = buildDocument(HOSPITAL_RECORDS.getCategory());
-        DocumentEntity evidenceDocumentEntity = buildDocumentEntity(HOSPITAL_RECORDS.name(), 2L, OffsetDateTime.now());
-
         when(caseDocumentTypesCache.getId(CaseDocumentType.DOCUMENT_MANAGEMENT)).thenReturn(2L);
 
         documentsService.buildAndSaveNewDocumentEntity(evidenceDocument, TEST_CASE_ID, HOSPITAL_RECORDS,
             CaseDocumentType.DOCUMENT_MANAGEMENT);
 
-        verify(documentsRepository, times(1)).save(evidenceDocumentEntity);
+        verify(documentsRepository, times(1)).insertIgnoreDuplicate(
+            eq(TEST_CASE_ID), eq(evidenceDocument.getUrl()), eq(evidenceDocument.getFilename()),
+            eq(evidenceDocument.getBinaryUrl()), eq(HOSPITAL_RECORDS.name()), eq(2L), any(OffsetDateTime.class));
     }
 
     @Test
      void shouldBuildAndSaveNewBundleDocument() {
         Document bundleDocument = buildDocument(null);
-        DocumentEntity bundleDocumentEntity = buildDocumentEntity(null, 9L, OffsetDateTime.now());
-
         when(caseDocumentTypesCache.getId(CaseDocumentType.BUNDLE)).thenReturn(9L);
 
         documentsService.buildAndSaveNewDocumentEntity(bundleDocument, TEST_CASE_ID, null,CaseDocumentType.BUNDLE);
 
-        verify(documentsRepository, times(1)).save(bundleDocumentEntity);
+        verify(documentsRepository, times(1)).insertIgnoreDuplicate(
+            eq(TEST_CASE_ID), eq(bundleDocument.getUrl()), eq(bundleDocument.getFilename()),
+            eq(bundleDocument.getBinaryUrl()), eq(null), eq(9L), any(OffsetDateTime.class));
     }
 
     @Test
      void shouldBuildAndSaveNewDraftOrderDocumentEntity() {
         Document draftEvidenceDocument = buildDocument(HOSPITAL_RECORDS.getCategory());
-        DocumentEntity draftEvidenceDocumentEntity = buildDocumentEntity(HOSPITAL_RECORDS.name(), 4L, OffsetDateTime.now());
-
         when(caseDocumentTypesCache.getId(CaseDocumentType.DRAFT_ORDER)).thenReturn(4L);
 
         documentsService.buildAndSaveNewDocumentEntity(draftEvidenceDocument, TEST_CASE_ID, HOSPITAL_RECORDS,
             CaseDocumentType.DRAFT_ORDER);
 
-        verify(documentsRepository, times(1)).save(draftEvidenceDocumentEntity);
+        verify(documentsRepository, times(1)).insertIgnoreDuplicate(
+            eq(TEST_CASE_ID), eq(draftEvidenceDocument.getUrl()), eq(draftEvidenceDocument.getFilename()),
+            eq(draftEvidenceDocument.getBinaryUrl()), eq(HOSPITAL_RECORDS.name()), eq(4L), any(OffsetDateTime.class));
     }
 
     @Test
      void shouldThrowRuntimeExceptionWhenDataAccessExceptionCaughtInBuildAndSaveNewDraftDocumentEntity() {
         Document draftEvidenceDocument = buildDocument(HOSPITAL_RECORDS.getCategory());
-        DocumentEntity draftEvidenceDocumentEntity = buildDocumentEntity(HOSPITAL_RECORDS.name(), 4L,
-            OffsetDateTime.now());
-
-        when(documentsRepository.save(draftEvidenceDocumentEntity)).thenThrow(new DataAccessResourceFailureException("DB error"));
+        when(documentsRepository.insertIgnoreDuplicate(any(), any(), any(), any(), any(), any(), any()))
+            .thenThrow(new DataAccessResourceFailureException("DB error"));
         when(caseDocumentTypesCache.getId(CaseDocumentType.DRAFT_ORDER)).thenReturn(4L);
 
         assertThatThrownBy(
@@ -109,6 +109,20 @@ public class DocumentsServiceTest {
                 CaseDocumentType.DRAFT_ORDER)).isInstanceOf(
             RuntimeException.class).hasMessageContaining("Error saving document entity to database").hasCauseInstanceOf(
             DataAccessException.class);
+    }
+
+    @Test
+    void shouldIgnoreExistingDocument() {
+        Document evidenceDocument = buildDocument(HOSPITAL_RECORDS.getCategory());
+        when(caseDocumentTypesCache.getId(CaseDocumentType.DOCUMENT_MANAGEMENT)).thenReturn(2L);
+        when(documentsRepository.insertIgnoreDuplicate(any(), any(), any(), any(), any(), any(), any())).thenReturn(0);
+
+        documentsService.buildAndSaveNewDocumentEntity(evidenceDocument, TEST_CASE_ID, HOSPITAL_RECORDS,
+            CaseDocumentType.DOCUMENT_MANAGEMENT);
+
+        verify(documentsRepository).insertIgnoreDuplicate(
+            eq(TEST_CASE_ID), eq(evidenceDocument.getUrl()), eq(evidenceDocument.getFilename()),
+            eq(evidenceDocument.getBinaryUrl()), eq(HOSPITAL_RECORDS.name()), eq(2L), any(OffsetDateTime.class));
     }
 
     @Test

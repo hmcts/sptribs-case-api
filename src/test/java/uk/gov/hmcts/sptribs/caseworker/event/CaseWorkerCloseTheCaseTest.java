@@ -27,6 +27,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.document.DocumentUtil;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
@@ -44,6 +45,7 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOCUMENT_VALIDATION_MESSAGE;
@@ -175,6 +177,29 @@ class CaseWorkerCloseTheCaseTest {
             eq(DocumentType.LINKED_DOCS),
             eq(CaseDocumentType.DOCUMENT_MANAGEMENT)
         );
+    }
+
+    @Test
+    void shouldNotSaveDocumentLoadedForReclosing() {
+        final Document document = Document.builder().url("document-url").binaryUrl("document-binary-url").filename("document.pdf").build();
+        final ListValue<CaseworkerCICDocument> existingDocument = ListValue.<CaseworkerCICDocument>builder()
+            .id("document-id")
+            .value(CaseworkerCICDocument.builder().documentLink(document).documentCategory(DocumentType.LINKED_DOCS).build())
+            .build();
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setData(CaseData.builder()
+            .closeCase(CloseCase.builder().documentsUpload(List.of(ListValue.<CaseworkerCICDocumentUpload>builder()
+                .id("document-id")
+                .value(CaseworkerCICDocumentUpload.builder().documentLink(document).documentCategory(DocumentType.LINKED_DOCS).build())
+                .build())).build())
+            .build());
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(CaseData.builder().closeCase(CloseCase.builder().documents(List.of(existingDocument)).build()).build());
+
+        caseworkerCloseTheCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        verifyNoInteractions(documentsService);
     }
 
     @Test

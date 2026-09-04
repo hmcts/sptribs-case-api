@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
@@ -24,7 +25,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
@@ -34,6 +37,7 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
@@ -144,6 +148,50 @@ class CaseworkerEditHearingSummaryTest {
         assertThat(response.getData().getListing().getSummary().getRecFileUpload()).hasSize(0);
         assertThat(response.getData().getListing().getSummary().getRecFile()).hasSize(0);
         verify(documentsService).buildAndSaveNewDocumentEntity(any(), any(), any(), any());
+    }
+
+    @Test
+    void shouldNotSaveRecordingLoadedForEditing() {
+        final Document recording = Document.builder()
+            .url("recording-url")
+            .binaryUrl("recording-binary-url")
+            .filename("recording.pdf")
+            .build();
+        final ListValue<CaseworkerCICDocument> existingRecording = ListValue.<CaseworkerCICDocument>builder()
+            .id("recording-id")
+            .value(CaseworkerCICDocument.builder()
+                .documentLink(recording)
+                .documentCategory(DocumentType.LINKED_DOCS)
+                .build())
+            .build();
+        final Listing existingListing = getRecordListing();
+        existingListing.setSummary(HearingSummary.builder().recFile(List.of(existingRecording)).build());
+        final CaseData beforeCaseData = CaseData.builder()
+            .hearingList(List.of(ListValue.<Listing>builder().value(existingListing).build()))
+            .build();
+        final CaseData updatedCaseData = CaseData.builder()
+            .cicCase(CicCase.builder()
+                .hearingSummaryList(DynamicList.builder()
+                    .value(DynamicListElement.builder().label("1 - Final - 21 Apr 2023 10:00").build())
+                    .build())
+                .build())
+            .listing(getRecordListing())
+            .build();
+        updatedCaseData.getListing().setSummary(HearingSummary.builder()
+            .recFileUpload(List.of(ListValue.<CaseworkerCICDocumentUpload>builder()
+                .id("recording-id")
+                .value(CaseworkerCICDocumentUpload.builder().documentLink(recording).documentCategory(DocumentType.LINKED_DOCS).build())
+                .build()))
+            .build());
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(updatedCaseData);
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(beforeCaseData);
+        when(judicialService.populateJudicialId(any())).thenReturn("personal_code");
+
+        caseWorkerEditHearingSummary.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        verifyNoInteractions(documentsService);
     }
 
     @Test

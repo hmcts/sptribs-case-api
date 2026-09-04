@@ -7,6 +7,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.EditHearingLoadingPage;
 import uk.gov.hmcts.sptribs.caseworker.event.page.EditHearingSummarySelect;
@@ -25,12 +26,14 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static uk.gov.hmcts.sptribs.caseworker.service.HearingService.isMatchingHearing;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_HEARING_SUMMARY;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
@@ -41,6 +44,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORK
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.getAddedDocuments;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.getRemovedDocuments;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.uploadRecFile;
 
 @Component
@@ -123,15 +128,17 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
         final List<String> errors = new ArrayList<>();
         caseData.setJudicialId(judicialService.populateJudicialId(caseData));
         caseData.getListing().getSummary().setJudgeList(null);
+        final String hearingName = caseData.getCicCase().getHearingSummaryList().getValue().getLabel();
+        final List<ListValue<CaseworkerCICDocument>> existingRecordings = getHearingRecordings(beforeDetails.getData(), hearingName);
         uploadRecFile(caseData);
+        final List<ListValue<CaseworkerCICDocument>> recordings = caseData.getListing().getSummary().getRecFile();
         HearingRecordingDocumentSaver.save(
             details.getId(),
-            caseData.getListing().getSummary().getRecFile(),
+            getAddedDocuments(recordings, existingRecordings),
             documentsService,
             errors
         );
-
-        final String hearingName = caseData.getCicCase().getHearingSummaryList().getValue().getLabel();
+        removeDeletedRecordings(getRemovedDocuments(existingRecordings, recordings), errors);
 
         recordListHelper.saveSummary(details.getData());
         hearingService.updateHearingList(caseData, hearingName);
@@ -144,6 +151,28 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
             .errors(errors)
             .build();
 
+    }
+
+    private List<ListValue<CaseworkerCICDocument>> getHearingRecordings(CaseData caseData, String hearingName) {
+        if (caseData == null || caseData.getHearingList() == null) {
+            return List.of();
+        }
+
+        return caseData.getHearingList().stream()
+            .filter(listing -> isMatchingHearing(listing, hearingName))
+            .map(listing -> listing.getValue().getSummary().getRecFile())
+            .findFirst()
+            .orElse(List.of());
+    }
+
+    private void removeDeletedRecordings(List<ListValue<CaseworkerCICDocument>> recordings, List<String> errors) {
+        for (ListValue<CaseworkerCICDocument> recording : recordings) {
+            try {
+                documentsService.removeEntryFromDocumentTableByBinaryURL(recording.getValue().getDocumentLink().getBinaryUrl());
+            } catch (RuntimeException e) {
+                errors.add(MessageUtil.handleDocumentException(recording.getValue().getDocumentLink(), e.getMessage()));
+            }
+        }
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,

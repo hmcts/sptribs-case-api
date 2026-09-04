@@ -54,6 +54,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.convertToCaseworkerCICDocument;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.getAddedDocuments;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateUploadedDocumentCategory;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateUploadedDocuments;
 import static uk.gov.hmcts.sptribs.document.model.CaseDocumentType.DOCUMENT_MANAGEMENT;
@@ -176,7 +177,10 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
         List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = caseData.getCloseCase().getDocumentsUpload();
         List<ListValue<CaseworkerCICDocument>> documents = updateUploadedDocumentCategory(uploadedDocuments, false);
         caseData.getCloseCase().setDocuments(documents);
-        List<String> errors = saveDocumentsToDocumentsTable(documents, details.getId());
+        List<ListValue<CaseworkerCICDocument>> existingDocuments = beforeDetails.getData() == null
+            ? List.of()
+            : beforeDetails.getData().getCloseCase().getDocuments();
+        List<String> errors = saveDocumentsToDocumentsTable(getAddedDocuments(documents, existingDocuments), details.getId());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
