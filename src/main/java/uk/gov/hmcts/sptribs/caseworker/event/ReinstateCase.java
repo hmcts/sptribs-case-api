@@ -22,6 +22,7 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseReinstatedNotification;
 
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ import java.util.List;
 import static java.lang.String.format;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_REINSTATE_CASE;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
@@ -41,6 +43,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.convertToCaseworkerCICDocument;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateUploadedDocumentCategory;
+import static uk.gov.hmcts.sptribs.document.model.CaseDocumentType.DOCUMENT_MANAGEMENT;
 
 @Component
 @Slf4j
@@ -53,6 +56,9 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
 
     @Autowired
     private CaseReinstatedNotification caseReinstatedNotification;
+
+    @Autowired
+    private DocumentsService documentsService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -102,11 +108,32 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
         List<ListValue<CaseworkerCICDocument>> documents = updateUploadedDocumentCategory(uploadedDocuments, false);
         caseData.getCicCase().setReinstateDocumentsUpload(new ArrayList<>());
         caseData.getCicCase().setReinstateDocuments(documents);
+        List<String> errors = saveDocumentsToDocumentsTable(documents, details.getId());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(CaseManagement)
+            .errors(errors)
             .build();
+    }
+
+    private List<String> saveDocumentsToDocumentsTable(List<ListValue<CaseworkerCICDocument>> documents, Long caseId) {
+        List<String> errors = new ArrayList<>();
+
+        for (ListValue<CaseworkerCICDocument> document : documents) {
+            try {
+                documentsService.buildAndSaveNewDocumentEntity(
+                    document.getValue().getDocumentLink(),
+                    caseId,
+                    document.getValue().getDocumentCategory(),
+                    DOCUMENT_MANAGEMENT
+                );
+            } catch (RuntimeException e) {
+                errors.add(handleDocumentException(document.getValue().getDocumentLink(), e.getMessage()));
+            }
+        }
+
+        return errors;
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,

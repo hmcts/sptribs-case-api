@@ -359,6 +359,51 @@ public class DocumentListUtilTest {
         assertThat(documents).doesNotContainKey(CaseDocumentType.HEARING_RECORD);
     }
 
+    @Test
+    void shouldIncludeCloseAndReinstateDocumentsInDocumentManagementMigrationMapping() {
+        CaseworkerCICDocument documentManagementDocument = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder()
+                .url("document-management-url")
+                .binaryUrl("document-management-binary")
+                .filename("document-management.mp3")
+                .build())
+            .build();
+        CaseworkerCICDocument closeCaseDocument = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder()
+                .url("close-case-url")
+                .binaryUrl("close-case-binary")
+                .filename("close-case.mp4")
+                .build())
+            .build();
+        CaseworkerCICDocument reinstateDocument = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder()
+                .url("reinstate-url")
+                .binaryUrl("reinstate-binary")
+                .filename("reinstate.m4a")
+                .build())
+            .build();
+        CaseData caseData = CaseData.builder()
+            .allDocManagement(DocumentManagement.builder()
+                .caseworkerCICDocument(List.of(listValue(documentManagementDocument)))
+                .build())
+            .closeCase(CloseCase.builder()
+                .documents(List.of(listValue(closeCaseDocument)))
+                .build())
+            .cicCase(CicCase.builder()
+                .reinstateDocuments(List.of(listValue(reinstateDocument)))
+                .build())
+            .build();
+
+        Map<CaseDocumentType, List<CaseworkerCICDocument>> documents =
+            DocumentListUtil.prepareDocTypeAndDocMap(caseData);
+
+        assertThat(documents.get(CaseDocumentType.DOCUMENT_MANAGEMENT))
+            .containsExactly(documentManagementDocument, closeCaseDocument, reinstateDocument);
+    }
+
     private static ListValue<CaseworkerCICDocument> listValue(CaseworkerCICDocument document) {
         return new ListValue<>("document-1", document);
     }

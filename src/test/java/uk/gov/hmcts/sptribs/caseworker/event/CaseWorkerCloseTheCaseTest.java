@@ -26,8 +26,10 @@ import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.document.DocumentUtil;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseWithdrawnNotification;
 
@@ -37,8 +39,11 @@ import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOCUMENT_VALIDATION_MESSAGE;
@@ -68,6 +73,9 @@ class CaseWorkerCloseTheCaseTest {
 
     @Mock
     private CaseWithdrawnNotification caseWithdrawnNotification;
+
+    @Mock
+    private DocumentsService documentsService;
 
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
@@ -161,6 +169,12 @@ class CaseWorkerCloseTheCaseTest {
         assertThat(closedCase).isNotNull();
         assertThat(closedCase.getConfirmationHeader()).contains("Case closed");
         assertThat(response.getState()).isEqualTo(State.CaseClosed);
+        verify(documentsService).buildAndSaveNewDocumentEntity(
+            any(Document.class),
+            eq(TEST_CASE_ID),
+            eq(DocumentType.LINKED_DOCS),
+            eq(CaseDocumentType.DOCUMENT_MANAGEMENT)
+        );
     }
 
     @Test

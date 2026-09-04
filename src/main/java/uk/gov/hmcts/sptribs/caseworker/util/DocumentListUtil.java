@@ -74,12 +74,19 @@ public final class DocumentListUtil {
         addDocsToMapIfNotNull(docTypeAndDocMap, APPLICATION, getApplicantCaseDocs(data.getCicCase()));
         addDocsToMapIfNotNull(docTypeAndDocMap, DECISION, getDecisionDocs(data));
         addDocsToMapIfNotNull(docTypeAndDocMap, FINAL_DECISION, getFinalDecisionDocs(data));
-        addDocsToMapIfNotNull(docTypeAndDocMap, DOCUMENT_MANAGEMENT, getDocumentManagementDocs(data));
-
-        TODO:
-        //docList.addAll(getCloseCaseDocuments(data));
+        addDocsToMapIfNotNull(docTypeAndDocMap, DOCUMENT_MANAGEMENT, getDocumentManagementDocsForMigration(data));
 
         return docTypeAndDocMap;
+    }
+
+    private static List<CaseworkerCICDocument> getDocumentManagementDocsForMigration(CaseData data) {
+        return Stream.of(
+                getDocumentManagementDocs(data),
+                getCloseCaseDocuments(data),
+                getReinstateDocuments(data.getCicCase())
+            )
+            .flatMap(Collection::stream)
+            .toList();
     }
 
     private static void addDocsToMapIfNotNull(Map<CaseDocumentType, List<CaseworkerCICDocument>> docTypeAndDocMap,

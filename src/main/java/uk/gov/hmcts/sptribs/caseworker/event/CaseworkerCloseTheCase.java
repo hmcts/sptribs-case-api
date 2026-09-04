@@ -31,13 +31,16 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseWithdrawnNotification;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CLOSE_THE_CASE;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
@@ -53,6 +56,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.convertToCaseworkerCICDocument;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateUploadedDocumentCategory;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateUploadedDocuments;
+import static uk.gov.hmcts.sptribs.document.model.CaseDocumentType.DOCUMENT_MANAGEMENT;
 
 @Component
 @Slf4j
@@ -73,6 +77,9 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
 
     @Autowired
     private CaseWithdrawnNotification caseWithdrawnNotification;
+
+    @Autowired
+    private DocumentsService documentsService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -169,11 +176,32 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
         List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = caseData.getCloseCase().getDocumentsUpload();
         List<ListValue<CaseworkerCICDocument>> documents = updateUploadedDocumentCategory(uploadedDocuments, false);
         caseData.getCloseCase().setDocuments(documents);
+        List<String> errors = saveDocumentsToDocumentsTable(documents, details.getId());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(CaseClosed)
+            .errors(errors)
             .build();
+    }
+
+    private List<String> saveDocumentsToDocumentsTable(List<ListValue<CaseworkerCICDocument>> documents, Long caseId) {
+        List<String> errors = new ArrayList<>();
+
+        for (ListValue<CaseworkerCICDocument> document : documents) {
+            try {
+                documentsService.buildAndSaveNewDocumentEntity(
+                    document.getValue().getDocumentLink(),
+                    caseId,
+                    document.getValue().getDocumentCategory(),
+                    DOCUMENT_MANAGEMENT
+                );
+            } catch (RuntimeException e) {
+                errors.add(handleDocumentException(document.getValue().getDocumentLink(), e.getMessage()));
+            }
+        }
+
+        return errors;
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
