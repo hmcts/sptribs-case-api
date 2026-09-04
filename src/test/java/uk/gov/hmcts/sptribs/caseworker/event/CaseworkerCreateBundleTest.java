@@ -25,7 +25,10 @@ import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.document.bundling.AudioVideoEvidenceBundleException;
+import uk.gov.hmcts.sptribs.document.bundling.AudioVideoEvidenceBundleService;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundlingService;
+import uk.gov.hmcts.sptribs.document.bundling.model.AudioVideoEvidenceBundleDocument;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleCallback;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleIdAndTimestamp;
@@ -41,15 +44,18 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
@@ -78,6 +84,9 @@ class CaseworkerCreateBundleTest {
 
     @Mock
     private BundlingService bundlingService;
+
+    @Mock
+    private AudioVideoEvidenceBundleService audioVideoEvidenceBundleService;
 
     @Mock
     private Clock clock;
@@ -122,9 +131,19 @@ class CaseworkerCreateBundleTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         final Bundle bundle = Bundle.builder().build();
+        AudioVideoEvidenceBundleDocument audioVideoBundleDocument = AudioVideoEvidenceBundleDocument.builder()
+            .documentLink(Document.builder()
+                .filename("audio-video-evidence-123.pdf")
+                .url("http://dm-store/documents/generated")
+                .binaryUrl("http://dm-store/documents/generated/binary")
+                .build())
+            .date(LocalDate.of(2026, 8, 5))
+            .build();
 
         when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
         when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
+        when(audioVideoEvidenceBundleService.createAudioVideoEvidenceBundleDocument(TEST_CASE_ID))
+            .thenReturn(Optional.of(audioVideoBundleDocument));
 
         when(bundlingService.createBundle(any(BundleCallback.class), eq(TEST_CASE_ID))).thenAnswer(callback -> {
             final BundleCallback callbackAtMockTime = (BundleCallback) callback.getArguments()[0];
@@ -134,6 +153,7 @@ class CaseworkerCreateBundleTest {
             assertThat(dataAtMockTime.getCaseDocuments().getFirst().getValue()).isEqualTo(cicDocuments.getFirst().getValue());
             assertThat(dataAtMockTime.getBundleConfiguration()).isEqualTo(MULTI_BUNDLE_CONFIG);
             assertThat(dataAtMockTime.getMultiBundleConfiguration()).isEqualTo(List.of(MULTI_BUNDLE_CONFIG));
+            assertThat(dataAtMockTime.getAudioVideoEvidenceBundleDocument()).isEqualTo(audioVideoBundleDocument);
             return List.of(bundle);
         });
 
@@ -143,6 +163,7 @@ class CaseworkerCreateBundleTest {
         verify(bundlingService).getMultiBundleConfig();
         verify(bundlingService).getMultiBundleConfigs();
         verify(bundlingService).buildBundleListValues(anyList());
+        verify(audioVideoEvidenceBundleService).createAudioVideoEvidenceBundleDocument(TEST_CASE_ID);
 
         final CaseData responseData = response.getData();
         assertThat(responseData)
@@ -154,6 +175,125 @@ class CaseworkerCreateBundleTest {
         //i.e. not in their respective child objects as well (CicCase.applicantDocumentsUploaded)
         assertThat(responseData.getCaseDocuments()).isNull();
         assertThat(responseData.getMultiBundleConfiguration()).isNull();
+        assertThat(responseData.getAudioVideoEvidenceBundleDocument()).isNull();
+    }
+
+    @Test
+    void shouldProceedWhenAudioVideoEvidenceIsEmpty() {
+        final CaseData caseData = caseData();
+        final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList();
+        final CicCase cicCase = CicCase.builder().build();
+        cicCase.setApplicantDocumentsUploaded(cicDocuments);
+        caseData.setCicCase(cicCase);
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        final Bundle bundle = Bundle.builder().build();
+
+        when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
+        when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
+        when(audioVideoEvidenceBundleService.createAudioVideoEvidenceBundleDocument(TEST_CASE_ID))
+            .thenReturn(Optional.empty());
+        when(bundlingService.createBundle(any(BundleCallback.class), eq(TEST_CASE_ID))).thenReturn(List.of(bundle));
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+
+        assertThat(response.getErrors()).isNull();
+        assertThat(response.getData().getCaseBundles()).isNotNull();
+        verify(bundlingService).createBundle(any(BundleCallback.class), eq(TEST_CASE_ID));
+    }
+
+    @Test
+    void shouldDeleteAudioVideoEvidenceDocumentWhenBundleCreationFails() {
+        final CaseData caseData = caseData();
+        final CicCase cicCase = CicCase.builder().build();
+        cicCase.setApplicantDocumentsUploaded(getCaseworkerCICDocumentList());
+        caseData.setCicCase(cicCase);
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+
+        Document generatedPdf = Document.builder()
+            .filename("audio-video-evidence-123.pdf")
+            .url("http://dm-store/documents/11111111-1111-1111-1111-111111111111")
+            .binaryUrl("http://dm-store/documents/11111111-1111-1111-1111-111111111111/binary")
+            .build();
+        AudioVideoEvidenceBundleDocument audioVideoBundleDocument = AudioVideoEvidenceBundleDocument.builder()
+            .documentLink(generatedPdf)
+            .build();
+
+        when(audioVideoEvidenceBundleService.createAudioVideoEvidenceBundleDocument(TEST_CASE_ID))
+            .thenReturn(Optional.of(audioVideoBundleDocument));
+        when(bundlingService.createBundle(any(BundleCallback.class), eq(TEST_CASE_ID))).thenReturn(null);
+        when(bundlingService.buildBundleListValues(any())).thenReturn(null);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+
+        assertThat(response.getData().getCaseBundles()).isNull();
+        verify(audioVideoEvidenceBundleService).deleteAudioVideoEvidenceBundleDocument(generatedPdf);
+    }
+
+    @Test
+    void shouldReturnCallbackErrorWhenAudioVideoEvidenceGenerationFails() {
+        final CaseData caseData = caseData();
+        final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList();
+        final CicCase cicCase = CicCase.builder().build();
+        cicCase.setApplicantDocumentsUploaded(cicDocuments);
+        caseData.setCicCase(cicCase);
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
+        when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
+        when(audioVideoEvidenceBundleService.createAudioVideoEvidenceBundleDocument(TEST_CASE_ID))
+            .thenThrow(new AudioVideoEvidenceBundleException(TEST_CASE_ID, new RuntimeException("upload failed")));
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+
+        assertThat(response.getErrors())
+            .containsExactly("The audio/video evidence document could not be created. No bundle has been created. Please try again.");
+        assertThat(response.getData().getCaseBundles()).isEmpty();
+        assertThat(response.getData().getMultiBundleConfiguration()).isNull();
+        assertThat(response.getData().getCaseDocuments()).isNull();
+        assertThat(response.getData().getFurtherCaseDocuments()).isNull();
+        assertThat(response.getData().getAudioVideoEvidenceBundleDocument()).isNull();
+        verify(bundlingService, never()).createBundle(any(BundleCallback.class), eq(TEST_CASE_ID));
+    }
+
+    @Test
+    void shouldNotSilentlyHandleUnexpectedAudioVideoException() {
+        final CaseData caseData = caseData();
+        final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList();
+        final CicCase cicCase = CicCase.builder().build();
+        cicCase.setApplicantDocumentsUploaded(cicDocuments);
+        caseData.setCicCase(cicCase);
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
+        when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
+        when(audioVideoEvidenceBundleService.createAudioVideoEvidenceBundleDocument(TEST_CASE_ID))
+            .thenThrow(new RuntimeException("unexpected"));
+
+        assertThatThrownBy(() -> caseworkerCreateBundle.aboutToSubmit(
+            updatedCaseDetails,
+            CaseDetails.<CaseData, State>builder().build()
+        )).isInstanceOf(RuntimeException.class).hasMessage("unexpected");
+
+        verify(bundlingService, never()).createBundle(any(BundleCallback.class), eq(TEST_CASE_ID));
     }
 
     @Test
@@ -306,6 +446,7 @@ class CaseworkerCreateBundleTest {
             .isEqualTo(caseDetails.getData());
         assertThat(responseData.getCaseBundles()).isNotNull();
         assertThat(responseData.getCaseDocuments()).isNull();
+        assertThat(responseData.getFurtherCaseDocuments()).isNull();
         assertThat(responseData.getMultiBundleConfiguration()).isNull();
     }
 
@@ -386,6 +527,7 @@ class CaseworkerCreateBundleTest {
             .isEqualTo(caseDetails.getData());
         assertThat(responseData.getCaseBundles()).isNotNull();
         assertThat(responseData.getCaseDocuments()).isNull();
+        assertThat(responseData.getFurtherCaseDocuments()).isNull();
         assertThat(responseData.getMultiBundleConfiguration()).isNull();
     }
 
@@ -450,6 +592,7 @@ class CaseworkerCreateBundleTest {
             .isEqualTo(updatedCaseDetails.getData());
         assertThat(responseData.getCaseBundles()).isNotNull();
         assertThat(responseData.getCaseDocuments()).isNull();
+        assertThat(responseData.getFurtherCaseDocuments()).isNull();
         assertThat(responseData.getMultiBundleConfiguration()).isNull();
     }
 

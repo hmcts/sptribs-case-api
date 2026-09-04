@@ -324,6 +324,53 @@ public class DocumentsServiceTest {
     }
 
     @Test
+    void shouldGetAudioVideoDocumentsFilteredAndOrdered() {
+        OffsetDateTime olderTime = OffsetDateTime.parse("2026-01-10T10:00:00Z");
+        OffsetDateTime newerTime = OffsetDateTime.parse("2026-01-12T10:00:00Z");
+
+        DocumentEntity audioDocument = DocumentEntity.builder()
+            .caseReferenceNumber(TEST_CASE_ID)
+            .documentFilename("test-audio.mp3")
+            .documentBinaryUrl("example.com/test-audio.mp3/binary")
+            .documentTypeName(HOSPITAL_RECORDS.name())
+            .savedAt(olderTime)
+            .build();
+
+        DocumentEntity videoDocument = DocumentEntity.builder()
+            .caseReferenceNumber(TEST_CASE_ID)
+            .documentFilename("test-video.mp4")
+            .documentBinaryUrl("example.com/test-video.mp4/binary")
+            .documentTypeName(HOSPITAL_RECORDS.name())
+            .savedAt(newerTime)
+            .build();
+
+        DocumentEntity pdfDocument = buildDocumentEntity(HOSPITAL_RECORDS.name(), 2L, olderTime);
+
+        when(documentsRepository.findByCaseReferenceNumberOrderBySavedAtAsc(TEST_CASE_ID))
+            .thenReturn(List.of(audioDocument, pdfDocument, videoDocument));
+
+        List<DocumentEntity> result = documentsService.getAudioVideoDocuments(TEST_CASE_ID);
+
+        assertThat(result).containsExactly(audioDocument, videoDocument);
+    }
+
+    @Test
+    void shouldReturnEmptyListWhenCaseReferenceNullForAudioVideoLookup() {
+        assertThat(documentsService.getAudioVideoDocuments(null)).isEmpty();
+    }
+
+    @Test
+    void shouldThrowDocumentLookupExceptionWhenAudioVideoLookupFails() {
+        when(documentsRepository.findByCaseReferenceNumberOrderBySavedAtAsc(TEST_CASE_ID))
+            .thenThrow(new DataAccessResourceFailureException("DB error"));
+
+        assertThatThrownBy(() -> documentsService.getAudioVideoDocuments(TEST_CASE_ID))
+            .isInstanceOf(DocumentLookupException.class)
+            .hasMessageContaining("Error getting audio video documents by case reference")
+            .hasCauseInstanceOf(DataAccessException.class);
+    }
+
+    @Test
     void shouldThrowDocumentDeleteExceptionWhenTryingToDelete() {
         //given
         String binaryURL = "binaryURL";

@@ -526,7 +526,7 @@ em-ccdorc:
   java:
     imagePullPolicy: Always
     releaseNameOverride: ${SERVICE_NAME}-em-ccdorc
-    image: hmctsprod.azurecr.io/em/ccdorc:latest
+    image: hmctsprod.azurecr.io/em/ccdorc:pr-2355
     ingressHost: em-ccdorc-${SERVICE_FQDN}
     environment:
       EM_STITCHING_API_URL: https://em-stitching-${SERVICE_FQDN}
