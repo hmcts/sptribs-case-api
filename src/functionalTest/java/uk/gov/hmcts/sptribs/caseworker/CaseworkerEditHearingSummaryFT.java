@@ -66,7 +66,7 @@ public class CaseworkerEditHearingSummaryFT extends FunctionalTestSuite {
     public void shouldGetHearingSummaryListInAboutToStartCallback() throws Exception {
         final Map<String, Object> caseData = caseData(ABOUT_TO_START_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_HEARING_SUMMARY, ABOUT_TO_START_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_HEARING_SUMMARY, ABOUT_TO_START_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -81,7 +81,8 @@ public class CaseworkerEditHearingSummaryFT extends FunctionalTestSuite {
         final Response response = triggerCallback(
             caseData,
             CASEWORKER_EDIT_HEARING_SUMMARY,
-            HEARING_VENUES_MID_EVENT_URL
+            HEARING_VENUES_MID_EVENT_URL,
+            false
         );
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
@@ -97,7 +98,8 @@ public class CaseworkerEditHearingSummaryFT extends FunctionalTestSuite {
         final Response response = triggerCallback(
             caseData,
             CASEWORKER_EDIT_HEARING_SUMMARY,
-            HEARING_RECORDING_UPLOAD_DOCUMENTS_MID_EVENT_URL
+            HEARING_RECORDING_UPLOAD_DOCUMENTS_MID_EVENT_URL,
+            false
         );
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
@@ -113,7 +115,8 @@ public class CaseworkerEditHearingSummaryFT extends FunctionalTestSuite {
         final Response response = triggerCallback(
             caseData,
             CASEWORKER_EDIT_HEARING_SUMMARY,
-            HEARING_RECORDING_UPLOAD_DOCUMENTS_MID_EVENT_URL
+            HEARING_RECORDING_UPLOAD_DOCUMENTS_MID_EVENT_URL,
+            false
         );
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
@@ -130,7 +133,8 @@ public class CaseworkerEditHearingSummaryFT extends FunctionalTestSuite {
         final Response response = triggerCallback(
             caseData,
             CASEWORKER_EDIT_HEARING_SUMMARY,
-            EDIT_HEARING_SUMMARY_SELECT_MID_EVENT_URL
+            EDIT_HEARING_SUMMARY_SELECT_MID_EVENT_URL,
+            false
         );
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
@@ -155,7 +159,7 @@ public class CaseworkerEditHearingSummaryFT extends FunctionalTestSuite {
     public void shouldSuccessfullySubmit() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_CASE_DATA);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_HEARING_SUMMARY, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_HEARING_SUMMARY, SUBMITTED_URL, false);
 
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)

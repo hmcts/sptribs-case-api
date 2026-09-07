@@ -32,7 +32,7 @@ public class CaseworkerAddNoteFT extends FunctionalTestSuite {
     public void shouldUpdateCaseDataWithNotesWhenAboutToSubmitCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_ABOUT_TO_SUBMIT);
 
-        final Response response = triggerCallback(caseData,CASEWORKER_ADD_NOTE, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_ADD_NOTE, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -44,7 +44,7 @@ public class CaseworkerAddNoteFT extends FunctionalTestSuite {
     public void shouldUpdateCaseDataWithMultipleNotesWhenAboutToSubmitCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_MULTIPLE_NOTES_ABOUT_TO_SUBMIT);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_ADD_NOTE, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_ADD_NOTE, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())

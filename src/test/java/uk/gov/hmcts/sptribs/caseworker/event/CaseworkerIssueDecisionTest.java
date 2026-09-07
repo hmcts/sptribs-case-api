@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataAccessException;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
@@ -26,10 +27,14 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentSaveException;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.content.DecisionTemplateContent;
 import uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.DecisionIssuedNotification;
 
 import java.time.Clock;
@@ -38,10 +43,18 @@ import java.time.ZoneId;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_HYPHENATED;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_ISSUE_DECISION;
 
@@ -61,6 +74,9 @@ class CaseworkerIssueDecisionTest {
     private DecisionIssuedNotification decisionIssuedNotification;
 
     @Mock
+    private DocumentsService documentsService;
+
+    @Mock
     private IssueDecisionFooter issueDecisionFooter;
 
     private final Clock fixedClock = Clock.fixed(
@@ -77,7 +93,8 @@ class CaseworkerIssueDecisionTest {
         issueDecision = new CaseworkerIssueDecision(
             issueDecisionFooter,
             decisionIssuedNotification,
-            fixedClock
+            fixedClock,
+            documentsService
         );
     }
 
@@ -108,10 +125,12 @@ class CaseworkerIssueDecisionTest {
     }
 
     @Test
-    void shouldSetState() {
+    void shouldSetStateOnAboutToSubmitWhenUploadedFromComputer() {
         //Given
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setId(TEST_CASE_ID);
         final CaseData caseData = caseData();
         final CaseIssueDecision decision = new CaseIssueDecision();
         final CICDocument document = CICDocument.builder()
@@ -120,12 +139,47 @@ class CaseworkerIssueDecisionTest {
             .build();
         decision.setDecisionDocument(document);
         caseData.setCaseIssueDecision(decision);
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         details.setData(caseData);
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response = issueDecision.aboutToSubmit(details, beforeDetails);
 
         //Then
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(DocumentType.TRIBUNAL_DIRECTION), eq(CaseDocumentType.DECISION)
+        );
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(document.getDocumentLink()), eq(TEST_CASE_ID), eq(DocumentType.TRIBUNAL_DIRECTION), eq(CaseDocumentType.DECISION)
+        );
+
+        assertThat(response.getState()).isEqualTo(CaseManagement);
+        assertThat(response.getData().getCaseIssueDecision().getDecisionDate()).isEqualTo(LocalDate.of(2026, 5, 15));
+    }
+
+    @Test
+    void shouldSetStateOnAboutToSubmitWhenCreatedFromTemplate() {
+        //Given
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setId(TEST_CASE_ID);
+        final CaseData caseData = caseData();
+        final CaseIssueDecision decision = new CaseIssueDecision();
+        final Document document = Document.builder().binaryUrl("url").url("url").filename("file.txt").build();
+        decision.setIssueDecisionDraft(document);
+        caseData.setCaseIssueDecision(decision);
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        details.setData(caseData);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response = issueDecision.aboutToSubmit(details, beforeDetails);
+
+        //Then
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(document), eq(TEST_CASE_ID), eq(DocumentType.TRIBUNAL_DIRECTION), eq(CaseDocumentType.DECISION)
+        );
+
         assertThat(response.getState()).isEqualTo(CaseManagement);
         assertThat(response.getData().getCaseIssueDecision().getDecisionDate()).isEqualTo(LocalDate.of(2026, 5, 15));
     }
@@ -189,5 +243,83 @@ class CaseworkerIssueDecisionTest {
         //Then
         assertThat(response).isNotNull();
         assertThat(response.getData().getDecisionSignature()).isEmpty();
+    }
+
+    @Test
+    void shouldStoreErrorsWhenBuildAndSaveNewDocumentEntityThrowsRuntimeException() {
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setId(TEST_CASE_ID);
+        final CaseData caseData = caseData();
+        final CaseIssueDecision decision = new CaseIssueDecision();
+        final CICDocument document = CICDocument.builder()
+            .documentLink(Document.builder().binaryUrl("url").url("url").filename("file.txt").build())
+            .documentEmailContent("content")
+            .build();
+        decision.setDecisionDocument(document);
+        caseData.setCaseIssueDecision(decision);
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        details.setData(caseData);
+
+        DataAccessException testDataAccessException = new DataAccessException("Error saving document entity to database") {};
+
+        doThrow(new DocumentSaveException(testDataAccessException.getMessage(), testDataAccessException))
+            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(DocumentType.TRIBUNAL_DIRECTION),
+                eq(CaseDocumentType.DECISION));
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = issueDecision.aboutToSubmit(details, beforeDetails);
+
+        assertThat(response.getErrors()).hasSize(1);
+        assertThat(response.getErrors()).contains("Error saving document with filename: " + document.getDocumentLink().getFilename());
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(DocumentType.TRIBUNAL_DIRECTION), eq(CaseDocumentType.DECISION)
+        );
+
+        document.getDocumentLink().setFilename(null);
+        decision.setDecisionDocument(document);
+        caseData.setCaseIssueDecision(decision);
+        details.setData(caseData);
+
+        AboutToStartOrSubmitResponse<CaseData, State> nullFilenameResponse = issueDecision.aboutToSubmit(details, beforeDetails);
+
+        assertThat(nullFilenameResponse.getErrors()).hasSize(1);
+        assertThat(nullFilenameResponse.getErrors()).contains("Error saving document with no filename");
+
+        document.getDocumentLink().setFilename("");
+        decision.setDecisionDocument(document);
+        caseData.setCaseIssueDecision(decision);
+        details.setData(caseData);
+
+        AboutToStartOrSubmitResponse<CaseData, State> emptyFilenameResponse = issueDecision.aboutToSubmit(details, beforeDetails);
+
+        assertThat(emptyFilenameResponse.getErrors()).hasSize(1);
+        assertThat(emptyFilenameResponse.getErrors()).contains("Error saving document with no filename");
+    }
+
+    @Test
+    void shouldNotSaveDecisionDocumentToDBWhenDecisionDocumentIsNullAndWhenDocumentLinkIsNull() {
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseData caseData = caseData();
+        final CaseIssueDecision decision = new CaseIssueDecision();
+        caseData.setCaseIssueDecision(decision);
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        details.setData(caseData);
+
+        issueDecision.aboutToSubmit(details, beforeDetails);
+
+        verifyNoInteractions(documentsService);
+
+        final CICDocument document = CICDocument.builder()
+            .documentLink(null)
+            .documentEmailContent("content")
+            .build();
+        decision.setDecisionDocument(document);
+
+        issueDecision.aboutToSubmit(details, beforeDetails);
+
+        verifyNoInteractions(documentsService);
     }
 }

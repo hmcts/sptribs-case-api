@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -14,8 +15,6 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.DocumentManagementAmendDocuments;
 import uk.gov.hmcts.sptribs.caseworker.event.page.DocumentManagementSelectDocuments;
-import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
-import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -23,24 +22,28 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.document.DocumentConstants;
-import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_DOCUMENT_MANAGEMENT_AMEND;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.document.model.DocumentType.APPLICATION_FORM;
+import static uk.gov.hmcts.sptribs.document.model.DocumentType.HOSPITAL_RECORDS;
+import static uk.gov.hmcts.sptribs.document.model.DocumentType.OTHER_GENERAL_EVIDENCE;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCICDocumentList;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentList;
 
 @ExtendWith(MockitoExtension.class)
@@ -54,6 +57,9 @@ class CaseworkerDocumentManagementAmendTest {
 
     @InjectMocks
     private DocumentManagementAmendDocuments amendCaseDocuments;
+
+    @Mock
+    private DocumentsService documentsService;
 
     private static final String UPDATED_EMAIL_CONTENT = "updated email content";
 
@@ -112,18 +118,24 @@ class CaseworkerDocumentManagementAmendTest {
         assertThat(midResponse.getData().getCicCase().getSelectedDocumentCategory()).isEqualTo(APPLICATION_FORM);
         assertThat(midResponse.getData().getCicCase().getSelectedDocumentEmailContent()).isEqualTo("updated email content");
 
+        updatedCaseDetails.getData().getCicCase().setSelectedDocumentCategory(HOSPITAL_RECORDS);
+
         AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmitResponse =
             caseworkerDocumentManagementAmend.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse documentMgmtResponse = caseworkerDocumentManagementAmend.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
+        verify(documentsService).setNewDocumentTypeName(
+            "http://url/binary", HOSPITAL_RECORDS.name()
+        );
+
         assertThat(aboutToStartResponse.getData().getCicCase().getAmendDocumentList().getListItems()).isNotEmpty();
         assertThat(midResponse).isNotNull();
         assertThat(midResponse.getData().getCicCase().getSelectedDocumentType()).isEqualTo(DocumentConstants.CASE_TYPE);
         assertThat(aboutToSubmitResponse.getData().getCicCase().getApplicantDocumentsUploaded().getFirst().getValue()).isNotNull();
         assertThat(aboutToSubmitResponse.getData().getCicCase()
             .getApplicantDocumentsUploaded().getFirst()
-            .getValue().getDocumentCategory()).isEqualTo(APPLICATION_FORM);
+            .getValue().getDocumentCategory()).isEqualTo(HOSPITAL_RECORDS);
         assertThat(documentMgmtResponse).isNotNull();
     }
 
@@ -149,12 +161,18 @@ class CaseworkerDocumentManagementAmendTest {
         cicCase.setSelectedDocumentLink(getDocumentData());
         cicCase.setSelectedDocumentType(DocumentConstants.REINSTATE_TYPE);
 
+        cicCase.getSelectedDocumentLink().setCategoryId(OTHER_GENERAL_EVIDENCE.getCategory());
+
         //When
         AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmitResponse =
             caseworkerDocumentManagementAmend.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse documentMgmtResponse = caseworkerDocumentManagementAmend.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
+        verify(documentsService).setNewDocumentTypeName(
+            "http://url/binary", APPLICATION_FORM.name()
+        );
+
         assertThat(aboutToSubmitResponse.getData().getCicCase().getReinstateDocuments().getFirst().getValue()).isNotNull();
         assertThat(aboutToSubmitResponse.getData().getCicCase().getReinstateDocuments().getFirst()
             .getValue().getDocumentCategory())
@@ -183,12 +201,18 @@ class CaseworkerDocumentManagementAmendTest {
         cicCase.setSelectedDocumentLink(getDocumentData());
         cicCase.setSelectedDocumentType(DocumentConstants.DOC_MGMT_TYPE);
 
+        cicCase.getSelectedDocumentLink().setCategoryId(OTHER_GENERAL_EVIDENCE.getCategory());
+
         //When
         AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmitResponse =
             caseworkerDocumentManagementAmend.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse documentMgmtResponse = caseworkerDocumentManagementAmend.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
+        verify(documentsService).setNewDocumentTypeName(
+            "http://url/binary", APPLICATION_FORM.name()
+        );
+
         assertThat(aboutToSubmitResponse.getData().getAllDocManagement().getCaseworkerCICDocument().getFirst().getValue()).isNotNull();
         assertThat(aboutToSubmitResponse.getData().getAllDocManagement().getCaseworkerCICDocument().getFirst()
             .getValue().getDocumentCategory())
@@ -217,12 +241,18 @@ class CaseworkerDocumentManagementAmendTest {
         cicCase.setSelectedDocumentLink(getDocumentData());
         cicCase.setSelectedDocumentType(DocumentConstants.CLOSE_CASE_TYPE);
 
+        cicCase.getSelectedDocumentLink().setCategoryId(OTHER_GENERAL_EVIDENCE.getCategory());
+
         //When
         AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmitResponse =
             caseworkerDocumentManagementAmend.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse documentMgmtResponse = caseworkerDocumentManagementAmend.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
+        verify(documentsService).setNewDocumentTypeName(
+            "http://url/binary", APPLICATION_FORM.name()
+        );
+
         assertThat(aboutToSubmitResponse.getData().getCloseCase().getDocuments().getFirst().getValue()).isNotNull();
         assertThat(aboutToSubmitResponse.getData().getCloseCase().getDocuments().getFirst()
             .getValue().getDocumentCategory())
@@ -251,82 +281,23 @@ class CaseworkerDocumentManagementAmendTest {
         cicCase.setSelectedDocumentLink(getDocumentData());
         cicCase.setSelectedDocumentType(DocumentConstants.HEARING_SUMMARY_TYPE);
 
+        cicCase.getSelectedDocumentLink().setCategoryId(OTHER_GENERAL_EVIDENCE.getCategory());
+
         //When
         AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmitResponse =
             caseworkerDocumentManagementAmend.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse documentMgmtResponse = caseworkerDocumentManagementAmend.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
+        verify(documentsService).setNewDocumentTypeName(
+            "http://url/binary", APPLICATION_FORM.name()
+        );
+
         assertThat(aboutToSubmitResponse.getData().getListing().getSummary().getRecFile().getFirst().getValue()).isNotNull();
         assertThat(aboutToSubmitResponse.getData().getListing().getSummary().getRecFile().getFirst()
             .getValue().getDocumentCategory())
             .isEqualTo(DocumentType.LINKED_DOCS);
         assertThat(documentMgmtResponse).isNotNull();
-    }
-
-    private Document getDocumentData() {
-        return Document.builder()
-            .filename("test.pdf")
-            .binaryUrl("http://url/")
-            .url("http://url/")
-            .build();
-    }
-
-    private CICDocument getCicDocumentData() {
-        return CICDocument.builder()
-            .documentEmailContent("email content")
-            .documentLink(getDocumentData())
-            .build();
-    }
-
-    private List<ListValue<Order>> getOrderTemplateDocumentList() {
-        DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
-            .templateGeneratedDocument(getDocumentData())
-            .build();
-        Order order = Order.builder().draftOrder(draftOrderCIC).build();
-        ListValue<Order> orderListValue = new ListValue<>();
-        orderListValue.setValue(order);
-        return List.of(orderListValue);
-    }
-
-    private List<ListValue<Order>> getOrderList() {
-        Order order = Order.builder().uploadedFile(getCICDocumentList("test.pdf")).build();
-        ListValue<Order> orderListValue = new ListValue<>();
-        orderListValue.setValue(order);
-        return List.of(orderListValue);
-    }
-
-    private CaseworkerCICDocument getCaseworkerCICDocument() {
-        return CaseworkerCICDocument.builder()
-            .documentLink(getDocumentData())
-            .documentCategory(APPLICATION_FORM)
-            .documentEmailContent("updated email content")
-            .build();
-    }
-
-    private DynamicListElement getDynamicListItems() {
-        return DynamicListElement
-            .builder()
-            .label("CASE--test.pdf--A - Application Form")
-            .code(UUID.randomUUID())
-            .build();
-    }
-
-    private List<ListValue<CaseworkerCICDocument>> getCaseworkerCICDocumentListWithUrl(String fileName, String url) {
-        final CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
-            .documentLink(Document.builder()
-                .filename(fileName)
-                .binaryUrl(url)
-                .url(url)
-                .build())
-            .documentCategory(APPLICATION_FORM)
-            .documentEmailContent("some email content")
-            .build();
-        List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
-        ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue = new ListValue<>();
-        caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
-        documentList.add(caseworkerCICDocumentListValue);
-        return documentList;
     }
 
     @Test
@@ -364,11 +335,17 @@ class CaseworkerDocumentManagementAmendTest {
         cicCase.setSelectedDocumentLink(testDocument);
         cicCase.setSelectedDocumentType(DocumentConstants.DOC_MGMT_TYPE);
 
+        testDocument.setCategoryId(OTHER_GENERAL_EVIDENCE.getCategory());
+
         //When
         AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmitResponse =
             caseworkerDocumentManagementAmend.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //Then
+        verify(documentsService).setNewDocumentTypeName(
+            "http://url/binary", APPLICATION_FORM.name()
+        );
+
         // Should update the main document management list
         assertThat(aboutToSubmitResponse.getData().getAllDocManagement().getCaseworkerCICDocument().getFirst().getValue()).isNotNull();
         assertThat(aboutToSubmitResponse.getData().getAllDocManagement().getCaseworkerCICDocument().getFirst()
@@ -426,11 +403,17 @@ class CaseworkerDocumentManagementAmendTest {
         cicCase.setSelectedDocumentLink(testDocument);
         cicCase.setSelectedDocumentType(DocumentConstants.DOC_MGMT_TYPE);
 
+        testDocument.setCategoryId(OTHER_GENERAL_EVIDENCE.getCategory());
+
         //When
         AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmitResponse =
             caseworkerDocumentManagementAmend.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //Then
+        verify(documentsService).setNewDocumentTypeName(
+            "http://url/binary", APPLICATION_FORM.name()
+        );
+
         // Should update the main document management list
         assertThat(aboutToSubmitResponse.getData().getAllDocManagement().getCaseworkerCICDocument().getFirst().getValue()).isNotNull();
         assertThat(aboutToSubmitResponse.getData().getAllDocManagement().getCaseworkerCICDocument().getFirst()
@@ -445,6 +428,142 @@ class CaseworkerDocumentManagementAmendTest {
         // Should NOT update further uploaded documents when new bundle order is disabled
         assertThat(aboutToSubmitResponse.getData().getFurtherUploadedDocuments().getFirst()
             .getValue().getDocumentEmailContent()).isEqualTo("some email content"); // Original value
+    }
+
+    @Test
+    void shouldNotCallDatabaseWhenOnlyDocumentEmailContentIsUpdated() {
+        //Given
+        final CaseData caseData = caseData();
+        final CicCase cicCase = CicCase.builder()
+            .applicantDocumentsUploaded(getCaseworkerCICDocumentList("test.pdf", APPLICATION_FORM))
+            .build();
+        caseData.setCicCase(cicCase);
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(caseData);
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setState(State.CaseManagement);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> aboutToStartResponse =
+            caseworkerDocumentManagementAmend.aboutToStart(updatedCaseDetails);
+        assertThat(aboutToStartResponse.getData().getCicCase().getAmendDocumentList().getListItems()).isNotEmpty();
+
+        cicCase.getAmendDocumentList().setValue(getDynamicListItems());
+        cicCase.getApplicantDocumentsUploaded().getFirst().setValue(getCaseworkerCICDocument());
+        cicCase.getApplicantDocumentsUploaded().getFirst().getValue().getDocumentLink().setCategoryId(APPLICATION_FORM.getCategory());
+        AboutToStartOrSubmitResponse<CaseData, State> midResponse =
+            selectCaseDocuments.midEvent(updatedCaseDetails, beforeDetails);
+
+        assertThat(midResponse.getData().getCicCase().getSelectedDocumentLink()).isNotNull();
+        assertThat(midResponse.getData().getCicCase().getSelectedDocumentCategory()).isEqualTo(APPLICATION_FORM);
+        assertThat(midResponse.getData().getCicCase().getSelectedDocumentEmailContent()).isEqualTo("updated email content");
+
+        assertThat(midResponse).isNotNull();
+        assertThat(midResponse.getData().getCicCase().getSelectedDocumentType()).isEqualTo(DocumentConstants.CASE_TYPE);
+
+        updatedCaseDetails.getData().getCicCase().setSelectedDocumentEmailContent("new updated email content");
+
+        AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmitResponse =
+            caseworkerDocumentManagementAmend.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        //Then
+        verifyNoInteractions(documentsService);
+
+        assertThat(aboutToSubmitResponse.getData().getCicCase().getApplicantDocumentsUploaded().getFirst().getValue()).isNotNull();
+        assertThat(aboutToSubmitResponse.getData().getCicCase()
+            .getApplicantDocumentsUploaded().getFirst()
+            .getValue().getDocumentCategory()).isEqualTo(APPLICATION_FORM);
+        assertThat(aboutToSubmitResponse.getData().getCicCase()
+            .getApplicantDocumentsUploaded().getFirst()
+            .getValue().getDocumentEmailContent()).isEqualTo("new updated email content");
+    }
+
+    @Test
+    void shouldStoreErrorsWhenSetNewDocumentTypeNameThrowsRuntimeException() {
+        final CaseData caseData = caseData();
+        final CicCase cicCase = CicCase.builder()
+            .applicantDocumentsUploaded(getCaseworkerCICDocumentList("test.pdf", APPLICATION_FORM))
+            .build();
+        caseData.setCicCase(cicCase);
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(caseData);
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setState(State.CaseManagement);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        //When
+        caseworkerDocumentManagementAmend.aboutToStart(updatedCaseDetails);
+        cicCase.getAmendDocumentList().setValue(getDynamicListItems());
+        cicCase.getApplicantDocumentsUploaded().getFirst().setValue(getCaseworkerCICDocument());
+        cicCase.getApplicantDocumentsUploaded().getFirst().getValue().getDocumentLink().setCategoryId(APPLICATION_FORM.getCategory());
+        selectCaseDocuments.midEvent(updatedCaseDetails, beforeDetails);
+
+        updatedCaseDetails.getData().getCicCase().setSelectedDocumentCategory(HOSPITAL_RECORDS);
+
+        doThrow(new RuntimeException("Error updating document type name"))
+            .when(documentsService).setNewDocumentTypeName("http://url/",HOSPITAL_RECORDS.name());
+
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerDocumentManagementAmend.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        assertThat(response.getErrors()).hasSize(1);
+        assertThat(response.getErrors()).contains("Document with filename "
+            + cicCase.getApplicantDocumentsUploaded().getFirst().getValue().getDocumentLink().getFilename()
+            + " could not be assigned new category ID");
+
+        verify(documentsService).setNewDocumentTypeName(
+            "http://url/binary", HOSPITAL_RECORDS.name()
+        );
+    }
+
+    private Document getDocumentData() {
+        return Document.builder()
+            .filename("test.pdf")
+            .binaryUrl("http://url/binary")
+            .url("http://url/")
+            .categoryId(APPLICATION_FORM.getCategory())
+            .build();
+    }
+
+    private CaseworkerCICDocument getCaseworkerCICDocument() {
+        return CaseworkerCICDocument.builder()
+            .documentLink(getDocumentData())
+            .documentCategory(APPLICATION_FORM)
+            .documentEmailContent("updated email content")
+            .build();
+    }
+
+    private DynamicListElement getDynamicListItems() {
+        return DynamicListElement
+            .builder()
+            .label("CASE--test.pdf--A - Application Form")
+            .code(UUID.randomUUID())
+            .build();
+    }
+
+    private List<ListValue<CaseworkerCICDocument>> getCaseworkerCICDocumentListWithUrl(String fileName, String url) {
+        final CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
+            .documentLink(Document.builder()
+                .filename(fileName)
+                .binaryUrl(url)
+                .url(url)
+                .categoryId(APPLICATION_FORM.getCategory())
+                .build())
+            .documentCategory(APPLICATION_FORM)
+            .documentEmailContent("some email content")
+            .build();
+        List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
+        ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue = new ListValue<>();
+        caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
+        documentList.add(caseworkerCICDocumentListValue);
+        return documentList;
     }
 
 }

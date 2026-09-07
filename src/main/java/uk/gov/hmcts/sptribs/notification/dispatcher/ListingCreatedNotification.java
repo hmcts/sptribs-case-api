@@ -115,7 +115,7 @@ public class ListingCreatedNotification implements PartiesNotification {
             toEmail,
             templateVars,
             TemplateName.HEARING_CREATED_EMAIL);
-        return notificationService.sendEmail(request, caseReferenceNumber);
+        return notificationService.sendEmail(request, caseReferenceNumber, null);
     }
 
     private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter, String caseReferenceNumber) {

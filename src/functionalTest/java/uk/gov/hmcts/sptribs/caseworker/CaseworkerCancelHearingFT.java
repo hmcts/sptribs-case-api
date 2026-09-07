@@ -47,7 +47,7 @@ public class CaseworkerCancelHearingFT extends FunctionalTestSuite {
     public void shouldInitialiseTheHearingListWhenAboutToStartCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_ABOUT_TO_START);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_CANCEL_HEARING, ABOUT_TO_START_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_CANCEL_HEARING, ABOUT_TO_START_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -60,7 +60,7 @@ public class CaseworkerCancelHearingFT extends FunctionalTestSuite {
     public void shouldCancelHearingWhenAboutToSubmitCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_ABOUT_TO_SUBMIT);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_CANCEL_HEARING, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_CANCEL_HEARING, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -72,7 +72,7 @@ public class CaseworkerCancelHearingFT extends FunctionalTestSuite {
     public void shouldReceiveNoticeWhenOnePartyIsSubmittedIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_SUBMITTED_ONE_PARTY);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_CANCEL_HEARING, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_CANCEL_HEARING, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -88,7 +88,7 @@ public class CaseworkerCancelHearingFT extends FunctionalTestSuite {
         caseData.put("emptyString", "");
         caseData.put("emptyJsonObject", emptyJsonObject);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_CANCEL_HEARING, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_CANCEL_HEARING, SUBMITTED_URL, false);
 
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
@@ -100,7 +100,7 @@ public class CaseworkerCancelHearingFT extends FunctionalTestSuite {
     public void shouldRaiseErrorIfSubjectRepresentativeRespondentNotifyPartiesAllNull() throws Exception {
         Map<String, Object> caseData = caseData(REQUEST_ALL_PARTIES_NULL);
 
-        Response response = triggerCallback(caseData, CASEWORKER_CANCEL_HEARING, RECORD_NOTIFY_PARTIES_MID_EVENT_URL);
+        Response response = triggerCallback(caseData, CASEWORKER_CANCEL_HEARING, RECORD_NOTIFY_PARTIES_MID_EVENT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -113,7 +113,7 @@ public class CaseworkerCancelHearingFT extends FunctionalTestSuite {
     public void shouldRaiseErrorIfOnePartyIsInvalid() throws Exception {
         Map<String, Object> caseData = caseData(REQUEST_ONE_PARTY_INVALID);
 
-        Response response = triggerCallback(caseData, CASEWORKER_CANCEL_HEARING, RECORD_NOTIFY_PARTIES_MID_EVENT_URL);
+        Response response = triggerCallback(caseData, CASEWORKER_CANCEL_HEARING, RECORD_NOTIFY_PARTIES_MID_EVENT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -143,7 +143,7 @@ public class CaseworkerCancelHearingFT extends FunctionalTestSuite {
             "list_items", List.of(Map.of("code", hearingCode, "label", "1 - Case management - 21 Apr 2023 09:00"))
         ));
 
-        final Response response = triggerCallback(caseData, CASEWORKER_CANCEL_HEARING, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_CANCEL_HEARING, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())

@@ -68,10 +68,6 @@ public class CaseworkerCICDocument {
         return isValidDocument(this.documentLink.getFilename(), "pdf,csv,txt,rtf,xlsx,docx,doc,xls,mp3,m4a,mp4");
     }
 
-    public boolean isDocumentValid(String validExtensions) {
-        return isValidDocument(this.documentLink.getFilename(), validExtensions);
-    }
-
     @JsonIgnore
     public boolean isValidBundleDocument() {
         return isValidDocument(this.documentLink.getFilename(),"pdf,txt,xlsx,docx,doc,xls,jpg,jpeg,tiff,bmp,gif,svg,png");
