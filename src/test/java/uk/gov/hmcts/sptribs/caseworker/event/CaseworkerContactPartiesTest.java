@@ -241,17 +241,6 @@ class CaseworkerContactPartiesTest {
             .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
         caseData.setCicCase(cicCase);
 
-        String orderFilename = "Order--[Subject kaikaqsrf]--14-07-2026 15:39:57.pdf";
-        String orderDocUrlUUID = UUID.randomUUID().toString();
-
-        DynamicListElement selectedDocument = new DynamicListElement();
-        selectedDocument.setLabel("[" + orderFilename + "]" + "(http://mocked-url.com/documents/" + orderDocUrlUUID + "/binary)");
-        List<DynamicListElement> selectedDocuments = new ArrayList<>();
-        selectedDocuments.add(selectedDocument);
-        DynamicMultiSelectList documentsToSelect = new DynamicMultiSelectList();
-        documentsToSelect.setValue(selectedDocuments);
-        caseData.getContactPartiesDocuments().setDocumentList(documentsToSelect);
-
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
@@ -281,7 +270,7 @@ class CaseworkerContactPartiesTest {
         assertThat(contactPartiesResponse.getConfirmationHeader()).contains("Respondent");
         assertThat(contactPartiesResponse.getConfirmationHeader()).contains(",");
 
-        verify(contactPartiesService, times(2)).linkCorrespondenceIdsToDocuments(caseData, emailDocs,
+        verify(contactPartiesService, times(1)).linkCorrespondenceIdsToDocuments(caseData, emailDocs,
             List.of("UUID1", "UUID2", "UUID3", "UUID4"));
     }
 
@@ -337,7 +326,7 @@ class CaseworkerContactPartiesTest {
         assertThat(contactPartiesResponse.getConfirmationHeader()).contains(",");
 
         verify(contactPartiesNotification, never()).sendToSubject(any(), any(), any());
-        verify(contactPartiesService, times(2)).linkCorrespondenceIdsToDocuments(caseData, emailDocs, List.of("UUID2", "UUID3", "UUID4"));
+        verify(contactPartiesService, times(1)).linkCorrespondenceIdsToDocuments(caseData, emailDocs, List.of("UUID2", "UUID3", "UUID4"));
     }
 
     @Test
@@ -455,6 +444,8 @@ class CaseworkerContactPartiesTest {
             .cicCase(cicCase)
             .build();
         updatedCaseDetails.setData(caseData);
+
+        ReflectionTestUtils.setField(caseWorkerContactParties, "baseUrl", "http://mocked-url.com/");
 
         AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerContactParties.aboutToStart(updatedCaseDetails);
 
