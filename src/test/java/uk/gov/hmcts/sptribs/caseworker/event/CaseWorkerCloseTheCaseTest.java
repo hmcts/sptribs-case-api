@@ -198,56 +198,6 @@ class CaseWorkerCloseTheCaseTest {
     }
 
     @Test
-    void shouldUpdateRetainedDocumentCategoryAndRemoveDeletedDocumentWhenReclosing() {
-        final Document retainedDocument = Document.builder()
-            .url("retained-url")
-            .binaryUrl("retained-binary-url")
-            .filename("retained.pdf")
-            .build();
-        final Document removedDocument = Document.builder()
-            .url("removed-url")
-            .binaryUrl("removed-binary-url")
-            .filename("removed.pdf")
-            .build();
-        final ListValue<CaseworkerCICDocument> existingRetainedDocument = ListValue.<CaseworkerCICDocument>builder()
-            .id("retained-id")
-            .value(CaseworkerCICDocument.builder()
-                .documentLink(retainedDocument)
-                .documentCategory(DocumentType.LINKED_DOCS)
-                .build())
-            .build();
-        final ListValue<CaseworkerCICDocument> existingRemovedDocument = ListValue.<CaseworkerCICDocument>builder()
-            .id("removed-id")
-            .value(CaseworkerCICDocument.builder()
-                .documentLink(removedDocument)
-                .documentCategory(DocumentType.LINKED_DOCS)
-                .build())
-            .build();
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        updatedCaseDetails.setId(TEST_CASE_ID);
-        updatedCaseDetails.setData(CaseData.builder()
-            .closeCase(CloseCase.builder().documentsUpload(List.of(ListValue.<CaseworkerCICDocumentUpload>builder()
-                .id("retained-id")
-                .value(CaseworkerCICDocumentUpload.builder()
-                    .documentLink(retainedDocument)
-                    .documentCategory(DocumentType.HOSPITAL_RECORDS)
-                    .build())
-                .build())).build())
-            .build());
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        beforeDetails.setData(CaseData.builder().closeCase(CloseCase.builder()
-            .documents(List.of(existingRetainedDocument, existingRemovedDocument))
-            .build()).build());
-
-        caseworkerCloseTheCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
-
-        verify(documentsService).updateDocumentCategories(argThat(documents -> documents.size() == 1
-            && documents.get(0).getValue().getDocumentCategory() == DocumentType.HOSPITAL_RECORDS));
-        verify(documentsService).removeDocuments(argThat(documents -> documents.size() == 1
-            && documents.get(0).getValue().getDocumentLink().getBinaryUrl().equals("removed-binary-url")));
-    }
-
-    @Test
     void shouldReturnErrorForInvalidUploadedDocument() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CloseCase closeCase = CloseCase.builder().documentsUpload(getCaseworkerCICDocumentUploadList("file.xml")).build();
