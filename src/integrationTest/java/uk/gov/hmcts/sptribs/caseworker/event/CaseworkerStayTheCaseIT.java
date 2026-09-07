@@ -142,7 +142,7 @@ public class CaseworkerStayTheCaseIT {
             .isString()
             .contains("# Stay Added to Case \n## A notification has been sent to: Subject, Representative, Applicant");
 
-        verify(notificationServiceCIC, times(3)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED));
+        verify(notificationServiceCIC, times(3)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
         verifyNoMoreInteractions(notificationServiceCIC);
     }
 

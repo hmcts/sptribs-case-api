@@ -23,7 +23,7 @@ public class CaseworkerCaseBuiltFT extends FunctionalTestSuite {
     public void shouldTriggerSuccessfulResponseIfSubmitCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_GENERAL);
 
-        final Response response = triggerCallback(caseData, EventConstants.CASEWORKER_CASE_BUILT, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, EventConstants.CASEWORKER_CASE_BUILT, SUBMITTED_URL, false);
 
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)

@@ -30,9 +30,9 @@
           "orderContentOrderTemplate": "CIC3_Rule_27",
           "templateGeneratedDocument": {
             "category_id": "TD",
-            "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/e58a6e2b-9fdf-45ba-975f-6bcd59c71344",
+            "document_url": "http://dm-store.service.core-compute.internal/documents/e58a6e2b-9fdf-45ba-975f-6bcd59c71344",
             "document_filename": "SENT :Order--[Subject AutoTesting]--29-05-2024 13:36:27.pdf",
-            "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/e58a6e2b-9fdf-45ba-975f-6bcd59c71344/binary"
+            "document_binary_url": "http://dm-store.service.core-compute.internal/documents/e58a6e2b-9fdf-45ba-975f-6bcd59c71344/binary"
           },
           "orderContentOrderSignature": "Lorem ipsum signature 1"
         },
@@ -136,9 +136,9 @@
       "value": {
         "documentLink": {
           "category_id": "A",
-          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/20f4cf09-b0c8-455f-840d-bd403b66fedb",
+          "document_url": "http://dm-store.service.core-compute.internal/documents/20f4cf09-b0c8-455f-840d-bd403b66fedb",
           "document_filename": "mockFile.pdf",
-          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/20f4cf09-b0c8-455f-840d-bd403b66fedb/binary"
+          "document_binary_url": "http://dm-store.service.core-compute.internal/documents/20f4cf09-b0c8-455f-840d-bd403b66fedb/binary"
         },
         "documentCategory": "ApplicationForm",
         "documentEmailContent": "Lorem ipsum text A - Application Form"

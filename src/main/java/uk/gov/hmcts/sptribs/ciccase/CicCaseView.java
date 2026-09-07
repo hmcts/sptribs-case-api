@@ -34,11 +34,17 @@ public class CicCaseView implements CaseView<CriminalInjuriesCompensationData, S
                                                    CriminalInjuriesCompensationData blobCase) {
         // Invoked whenever CCD needs to load a case.
         // Load up any additional data or perform transformations as needed.
+        List<ListValue<Correspondence>> correspondences = buildCorrespondence(request.caseRef());
+        blobCase.setCorrespondence(correspondences);
+        return blobCase;
+    }
+
+    private List<ListValue<Correspondence>> buildCorrespondence(long caseRef) {
         List<ListValue<Correspondence>> correspondences = new ArrayList<>();
         AtomicInteger listValueIndex = new AtomicInteger(0);
 
         for (CorrespondenceEntity correspondenceEntity :
-            correspondenceRepository.findAllByCaseReferenceNumberOrderBySentOnDesc(request.caseRef())) {
+            correspondenceRepository.findAllByCaseReferenceNumberOrderBySentOnDesc(caseRef)) {
             Document correspondenceDocument = Document.builder()
                 .url(correspondenceEntity.getDocumentUrl())
                 .filename(correspondenceEntity.getDocumentFilename())
@@ -60,8 +66,6 @@ public class CicCaseView implements CaseView<CriminalInjuriesCompensationData, S
             correspondenceListValue.setValue(correspondence);
             correspondences.add(correspondenceListValue);
         }
-
-        blobCase.setCorrespondence(correspondences);
-        return blobCase;
+        return correspondences;
     }
 }

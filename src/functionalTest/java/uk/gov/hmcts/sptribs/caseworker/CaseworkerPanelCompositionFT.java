@@ -35,7 +35,7 @@ public class CaseworkerPanelCompositionFT extends FunctionalTestSuite {
     public void shouldSetPanel1MemberInAboutToStartCallback() throws Exception {
         final Map<String, Object> caseData = caseData(ABOUT_TO_START_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_PANEL_COMPOSITION, ABOUT_TO_START_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_PANEL_COMPOSITION, ABOUT_TO_START_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -47,7 +47,7 @@ public class CaseworkerPanelCompositionFT extends FunctionalTestSuite {
     public void shouldSetPanelCompositionInAboutToSubmitCallback() throws Exception {
         final Map<String, Object> caseData = caseData(ABOUT_TO_SUBMIT_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_PANEL_COMPOSITION, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_PANEL_COMPOSITION, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())

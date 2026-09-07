@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleIdAndTimestamp;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -27,6 +29,8 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -42,6 +46,9 @@ class CaseworkerRemoveBundlesTest {
 
     @InjectMocks
     private SelectBundles selectBundles;
+
+    @Mock
+    private DocumentsService documentsService;
 
     private CaseData caseData;
 
@@ -218,6 +225,8 @@ class CaseworkerRemoveBundlesTest {
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerRemoveBundles.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
 
+        //Stitched Document isn't generated yet so binary will always be null
+        verify(documentsService, times(2)).removeEntryFromDocumentTableByBinaryURL(null);
         assertThat(response.getData().getCaseBundles()).hasSize(1);
         assertThat(response.getData().getCaseBundles().getFirst().getId()).isEqualTo("1");
         assertThat(response.getData().getCaseBundles().getFirst().getValue().getId()).isEqualTo(bundleUUID3);
