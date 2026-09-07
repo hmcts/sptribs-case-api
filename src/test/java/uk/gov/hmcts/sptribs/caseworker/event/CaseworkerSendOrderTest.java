@@ -36,27 +36,32 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.common.service.ContactPartiesService;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT;
 import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.COLON;
@@ -98,6 +103,12 @@ class CaseworkerSendOrderTest {
 
     @Mock
     private DocumentsService documentsService;
+
+    @Mock
+    private ContactPartiesService contactPartiesService;
+
+    @Mock
+    private NotificationHelper notificationHelper;
 
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
@@ -680,6 +691,25 @@ class CaseworkerSendOrderTest {
 
         // Then
         assertThat(s.getConfirmationHeader()).contains("# Order sent");
+    }
+
+    @Test
+    void shouldLinkCorrespondenceIdsToDocumentsWhenOrderNotificationSent() {
+        final CaseData caseData = caseData();
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        caseData.setCicCase(CicCase.builder().notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build());
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(caseData);
+
+        when(notificationHelper.buildDocumentList(any(), eq(10))).thenReturn(Map.of("tribunalOrder", "uuid-1"));
+        when(newOrderIssuedNotification.sendToRespondent(eq(caseData), eq(TEST_CASE_ID_HYPHENATED), anyMap()))
+            .thenReturn("corr-id-1");
+
+        SubmittedCallbackResponse response = caseworkerSendOrder.submitted(details, new CaseDetails<>());
+
+        assertThat(response.getConfirmationHeader()).contains("# Order sent");
+        verify(contactPartiesService)
+            .linkCorrespondenceIdsToDocuments(caseData, Map.of("tribunalOrder", "uuid-1"), List.of("corr-id-1"));
     }
 
     @Test

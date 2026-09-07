@@ -39,9 +39,11 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.CreateNewOrder;
 import uk.gov.hmcts.sptribs.common.event.page.EditNewOrderContentPage;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
+import uk.gov.hmcts.sptribs.common.service.ContactPartiesService;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.dispatcher.AnonymityAppliedNotification;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
@@ -50,6 +52,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.CREATE_AND_SEND_NEW_ORDER;
@@ -94,6 +97,9 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
     private final AnonymityAppliedNotification anonymityAppliedNotification;
     private final SendOrderOrderDueDates orderDueDates;
     private final DocumentsService documentsService;
+    private final ContactPartiesService contactPartiesService;
+    private final NotificationHelper notificationHelper;
+
 
 
     @Override
@@ -295,21 +301,38 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
     }
 
     private void sendOrderNotification(String caseNumber, CaseData caseData) {
+        Map<String, String> uploadedDocuments = notificationHelper.buildDocumentList(caseData.getContactPartiesDocuments().getDocumentList(), 10);
+        List<String> correspondenceIds = new ArrayList<>();
+
         if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartySubject())) {
-            newOrderIssuedNotification.sendToSubject(caseData, caseNumber);
+            addCorrespondenceId(correspondenceIds,
+                newOrderIssuedNotification.sendToSubject(caseData, caseNumber, uploadedDocuments));
         }
 
         if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRepresentative())) {
-            newOrderIssuedNotification.sendToRepresentative(caseData, caseNumber);
+            addCorrespondenceId(correspondenceIds,
+                newOrderIssuedNotification.sendToRepresentative(caseData, caseNumber, uploadedDocuments));
         }
 
         if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRespondent())) {
-            newOrderIssuedNotification.sendToRespondent(caseData, caseNumber);
+            addCorrespondenceId(correspondenceIds,
+                newOrderIssuedNotification.sendToRespondent(caseData, caseNumber, uploadedDocuments));
         }
 
         if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyApplicant())) {
-            newOrderIssuedNotification.sendToApplicant(caseData, caseNumber);
+            addCorrespondenceId(correspondenceIds,
+                newOrderIssuedNotification.sendToApplicant(caseData, caseNumber, uploadedDocuments));
         }
 
+        if (!correspondenceIds.isEmpty()) {
+            contactPartiesService.linkCorrespondenceIdsToDocuments(caseData, uploadedDocuments, correspondenceIds);
+        }
+
+    }
+
+    private void addCorrespondenceId(List<String> correspondenceIds, String correspondenceId) {
+        if (correspondenceId != null) {
+            correspondenceIds.add(correspondenceId);
+        }
     }
 }

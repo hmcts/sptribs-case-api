@@ -26,6 +26,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.service.ContactPartiesService;
 import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentSaveException;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
@@ -42,6 +43,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_FINAL_DECISION;
@@ -90,6 +92,8 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
     private final Clock clock;
 
     private final DocumentsService documentsService;
+
+    private final ContactPartiesService contactPartiesService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -161,23 +165,35 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
         Document finalDecisionGuidance = getFinalDecisionGuidanceDocument(details.getId());
         data.getCaseIssueFinalDecision().setFinalDecisionGuidance(finalDecisionGuidance);
         try {
+            final Map<String, String> uploadedDocuments = Optional
+                .ofNullable(caseFinalDecisionIssuedNotification.getUploadedDocuments(data))
+                .orElseGet(Map::of);
+            final List<String> correspondenceIds = new ArrayList<>();
             final StringBuilder messageLine2 = new StringBuilder(100);
             messageLine2.append(" A notification will be sent  to: ");
             if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
                 messageLine2.append("Subject, ");
-                caseFinalDecisionIssuedNotification.sendToSubject(details.getData(), caseNumber);
+                addCorrespondenceId(correspondenceIds,
+                    caseFinalDecisionIssuedNotification.sendToSubject(details.getData(), caseNumber, uploadedDocuments));
             }
             if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
                 messageLine2.append("Representative, ");
-                caseFinalDecisionIssuedNotification.sendToRepresentative(details.getData(), caseNumber);
+                addCorrespondenceId(correspondenceIds,
+                    caseFinalDecisionIssuedNotification.sendToRepresentative(details.getData(), caseNumber, uploadedDocuments));
             }
             if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
                 messageLine2.append("Respondent, ");
-                caseFinalDecisionIssuedNotification.sendToRespondent(details.getData(), caseNumber);
+                addCorrespondenceId(correspondenceIds,
+                    caseFinalDecisionIssuedNotification.sendToRespondent(details.getData(), caseNumber, uploadedDocuments));
             }
             if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyApplicant())) {
                 messageLine2.append("Applicant ");
-                caseFinalDecisionIssuedNotification.sendToApplicant(details.getData(), caseNumber);
+                addCorrespondenceId(correspondenceIds,
+                    caseFinalDecisionIssuedNotification.sendToApplicant(details.getData(), caseNumber, uploadedDocuments));
+            }
+
+            if (!correspondenceIds.isEmpty() && !uploadedDocuments.isEmpty()) {
+                contactPartiesService.linkCorrespondenceIdsToDocuments(data, uploadedDocuments, correspondenceIds);
             }
         } catch (Exception notificationException) {
             log.error("Issue final decision notification failed with exception : {}", notificationException.getMessage());
@@ -216,6 +232,12 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
             );
         } catch (DocumentSaveException e) {
             errors.add(handleDocumentException(finalDecisionDocument, e.getMessage()));
+        }
+    }
+
+    private void addCorrespondenceId(List<String> correspondenceIds, String correspondenceId) {
+        if (correspondenceId != null) {
+            correspondenceIds.add(correspondenceId);
         }
     }
 }

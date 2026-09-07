@@ -28,6 +28,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.common.service.ContactPartiesService;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseIssuedNotification;
@@ -36,11 +37,14 @@ import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
@@ -79,6 +83,9 @@ class CaseworkerIssueCaseTest {
     @Mock
     private CaseIssuedNotification caseIssuedNotification;
 
+    @Mock
+    private ContactPartiesService contactPartiesService;
+
     private final String bankHolidayUrl = "https://www.gov.uk/bank-holidays/scotland.json";
 
     private final String baseUrl = "http://localhost:4013/";
@@ -89,9 +96,15 @@ class CaseworkerIssueCaseTest {
 
     @BeforeEach
     void setUp() {
-        caseworkerIssueCase = new CaseworkerIssueCase(caseIssuedNotification, bankHolidayService, bankHolidayUrl, baseUrl);
+        caseworkerIssueCase = new CaseworkerIssueCase(
+            caseIssuedNotification,
+            bankHolidayService,
+            contactPartiesService,
+            bankHolidayUrl,
+            baseUrl
+        );
 
-        Mockito.reset(bankHolidayService, caseIssuedNotification);
+        Mockito.reset(bankHolidayService, caseIssuedNotification, contactPartiesService);
     }
 
     @Test
@@ -153,7 +166,9 @@ class CaseworkerIssueCaseTest {
         doNothing().when(caseIssuedNotification).sendToSubject(caseData, caseData.getHyphenatedCaseRef());
         doNothing().when(caseIssuedNotification).sendToApplicant(caseData, caseData.getHyphenatedCaseRef());
         doNothing().when(caseIssuedNotification).sendToRepresentative(caseData, caseData.getHyphenatedCaseRef());
-        doNothing().when(caseIssuedNotification).sendToRespondent(caseData, caseData.getHyphenatedCaseRef());
+        when(caseIssuedNotification.getUploadedDocuments(caseData)).thenReturn(Map.of("doc", "uuid"));
+        when(caseIssuedNotification.sendToRespondent(eq(caseData), eq(caseData.getHyphenatedCaseRef()), anyMap()))
+            .thenReturn("test-correspondence-id");
 
         SubmittedCallbackResponse submittedResponse = caseworkerIssueCase.submitted(updatedCaseDetails, beforeDetails);
 
@@ -162,6 +177,8 @@ class CaseworkerIssueCaseTest {
         assertThat(submittedResponse).isNotNull();
         assertThat(submittedResponse.getConfirmationHeader())
             .contains("# Case issued \n##  This case has now been issued.");
+        verify(contactPartiesService).linkCorrespondenceIdsToDocuments(caseData, Map.of("doc", "uuid"),
+            List.of("test-correspondence-id"));
     }
 
     @Test
@@ -186,9 +203,8 @@ class CaseworkerIssueCaseTest {
         doThrow(NotificationException.class)
             .when(caseIssuedNotification)
             .sendToRepresentative(caseData, hyphenatedCaseRef);
-        doThrow(NotificationException.class)
-            .when(caseIssuedNotification)
-            .sendToRespondent(caseData, hyphenatedCaseRef);
+        when(caseIssuedNotification.sendToRespondent(eq(caseData), eq(hyphenatedCaseRef), anyMap()))
+            .thenThrow(NotificationException.class);
 
         SubmittedCallbackResponse submittedResponse = caseworkerIssueCase.submitted(caseDetails, caseDetails);
 
