@@ -54,7 +54,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.convertToCaseworkerCICDocument;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.getAddedDocuments;
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.getDocumentsWithUpdatedCategory;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.getRemovedDocuments;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateUploadedDocumentCategory;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateUploadedDocuments;
