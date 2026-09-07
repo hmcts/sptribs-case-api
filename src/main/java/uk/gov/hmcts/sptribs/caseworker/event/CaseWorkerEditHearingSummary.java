@@ -31,6 +31,7 @@ import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static uk.gov.hmcts.sptribs.caseworker.service.HearingService.isMatchingHearing;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_HEARING_SUMMARY;
@@ -157,6 +158,7 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
         return caseData.getHearingList().stream()
             .filter(listing -> isMatchingHearing(listing, hearingName))
             .map(listing -> listing.getValue().getSummary().getRecFile())
+            .filter(Objects::nonNull)
             .findFirst()
             .orElse(List.of());
     }

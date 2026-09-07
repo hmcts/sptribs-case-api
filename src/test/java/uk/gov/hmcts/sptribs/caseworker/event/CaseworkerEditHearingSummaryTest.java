@@ -196,6 +196,35 @@ class CaseworkerEditHearingSummaryTest {
     }
 
     @Test
+    void shouldEditHearingWithNoExistingRecordingCollection() {
+        final Listing existingListing = getRecordListing();
+        existingListing.setSummary(HearingSummary.builder().recFile(null).build());
+        final CaseData beforeCaseData = CaseData.builder()
+            .hearingList(List.of(ListValue.<Listing>builder().value(existingListing).build()))
+            .build();
+        final CaseData updatedCaseData = CaseData.builder()
+            .cicCase(CicCase.builder()
+                .hearingSummaryList(DynamicList.builder()
+                    .value(DynamicListElement.builder().label("1 - Final - 21 Apr 2023 10:00").build())
+                    .build())
+                .build())
+            .listing(getRecordListing())
+            .build();
+        updatedCaseData.getListing().setSummary(HearingSummary.builder().build());
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(updatedCaseData);
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(beforeCaseData);
+        when(judicialService.populateJudicialId(any())).thenReturn("personal_code");
+
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseWorkerEditHearingSummary.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        assertThat(response.getErrors()).isEmpty();
+        verify(documentsService).saveDocuments(any(), eq(List.of()), eq(HEARING_RECORD));
+    }
+
+    @Test
     void shouldRunSubmitted() {
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
