@@ -183,8 +183,6 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
             : beforeDetails.getData().getCloseCase().getDocuments();
         List<String> errors = new ArrayList<>(documentsService.saveDocuments(
             details.getId(), getAddedDocuments(documents, existingDocuments), DOCUMENT_MANAGEMENT));
-        errors.addAll(documentsService.updateDocumentCategories(
-            getDocumentsWithUpdatedCategory(documents, existingDocuments)));
         errors.addAll(documentsService.removeDocuments(getRemovedDocuments(existingDocuments, documents)));
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
