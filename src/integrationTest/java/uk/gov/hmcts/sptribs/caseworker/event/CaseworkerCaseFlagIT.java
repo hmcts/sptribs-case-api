@@ -215,7 +215,8 @@ public class CaseworkerCaseFlagIT {
             .isString()
             .contains("# Flag created \n## This Flag has been added to case");
 
-        verify(notificationServiceCIC, times(1)).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID_HYPHENATED));
+        verify(notificationServiceCIC, times(1)).sendEmail(any(NotificationRequest.class),
+            eq(TEST_CASE_ID_HYPHENATED), eq(null));
     }
 
     @Test

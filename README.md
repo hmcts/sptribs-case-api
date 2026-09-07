@@ -110,6 +110,10 @@ TASK_NAME=SystemProgressHeldCasesTask java -jar sptribs-case-api.jar
 # or
 TASK_NAME=SystemProgressHeldCasesTask ./gradlew bootRun
 ```
+## Scripts
+`generate-env-ccd-definition.sh` can be used to generate a local copy of definition files for manual uploads per environment
+
+`deploy-demo-dmn.sh` can be used to manually deploy local DMN files to Demo environment
 
 ## License
 

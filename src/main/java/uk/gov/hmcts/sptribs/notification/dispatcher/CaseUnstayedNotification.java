@@ -84,7 +84,7 @@ public class CaseUnstayedNotification implements PartiesNotification {
             destinationAddress,
             templateVars,
             TemplateName.CASE_UNSTAYED_EMAIL);
-        return notificationService.sendEmail(request, caseReferenceNumber);
+        return notificationService.sendEmail(request, caseReferenceNumber, null);
     }
 
     private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter, String caseReferenceNumber) {

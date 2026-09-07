@@ -89,9 +89,9 @@ public class CaseworkerEditDraftOrderIT {
             .build();
 
         final Document document = Document.builder()
-            .url("http://dm-store-aat.service.core-compute-aat.internal/documents/0ebad3a7-223e-4185-b8ce-ccb50a87e982")
+            .url("http://url/")
             .filename("DRAFT :Order--[null]--09-05-2024 15:11:08.pdf")
-            .binaryUrl("http://dm-store-aat.service.core-compute-aat.internal/documents/0ebad3a7-223e-4185-b8ce-ccb50a87e982/binary")
+            .binaryUrl("http://url/binary")
             .categoryId("TD")
             .build();
 

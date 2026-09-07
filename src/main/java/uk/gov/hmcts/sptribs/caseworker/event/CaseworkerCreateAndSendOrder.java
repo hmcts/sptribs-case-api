@@ -39,7 +39,9 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.CreateNewOrder;
 import uk.gov.hmcts.sptribs.common.event.page.EditNewOrderContentPage;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.AnonymityAppliedNotification;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
@@ -47,6 +49,7 @@ import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.CREATE_AND_SEND_NEW_ORDER;
@@ -54,6 +57,7 @@ import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.UPLOAD_A_NE
 import static uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil.applyAnonymityCaseFlag;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_AND_SEND_ORDER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
 import static uk.gov.hmcts.sptribs.caseworker.util.SendOrderUtil.updateCicCaseOrderList;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
@@ -89,6 +93,8 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
     private final NewOrderIssuedNotification newOrderIssuedNotification;
     private final AnonymityAppliedNotification anonymityAppliedNotification;
     private final SendOrderOrderDueDates orderDueDates;
+    private final DocumentsService documentsService;
+
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -153,7 +159,9 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
         final ListValue<FlagDetail> mergedAnonymityFlag =
             CaseFlagsUtil.mergeAnonymityFlagsPreserveOriginalId(caseData, beforeData);
 
-        final Order order = buildOrder(caseData, cicCase);
+        List<String> errors = new ArrayList<>();
+
+        final Order order = buildOrder(caseData, cicCase, errors, details.getId());
 
         updateCicCaseOrderList(caseData, order);
 
@@ -170,22 +178,24 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())
+            .errors(errors)
             .build();
     }
 
-    private static Order buildOrder(CaseData caseData, CicCase cicCase) {
+    private Order buildOrder(CaseData caseData, CicCase cicCase, List<String> errors, long caseReferenceNumber) {
         Order.OrderBuilder orderBuilder = Order.builder()
             .dueDateList(caseData.getOrderDueDates())
             .parties(getRecipients(cicCase))
             .orderSentDate(LocalDate.now());
 
-        populateDraftOrder(orderBuilder, caseData, cicCase);
-        populateUploadedOrder(orderBuilder, cicCase);
+        populateDraftOrder(orderBuilder, caseData, cicCase, errors, caseReferenceNumber);
+        populateUploadedOrder(orderBuilder, cicCase, errors, caseReferenceNumber);
 
         return orderBuilder.build();
     }
 
-    private static void populateDraftOrder(Order.OrderBuilder orderBuilder, CaseData caseData, CicCase cicCase) {
+    private void populateDraftOrder(Order.OrderBuilder orderBuilder, CaseData caseData, CicCase cicCase, List<String> errors,
+                                    long caseReferenceNumber) {
         if (!CREATE_AND_SEND_NEW_ORDER.equals(cicCase.getOrderIssuingType())) {
             return;
         }
@@ -195,12 +205,24 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
             .templateGeneratedDocument(cicCase.getOrderTemplateIssued())
             .build();
 
+        try {
+            documentsService.buildAndSaveNewDocumentEntity(
+                draftOrder.getTemplateGeneratedDocument(),
+                caseReferenceNumber,
+                DocumentType.TRIBUNAL_DIRECTION,
+                CaseDocumentType.ORDER
+            );
+        } catch (RuntimeException e) {
+            errors.add(handleDocumentException(draftOrder.getTemplateGeneratedDocument(), e.getMessage()));
+        }
+
         orderBuilder.draftOrder(draftOrder);
         caseData.setDraftOrderContentCIC(new DraftOrderContentCIC());
         cicCase.setOrderTemplateIssued(null);
     }
 
-    private static void populateUploadedOrder(Order.OrderBuilder orderBuilder, CicCase cicCase) {
+    private void populateUploadedOrder(Order.OrderBuilder orderBuilder, CicCase cicCase, List<String> errors,
+                                       long caseReferenceNumber) {
         if (!UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER.equals(cicCase.getOrderIssuingType())) {
             return;
         }
@@ -208,7 +230,19 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
         if (cicCase.getOrderFile() != null) {
             updateCategoryToDocument(cicCase.getOrderFile(), DocumentType.TRIBUNAL_DIRECTION.getCategory());
         }
+
         orderBuilder.uploadedFile(cicCase.getOrderFile());
+
+        try {
+            documentsService.buildAndSaveNewDocumentEntity(
+                cicCase.getOrderFile().getFirst().getValue().getDocumentLink(),
+                caseReferenceNumber,
+                DocumentType.TRIBUNAL_DIRECTION,
+                CaseDocumentType.ORDER
+            );
+        } catch (RuntimeException e) {
+            errors.add(handleDocumentException(cicCase.getOrderFile().getFirst().getValue().getDocumentLink(), e.getMessage()));
+        }
     }
 
     private static boolean shouldApplyAnonymityFlag(CicCase cicCase) {
@@ -240,7 +274,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                                       CaseDetails<CaseData, State> beforeDetails) {
+                                               CaseDetails<CaseData, State> beforeDetails) {
         try {
             sendOrderNotification(details.getData().getHyphenatedCaseRef(), details.getData());
             anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(

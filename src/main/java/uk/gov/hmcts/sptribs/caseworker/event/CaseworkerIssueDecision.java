@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionMainContent;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionNotice;
@@ -22,14 +23,21 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentSaveException;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.DecisionIssuedNotification;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_DECISION;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
@@ -57,6 +65,7 @@ public class CaseworkerIssueDecision implements CCDConfig<CaseData, State, UserR
     private final CcdPageConfiguration issueDecisionFooter;
     private final DecisionIssuedNotification decisionIssuedNotification;
     private final Clock clock;
+    private final DocumentsService documentsService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -100,16 +109,23 @@ public class CaseworkerIssueDecision implements CCDConfig<CaseData, State, UserR
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         final CaseData caseData = details.getData();
         final CICDocument decisionDocument = caseData.getCaseIssueDecision().getDecisionDocument();
+        final Document decisionDocumentCreatedFromTemplate = caseData.getCaseIssueDecision().getIssueDecisionDraft();
+
+        final List<String> errors = new ArrayList<>();
 
         if (decisionDocument != null && decisionDocument.getDocumentLink() != null) {
-            decisionDocument.getDocumentLink().setCategoryId("TD");
+            decisionDocument.getDocumentLink().setCategoryId(DocumentType.TRIBUNAL_DIRECTION.getCategory());
+            saveDecisionDocumentToDB(decisionDocument.getDocumentLink(), details.getId(), errors);
+        } else if (decisionDocumentCreatedFromTemplate != null) {
+            saveDecisionDocumentToDB(decisionDocumentCreatedFromTemplate, details.getId(), errors);
         }
 
         caseData.getCaseIssueDecision().setDecisionDate(LocalDate.now(this.clock));
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
-            .state(CaseManagement)//or AwaitingHearing
+            .state(CaseManagement)
+            .errors(errors)
             .build();
     }
 
@@ -143,6 +159,19 @@ public class CaseworkerIssueDecision implements CCDConfig<CaseData, State, UserR
         }
         if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyApplicant())) {
             decisionIssuedNotification.sendToApplicant(data, caseNumber);
+        }
+    }
+
+    private void saveDecisionDocumentToDB(Document decisionDocument, Long caseId, List<String> errors) {
+        try {
+            documentsService.buildAndSaveNewDocumentEntity(
+                decisionDocument,
+                caseId,
+                DocumentType.TRIBUNAL_DIRECTION,
+                CaseDocumentType.DECISION
+            );
+        } catch (DocumentSaveException e) {
+            errors.add(handleDocumentException(decisionDocument, e.getMessage()));
         }
     }
 }

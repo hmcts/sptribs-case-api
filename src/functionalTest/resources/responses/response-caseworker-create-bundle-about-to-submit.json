@@ -102,7 +102,6 @@
         }
       }
     ],
-    "caseNumber": "1234567890123456",
     "schemeLabel": "1996",
     "bundleConfiguration": {
       "value": "st_cic_bundle_all_case.yaml"
