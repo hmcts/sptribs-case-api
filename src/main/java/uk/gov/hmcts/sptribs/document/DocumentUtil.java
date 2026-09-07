@@ -10,12 +10,15 @@ import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentInfo;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -209,6 +212,29 @@ public final class DocumentUtil {
         List<ListValue<CaseworkerCICDocument>> updatedDocuments
     ) {
         return getDocumentsNotIn(existingDocuments, updatedDocuments);
+    }
+
+    public static List<ListValue<CaseworkerCICDocument>> getDocumentsWithUpdatedCategory(
+        List<ListValue<CaseworkerCICDocument>> updatedDocuments,
+        List<ListValue<CaseworkerCICDocument>> existingDocuments
+    ) {
+        if (CollectionUtils.isEmpty(updatedDocuments) || CollectionUtils.isEmpty(existingDocuments)) {
+            return List.of();
+        }
+
+        Map<String, DocumentType> existingCategories = existingDocuments.stream()
+            .collect(Collectors.toMap(
+                document -> document.getValue().getDocumentLink().getBinaryUrl(),
+                document -> document.getValue().getDocumentCategory()
+            ));
+
+        return updatedDocuments.stream()
+            .filter(document -> {
+                String binaryUrl = document.getValue().getDocumentLink().getBinaryUrl();
+                return existingCategories.containsKey(binaryUrl)
+                    && !Objects.equals(document.getValue().getDocumentCategory(), existingCategories.get(binaryUrl));
+            })
+            .toList();
     }
 
     private static List<ListValue<CaseworkerCICDocument>> getDocumentsNotIn(

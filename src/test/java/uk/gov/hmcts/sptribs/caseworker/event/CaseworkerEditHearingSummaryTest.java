@@ -36,6 +36,7 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -193,6 +194,51 @@ class CaseworkerEditHearingSummaryTest {
         caseWorkerEditHearingSummary.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         verify(documentsService).saveDocuments(any(), eq(List.of()), eq(HEARING_RECORD));
+    }
+
+    @Test
+    void shouldUpdateCategoryForRecordingLoadedForEditing() {
+        final Document recording = Document.builder()
+            .url("recording-url")
+            .binaryUrl("recording-binary-url")
+            .filename("recording.pdf")
+            .build();
+        final Listing existingListing = getRecordListing();
+        existingListing.setSummary(HearingSummary.builder().recFile(List.of(ListValue.<CaseworkerCICDocument>builder()
+            .id("recording-id")
+            .value(CaseworkerCICDocument.builder()
+                .documentLink(recording)
+                .documentCategory(DocumentType.LINKED_DOCS)
+                .build())
+            .build())).build());
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(CaseData.builder()
+            .hearingList(List.of(ListValue.<Listing>builder().value(existingListing).build()))
+            .build());
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(CaseData.builder()
+            .cicCase(CicCase.builder()
+                .hearingSummaryList(DynamicList.builder()
+                    .value(DynamicListElement.builder().label("1 - Final - 21 Apr 2023 10:00").build())
+                    .build())
+                .build())
+            .listing(getRecordListing())
+            .build());
+        updatedCaseDetails.getData().getListing().setSummary(HearingSummary.builder()
+            .recFileUpload(List.of(ListValue.<CaseworkerCICDocumentUpload>builder()
+                .id("recording-id")
+                .value(CaseworkerCICDocumentUpload.builder()
+                    .documentLink(recording)
+                    .documentCategory(DocumentType.HOSPITAL_RECORDS)
+                    .build())
+                .build()))
+            .build());
+        when(judicialService.populateJudicialId(any())).thenReturn("personal_code");
+
+        caseWorkerEditHearingSummary.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        verify(documentsService).updateDocumentCategories(argThat(documents -> documents.size() == 1
+            && documents.get(0).getValue().getDocumentCategory() == DocumentType.HOSPITAL_RECORDS));
     }
 
     @Test

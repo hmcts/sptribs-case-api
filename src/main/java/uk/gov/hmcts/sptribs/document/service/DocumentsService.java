@@ -89,6 +89,38 @@ public class DocumentsService {
         return errors;
     }
 
+    @Transactional
+    public List<String> updateDocumentCategories(List<ListValue<CaseworkerCICDocument>> documents) {
+        List<String> errors = new ArrayList<>();
+        for (ListValue<CaseworkerCICDocument> document : documents) {
+            try {
+                DocumentType documentType = document.getValue().getDocumentCategory();
+                setNewDocumentTypeName(
+                    document.getValue().getDocumentLink().getBinaryUrl(),
+                    documentType != null ? documentType.name() : null
+                );
+            } catch (RuntimeException e) {
+                errors.add(handleDocumentException(document.getValue().getDocumentLink(), e.getMessage()));
+            }
+        }
+
+        return errors;
+    }
+
+    @Transactional
+    public List<String> removeDocuments(List<ListValue<CaseworkerCICDocument>> documents) {
+        List<String> errors = new ArrayList<>();
+        for (ListValue<CaseworkerCICDocument> document : documents) {
+            try {
+                removeEntryFromDocumentTableByBinaryURL(document.getValue().getDocumentLink().getBinaryUrl());
+            } catch (RuntimeException e) {
+                errors.add(handleDocumentException(document.getValue().getDocumentLink(), e.getMessage()));
+            }
+        }
+
+        return errors;
+    }
+
     public List<Long> getDocumentsViaSentByContactParties(CaseData caseData, final Map<String, String> uploadedDocuments) {
 
         List<ListValue<CaseworkerCICDocument>> allCaseDocuments =  getAllCaseDocuments(caseData);

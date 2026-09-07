@@ -34,6 +34,7 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
@@ -219,6 +220,56 @@ class ReinstateCaseTest {
         reinstateCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         verify(documentsService).saveDocuments(eq(TEST_CASE_ID), eq(List.of()), eq(CaseDocumentType.DOCUMENT_MANAGEMENT));
+    }
+
+    @Test
+    void shouldUpdateRetainedDocumentCategoryAndRemoveDeletedDocumentWhenReinstatingAgain() {
+        final Document retainedDocument = Document.builder()
+            .url("retained-url")
+            .binaryUrl("retained-binary-url")
+            .filename("retained.pdf")
+            .build();
+        final Document removedDocument = Document.builder()
+            .url("removed-url")
+            .binaryUrl("removed-binary-url")
+            .filename("removed.pdf")
+            .build();
+        final ListValue<CaseworkerCICDocument> existingRetainedDocument = ListValue.<CaseworkerCICDocument>builder()
+            .id("retained-id")
+            .value(CaseworkerCICDocument.builder()
+                .documentLink(retainedDocument)
+                .documentCategory(DocumentType.LINKED_DOCS)
+                .build())
+            .build();
+        final ListValue<CaseworkerCICDocument> existingRemovedDocument = ListValue.<CaseworkerCICDocument>builder()
+            .id("removed-id")
+            .value(CaseworkerCICDocument.builder()
+                .documentLink(removedDocument)
+                .documentCategory(DocumentType.LINKED_DOCS)
+                .build())
+            .build();
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setData(CaseData.builder().cicCase(CicCase.builder()
+            .reinstateDocumentsUpload(List.of(ListValue.<CaseworkerCICDocumentUpload>builder()
+                .id("retained-id")
+                .value(CaseworkerCICDocumentUpload.builder()
+                    .documentLink(retainedDocument)
+                    .documentCategory(DocumentType.HOSPITAL_RECORDS)
+                    .build())
+                .build()))
+            .build()).build());
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(CaseData.builder().cicCase(CicCase.builder()
+            .reinstateDocuments(List.of(existingRetainedDocument, existingRemovedDocument))
+            .build()).build());
+
+        reinstateCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        verify(documentsService).updateDocumentCategories(argThat(documents -> documents.size() == 1
+            && documents.get(0).getValue().getDocumentCategory() == DocumentType.HOSPITAL_RECORDS));
+        verify(documentsService).removeDocuments(argThat(documents -> documents.size() == 1
+            && documents.get(0).getValue().getDocumentLink().getBinaryUrl().equals("removed-binary-url")));
     }
 
 

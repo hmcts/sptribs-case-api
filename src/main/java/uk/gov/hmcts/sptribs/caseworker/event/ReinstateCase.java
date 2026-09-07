@@ -42,6 +42,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.convertToCaseworkerCICDocument;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.getAddedDocuments;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.getDocumentsWithUpdatedCategory;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.getRemovedDocuments;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateUploadedDocumentCategory;
 import static uk.gov.hmcts.sptribs.document.model.CaseDocumentType.DOCUMENT_MANAGEMENT;
 
@@ -111,8 +113,11 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
         List<ListValue<CaseworkerCICDocument>> existingDocuments = beforeDetails.getData() == null
             ? List.of()
             : beforeDetails.getData().getCicCase().getReinstateDocuments();
-        List<String> errors = documentsService.saveDocuments(
-            details.getId(), getAddedDocuments(documents, existingDocuments), DOCUMENT_MANAGEMENT);
+        List<String> errors = new ArrayList<>(documentsService.saveDocuments(
+            details.getId(), getAddedDocuments(documents, existingDocuments), DOCUMENT_MANAGEMENT));
+        errors.addAll(documentsService.updateDocumentCategories(
+            getDocumentsWithUpdatedCategory(documents, existingDocuments)));
+        errors.addAll(documentsService.removeDocuments(getRemovedDocuments(existingDocuments, documents)));
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

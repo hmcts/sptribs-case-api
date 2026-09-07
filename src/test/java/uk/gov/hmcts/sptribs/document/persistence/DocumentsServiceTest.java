@@ -144,6 +144,27 @@ public class DocumentsServiceTest {
     }
 
     @Test
+    void shouldUpdateDocumentCategories() {
+        Document document = buildDocument(HOSPITAL_RECORDS.getCategory());
+
+        List<String> errors = documentsService.updateDocumentCategories(List.of(buildCaseworkerDocument(document)));
+
+        assertThat(errors).isEmpty();
+        verify(documentsRepository).setDocumentTypeNameByDocumentBinaryUrl(
+            document.getBinaryUrl(), HOSPITAL_RECORDS.name());
+    }
+
+    @Test
+    void shouldRemoveDocuments() {
+        Document document = buildDocument(HOSPITAL_RECORDS.getCategory());
+
+        List<String> errors = documentsService.removeDocuments(List.of(buildCaseworkerDocument(document)));
+
+        assertThat(errors).isEmpty();
+        verify(documentsRepository).deleteEntryByBinaryURL(document.getBinaryUrl());
+    }
+
+    @Test
     void shouldContinueSavingDocumentsWhenOneFails() {
         Document failedRecording = buildDocument(HOSPITAL_RECORDS.getCategory());
         Document savedRecording = buildDocument(HOSPITAL_RECORDS.getCategory());

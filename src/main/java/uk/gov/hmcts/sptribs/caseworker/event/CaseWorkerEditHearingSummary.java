@@ -45,6 +45,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.getAddedDocuments;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.getDocumentsWithUpdatedCategory;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.getRemovedDocuments;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.uploadRecFile;
 import static uk.gov.hmcts.sptribs.document.model.CaseDocumentType.HEARING_RECORD;
@@ -135,7 +136,9 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
         final List<ListValue<CaseworkerCICDocument>> recordings = caseData.getListing().getSummary().getRecFile();
         errors.addAll(documentsService.saveDocuments(
             details.getId(), getAddedDocuments(recordings, existingRecordings), HEARING_RECORD));
-        removeDeletedRecordings(getRemovedDocuments(existingRecordings, recordings), errors);
+        errors.addAll(documentsService.updateDocumentCategories(
+            getDocumentsWithUpdatedCategory(recordings, existingRecordings)));
+        errors.addAll(documentsService.removeDocuments(getRemovedDocuments(existingRecordings, recordings)));
 
         recordListHelper.saveSummary(details.getData());
         hearingService.updateHearingList(caseData, hearingName);
@@ -161,16 +164,6 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
             .filter(Objects::nonNull)
             .findFirst()
             .orElse(List.of());
-    }
-
-    private void removeDeletedRecordings(List<ListValue<CaseworkerCICDocument>> recordings, List<String> errors) {
-        for (ListValue<CaseworkerCICDocument> recording : recordings) {
-            try {
-                documentsService.removeEntryFromDocumentTableByBinaryURL(recording.getValue().getDocumentLink().getBinaryUrl());
-            } catch (RuntimeException e) {
-                errors.add(MessageUtil.handleDocumentException(recording.getValue().getDocumentLink(), e.getMessage()));
-            }
-        }
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,

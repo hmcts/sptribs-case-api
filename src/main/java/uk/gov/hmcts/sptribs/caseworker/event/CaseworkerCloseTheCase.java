@@ -35,6 +35,7 @@ import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseWithdrawnNotification;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
@@ -53,6 +54,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.convertToCaseworkerCICDocument;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.getAddedDocuments;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.getDocumentsWithUpdatedCategory;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.getRemovedDocuments;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateUploadedDocumentCategory;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateUploadedDocuments;
 import static uk.gov.hmcts.sptribs.document.model.CaseDocumentType.DOCUMENT_MANAGEMENT;
@@ -178,8 +181,11 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
         List<ListValue<CaseworkerCICDocument>> existingDocuments = beforeDetails.getData() == null
             ? List.of()
             : beforeDetails.getData().getCloseCase().getDocuments();
-        List<String> errors = documentsService.saveDocuments(
-            details.getId(), getAddedDocuments(documents, existingDocuments), DOCUMENT_MANAGEMENT);
+        List<String> errors = new ArrayList<>(documentsService.saveDocuments(
+            details.getId(), getAddedDocuments(documents, existingDocuments), DOCUMENT_MANAGEMENT));
+        errors.addAll(documentsService.updateDocumentCategories(
+            getDocumentsWithUpdatedCategory(documents, existingDocuments)));
+        errors.addAll(documentsService.removeDocuments(getRemovedDocuments(existingDocuments, documents)));
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
