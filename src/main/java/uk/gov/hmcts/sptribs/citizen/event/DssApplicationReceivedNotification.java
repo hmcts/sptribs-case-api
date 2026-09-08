@@ -27,6 +27,7 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.HAS_CICA_NUMBER;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.APPLICATION_RECEIVED;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.APPLICATION_RECEIVED_CY;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.APPLICATION_RECEIVED_NEW_CD;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.APPLICATION_RECEIVED_NEW_CD_CY;
 
 @Component
 @Setter
@@ -95,7 +96,7 @@ public class DssApplicationReceivedNotification implements PartiesNotification {
                                                        LanguagePreference languagePreference,
                                                        String caseReferenceNumber) {
 
-        TemplateName templateName = WELSH.equals(languagePreference) ? APPLICATION_RECEIVED_CY : getTemplateName();
+        TemplateName templateName = WELSH.equals(languagePreference) ?  getWelshTemplateName() : getTemplateName();
         NotificationRequest request =
             dssNotificationHelper.buildEmailNotificationRequest(toEmail, templateVars, templateName);
         return notificationService.sendEmail(request, caseReferenceNumber, null);
@@ -103,6 +104,10 @@ public class DssApplicationReceivedNotification implements PartiesNotification {
 
     private TemplateName getTemplateName() {
         return citizenDashboardEnabled ? APPLICATION_RECEIVED_NEW_CD : APPLICATION_RECEIVED;
+    }
+
+    private TemplateName getWelshTemplateName() {
+        return citizenDashboardEnabled ? APPLICATION_RECEIVED_NEW_CD_CY : APPLICATION_RECEIVED_CY;
     }
 
     private void addDashboardLink(Map<String, Object> templateVars) {
