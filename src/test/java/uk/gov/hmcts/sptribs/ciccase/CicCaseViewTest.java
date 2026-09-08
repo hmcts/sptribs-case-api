@@ -2,11 +2,14 @@ package uk.gov.hmcts.sptribs.ciccase;
 
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.ccd.sdk.CaseViewRequest;
+import uk.gov.hmcts.ccd.sdk.External;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.repositories.CorrespondenceRepository;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentView;
+import uk.gov.hmcts.sptribs.document.service.CaseDocumentReadService;
 import uk.gov.hmcts.sptribs.notification.model.Correspondence;
 import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
 
@@ -23,7 +26,8 @@ import static org.mockito.Mockito.when;
 class CicCaseViewTest {
 
     private final CorrespondenceRepository correspondenceRepository = mock(CorrespondenceRepository.class);
-    private final CicCaseView cicCaseView = new CicCaseView(correspondenceRepository);
+    private final CaseDocumentReadService caseDocumentReadService = mock(CaseDocumentReadService.class);
+    private final CicCaseView cicCaseView = new CicCaseView(correspondenceRepository, caseDocumentReadService);
 
     @Test
     void shouldReturnProvidedCaseDataUnchanged() {
@@ -77,9 +81,23 @@ class CicCaseViewTest {
 
         when(correspondenceRepository.findAllByCaseReferenceNumberOrderBySentOnDesc(request.caseRef()))
             .thenReturn(singletonList(testCorrespondenceEntity));
+        ListValue<CaseDocumentView> caseDocument = ListValue.<CaseDocumentView>builder()
+            .id("42")
+            .value(CaseDocumentView.builder().sourceType("Application").build())
+            .build();
+        when(caseDocumentReadService.getCaseViewDocuments(request.caseRef()))
+            .thenReturn(singletonList(caseDocument));
 
         CriminalInjuriesCompensationData returnedCaseData = cicCaseView.getCase(request, caseData);
 
         assertThat(returnedCaseData).isSameAs(caseData);
+        assertThat(returnedCaseData.getCaseDocumentView()).containsExactly(caseDocument);
+    }
+
+    @Test
+    void shouldKeepCaseDocumentProjectionExternalToPersistedCaseData() throws NoSuchFieldException {
+        assertThat(CriminalInjuriesCompensationData.class.getSuperclass()
+            .getDeclaredField("caseDocumentView")
+            .isAnnotationPresent(External.class)).isTrue();
     }
 }

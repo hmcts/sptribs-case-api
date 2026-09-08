@@ -17,7 +17,6 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ContactPartiesSelectDocument;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
-import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -27,6 +26,8 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.PartiesToContact;
 import uk.gov.hmcts.sptribs.common.service.ContactPartiesService;
+import uk.gov.hmcts.sptribs.document.model.SelectedCaseDocuments;
+import uk.gov.hmcts.sptribs.document.service.CaseDocumentReadService;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
 
@@ -75,6 +76,7 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
     private final ContactPartiesNotification contactPartiesNotification;
     private final NotificationHelper notificationHelper;
     private final ContactPartiesService contactPartiesService;
+    private final CaseDocumentReadService caseDocumentReadService;
     private static final int DOC_ATTACH_LIMIT = 10;
 
     @Override
@@ -119,7 +121,7 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         final CaseData caseData = details.getData();
         caseData.setContactParties(new ContactParties());
-        DynamicMultiSelectList documentList = DocumentListUtil.prepareContactPartiesDocumentList(caseData, baseUrl);
+        DynamicMultiSelectList documentList = caseDocumentReadService.getContactPartyOptions(details.getId(), baseUrl);
         caseData.getContactPartiesDocuments().setDocumentList(documentList);
         caseData.getCicCase().setNotifyPartyMessage("");
 
@@ -176,29 +178,38 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
 
     private void sendContactPartiesNotification(CaseDetails<CaseData, State> details, CicCase cicCase, String caseNumber) {
 
+        SelectedCaseDocuments selectedDocuments = caseDocumentReadService.getSelectedContactPartyDocuments(
+            details.getId(),
+            details.getData().getContactPartiesDocuments().getDocumentList(),
+            DOC_ATTACH_LIMIT
+        );
         final Map<String, String> uploadedDocuments = notificationHelper
-            .buildDocumentList(details.getData().getContactPartiesDocuments().getDocumentList(), DOC_ATTACH_LIMIT);
+            .buildDocumentList(selectedDocuments.getDocuments(), DOC_ATTACH_LIMIT);
 
         List<String> correspondenceIds = new ArrayList<>();
 
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
-            correspondenceIds.add(contactPartiesNotification.sendToSubject(details.getData(), caseNumber, uploadedDocuments));
+            correspondenceIds.add(contactPartiesNotification.sendToSubject(
+                details.getData(), caseNumber, uploadedDocuments, selectedDocuments.getDocuments()));
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
             correspondenceIds.add(contactPartiesNotification.sendToRepresentative(details.getData(), caseNumber,
-                uploadedDocuments));
+                uploadedDocuments, selectedDocuments.getDocuments()));
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyApplicant())) {
             correspondenceIds.add(contactPartiesNotification.sendToApplicant(details.getData(), caseNumber,
-                uploadedDocuments));
+                uploadedDocuments, selectedDocuments.getDocuments()));
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
             correspondenceIds.add(contactPartiesNotification.sendToRespondent(details.getData(), caseNumber,
-                uploadedDocuments));
+                uploadedDocuments, selectedDocuments.getDocuments()));
         }
 
         if (!correspondenceIds.isEmpty()) {
-            contactPartiesService.linkCorrespondenceIdsToDocuments(details.getData(), uploadedDocuments, correspondenceIds);
+            contactPartiesService.linkCorrespondenceIdsToDocuments(
+                selectedDocuments.getDocumentEntityIds(),
+                correspondenceIds
+            );
         }
     }
 

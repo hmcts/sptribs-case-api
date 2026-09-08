@@ -49,6 +49,7 @@ class CaseDocumentTypesCacheTest {
         assertThat(documentTypeId).isEqualTo(1L);
         assertThat(caseDocumentTypesCache.getId(CaseDocumentType.values()[0]))
             .isEqualTo(1L);
+        assertThat(caseDocumentTypesCache.getType(1L)).isEqualTo(CaseDocumentType.values()[0]);
     }
 
     @Test
@@ -82,6 +83,19 @@ class CaseDocumentTypesCacheTest {
         assertThatThrownBy(() -> caseDocumentTypesCache.getId(unknownType))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("Unknown document type code: " + unknownType);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenDocumentTypeIdIsUnknown() {
+        ReflectionTestUtils.setField(
+            caseDocumentTypesCache,
+            "caseDocumentTypeIdMap",
+            Map.of(CaseDocumentType.APPLICATION, 1L)
+        );
+
+        assertThatThrownBy(() -> caseDocumentTypesCache.getType(99L))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("Unknown document type id: 99");
     }
 
     @Test

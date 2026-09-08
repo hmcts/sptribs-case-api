@@ -14,6 +14,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
+import uk.gov.hmcts.sptribs.document.DocumentUtil;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.time.format.DateTimeFormatter;
@@ -198,6 +200,40 @@ public class NotificationHelper {
             uploadedDocuments.put(CASE_DOCUMENT + count, EMPTY_PLACEHOLDER);
             log.debug("Document not Available: {}, {} with value {}", count, uploadedDocuments.get(DOC_AVAILABLE + count),
                 uploadedDocuments.get(CASE_DOCUMENT + count));
+        }
+
+        return uploadedDocuments;
+    }
+
+    public Map<String, String> buildDocumentList(List<CaseworkerCICDocument> documents, int docAttachLimit) {
+        final Map<String, String> uploadedDocuments = new HashMap<>();
+
+        int count = 0;
+        if (documents != null) {
+            for (CaseworkerCICDocument document : documents.stream().limit(docAttachLimit).toList()) {
+                if (document == null || document.getDocumentLink() == null) {
+                    continue;
+                }
+
+                String documentUrl = ObjectUtils.defaultIfNull(
+                    document.getDocumentLink().getBinaryUrl(),
+                    document.getDocumentLink().getUrl()
+                );
+                var documentId = DocumentUtil.extractDocumentId(documentUrl);
+                if (documentId.isEmpty()) {
+                    continue;
+                }
+
+                count++;
+                uploadedDocuments.put(DOC_AVAILABLE + count, YES);
+                uploadedDocuments.put(CASE_DOCUMENT + count, documentId.get().toString());
+            }
+        }
+
+        while (count < docAttachLimit) {
+            count++;
+            uploadedDocuments.put(DOC_AVAILABLE + count, NO);
+            uploadedDocuments.put(CASE_DOCUMENT + count, EMPTY_PLACEHOLDER);
         }
 
         return uploadedDocuments;

@@ -17,6 +17,8 @@ import java.util.Optional;
 @Repository
 public interface DocumentsRepository extends JpaRepository<DocumentEntity, Long> {
 
+    List<DocumentEntity> findAllByCaseReferenceNumberOrderBySavedAtDesc(Long caseReferenceNumber);
+
     @Query("""
         select d.id
         from DocumentEntity d

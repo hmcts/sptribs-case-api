@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.controllers.mapper;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
@@ -11,6 +12,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Component
+@Slf4j
 public class CaseworkerCICDocumentMapper {
 
     public CaseworkerCICDocument mapDocument(DocumentEntity entity) {
@@ -28,6 +30,8 @@ public class CaseworkerCICDocumentMapper {
         Document document = Document.builder()
             .filename(entity.getDocumentFilename())
             .url(entity.getDocumentUrl())
+            .binaryUrl(entity.getDocumentBinaryUrl())
+            .categoryId(mapCategoryId(entity.getDocumentTypeName()))
             .build();
 
         return CaseworkerCICDocument.builder()
@@ -78,10 +82,22 @@ public class CaseworkerCICDocumentMapper {
             : List.of(mapDocument(entity));
     }
 
-    private DocumentType mapDocumentType(String documentTypeName) {
-        return documentTypeName == null
-            ? null
-            : DocumentType.valueOf(documentTypeName);
+    public DocumentType mapDocumentType(String documentTypeName) {
+        if (documentTypeName == null) {
+            return null;
+        }
+
+        try {
+            return DocumentType.valueOf(documentTypeName);
+        } catch (IllegalArgumentException exception) {
+            log.warn("Unsupported document type name: {}", documentTypeName);
+            return null;
+        }
+    }
+
+    private String mapCategoryId(String documentTypeName) {
+        DocumentType documentType = mapDocumentType(documentTypeName);
+        return documentType == null ? null : documentType.getCategory();
     }
 
 }

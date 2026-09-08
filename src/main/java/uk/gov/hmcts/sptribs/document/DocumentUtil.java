@@ -19,7 +19,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOCUMENT_VALIDATION_MESSAGE;
@@ -36,6 +38,21 @@ public final class DocumentUtil {
             documentInfo.getBinaryUrl(),
             documentInfo.getCategoryId()
         );
+    }
+
+    public static Optional<UUID> extractDocumentId(String documentUrl) {
+        if (StringUtils.isBlank(documentUrl)) {
+            return Optional.empty();
+        }
+
+        String urlWithoutBinarySuffix = documentUrl.replaceFirst("/binary/?$", "");
+        String documentId = StringUtils.substringAfterLast(urlWithoutBinarySuffix, "/");
+
+        try {
+            return Optional.of(UUID.fromString(documentId));
+        } catch (IllegalArgumentException exception) {
+            return Optional.empty();
+        }
     }
 
     public static List<ListValue<CaseworkerCICDocument>> updateUploadedDocumentCategory(

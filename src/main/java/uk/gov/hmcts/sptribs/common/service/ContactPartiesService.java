@@ -45,4 +45,18 @@ public class ContactPartiesService {
             );
         }
     }
+
+    public void linkCorrespondenceIdsToDocuments(List<Long> documentIds, List<String> correspondenceIds) {
+        for (String correspondenceId : correspondenceIds) {
+            try {
+                correspondenceDocumentService.saveCorrespondenceDocumentLink(correspondenceId, documentIds);
+            } catch (CorrespondenceDocumentSaveException e) {
+                log.error(
+                    "Unable to link documents for correspondenceId {}. Continuing with remaining correspondences.",
+                    correspondenceId,
+                    e
+                );
+            }
+        }
+    }
 }

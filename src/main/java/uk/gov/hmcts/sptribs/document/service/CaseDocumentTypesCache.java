@@ -51,6 +51,18 @@ public class CaseDocumentTypesCache {
         return id;
     }
 
+    public CaseDocumentType getType(Long id) {
+        if (caseDocumentTypeIdMap.isEmpty()) {
+            reload();
+        }
+
+        return caseDocumentTypeIdMap.entrySet().stream()
+            .filter(entry -> entry.getValue().equals(id))
+            .map(Map.Entry::getKey)
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Unknown document type id: " + id));
+    }
+
     private void validate(Map<CaseDocumentType, Long> loadedTypes) {
         for (CaseDocumentType type : CaseDocumentType.values()) {
             if (!loadedTypes.containsKey(type)) {

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import org.jspecify.annotations.NonNull;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -30,8 +31,10 @@ import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleCallback;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleIdAndTimestamp;
 import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
+import uk.gov.hmcts.sptribs.document.model.BundleDocumentsView;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.service.CaseDocumentReadService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.BundleCreatedNotification;
 
 import java.time.Clock;
@@ -50,8 +53,11 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.extractDocumentsFromListValues;
+import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.getAllCaseDocuments;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
@@ -81,6 +87,33 @@ class CaseworkerCreateBundleTest {
 
     @Mock
     private Clock clock;
+
+    @Mock
+    private CaseDocumentReadService caseDocumentReadService;
+
+    @BeforeEach
+    void setUpDocumentProjection() {
+        lenient().when(caseDocumentReadService.getBundleDocuments(any(Long.class), any(CaseData.class)))
+            .thenAnswer(invocation -> {
+                CaseData data = invocation.getArgument(1);
+                List<CaseworkerCICDocument> allDocuments =
+                    extractDocumentsFromListValues(getAllCaseDocuments(data));
+                List<CaseworkerCICDocument> initialDocuments =
+                    extractDocumentsFromListValues(data.getInitialCicaDocuments());
+                List<CaseworkerCICDocument> furtherDocuments = allDocuments.stream()
+                    .filter(document -> !initialDocuments.contains(document))
+                    .sorted(java.util.Comparator.comparing(
+                        CaseworkerCICDocument::getDate,
+                        java.util.Comparator.nullsLast(java.util.Comparator.naturalOrder())
+                    ))
+                    .toList();
+                return BundleDocumentsView.builder()
+                    .allDocuments(allDocuments)
+                    .initialDocuments(initialDocuments)
+                    .furtherDocuments(furtherDocuments)
+                    .build();
+            });
+    }
 
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {

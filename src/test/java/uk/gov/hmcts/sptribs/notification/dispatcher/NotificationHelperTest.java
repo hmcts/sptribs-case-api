@@ -8,6 +8,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
@@ -491,6 +493,26 @@ public class NotificationHelperTest {
             .containsEntry("CaseDocument1", "5e32a0d2-9b37-4548-b007-b9b2eb580d0a")
             .containsEntry("CaseDocument2", EMPTY_PLACEHOLDER)
             .containsEntry("DocumentAvailable1", YES)
+            .containsEntry("DocumentAvailable2", NO);
+    }
+
+    @Test
+    void shouldBuildDocumentListFromResolvedDocumentsWithoutParsingLabels() {
+        UUID documentId = UUID.randomUUID();
+        CaseworkerCICDocument document = CaseworkerCICDocument.builder()
+            .documentLink(Document.builder()
+                .url("http://document-management/documents/" + documentId)
+                .binaryUrl("http://document-management/documents/" + documentId + "/binary")
+                .filename("evidence.pdf")
+                .build())
+            .build();
+
+        Map<String, String> result = notificationHelper.buildDocumentList(List.of(document), 2);
+
+        assertThat(result)
+            .containsEntry("CaseDocument1", documentId.toString())
+            .containsEntry("DocumentAvailable1", YES)
+            .containsEntry("CaseDocument2", EMPTY_PLACEHOLDER)
             .containsEntry("DocumentAvailable2", NO);
     }
 
