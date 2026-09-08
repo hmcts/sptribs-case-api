@@ -52,7 +52,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
@@ -1057,5 +1059,29 @@ class CaseworkerCreateBundleTest {
         assertThat(responseData.getCaseBundles().getFirst().getValue().getDateAndTime())
             .isEqualTo(LocalDateTime.ofInstant(instant, zoneId));
         assertThat(responseData.getCaseBundleIdsAndTimestamps()).hasSize(1);
+    }
+
+    @Test
+    void shouldNotNotifyIfCaseClosed() {
+        final CaseData caseData = caseData();
+        final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList();
+        final CicCase cicCase = CicCase.builder().build();
+        cicCase.setApplicantDocumentsUploaded(cicDocuments);
+        caseData.setCicCase(cicCase);
+        caseData.setHyphenatedCaseRef("1234-5678-3456");
+        cicCase.setRepresentativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE));
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setState(CaseClosed);
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        SubmittedCallbackResponse createBundleSubmittedResponse =
+            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+
+        assertThat(createBundleSubmittedResponse.getConfirmationHeader())
+            .isEqualTo("# Bundle created.");
+        verifyNoInteractions(bundleCreatedNotification);
     }
 }
