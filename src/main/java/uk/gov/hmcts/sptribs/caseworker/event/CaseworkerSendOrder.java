@@ -266,7 +266,8 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
 
 
     private void sendOrderNotification(String caseNumber, CaseData caseData) {
-        Map<String, String> uploadedDocuments = notificationHelper.buildDocumentList(caseData.getContactPartiesDocuments().getDocumentList(), 10);
+        Map<String, String> uploadedDocuments = notificationHelper.buildDocumentList(
+            caseData.getContactPartiesDocuments().getDocumentList(), 10);
         List<String> correspondenceIds = new ArrayList<>();
 
         if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartySubject())) {
