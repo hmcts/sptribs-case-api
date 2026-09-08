@@ -151,7 +151,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
 
         if (details.getState() == CaseClosed) {
             return SubmittedCallbackResponse.builder()
-                .confirmationHeader("# Bundle created")
+                .confirmationHeader("# Bundle created.")
                 .build();
         }
 

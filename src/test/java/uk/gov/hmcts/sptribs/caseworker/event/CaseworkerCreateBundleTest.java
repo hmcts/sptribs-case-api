@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
@@ -106,6 +107,32 @@ class CaseworkerCreateBundleTest {
             .extracting(Event::getGrants)
             .extracting(map -> map.get(ST_CIC_WA_CONFIG_USER))
             .contains(Permissions.CREATE_READ_UPDATE);
+    }
+
+    @Test
+    void shouldNotAddSubmittedIfCitizenDashboardIsDisabled() {
+        ReflectionTestUtils.setField(caseworkerCreateBundle, "citizenDashboardEnabled", false);
+
+        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+
+        caseworkerCreateBundle.configure(configBuilder);
+
+        assertThat(getEventsFrom(configBuilder).values())
+            .extracting(Event::getSubmittedCallback)
+            .containsOnlyNulls();
+    }
+
+    @Test
+    void shouldAddSubmittedIfCitizenDashboardIsEnabled() {
+        ReflectionTestUtils.setField(caseworkerCreateBundle, "citizenDashboardEnabled", true);
+
+        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+
+        caseworkerCreateBundle.configure(configBuilder);
+
+        assertThat(getEventsFrom(configBuilder).values())
+            .extracting(Event::getSubmittedCallback)
+            .doesNotContainNull();
     }
 
     @Test
@@ -249,7 +276,6 @@ class CaseworkerCreateBundleTest {
                 ## A notification could not be sent to: Respondent, Representative\s
                 ## Please resend the notification.""");
     }
-
 
     @Test
     void shouldSuccessfullyCreateBundleWithNewOrderEnabled_noInitialDocuments_null() {
