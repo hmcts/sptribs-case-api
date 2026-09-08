@@ -58,7 +58,7 @@ public final class CommonConstants {
     public static final String MICRO_SERVICE_ID = "sptribs_case_api";
     public static final String CATEGORY_ID_LINK_REASON = "CaseLinkingReasonCode";
 
-    public static final String MARKUP_SEPARATOR = "]";
+    public static final String MARKUP_SEPARATOR = "](?=[^\\]]*$)";
     public static final String CIC = "Criminal Injuries Compensation Tribunal";
 
     public static final String STITCHED_FILE_NAME_FIELD_LENGTH_ERROR_MSG = "File Name should contain at least 2 and "
@@ -72,7 +72,6 @@ public final class CommonConstants {
     public static final String TRIBUNAL_NAME_VALUE = "First-tier Tribunal (CIC)";
     public static final String TRIBUNAL_EMAIL_VALUE = "CIC.enquiries@justice.gov.uk";
 
-    public static final String DASHBOARD_LINK = "http://special-tribunals.service.gov.uk/cic-update";
     public static final String DASHBOARD_KEY = "DashboardLink";
 
 

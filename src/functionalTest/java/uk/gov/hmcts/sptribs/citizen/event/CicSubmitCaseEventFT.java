@@ -95,6 +95,7 @@ public class CicSubmitCaseEventFT extends FunctionalTestSuite {
         assertThat(firstCorrespondenceEntity.getDocumentUrl()).isNotNull();
         assertThat(firstCorrespondenceEntity.getDocumentFilename()).isNotNull();
         assertThat(firstCorrespondenceEntity.getDocumentBinaryUrl()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getId()).isNotNull();
     }
 
     @Test
