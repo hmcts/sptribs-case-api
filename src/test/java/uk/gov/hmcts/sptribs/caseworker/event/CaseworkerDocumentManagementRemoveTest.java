@@ -259,7 +259,7 @@ public class CaseworkerDocumentManagementRemoveTest {
     }
 
     @Test
-    void shouldGrantCaseworkerRolesButNotJudicialRolesRemoveAccess() {
+    void shouldGrantSeniorCaseworkerAndTeamLeaderRemoveAccess() {
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         caseworkerDocumentManagementRemove.configure(configBuilder);
@@ -275,23 +275,23 @@ public class CaseworkerDocumentManagementRemoveTest {
 
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getGrants)
-            .extracting(map -> map.get(ST_CIC_CASEWORKER))
-            .contains(Permissions.CREATE_READ_UPDATE_DELETE);
-
-        assertThat(getEventsFrom(configBuilder).values())
-            .extracting(Event::getGrants)
             .extracting(map -> map.get(ST_CIC_SENIOR_CASEWORKER))
-            .contains(Permissions.CREATE_READ_UPDATE_DELETE);
-
-        assertThat(getEventsFrom(configBuilder).values())
-            .extracting(Event::getGrants)
-            .extracting(map -> map.get(ST_CIC_HEARING_CENTRE_ADMIN))
             .contains(Permissions.CREATE_READ_UPDATE_DELETE);
 
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getGrants)
             .extracting(map -> map.get(ST_CIC_HEARING_CENTRE_TEAM_LEADER))
             .contains(Permissions.CREATE_READ_UPDATE_DELETE);
+
+        assertThat(getEventsFrom(configBuilder).values())
+            .extracting(Event::getGrants)
+            .extracting(map -> map.get(ST_CIC_CASEWORKER))
+            .doesNotContain(Permissions.CREATE_READ_UPDATE_DELETE);
+
+        assertThat(getEventsFrom(configBuilder).values())
+            .extracting(Event::getGrants)
+            .extracting(map -> map.get(ST_CIC_HEARING_CENTRE_ADMIN))
+            .doesNotContain(Permissions.CREATE_READ_UPDATE_DELETE);
 
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getGrants)
