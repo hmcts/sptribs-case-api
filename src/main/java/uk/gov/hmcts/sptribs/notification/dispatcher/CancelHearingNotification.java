@@ -15,14 +15,10 @@ import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.APPLICANT;
-import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.REPRESENTATIVE;
-import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.RESPONDENT;
-import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.SUBJECT;
+import static uk.gov.hmcts.sptribs.notification.NotificationHelper.getHearingNotificationParties;
 
 @Component
 @Slf4j
@@ -126,25 +122,8 @@ public class CancelHearingNotification implements PartiesNotification {
 
     @Override
     public Set<NotificationParties> buildCorrespondenceParties(NotificationContextRequest request) {
-        Set<NotificationParties> correspondenceParties = new HashSet<>();
         CicCase cicCase = request.getCaseData().getCicCase();
 
-        if (cicCase.getHearingNotificationParties() == null) {
-            return correspondenceParties;
-        }
-
-        if (cicCase.getHearingNotificationParties().contains(NotificationParties.SUBJECT)) {
-            correspondenceParties.add(SUBJECT);
-        }
-        if (cicCase.getHearingNotificationParties().contains(NotificationParties.REPRESENTATIVE)) {
-            correspondenceParties.add(REPRESENTATIVE);
-        }
-        if (cicCase.getHearingNotificationParties().contains(NotificationParties.RESPONDENT)) {
-            correspondenceParties.add(RESPONDENT);
-        }
-        if (cicCase.getHearingNotificationParties().contains(NotificationParties.APPLICANT)) {
-            correspondenceParties.add(APPLICANT);
-        }
-        return correspondenceParties;
+        return getHearingNotificationParties(cicCase);
     }
 }

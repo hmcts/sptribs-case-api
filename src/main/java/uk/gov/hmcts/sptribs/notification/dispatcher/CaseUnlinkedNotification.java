@@ -15,13 +15,10 @@ import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.APPLICANT;
-import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.REPRESENTATIVE;
-import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.SUBJECT;
+import static uk.gov.hmcts.sptribs.notification.NotificationHelper.getPartiesOnCase;
 
 @Component
 @Slf4j
@@ -99,18 +96,8 @@ public class CaseUnlinkedNotification implements PartiesNotification {
 
     @Override
     public Set<NotificationParties> buildCorrespondenceParties(NotificationContextRequest request) {
-        Set<NotificationParties> correspondenceParties = new HashSet<>();
         CicCase cicCase = request.getCaseData().getCicCase();
 
-        if (null != cicCase.getSubjectCIC() && !cicCase.getSubjectCIC().isEmpty()) {
-            correspondenceParties.add(SUBJECT);
-        }
-        if (null != cicCase.getApplicantCIC() && !cicCase.getApplicantCIC().isEmpty()) {
-            correspondenceParties.add(APPLICANT);
-        }
-        if (null != cicCase.getRepresentativeCIC() && !cicCase.getRepresentativeCIC().isEmpty()) {
-            correspondenceParties.add(REPRESENTATIVE);
-        }
-        return correspondenceParties;
+        return getPartiesOnCase(cicCase);
     }
 }

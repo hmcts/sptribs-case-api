@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.notification.dispatcher;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -21,18 +20,14 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import uk.gov.hmcts.sptribs.notification.model.Party;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.APPLICANT;
-import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.REPRESENTATIVE;
-import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.RESPONDENT;
-import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.SUBJECT;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DASHBOARD_KEY;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_EMAIL_VALUE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME_VALUE;
+import static uk.gov.hmcts.sptribs.notification.NotificationHelper.getNotificationParties;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.CONTACT_PARTIES_EMAIL;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.CONTACT_PARTIES_EMAIL_NEW_CD;
 
@@ -190,22 +185,9 @@ public class ContactPartiesNotification implements PartiesNotification {
 
     @Override
     public Set<NotificationParties> buildCorrespondenceParties(NotificationContextRequest request) {
-        Set<NotificationParties> correspondenceParties = new HashSet<>();
         CicCase cicCase = request.getCaseData().getCicCase();
 
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
-            correspondenceParties.add(SUBJECT);
-        }
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
-            correspondenceParties.add(REPRESENTATIVE);
-        }
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyApplicant())) {
-            correspondenceParties.add(APPLICANT);
-        }
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
-            correspondenceParties.add(RESPONDENT);
-        }
-        return correspondenceParties;
+        return getNotificationParties(cicCase);
     }
 
     private NotificationResponse sendEmailNotification(final Map<String, Object> templateVars,

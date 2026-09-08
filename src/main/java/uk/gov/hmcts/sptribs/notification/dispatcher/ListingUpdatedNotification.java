@@ -17,13 +17,12 @@ import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
-import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.REPRESENTATIVE;
-import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.RESPONDENT;
-import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.SUBJECT;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.APPLICANT;
+import static uk.gov.hmcts.sptribs.notification.NotificationHelper.getHearingNotificationParties;
 
 @Component
 @Slf4j
@@ -113,23 +112,8 @@ public class ListingUpdatedNotification implements PartiesNotification {
 
     @Override
     public Set<NotificationParties> buildCorrespondenceParties(NotificationContextRequest request) {
-        Set<NotificationParties> correspondenceParties = new HashSet<>();
         CicCase cicCase = request.getCaseData().getCicCase();
 
-        if (cicCase.getHearingNotificationParties() == null) {
-            return correspondenceParties;
-        }
-
-        if (cicCase.getHearingNotificationParties().contains(SUBJECT)) {
-            correspondenceParties.add(SUBJECT);
-        }
-        if (cicCase.getHearingNotificationParties().contains(REPRESENTATIVE)) {
-            correspondenceParties.add(REPRESENTATIVE);
-        }
-        if (cicCase.getHearingNotificationParties().contains(RESPONDENT)) {
-            correspondenceParties.add(RESPONDENT);
-        }
-
-        return correspondenceParties;
+        return getHearingNotificationParties(cicCase, EnumSet.of(APPLICANT));
     }
 }

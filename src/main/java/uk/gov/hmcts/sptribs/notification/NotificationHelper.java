@@ -5,6 +5,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
@@ -13,16 +14,24 @@ import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.time.format.DateTimeFormatter;
+import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SPACE;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.APPLICANT;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.REPRESENTATIVE;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.RESPONDENT;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.SUBJECT;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_1;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_2;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_3;
@@ -248,4 +257,77 @@ public class NotificationHelper {
         return listing.getHearingFormat() != null && listing.getHearingFormat().equals(HearingFormat.TELEPHONE);
     }
 
+    public static Set<NotificationParties> getHearingNotificationParties(CicCase cicCase) {
+        return getHearingNotificationParties(cicCase, EnumSet.noneOf(NotificationParties.class));
+    }
+
+    public static Set<NotificationParties> getHearingNotificationParties(CicCase cicCase,
+                                                                         Set<NotificationParties> exclude) {
+        Set<NotificationParties> correspondenceParties = new HashSet<>();
+
+        if (cicCase.getHearingNotificationParties() == null) {
+            return correspondenceParties;
+        }
+
+        if (!exclude.contains(SUBJECT) && cicCase.getHearingNotificationParties().contains(SUBJECT)) {
+            correspondenceParties.add(SUBJECT);
+        }
+        if (!exclude.contains(REPRESENTATIVE) && cicCase.getHearingNotificationParties().contains(REPRESENTATIVE)) {
+            correspondenceParties.add(REPRESENTATIVE);
+        }
+        if (!exclude.contains(RESPONDENT) && cicCase.getHearingNotificationParties().contains(RESPONDENT)) {
+            correspondenceParties.add(RESPONDENT);
+        }
+        if (!exclude.contains(APPLICANT) && cicCase.getHearingNotificationParties().contains(APPLICANT)) {
+            correspondenceParties.add(APPLICANT);
+        }
+        return correspondenceParties;
+    }
+
+    public static Set<NotificationParties> getNotificationParties(CicCase cicCase) {
+        return getNotificationParties(cicCase, EnumSet.noneOf(NotificationParties.class));
+    }
+
+    public static Set<NotificationParties> getNotificationParties(CicCase cicCase,
+                                                                  Set<NotificationParties> exclude) {
+        Set<NotificationParties> correspondenceParties = new HashSet<>();
+
+        if (!exclude.contains(SUBJECT) && !CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
+            correspondenceParties.add(SUBJECT);
+        }
+        if (!exclude.contains(APPLICANT) && !CollectionUtils.isEmpty(cicCase.getNotifyPartyApplicant())) {
+            correspondenceParties.add(APPLICANT);
+        }
+        if (!exclude.contains(REPRESENTATIVE) && !CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
+            correspondenceParties.add(REPRESENTATIVE);
+        }
+        if (!exclude.contains(RESPONDENT) && !CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
+            correspondenceParties.add(RESPONDENT);
+        }
+        return correspondenceParties;
+    }
+
+    public static Set<NotificationParties> getPartiesOnCase(CicCase cicCase) {
+        return getPartiesOnCase(cicCase, EnumSet.noneOf(NotificationParties.class));
+    }
+
+    public static Set<NotificationParties> getPartiesOnCase(CicCase cicCase,
+                                                     Set<NotificationParties> exclude) {
+        Set<NotificationParties> correspondenceParties = new HashSet<>();
+
+        if (!exclude.contains(SUBJECT) && cicCase.getSubjectCIC() != null
+            && !cicCase.getSubjectCIC().isEmpty()) {
+            correspondenceParties.add(SUBJECT);
+        }
+        if (!exclude.contains(APPLICANT) && cicCase.getApplicantCIC() != null
+            && !cicCase.getApplicantCIC().isEmpty()) {
+            correspondenceParties.add(APPLICANT);
+        }
+        if (!exclude.contains(REPRESENTATIVE) && cicCase.getRepresentativeCIC() != null
+            && !cicCase.getRepresentativeCIC().isEmpty()) {
+            correspondenceParties.add(REPRESENTATIVE);
+        }
+
+        return correspondenceParties;
+    }
 }

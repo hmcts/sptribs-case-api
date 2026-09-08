@@ -17,18 +17,14 @@ import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static org.apache.commons.collections4.CollectionUtils.isEmpty;
-import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.APPLICANT;
-import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.REPRESENTATIVE;
-import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.SUBJECT;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.NONE_PROVIDED;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.STAY_ADDITIONAL_DETAIL;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.STAY_EXPIRATION_DATE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.STAY_REASON;
+import static uk.gov.hmcts.sptribs.notification.NotificationHelper.getPartiesOnCase;
 
 @Component
 @Slf4j
@@ -123,19 +119,8 @@ public class CaseStayedNotification implements PartiesNotification {
 
     @Override
     public Set<NotificationParties> buildCorrespondenceParties(NotificationContextRequest request) {
-        Set<NotificationParties> correspondenceParties = new HashSet<>();
         CicCase cicCase = request.getCaseData().getCicCase();
 
-        if (!isEmpty(cicCase.getSubjectCIC())) {
-            correspondenceParties.add(SUBJECT);
-        }
-        if (!isEmpty(cicCase.getApplicantCIC())) {
-            correspondenceParties.add(APPLICANT);
-        }
-        if (!isEmpty(cicCase.getRepresentativeCIC())) {
-            correspondenceParties.add(REPRESENTATIVE);
-        }
-
-        return correspondenceParties;
+        return getPartiesOnCase(cicCase);
     }
 }
