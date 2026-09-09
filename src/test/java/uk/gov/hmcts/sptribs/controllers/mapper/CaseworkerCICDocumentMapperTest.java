@@ -51,7 +51,7 @@ class CaseworkerCICDocumentMapperTest {
     }
 
     @Test
-    void shouldUseUpdatedAtWhenPresent() {
+    void shouldKeepSavedDateWhenDocumentMetadataHasBeenUpdated() {
         // Given
         OffsetDateTime savedAt =
             OffsetDateTime.parse("2026-06-05T10:15:30Z");
@@ -71,7 +71,7 @@ class CaseworkerCICDocumentMapperTest {
 
         // Then
         assertThat(result.getDate())
-            .isEqualTo(updatedAt.toLocalDate());
+            .isEqualTo(savedAt.toLocalDate());
     }
 
     @Test

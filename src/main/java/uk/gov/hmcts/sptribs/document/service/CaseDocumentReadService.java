@@ -1,69 +1,100 @@
 package uk.gov.hmcts.sptribs.document.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesAllowedFileTypes;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
-import uk.gov.hmcts.sptribs.controllers.mapper.CaseDocumentProjectionMapper;
+import uk.gov.hmcts.sptribs.controllers.mapper.CaseworkerCICDocumentMapper;
+import uk.gov.hmcts.sptribs.document.DocumentFileTypes;
 import uk.gov.hmcts.sptribs.document.DocumentUtil;
 import uk.gov.hmcts.sptribs.document.model.BundleDocumentsView;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentView;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
-import uk.gov.hmcts.sptribs.document.model.DocumentReadPurpose;
 import uk.gov.hmcts.sptribs.document.model.SelectedCaseDocuments;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class CaseDocumentReadService {
 
     private static final String DOCUMENT_BINARY_PATH = "documents/%s/binary";
 
+    private static final Set<CaseDocumentType> CASE_VIEW_TYPES = Set.of(
+        CaseDocumentType.APPLICATION,
+        CaseDocumentType.DOCUMENT_MANAGEMENT,
+        CaseDocumentType.ORDER,
+        CaseDocumentType.DRAFT_ORDER,
+        CaseDocumentType.DECISION,
+        CaseDocumentType.FINAL_DECISION,
+        CaseDocumentType.HEARING_RECORD,
+        CaseDocumentType.OTHER
+    );
+
+    private static final Set<CaseDocumentType> SELECTABLE_TYPES = Set.of(
+        CaseDocumentType.APPLICATION,
+        CaseDocumentType.DOCUMENT_MANAGEMENT,
+        CaseDocumentType.ORDER,
+        CaseDocumentType.DECISION,
+        CaseDocumentType.FINAL_DECISION,
+        CaseDocumentType.HEARING_RECORD,
+        CaseDocumentType.OTHER
+    );
+
     private final DocumentsRepository documentsRepository;
     private final CaseDocumentTypesCache caseDocumentTypesCache;
-    private final CaseDocumentPolicy caseDocumentPolicy;
-    private final CaseDocumentProjectionMapper projectionMapper;
+    private final CaseworkerCICDocumentMapper documentMapper;
 
     public List<ListValue<CaseDocumentView>> getCaseViewDocuments(long caseReference) {
-        return getDocuments(caseReference, DocumentReadPurpose.CASE_VIEW).stream()
-            .map(document -> projectionMapper.mapCaseView(document.entity(), document.type()))
+        return getDocuments(caseReference, CASE_VIEW_TYPES).stream()
+            .map(document -> documentMapper.mapCaseDocumentView(document.entity(), document.type()))
             .toList();
     }
 
-    public BundleDocumentsView getBundleDocuments(long caseReference, CaseData caseData) {
-        List<TypedDocument> typedDocuments = getDocuments(caseReference, DocumentReadPurpose.BUNDLE);
-        Set<String> initialBinaryUrls = getInitialBinaryUrls(caseData);
+    public BundleDocumentsView getBundleDocuments(
+        long caseReference,
+        Set<String> initialDocumentBinaryUrls
+    ) {
+        Set<String> initialBinaryUrls = initialDocumentBinaryUrls == null
+            ? Set.of()
+            : initialDocumentBinaryUrls;
 
-        List<CaseworkerCICDocument> allDocuments = typedDocuments.stream()
+        List<ProjectedDocument> projectedDocuments = getDocuments(caseReference, SELECTABLE_TYPES).stream()
             .map(TypedDocument::entity)
-            .map(projectionMapper::mapBundleOrSelection)
+            .filter(this::isValidBundleDocument)
+            .map(entity -> new ProjectedDocument(
+                entity.getDocumentBinaryUrl(),
+                documentMapper.mapDocument(entity)
+            ))
             .toList();
 
-        List<CaseworkerCICDocument> initialDocuments = typedDocuments.stream()
-            .map(TypedDocument::entity)
-            .filter(entity -> initialBinaryUrls.contains(entity.getDocumentBinaryUrl()))
-            .map(projectionMapper::mapBundleOrSelection)
+        List<CaseworkerCICDocument> allDocuments = projectedDocuments.stream()
+            .map(ProjectedDocument::document)
             .toList();
 
-        List<CaseworkerCICDocument> furtherDocuments = typedDocuments.stream()
-            .map(TypedDocument::entity)
-            .filter(entity -> !initialBinaryUrls.contains(entity.getDocumentBinaryUrl()))
-            .map(projectionMapper::mapBundleOrSelection)
+        List<CaseworkerCICDocument> initialDocuments = projectedDocuments.stream()
+            .filter(document -> initialBinaryUrls.contains(document.binaryUrl()))
+            .map(ProjectedDocument::document)
+            .toList();
+
+        List<CaseworkerCICDocument> furtherDocuments = projectedDocuments.stream()
+            .filter(document -> !initialBinaryUrls.contains(document.binaryUrl()))
+            .map(ProjectedDocument::document)
             .sorted(Comparator.comparing(
                 CaseworkerCICDocument::getDate,
                 Comparator.nullsLast(Comparator.naturalOrder())
@@ -78,12 +109,13 @@ public class CaseDocumentReadService {
     }
 
     public DynamicMultiSelectList getContactPartyOptions(long caseReference, String baseUrl) {
-        String apiUrl = baseUrl.replaceAll("/$", "") + "/" + DOCUMENT_BINARY_PATH;
+        String apiUrl = removeTrailingSlash(baseUrl) + "/" + DOCUMENT_BINARY_PATH;
 
-        List<DynamicListElement> options = getDocuments(caseReference, DocumentReadPurpose.CONTACT_PARTIES).stream()
+        List<DynamicListElement> options = getDocuments(caseReference, SELECTABLE_TYPES).stream()
             .map(TypedDocument::entity)
+            .filter(this::isValidContactPartyDocument)
             .map(entity -> toContactPartyOption(entity, apiUrl))
-            .flatMap(java.util.Optional::stream)
+            .flatMap(Optional::stream)
             .toList();
 
         return DynamicMultiSelectList.builder()
@@ -98,78 +130,82 @@ public class CaseDocumentReadService {
         int limit
     ) {
         Set<UUID> selectedIds = selectedIds(selection);
-        if (selectedIds.isEmpty()) {
+        if (selectedIds.isEmpty() || limit <= 0) {
             return emptySelection();
         }
 
-        Map<UUID, DocumentEntity> documentsById = new LinkedHashMap<>();
-        getDocuments(caseReference, DocumentReadPurpose.CONTACT_PARTIES).stream()
-            .map(TypedDocument::entity)
-            .forEach(entity -> DocumentUtil.extractDocumentId(entity.getDocumentUrl())
-                .ifPresent(id -> documentsById.put(id, entity)));
-
+        Set<Long> selectableTypeIds = getCaseDocumentTypesById(SELECTABLE_TYPES).keySet();
         List<DocumentEntity> selectedEntities = selectedIds.stream()
-            .map(documentsById::get)
-            .filter(java.util.Objects::nonNull)
             .limit(limit)
+            .map(UUID::toString)
+            .map(documentId -> documentsRepository.findByCaseReferenceAndDocumentIdUuid(caseReference, documentId))
+            .flatMap(Optional::stream)
+            .filter(entity -> selectableTypeIds.contains(entity.getCaseDocumentTypeId()))
+            .filter(this::isValidContactPartyDocument)
             .toList();
 
         return SelectedCaseDocuments.builder()
             .documentEntityIds(selectedEntities.stream().map(DocumentEntity::getId).toList())
-            .documents(selectedEntities.stream().map(projectionMapper::mapBundleOrSelection).toList())
+            .documents(selectedEntities.stream().map(documentMapper::mapDocument).toList())
             .build();
     }
 
-    private List<TypedDocument> getDocuments(long caseReference, DocumentReadPurpose purpose) {
-        return documentsRepository.findAllByCaseReferenceNumberOrderBySavedAtDesc(caseReference).stream()
-            .map(this::toTypedDocument)
-            .flatMap(java.util.Optional::stream)
-            .filter(document -> caseDocumentPolicy.includes(purpose, document.type(), document.entity()))
+    private List<TypedDocument> getDocuments(long caseReference, Set<CaseDocumentType> documentTypes) {
+        Map<Long, CaseDocumentType> documentTypesById = getCaseDocumentTypesById(documentTypes);
+
+        return documentsRepository.findDocumentsByReferenceAndCaseDocumentTypeIds(
+            caseReference,
+            List.copyOf(documentTypesById.keySet())
+        ).stream()
+            .filter(this::hasDocumentUrl)
+            .map(entity -> new TypedDocument(entity, documentTypesById.get(entity.getCaseDocumentTypeId())))
+            .filter(document -> document.type() != null)
             .toList();
     }
 
-    private java.util.Optional<TypedDocument> toTypedDocument(DocumentEntity entity) {
-        try {
-            return java.util.Optional.of(new TypedDocument(
-                entity,
-                caseDocumentTypesCache.getType(entity.getCaseDocumentTypeId())
-            ));
-        } catch (IllegalArgumentException exception) {
-            log.warn("Ignoring document {} with unsupported case document type id {}",
-                entity.getId(), entity.getCaseDocumentTypeId());
-            return java.util.Optional.empty();
-        }
+    private Map<Long, CaseDocumentType> getCaseDocumentTypesById(Set<CaseDocumentType> documentTypes) {
+        return documentTypes.stream()
+            .collect(Collectors.toMap(caseDocumentTypesCache::getId, Function.identity()));
     }
 
-    private java.util.Optional<DynamicListElement> toContactPartyOption(DocumentEntity entity, String apiUrl) {
+    private boolean hasDocumentUrl(DocumentEntity document) {
+        return document != null && StringUtils.isNotBlank(document.getDocumentUrl());
+    }
+
+    private boolean isValidBundleDocument(DocumentEntity document) {
+        return hasDocumentUrl(document)
+            && DocumentFileTypes.isValid(
+                document.getDocumentFilename(),
+                DocumentFileTypes.BUNDLE_DOCUMENT_EXTENSIONS
+            );
+    }
+
+    private boolean isValidContactPartyDocument(DocumentEntity document) {
+        return hasDocumentUrl(document)
+            && ContactPartiesAllowedFileTypes.isFileTypeValid(
+                StringUtils.substringAfterLast(document.getDocumentFilename(), ".")
+            );
+    }
+
+    private Optional<DynamicListElement> toContactPartyOption(DocumentEntity entity, String apiUrl) {
         return DocumentUtil.extractDocumentId(entity.getDocumentUrl())
             .map(documentId -> {
-                CaseworkerCICDocument document = projectionMapper.mapBundleOrSelection(entity);
+                CaseworkerCICDocument document = documentMapper.mapDocument(entity);
                 String category = document.getDocumentCategory() == null
                     ? "Uncategorised"
                     : document.getDocumentCategory().getLabel();
-                String label = "[" + entity.getDocumentFilename() + " " + category + "]("
-                    + String.format(apiUrl, documentId) + ")";
+                String label = String.format(
+                    "[%s %s](%s)",
+                    entity.getDocumentFilename(),
+                    category,
+                    String.format(apiUrl, documentId)
+                );
                 return DynamicListElement.builder().code(documentId).label(label).build();
             });
     }
 
-    private Set<String> getInitialBinaryUrls(CaseData caseData) {
-        if (caseData == null || caseData.getInitialCicaDocuments() == null) {
-            return Set.of();
-        }
-
-        Set<String> binaryUrls = new LinkedHashSet<>();
-        caseData.getInitialCicaDocuments().stream()
-            .filter(java.util.Objects::nonNull)
-            .map(ListValue::getValue)
-            .filter(java.util.Objects::nonNull)
-            .map(CaseworkerCICDocument::getDocumentLink)
-            .filter(java.util.Objects::nonNull)
-            .map(uk.gov.hmcts.ccd.sdk.type.Document::getBinaryUrl)
-            .filter(java.util.Objects::nonNull)
-            .forEach(binaryUrls::add);
-        return binaryUrls;
+    private String removeTrailingSlash(String url) {
+        return url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
     }
 
     private Set<UUID> selectedIds(DynamicMultiSelectList selection) {
@@ -194,5 +230,8 @@ public class CaseDocumentReadService {
     }
 
     private record TypedDocument(DocumentEntity entity, CaseDocumentType type) {
+    }
+
+    private record ProjectedDocument(String binaryUrl, CaseworkerCICDocument document) {
     }
 }

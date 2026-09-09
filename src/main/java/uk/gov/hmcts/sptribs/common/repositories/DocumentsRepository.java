@@ -17,8 +17,6 @@ import java.util.Optional;
 @Repository
 public interface DocumentsRepository extends JpaRepository<DocumentEntity, Long> {
 
-    List<DocumentEntity> findAllByCaseReferenceNumberOrderBySavedAtDesc(Long caseReferenceNumber);
-
     @Query("""
         select d.id
         from DocumentEntity d
@@ -98,6 +96,17 @@ public interface DocumentsRepository extends JpaRepository<DocumentEntity, Long>
     Optional<DocumentEntity> findFirstByCaseReferenceNumberAndCaseDocumentTypeIdOrderBySavedAtDesc(
         Long caseReferenceNumber,
         Long caseDocumentTypeId
+    );
+
+    @Query("""
+        select d
+        from DocumentEntity d
+        where d.caseReferenceNumber = :caseReference
+            and (d.documentUrl like %:documentId% or d.documentBinaryUrl like %:documentId%)
+        """)
+    Optional<DocumentEntity> findByCaseReferenceAndDocumentIdUuid(
+        @Param("caseReference") Long caseReference,
+        @Param("documentId") String documentId
     );
 
     @Modifying

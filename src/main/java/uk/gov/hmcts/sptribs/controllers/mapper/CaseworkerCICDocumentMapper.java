@@ -3,6 +3,9 @@ package uk.gov.hmcts.sptribs.controllers.mapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentView;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.ContactPartyDocumentDetails;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
@@ -16,28 +19,42 @@ import java.util.List;
 public class CaseworkerCICDocumentMapper {
 
     public CaseworkerCICDocument mapDocument(DocumentEntity entity) {
-        LocalDate documentDate = entity.getUpdatedAt() != null
-            ? entity.getUpdatedAt().toLocalDate()
-            : entity.getSavedAt().toLocalDate();
-
-        return mapDocument(entity, documentDate);
+        return mapDocument(entity, entity.getSavedAt().toLocalDate());
     }
 
     private CaseworkerCICDocument mapDocument(
         DocumentEntity entity,
         LocalDate date
     ) {
+        DocumentType documentType = mapDocumentType(entity.getDocumentTypeName());
         Document document = Document.builder()
             .filename(entity.getDocumentFilename())
             .url(entity.getDocumentUrl())
             .binaryUrl(entity.getDocumentBinaryUrl())
-            .categoryId(mapCategoryId(entity.getDocumentTypeName()))
+            .categoryId(documentType == null ? null : documentType.getCategory())
             .build();
 
         return CaseworkerCICDocument.builder()
             .documentLink(document)
-            .documentCategory(mapDocumentType(entity.getDocumentTypeName()))
+            .documentCategory(documentType)
             .date(date)
+            .build();
+    }
+
+    public ListValue<CaseDocumentView> mapCaseDocumentView(
+        DocumentEntity entity,
+        CaseDocumentType caseDocumentType
+    ) {
+        CaseworkerCICDocument document = mapDocument(entity);
+
+        return ListValue.<CaseDocumentView>builder()
+            .id(String.valueOf(entity.getId()))
+            .value(CaseDocumentView.builder()
+                .sourceType(caseDocumentType.getLabel())
+                .documentCategory(document.getDocumentCategory())
+                .documentDate(document.getDate())
+                .documentLink(document.getDocumentLink())
+                .build())
             .build();
     }
 
@@ -93,11 +110,6 @@ public class CaseworkerCICDocumentMapper {
             log.warn("Unsupported document type name: {}", documentTypeName);
             return null;
         }
-    }
-
-    private String mapCategoryId(String documentTypeName) {
-        DocumentType documentType = mapDocumentType(documentTypeName);
-        return documentType == null ? null : documentType.getCategory();
     }
 
 }

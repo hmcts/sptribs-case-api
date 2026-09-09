@@ -50,6 +50,8 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
@@ -93,26 +95,36 @@ class CaseworkerCreateBundleTest {
 
     @BeforeEach
     void setUpDocumentProjection() {
-        lenient().when(caseDocumentReadService.getBundleDocuments(any(Long.class), any(CaseData.class)))
-            .thenAnswer(invocation -> {
-                CaseData data = invocation.getArgument(1);
-                List<CaseworkerCICDocument> allDocuments =
-                    extractDocumentsFromListValues(getAllCaseDocuments(data));
-                List<CaseworkerCICDocument> initialDocuments =
-                    extractDocumentsFromListValues(data.getInitialCicaDocuments());
-                List<CaseworkerCICDocument> furtherDocuments = allDocuments.stream()
-                    .filter(document -> !initialDocuments.contains(document))
-                    .sorted(java.util.Comparator.comparing(
-                        CaseworkerCICDocument::getDate,
-                        java.util.Comparator.nullsLast(java.util.Comparator.naturalOrder())
-                    ))
-                    .toList();
-                return BundleDocumentsView.builder()
-                    .allDocuments(allDocuments)
-                    .initialDocuments(initialDocuments)
-                    .furtherDocuments(furtherDocuments)
-                    .build();
-            });
+        lenient().when(caseDocumentReadService.getBundleDocuments(anyLong(), anySet()))
+            .thenReturn(BundleDocumentsView.builder()
+                .allDocuments(List.of())
+                .initialDocuments(List.of())
+                .furtherDocuments(List.of())
+                .build());
+    }
+
+    private void stubBundleDocuments(CaseData data) {
+        List<CaseworkerCICDocument> allDocuments = extractDocumentsFromListValues(getAllCaseDocuments(data)).stream()
+            .filter(CaseworkerCICDocument::isValidBundleDocument)
+            .toList();
+        List<CaseworkerCICDocument> initialDocuments = extractDocumentsFromListValues(data.getInitialCicaDocuments())
+            .stream()
+            .filter(CaseworkerCICDocument::isValidBundleDocument)
+            .toList();
+        List<CaseworkerCICDocument> furtherDocuments = allDocuments.stream()
+            .filter(document -> !initialDocuments.contains(document))
+            .sorted(java.util.Comparator.comparing(
+                CaseworkerCICDocument::getDate,
+                java.util.Comparator.nullsLast(java.util.Comparator.naturalOrder())
+            ))
+            .toList();
+
+        when(caseDocumentReadService.getBundleDocuments(eq(TEST_CASE_ID), anySet()))
+            .thenReturn(BundleDocumentsView.builder()
+                .allDocuments(allDocuments)
+                .initialDocuments(initialDocuments)
+                .furtherDocuments(furtherDocuments)
+                .build());
     }
 
     @Test
@@ -148,6 +160,7 @@ class CaseworkerCreateBundleTest {
         final CicCase cicCase = CicCase.builder().build();
         cicCase.setApplicantDocumentsUploaded(cicDocuments);
         caseData.setCicCase(cicCase);
+        stubBundleDocuments(caseData);
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
@@ -303,6 +316,7 @@ class CaseworkerCreateBundleTest {
 
         caseData.setAllDocManagement(documentManagement);
         caseData.setCicCase(cicCase);
+        stubBundleDocuments(caseData);
 
         CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         caseDetails.setId(TEST_CASE_ID);
@@ -352,6 +366,9 @@ class CaseworkerCreateBundleTest {
         LocalDate applicantDocsDate = LocalDate.of(2026, 1, 10);
         List<ListValue<CaseworkerCICDocument>> allApplicantDocs = setApplicantDocsForDate(applicantDocsDate);
         List<ListValue<CaseworkerCICDocument>> initialDocuments = new ArrayList<>(allApplicantDocs);
+        initialDocuments.forEach(document -> document.getValue().getDocumentLink().setBinaryUrl(
+            "documents/" + document.getValue().getDocumentLink().getFilename() + "/binary"
+        ));
         caseData.setInitialCicaDocuments(initialDocuments);
 
         LocalDate additionalApplicantDocsDate = LocalDate.of(2026, 2, 12);
@@ -383,6 +400,7 @@ class CaseworkerCreateBundleTest {
         caseworkerDocs.add(extraCaseworkerDoc);
         caseData.setAllDocManagement(documentManagement);
         caseData.setCicCase(cicCase);
+        stubBundleDocuments(caseData);
 
         CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         caseDetails.setId(TEST_CASE_ID);
@@ -445,6 +463,7 @@ class CaseworkerCreateBundleTest {
         final CicCase cicCase = CicCase.builder().build();
         cicCase.setApplicantDocumentsUploaded(cicDocuments);
         caseData.setCicCase(cicCase);
+        stubBundleDocuments(caseData);
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
@@ -493,6 +512,7 @@ class CaseworkerCreateBundleTest {
         final CicCase cicCase = CicCase.builder().build();
         cicCase.setApplicantDocumentsUploaded(documents);
         caseData.setCicCase(cicCase);
+        stubBundleDocuments(caseData);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
@@ -564,6 +584,7 @@ class CaseworkerCreateBundleTest {
         final CicCase cicCase = CicCase.builder().build();
         cicCase.setApplicantDocumentsUploaded(cicDocuments);
         caseData.setCicCase(cicCase);
+        stubBundleDocuments(caseData);
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);

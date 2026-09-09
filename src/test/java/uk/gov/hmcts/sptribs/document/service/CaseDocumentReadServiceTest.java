@@ -9,23 +9,27 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
-import uk.gov.hmcts.sptribs.controllers.mapper.CaseDocumentProjectionMapper;
 import uk.gov.hmcts.sptribs.controllers.mapper.CaseworkerCICDocumentMapper;
 import uk.gov.hmcts.sptribs.document.model.BundleDocumentsView;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentView;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.model.SelectedCaseDocuments;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -43,24 +47,22 @@ class CaseDocumentReadServiceTest {
 
     @BeforeEach
     void setUp() {
-        CaseworkerCICDocumentMapper caseworkerMapper = new CaseworkerCICDocumentMapper();
-        CaseDocumentProjectionMapper projectionMapper = new CaseDocumentProjectionMapper(caseworkerMapper);
+        lenient().when(caseDocumentTypesCache.getId(any(CaseDocumentType.class)))
+            .thenAnswer(invocation -> (long) invocation.<CaseDocumentType>getArgument(0).ordinal() + 1);
         service = new CaseDocumentReadService(
             documentsRepository,
             caseDocumentTypesCache,
-            new CaseDocumentPolicy(),
-            projectionMapper
+            new CaseworkerCICDocumentMapper()
         );
     }
 
     @Test
-    void shouldBuildCaseViewWithStableDatabaseIdentityAndCompleteDocumentLink() {
+    void shouldBuildCaseViewFromEligibleDocumentTypesQueriedFromDatabase() {
         UUID documentId = UUID.randomUUID();
         DocumentEntity entity = document(41L, documentId, "application.pdf", 1L, DocumentType.APPLICATION_FORM);
 
-        when(documentsRepository.findAllByCaseReferenceNumberOrderBySavedAtDesc(CASE_REFERENCE))
+        when(documentsRepository.findDocumentsByReferenceAndCaseDocumentTypeIds(eq(CASE_REFERENCE), anyList()))
             .thenReturn(List.of(entity));
-        when(caseDocumentTypesCache.getType(1L)).thenReturn(CaseDocumentType.APPLICATION);
 
         List<ListValue<CaseDocumentView>> result = service.getCaseViewDocuments(CASE_REFERENCE);
 
@@ -77,44 +79,33 @@ class CaseDocumentReadServiceTest {
                     DocumentType.APPLICATION_FORM.getCategory()
                 );
         });
+
+        verify(documentsRepository).findDocumentsByReferenceAndCaseDocumentTypeIds(
+            eq(CASE_REFERENCE),
+            org.mockito.ArgumentMatchers.argThat(typeIds -> {
+                assertThat(typeIds)
+                    .containsExactlyInAnyOrder(1L, 2L, 3L, 4L, 5L, 6L, 7L, 10L)
+                    .doesNotContain(8L, 9L);
+                return true;
+            })
+        );
     }
 
     @Test
-    void shouldExcludeCorrespondenceAndUnknownSourceTypesFromCaseView() {
-        DocumentEntity correspondence = document(1L, UUID.randomUUID(), "correspondence.pdf", 8L,
-            DocumentType.CORRESPONDENCE);
-        DocumentEntity unknown = document(2L, UUID.randomUUID(), "unknown.pdf", 99L, DocumentType.LINKED_DOCS);
-
-        when(documentsRepository.findAllByCaseReferenceNumberOrderBySavedAtDesc(CASE_REFERENCE))
-            .thenReturn(List.of(correspondence, unknown));
-        when(caseDocumentTypesCache.getType(8L)).thenReturn(CaseDocumentType.CORRESPONDENCE);
-        when(caseDocumentTypesCache.getType(99L)).thenThrow(new IllegalArgumentException("Unknown type"));
-
-        assertThat(service.getCaseViewDocuments(CASE_REFERENCE)).isEmpty();
-    }
-
-    @Test
-    void shouldBuildBundleProjectionAndUseLegacyInitialListOnlyForClassification() {
+    void shouldBuildBundleProjectionAndUseInitialBinaryUrlsOnlyForClassification() {
         UUID initialId = UUID.randomUUID();
         UUID furtherId = UUID.randomUUID();
         DocumentEntity initial = document(1L, initialId, "initial.pdf", 1L, DocumentType.DSS_TRIBUNAL_FORM);
         DocumentEntity further = document(2L, furtherId, "further.docx", 2L, DocumentType.LINKED_DOCS);
         DocumentEntity recording = document(3L, UUID.randomUUID(), "recording.mp3", 7L, DocumentType.LINKED_DOCS);
 
-        when(documentsRepository.findAllByCaseReferenceNumberOrderBySavedAtDesc(CASE_REFERENCE))
+        when(documentsRepository.findDocumentsByReferenceAndCaseDocumentTypeIds(eq(CASE_REFERENCE), anyList()))
             .thenReturn(List.of(further, recording, initial));
-        when(caseDocumentTypesCache.getType(1L)).thenReturn(CaseDocumentType.APPLICATION);
-        when(caseDocumentTypesCache.getType(2L)).thenReturn(CaseDocumentType.DOCUMENT_MANAGEMENT);
-        when(caseDocumentTypesCache.getType(7L)).thenReturn(CaseDocumentType.HEARING_RECORD);
 
-        CaseworkerCICDocument legacyInitial = CaseworkerCICDocument.builder()
-            .documentLink(Document.builder().binaryUrl(initial.getDocumentBinaryUrl()).build())
-            .build();
-        CaseData caseData = CaseData.builder()
-            .initialCicaDocuments(List.of(ListValue.<CaseworkerCICDocument>builder().value(legacyInitial).build()))
-            .build();
-
-        BundleDocumentsView result = service.getBundleDocuments(CASE_REFERENCE, caseData);
+        BundleDocumentsView result = service.getBundleDocuments(
+            CASE_REFERENCE,
+            Set.of(initial.getDocumentBinaryUrl())
+        );
 
         assertThat(result.getAllDocuments()).extracting(document -> document.getDocumentLink().getFilename())
             .containsExactly("further.docx", "initial.pdf");
@@ -130,10 +121,8 @@ class CaseDocumentReadServiceTest {
         DocumentEntity pdf = document(1L, pdfId, "evidence.pdf", 2L, DocumentType.LINKED_DOCS);
         DocumentEntity video = document(2L, UUID.randomUUID(), "recording.mp4", 7L, DocumentType.LINKED_DOCS);
 
-        when(documentsRepository.findAllByCaseReferenceNumberOrderBySavedAtDesc(CASE_REFERENCE))
+        when(documentsRepository.findDocumentsByReferenceAndCaseDocumentTypeIds(eq(CASE_REFERENCE), anyList()))
             .thenReturn(List.of(pdf, video));
-        when(caseDocumentTypesCache.getType(2L)).thenReturn(CaseDocumentType.DOCUMENT_MANAGEMENT);
-        when(caseDocumentTypesCache.getType(7L)).thenReturn(CaseDocumentType.HEARING_RECORD);
 
         DynamicMultiSelectList result = service.getContactPartyOptions(CASE_REFERENCE, "http://case-api/");
 
@@ -148,16 +137,19 @@ class CaseDocumentReadServiceTest {
     }
 
     @Test
-    void shouldResolveSelectedDocumentsByCodeWithinTheCaseAndPreserveSelectionOrder() {
+    void shouldQueryOnlySelectedDocumentsWithinTheCaseAndPreserveSelectionOrder() {
         UUID firstId = UUID.randomUUID();
         UUID secondId = UUID.randomUUID();
         UUID otherCaseId = UUID.randomUUID();
         DocumentEntity first = document(1L, firstId, "first.pdf", 2L, DocumentType.LINKED_DOCS);
         DocumentEntity second = document(2L, secondId, "second.pdf", 2L, DocumentType.TRIBUNAL_DIRECTION);
 
-        when(documentsRepository.findAllByCaseReferenceNumberOrderBySavedAtDesc(CASE_REFERENCE))
-            .thenReturn(List.of(first, second));
-        when(caseDocumentTypesCache.getType(2L)).thenReturn(CaseDocumentType.DOCUMENT_MANAGEMENT);
+        when(documentsRepository.findByCaseReferenceAndDocumentIdUuid(CASE_REFERENCE, secondId.toString()))
+            .thenReturn(Optional.of(second));
+        when(documentsRepository.findByCaseReferenceAndDocumentIdUuid(CASE_REFERENCE, otherCaseId.toString()))
+            .thenReturn(Optional.empty());
+        when(documentsRepository.findByCaseReferenceAndDocumentIdUuid(CASE_REFERENCE, firstId.toString()))
+            .thenReturn(Optional.of(first));
 
         DynamicMultiSelectList selection = DynamicMultiSelectList.builder()
             .value(List.of(option(secondId), option(otherCaseId), option(firstId)))
@@ -168,6 +160,18 @@ class CaseDocumentReadServiceTest {
         assertThat(result.getDocumentEntityIds()).containsExactly(2L, 1L);
         assertThat(result.getDocuments()).extracting(document -> document.getDocumentLink().getFilename())
             .containsExactly("second.pdf", "first.pdf");
+    }
+
+    @Test
+    void shouldNotQueryDocumentsForAnEmptySelection() {
+        SelectedCaseDocuments result = service.getSelectedContactPartyDocuments(
+            CASE_REFERENCE,
+            DynamicMultiSelectList.builder().value(List.of()).build(),
+            10
+        );
+
+        assertThat(result.getDocumentEntityIds()).isEmpty();
+        assertThat(result.getDocuments()).isEmpty();
     }
 
     private DynamicListElement option(UUID id) {
