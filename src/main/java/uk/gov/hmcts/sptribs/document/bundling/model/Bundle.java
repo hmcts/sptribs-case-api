@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.document.bundling.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
@@ -97,6 +98,7 @@ public class Bundle {
         ignore = true,
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
+    @JsonIgnore
     private String stitchingFailureMessage;
 
     @CCD(
