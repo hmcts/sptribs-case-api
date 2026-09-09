@@ -17,7 +17,12 @@ import lombok.Getter;
 public enum CcdServiceCode {
 
     ST_CIC("ST_CIC", "BBA2", "CRIMINAL_INJURIES_COMPENSATION", CcdCaseType.CIC,
-        CcdJurisdiction.CRIMINAL_INJURIES_COMPENSATION, "Special Tribunals: Criminal Injuries Compensation");
+        CcdJurisdiction.CRIMINAL_INJURIES_COMPENSATION, "Special Tribunals: Criminal Injuries Compensation"),
+
+    // SEND stays in the ST_CIC jurisdiction. A jurisdiction of its own would need its own
+    // CCD roles, an XUI_JURISDICTIONS entry and an IDAM profile row per user.
+    ST_SEND35("ST_SEND35", "StSend35", "SEND35", CcdCaseType.SEND35,
+        CcdJurisdiction.CRIMINAL_INJURIES_COMPENSATION, "Special Tribunals: Special Educational Needs and Disability");
 
     private final String ccdServiceAcronym;
     @JsonValue
