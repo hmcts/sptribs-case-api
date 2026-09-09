@@ -43,7 +43,7 @@ import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.PAGE_NUMB
 import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.PAGINATION_STYLE;
 import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.SORT_INDEX;
 import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.STITCHED_DOCUMENT;
-//        import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.STITCHING_FAILURE_MESSAGE;
+//import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.STITCHING_FAILURE_MESSAGE;
 import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.STITCHING_STATUS;
 import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.TITLE;
 import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.VALUE;
@@ -199,7 +199,7 @@ public class BundlingService {
     private Bundle buildBundle(LinkedHashMap<String, Object> objectLinkedHashMap, Long caseNumber) {
 
         Document stitchedDocument = getStitchedDocument(objectLinkedHashMap, caseNumber);
-//        String stitchingFailureMessage = MapUtils.getString(objectLinkedHashMap, STITCHING_FAILURE_MESSAGE, "");
+        //        String stitchingFailureMessage = MapUtils.getString(objectLinkedHashMap, STITCHING_FAILURE_MESSAGE, "");
         String stitchingFailureMessage = "Failure message should not display on XUI";
 
         return Bundle.builder()
