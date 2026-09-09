@@ -43,7 +43,7 @@ import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.PAGE_NUMB
 import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.PAGINATION_STYLE;
 import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.SORT_INDEX;
 import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.STITCHED_DOCUMENT;
-//import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.STITCHING_FAILURE_MESSAGE;
+//        import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.STITCHING_FAILURE_MESSAGE;
 import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.STITCHING_STATUS;
 import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.TITLE;
 import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.VALUE;
