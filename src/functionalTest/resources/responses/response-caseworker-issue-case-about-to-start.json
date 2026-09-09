@@ -6,7 +6,12 @@
     "stayIsCaseStayed": "No",
     "issueCaseDocumentList": {
       "value": [],
-      "list_items": []
+      "list_items": [
+        {
+          "code": "${json-unit.any-string}",
+          "label": "${json-unit.any-string}"
+        }
+      ]
     }
   }
 }

@@ -25,6 +25,9 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.CreateDraftOrder;
 import uk.gov.hmcts.sptribs.common.event.page.DraftOrderMainContentPage;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -37,6 +40,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_DRAFT_ORDER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -64,6 +68,7 @@ public class CaseworkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
     private static final CcdPageConfiguration previewOrder = new PreviewDraftOrder("previewDraftOrderPage", CASEWORKER_CREATE_DRAFT_ORDER);
 
     private final OrderService orderService;
+    private final DocumentsService documentsService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -105,13 +110,30 @@ public class CaseworkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
         final CaseData caseData = details.getData();
         final OrderTemplate orderTemplate = caseData.getDraftOrderContentCIC().getOrderTemplate();
 
-        String[] fileName = caseData.getCicCase().getOrderTemplateIssued().getFilename().split(DOUBLE_HYPHEN);
-        addToDraftOrderTemplatesDynamicList(orderTemplate, caseData.getCicCase(), fileName[2]);
+        if (caseData.getCicCase().getOrderTemplateIssued().getFilename() != null
+            && caseData.getCicCase().getOrderTemplateIssued().getFilename().length() > 1) {
+            String[] fileName = caseData.getCicCase().getOrderTemplateIssued().getFilename().split(DOUBLE_HYPHEN);
+            addToDraftOrderTemplatesDynamicList(orderTemplate, caseData.getCicCase(), fileName[2]);
+        } else {
+            addToDraftOrderTemplatesDynamicList(orderTemplate, caseData.getCicCase(), null);
+        }
 
         DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
             .draftOrderContentCIC(caseData.getDraftOrderContentCIC())
             .templateGeneratedDocument(caseData.getCicCase().getOrderTemplateIssued())
             .build();
+
+        List<String> errors = new ArrayList<>();
+        try {
+            documentsService.buildAndSaveNewDocumentEntity(
+                draftOrderCIC.getTemplateGeneratedDocument(),
+                details.getId(),
+                DocumentType.TRIBUNAL_DIRECTION,
+                CaseDocumentType.DRAFT_ORDER
+            );
+        } catch (RuntimeException e) {
+            errors.add(handleDocumentException(draftOrderCIC.getTemplateGeneratedDocument(), e.getMessage()));
+        }
 
         caseData.setDraftOrderContentCIC(new DraftOrderContentCIC());
 
@@ -146,6 +168,7 @@ public class CaseworkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .state(details.getState())
             .data(caseData)
+            .errors(errors)
             .build();
     }
 

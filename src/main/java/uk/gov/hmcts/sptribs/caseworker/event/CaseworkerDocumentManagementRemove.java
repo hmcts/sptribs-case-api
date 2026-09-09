@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,10 +50,12 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 @Setter
+@RequiredArgsConstructor
 public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, State, UserRole> {
 
     private final ShowCaseDocuments showCaseDocuments = new ShowCaseDocuments();
     private final ShowRemovedCaseDocuments showRemovedCaseDocuments = new ShowRemovedCaseDocuments();
+    private final DocumentsService documentsService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -97,9 +101,13 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails) {
         var caseData = details.getData();
+
         if (!ObjectUtils.isEmpty(caseData.getCicCase().getRemovedDocumentList())) {
             removeCaseDocuments(caseData);
+
+            removeDocumentsFromDocumentsTable(caseData);
         }
+
         List<ListValue<CaseworkerCICDocument>> listValues = new ArrayList<>();
         caseData.getCicCase().setRemovedDocumentList(listValues);
         caseData.getCicCase().setOrderDocumentList(listValues);
@@ -108,6 +116,17 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
             .state(details.getState())
             .build();
     }
+
+    private void removeDocumentsFromDocumentsTable(CaseData caseData) {
+        List<ListValue<CaseworkerCICDocument>> removedDocumentList = caseData.getCicCase().getRemovedDocumentList();
+
+        removedDocumentList.forEach(v -> {
+            documentsService.removeEntryFromDocumentTableByBinaryURL(
+                 v.getValue().getDocumentLink().getBinaryUrl());
+        });
+
+    }
+
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {

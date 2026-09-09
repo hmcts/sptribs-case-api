@@ -3,8 +3,10 @@ package uk.gov.hmcts.sptribs.caseworker;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
+import java.util.List;
 import java.util.Map;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
@@ -41,7 +43,7 @@ public class CaseworkerPostponeHearingFT extends FunctionalTestSuite {
     public void shouldInitialiseDynamicHearingListAndSetCurrentEventWhenAboutToStartCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_ABOUT_TO_START);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_POSTPONE_HEARING, ABOUT_TO_START_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_POSTPONE_HEARING, ABOUT_TO_START_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -54,7 +56,7 @@ public class CaseworkerPostponeHearingFT extends FunctionalTestSuite {
     public void shouldSuccessfullySetHearingStatusCurrentEventAndPostponeDateWhenABoutToSubmitCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_POSTPONE_HEARING, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_POSTPONE_HEARING, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -67,7 +69,7 @@ public class CaseworkerPostponeHearingFT extends FunctionalTestSuite {
     public void shouldBeUnsuccessfulWhenBadSubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_POSTPONE_HEARING, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_POSTPONE_HEARING, SUBMITTED_URL, false);
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
@@ -79,7 +81,7 @@ public class CaseworkerPostponeHearingFT extends FunctionalTestSuite {
     public void shouldBeSuccessfulWhenGoodSubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_SUBMITTED);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_POSTPONE_HEARING, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_POSTPONE_HEARING, SUBMITTED_URL, false);
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
@@ -89,5 +91,53 @@ public class CaseworkerPostponeHearingFT extends FunctionalTestSuite {
                 ## The hearing has been postponed, the case has been updated \
 
                 ## A notification has been sent to: Subject""");
+
+        long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
+
+        List<CorrespondenceEntity> correspondenceEntities = caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef);
+        assertThat(correspondenceEntities).hasSize(1);
+
+        CorrespondenceEntity firstCorrespondenceEntity = correspondenceEntities.getFirst();
+
+        assertThat(firstCorrespondenceEntity.getId()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
+            .toString().replace("-", "")));
+        assertThat(firstCorrespondenceEntity.getEventType()).isEqualTo("HEARING_POSTPONED_EMAIL");
+        assertThat(firstCorrespondenceEntity.getSentOn()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getSentFrom()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getSentTo()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getCorrespondenceType()).isEqualTo("Email");
+        assertThat(firstCorrespondenceEntity.getDocumentUrl()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getDocumentFilename()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getDocumentBinaryUrl()).isNotNull();
+    }
+
+    @Test
+    public void shouldReturnHearingDateNullAfterPostponeInAboutToSubmit() throws Exception {
+        final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
+        final String hearingCode = "c03c79c6-5d53-4176-88f9-edbe154074cb";
+        caseData.put("hearingDate", "2027-01-01");
+        caseData.put("hearingList", List.of(
+            Map.of(
+                "id", "1",
+                "value", Map.of(
+                    "hearingType", "CaseManagement",
+                    "date", "2027-01-01",
+                    "hearingTime", "09:00",
+                    "hearingStatus", "Listed"
+                )
+            )
+        ));
+        caseData.put("cicCaseHearingList", Map.of(
+            "value", Map.of("code", hearingCode, "label", "1 - Case management - 01 Jan 2027 09:00"),
+            "list_items", List.of(Map.of("code", hearingCode, "label", "1 - Case management - 01 Jan 2027 09:00"))
+        ));
+
+        final Response response = triggerCallback(caseData, CASEWORKER_POSTPONE_HEARING, ABOUT_TO_SUBMIT_URL, false);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .inPath("$.data.hearingDate")
+            .isAbsent();
     }
 }

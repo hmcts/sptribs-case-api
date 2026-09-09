@@ -46,7 +46,6 @@
   "cicCaseSubjectCIC": [
     "SubjectCIC"
   ],
-  "hyphenatedCaseRef": "1716-9766-0411-8707",
   "cicCaseDateOfBirth": "2000-01-01",
   "cicCasePhoneNumber": "",
   "cicCaseCaseCategory": "Assessment",
@@ -60,6 +59,7 @@
   "cicCaseContactPreferenceType": "Email",
   "cicCaseRespondentOrganisation": "CICA",
   "cicCaseIsRepresentativePresent": "No",
+  "cicCaseNotifyPartySubject": ["SubjectCIC"],
   "cicCaseCompensationClaimLinkCIC": "No",
   "cicCaseApplicantDocumentsUploaded": [
     {
@@ -67,9 +67,9 @@
       "value": {
         "documentLink": {
           "category_id": "A",
-          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/99e2594c-8de7-40c9-9010-c5cbe2de284b",
+          "document_url": "http://dm-store.service.core-compute.internal/documents/99e2594c-8de7-40c9-9010-c5cbe2de284b",
           "document_filename": "pdf.pdf",
-          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/99e2594c-8de7-40c9-9010-c5cbe2de284b/binary"
+          "document_binary_url": "http://dm-store.service.core-compute.internal/documents/99e2594c-8de7-40c9-9010-c5cbe2de284b/binary"
         },
         "documentCategory": "ApplicationForm",
         "documentEmailContent": "Lorem ipsum PDF"

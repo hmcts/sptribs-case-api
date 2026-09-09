@@ -94,7 +94,7 @@ public class CaseStayedNotification implements PartiesNotification {
             destinationAddress,
             templateVars,
             TemplateName.CASE_STAYED_EMAIL);
-        return notificationService.sendEmail(request, caseReferenceNumber);
+        return notificationService.sendEmail(request, caseReferenceNumber, null);
     }
 
     private void sendLetterNotification(Map<String, Object> templateVarsLetter, String caseReferenceNumber) {

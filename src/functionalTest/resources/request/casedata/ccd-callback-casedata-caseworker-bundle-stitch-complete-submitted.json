@@ -1,0 +1,15 @@
+{
+  "caseBundles": [
+    {
+      "id": "1",
+      "value": {
+        "dateAndTime": "2026-06-16T10:00:00.000",
+        "stitchedDocument": {
+          "document_url": "http://localhost/documents/123",
+          "document_binary_url": "http://localhost/documents/123/binary",
+          "document_filename": "bundle.pdf"
+        }
+      }
+    }
+  ]
+}

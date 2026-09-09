@@ -194,7 +194,7 @@ public class ReinstateCaseIT {
                         ## A notification has been sent to: Subject, Respondent, Representative, Applicant\s"""
             );
 
-        verify(notificationServiceCIC, times(4)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED));
+        verify(notificationServiceCIC, times(4)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
         verifyNoMoreInteractions(notificationServiceCIC);
     }
 

@@ -38,10 +38,21 @@ class CamundaTaskWaCancellationTest extends DmnDecisionTableBaseUnitTest {
             event("caseworker-postpone-hearing")
                 .cancel(PROCESS_CATEGORY_HEARING_COMPLETION)
                 .cancel(PROCESS_CATEGORY_HEARING_BUNDLE)
+                .reconfigureAll()
                 .build(),
             event("caseworker-cancel-hearing")
                 .cancel(PROCESS_CATEGORY_HEARING_COMPLETION)
                 .cancel(PROCESS_CATEGORY_HEARING_BUNDLE)
+                .reconfigureAll()
+                .build(),
+            event("caseworker-record-listing")
+                .reconfigureAll()
+                .build(),
+            event("caseworker-edit-record-listing")
+                .reconfigureAll()
+                .build(),
+            event("create-hearing-summary")
+                .reconfigureAll()
                 .build(),
             event("refer-to-judge")
                 .cancel(PROCESS_CATEGORY_ISSUE_CASE)
@@ -58,7 +69,7 @@ class CamundaTaskWaCancellationTest extends DmnDecisionTableBaseUnitTest {
         DmnDecisionTableImpl logic = (DmnDecisionTableImpl) decision.getDecisionLogic();
         assertThat(logic.getInputs().size(), is(3));
         assertThat(logic.getOutputs().size(), is(4));
-        assertThat(logic.getRules().size(), is(4));
+        assertThat(logic.getRules().size(), is(5));
     }
 
     @ParameterizedTest(name = "from state: {0}, event id: {1}, state: {2}")
