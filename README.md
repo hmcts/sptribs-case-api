@@ -72,6 +72,37 @@ If you would like to run the full CCD and XUI stack locally you can use:
 This will start a containers for the CFTLib components (`ccd-elasticsearch`,`xui-manage-org`, `xui-manage-cases`, postgres database)
 Then you can access XUI on `http://localhost:3000`
 
+#### Running without AAT (local auth)
+
+By default `bootWithCCD` authenticates the whole stack against AAT IDAM and pulls
+secrets from the `sptribs-aat` vault, so it needs an Azure login and the VPN. If AAT
+is unavailable — or you simply want a self-contained stack — add `-PlocalAuth`:
+
+    ./gradlew bootWithCCD -PlocalAuth
+
+This switches cftlib to `AuthMode.Local`, which starts the IDAM simulator on `5062`
+and the S2S simulator on `8489`, skips the `loadEnvSecrets` Key Vault fetch, and
+points outbound integrations (PDF, fees, doc assembly, DM store, RD professional) at
+a local wiremock on `8765` instead of AAT hostnames. Nothing in the stack reaches the
+AAT network. Log in through XUI as usual — the simulator accepts any known local user.
+
+Without the flag behaviour is unchanged, so CI and anyone with working AAT access
+keeps the AAT-backed stack.
+
+Two things to know if the stack does not come up:
+
+- **XUI exits with `idam api must be up to start`.** cftlib's compose file has no
+  `depends_on` between `xui-manage-cases` and the IDAM simulator, so if the simulator
+  is being (re)created XUI can lose the race and exit. The JVM services are unaffected.
+  Just restart the containers: `docker start cftlib-xui-manage-cases-1 cftlib-xui-manage-org-1`.
+- **Definition store fails Flyway with `Detected applied migration not resolved locally`.**
+  The shared Postgres container is reused across projects, so a newer cftlib may have
+  left migrations in the platform databases that this version cannot resolve. Drop and
+  let cftlib recreate them (project data in `sptribs` is untouched):
+
+      for db in definitionstore datastore userprofile am cft_task_db; do \
+        docker exec cftlib-shared-database-pg-1 psql -U postgres -c "drop database if exists $db;"; done
+
 ### Generate CCD JSON files
 
 Generating the CCD JSON files will happen on every `./gradlew bootWithCcd` but you can manually trigger this with:

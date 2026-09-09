@@ -32,7 +32,9 @@ plugins {
   id 'com.github.ben-manes.versions' version '0.50.0'
   id 'hmcts.ccd.sdk' version '6.8.1'
   id "au.com.dius.pact" version "4.3.10"
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.2017'
+  // >= 0.19.2190 for RSE_LIB_XUI_ENV_*, which the -PlocalAuth stack needs to correct
+  // XUI's expected IDAM issuer.
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.2315'
 }
 
 apply plugin: 'cz.habarta.typescript-generator'
@@ -565,21 +567,115 @@ ccd {
   configDir = file('build/definitions')
 }
 
+/**
+ * Every case type this service owns, as CCD case type ids.
+ *
+ * Read out of CcdCaseType rather than listed here, so adding a case type stays a single
+ * enum constant. Parsed with a regex because this runs at Gradle configuration time, long
+ * before anything is compiled — the alternative is a hand-maintained list that silently
+ * disagrees with the registry.
+ */
+def ccdCaseTypeIds = {
+  def source = file('src/main/java/uk/gov/hmcts/sptribs/common/ccd/CcdCaseType.java').text
+  // The second constructor argument is the case type id (the first is the acronym).
+  def ids = (source =~ /(?m)^\s+[A-Z][A-Z0-9_]*\(\s*"[^"]*"\s*,\s*"([^"]+)"/).with { matcher ->
+    def found = []
+    while (matcher.find()) {
+      found << matcher.group(1)
+    }
+    found
+  }
+  if (ids.isEmpty()) {
+    throw new GradleException('Found no case type ids in CcdCaseType.java — the decentralised '
+      + 'service URLs below would be empty, and CCD would store every case centrally instead of '
+      + 'routing to this service. Check the enum still has one constant per case type.')
+  }
+  ids
+}()
+
 tasks.withType(CftlibExec).configureEach {
   environment 'RSE_LIB_ADDITIONAL_DATABASES', 'sptribs'
-  environment 'CCD_DECENTRALISED_CASE-TYPE-SERVICE-URLS_CriminalInjuriesCompensation', 'http://localhost:4013'
   environment 'SPRING_JMS_SERVICEBUS_ENABLED', 'false'
+
+  /*
+   * One CCD_DECENTRALISED_CASE-TYPE-SERVICE-URLS_<CaseTypeId> per case type.
+   *
+   * This is what makes CCD route a case type's data to this service instead of storing it
+   * itself. Without an entry the case type is treated as centralised: cases are written to
+   * CCD's own `datastore` database rather than to this service's `sptribs` one, and since
+   * the decentralised ES indexer reads `ccd.es_queue` in *this* service's database, nothing
+   * is ever indexed. The case exists and is fetchable by reference, but XUI's case list is
+   * an Elasticsearch search, so it comes back empty — a case that was created successfully
+   * and cannot be found.
+   */
+  ccdCaseTypeIds.each { caseTypeId ->
+    environment "CCD_DECENTRALISED_CASE-TYPE-SERVICE-URLS_${caseTypeId}", 'http://localhost:4013'
+  }
 }
+
+// Run with -PlocalAuth to authenticate against cftlib's own simulators
+// (IDAM simulator on 5062, S2S simulator on 8489) instead of AAT IDAM.
+// Without the flag the AAT-backed stack is used, exactly as before.
+def useLocalAuth = project.hasProperty('localAuth')
 
 bootWithCCD {
     environment 'XUI_MO_PORT', '3003'
     environment 'XUI_JURISDICTIONS', 'ST_CIC'
     environment 'CASE_DOCUMENT_S2S_AUTHORISED_SERVICES', 'ccd_case_document_am_api,ccd_gw,xui_webapp,ccd_data,bulk_scan_processor,em_npa_app,dg_docassembly_api,em_stitching_api,em_ccd_orchestrator,bulk_scan_orchestrator,sptribs_case_api,sptribs_frontend'
-    environment 'PDF_API_URL', 'http://rpe-pdf-service-aat.service.core-compute-aat.internal'
     environment 'SPRING_JMS_SERVICEBUS_ENABLED', 'false'
     group = 'ccd tasks'
-    dependsOn loadEnvSecretsTask
-    doFirst() { loadEnvFile(it) }
+
+    if (useLocalAuth) {
+        authMode = uk.gov.hmcts.rse.AuthMode.Local
+
+        // Outbound integrations point at a local wiremock rather than AAT hostnames,
+        // so nothing in the stack needs to reach the AAT network.
+        environment 'PDF_API_URL', 'http://localhost:8765'
+        environment 'FEE_API_URL', 'http://localhost:8765'
+        environment 'DOC_ASSEMBLY_URL', 'http://localhost:8765'
+        environment 'DM_STORE_BASE_URL', 'http://localhost:8765'
+        environment 'RD_PROFESSIONAL_API_URL', 'http://localhost:8765'
+        environment 'CASE_DOCUMENT_AM_API_ATTACH_DOCUMENT_ENABLED', 'false'
+        environment 'CCD_DOCUMENT_URL_PATTERN', '.*'
+        environment 'CASE_DATA_STORE_BASEURL', 'http://localhost:4452'
+        environment 'ROLE_ASSIGNMENT_URL', 'http://localhost:4096'
+        environment 'CCD_S2S_AUTHORISED_SERVICES_CASE_USER_ROLES', 'sptribs_case_api'
+        environment 'DATA_STORE_S2S_AUTHORISED_SERVICES', 'ccd_gw,fpl_case_service,ccd_data,ccd_ps,sptribs_frontend,xui_webapp,sptribs_case_api,ccd_case_document_am_api,am_role_assignment_service'
+
+        // Let XUI accept tokens from the local IDAM simulator.
+        //
+        // Without this nobody can sign in to XUI on this stack: the OAuth callback
+        // completes, then the browser is bounced straight back to the login form and
+        // loops. The reason is in XUI's own log —
+        //
+        //   unexpected iss value,
+        //   expected https://forgerock-am.service.core-compute-idam-prod.internal:8443/openam/oauth2/hmcts,
+        //   got: http://localhost:5062
+        //
+        // — the published image bakes in the *production* ForgeRock issuer, so every
+        // token the simulator mints is rejected. cftlib points XUI at the simulator but
+        // does not correct the expected issuer.
+        //
+        // `RSE_LIB_XUI_ENV_<NAME>` is cftlib's mechanism for passing environment into the
+        // manage-cases container, and it needs cftlib >= 0.19.2190 — which is why the
+        // plugin version above is not 0.19.2017. Note it can only set names cftlib does
+        // not set itself: its compose file lists `env_file: xui.env` before its own
+        // `environment:` block, and compose gives `environment:` precedence.
+        environment 'RSE_LIB_XUI_ENV_SERVICES_IDAM_ISS_URL', 'http://localhost:5062'
+
+        // XUI's OIDC strategy is deliberately left off (the image ships
+        // `oidcEnabled: false`, so it uses the legacy oauth2 strategy). Enabling it makes
+        // XUI do OIDC discovery *server-side* against SERVICES_IDAM_LOGIN_URL, which
+        // cftlib sets to `http://localhost:5062` for the browser's benefit — and inside
+        // the container `localhost` is the container, so boot dies with "idam api must be
+        // up to start". cftlib hardcodes `extra_hosts` in its compose file, so no alias
+        // can be added to fix it. The oauth2 strategy does no server-side discovery and
+        // works once the issuer above is right.
+    } else {
+        environment 'PDF_API_URL', 'http://rpe-pdf-service-aat.service.core-compute-aat.internal'
+        dependsOn loadEnvSecretsTask
+        doFirst() { loadEnvFile(it) }
+    }
 }
 
 assemble.dependsOn(dumpCCDDefinitions)
@@ -613,6 +709,24 @@ cftlibTest {
 // exclude the logback binding is coming in via cftlib
 configurations.cftlibTestImplementation {
   exclude group: 'ch.qos.logback', module: 'logback-classic'
+}
+
+// fortify-client is a shaded 'all' jar that bundles an un-relocated, older
+// logback-classic. It reaches cftlibTest only because that configuration extends
+// testImplementation, and on the cftlibTest classpath its copy of
+// ch.qos.logback.classic.LoggerContext shadows the real one - producing
+// 'NoSuchMethodError: LoggerContext.initCollisionMaps()' against logback-core.
+// Only the fortifyScan task needs it, and that uses sourceSets.test.
+// The exclusion has to go on the resolvable classpath: an exclude on the
+// declarable cftlibTestImplementation is not applied to inherited dependencies.
+configurations.cftlibTestRuntimeClasspath {
+  exclude group: 'com.github.hmcts', module: 'fortify-client'
+
+  // log4j-core (pulled in transitively by elasticsearch and decentralised-runtime)
+  // makes Spring Boot select Log4J2LoggingSystem, but log4j-to-slf4j routes the log4j
+  // API to slf4j, so the context is an SLF4JLoggerContext and Boot's cast to
+  // log4j's LoggerContext fails. We log through slf4j, so log4j-core is not wanted.
+  exclude group: 'org.apache.logging.log4j', module: 'log4j-core'
 }
 
 tasks.register('installChromium', JavaExec) {

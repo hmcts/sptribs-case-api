@@ -42,6 +42,21 @@ public class CftLibConfig implements CFTLibConfigurer {
             // one, only caseworker paths are exercisable locally.
             "TEST_CITIZEN_USER@mailinator.com", List.of("citizen"));
 
+        // CCD data-store's own service user. Not a person: ccd-data-store-api
+        // authenticates as this account to call the definition store and to
+        // resolve case-type metadata while handling a request, taking the
+        // username from `idam.data-store.system-user.username` (default
+        // `data.store.idam.system.user@gmail.com`).
+        //
+        // The IDAM simulator only issues tokens for accounts it has been told
+        // about, so without this seeding its `POST /o/token` answers 401 and
+        // every case *creation* fails with a Feign 401 — while the preceding
+        // event-trigger GET still returns 200, because that leg runs entirely
+        // as the calling user. That asymmetry is why the symptom looks like a
+        // problem with the POST body rather than a missing account.
+        lib.createIdamUser("data.store.idam.system.user@gmail.com",
+            "caseworker", "caseworker-st_cic", "ccd-import");
+
         for (Map.Entry<String, List<String>> p : users.entrySet()) {
             lib.createIdamUser(p.getKey(), p.getValue().toArray(new String[0]));
             // CCD needs a profile row per (user, jurisdiction, case type), so

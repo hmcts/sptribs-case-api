@@ -15,21 +15,12 @@ multi-case-type machinery at all.
 
 ## What does NOT leak
 
-`CriminalInjuriesCompensation` injects every `CCDConfig<CaseData, State, UserRole>`
-in the context and replays it onto its own builder:
-
-```java
-@Autowired
-private List<CCDConfig<CaseData, State, UserRole>> cfgs;
-```
-
-That looks alarming, and it is easy to assume a new case type would inherit
-CIC's ~70 events. **It does not.** The fan-in is a field on the CIC root config,
-pulling CIC's own configs into CIC deliberately. A new root config simply does
-not have that field, so nothing is replayed into it.
+Nothing. Every CIC config declares `CriminalInjuriesCompensationData`, so the
+compiler guarantees a new case type cannot reach CIC's ~70 events and CIC cannot
+reach yours. There is no fan-in and no replay.
 
 Verified empirically: a throwaway case type with one field and no events
-generated 17 definition files containing only its own field, against CIC's 256.
+generated 17 definition files containing only its own field, against CIC's 258.
 
 ## Steps
 
@@ -65,13 +56,36 @@ generated 17 definition files containing only its own field, against CIC's 256.
 `bin/ccd-build-definition.sh` and `buildCCDXlsx` discover definition directories,
 so they need no change.
 
-## Known wart
+## The trap this replaced
 
-The ~70 `CCDConfig<CaseData, State, UserRole>` configs also resolve as a second,
-nameless group (their case-data class is bare `CaseData`, and nothing calls
-`caseType(...)` for it). Its `caseType` is `""`, so `new File(dest, "")` writes
-its files loose into `build/definitions/` — 15 stray `*.json` alongside the real
-directories. Harmless: `ccd-build-definition.sh` only picks up subdirectories,
-and the loader iterates the enum. Retyping those configs onto
-`CriminalInjuriesCompensationData` would remove it, but that touches ~139 files
-for a cosmetic gain and was judged not worth the risk.
+Until every CIC config was retyped, the ~70 that declared bare `CaseData`
+resolved as a second, **nameless** group — nothing calls `caseType(...)` for that
+class, so its case type id was `""` and its output directory was
+`new File(destinationFolder, "")`: `build/definitions/` itself, the parent of
+every real case type directory.
+
+`CCDDefinitionGenerator` clears each group's directory before writing it. While
+CIC was the only case type this looked cosmetic — 15 stray `*.json` loose in
+`build/definitions/`, which `ccd-build-definition.sh` ignores because it only
+picks up subdirectories. With a second case type it is **destructive**: writing
+the nameless group deletes every case type already written to the parent. Spring
+injects beans in package order, so whichever case type sorts before `ciccase`
+disappears, surfacing as
+
+    FileNotFoundException: build/definitions/<YourCaseType>
+
+against generated Java that compiles and is entirely correct — which is what
+makes it expensive to find.
+
+So: **never declare a config on bare `CaseData`.** If you add a config to CIC,
+declare it on `CriminalInjuriesCompensationData`. A quick check that nothing has
+regressed:
+
+```sh
+grep -rn 'CCDConfig<CaseData,' src/main/java   # must return nothing
+ls build/definitions/                          # must contain only directories
+```
+
+Shared page classes (`CcdPageConfiguration` implementations) are the exception
+and stay on the base class, via `<T extends CaseData> void addTo(PageBuilder<T>)`
+— they are not `CCDConfig` beans, so they form no group.
