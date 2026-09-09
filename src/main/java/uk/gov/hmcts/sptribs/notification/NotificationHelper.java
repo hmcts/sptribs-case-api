@@ -330,4 +330,22 @@ public class NotificationHelper {
 
         return correspondenceParties;
     }
+
+    public static Set<NotificationParties> getNotificationPartiesBundle(CicCase cicCase) {
+        Set<NotificationParties> correspondenceParties = new HashSet<>();
+
+        if (cicCase.getRespondentEmail() != null) {
+            correspondenceParties.add(RESPONDENT);
+        }
+        if (!CollectionUtils.isEmpty(cicCase.getRepresentativeCIC())) {
+            correspondenceParties.add(REPRESENTATIVE);
+        }
+        if (CollectionUtils.isEmpty(cicCase.getRepresentativeCIC())
+            && !CollectionUtils.isEmpty(cicCase.getApplicantCIC())) {
+            correspondenceParties.add(APPLICANT);
+        }
+
+        return correspondenceParties;
+    }
+
 }
