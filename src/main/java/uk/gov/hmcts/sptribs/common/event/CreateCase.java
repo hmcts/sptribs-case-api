@@ -19,7 +19,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil;
 import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -53,7 +52,6 @@ import java.util.UUID;
 
 import static java.lang.String.format;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
-import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_CASE;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Draft;
@@ -226,22 +224,6 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
             ccdSupplementaryDataService.submitSupplementaryDataToCcd(caseId.toString());
         } catch (Exception exception) {
             log.error("Unable to set Supplementary data with exception : {}", exception.getMessage());
-        }
-    }
-
-    private void sendApplicationReceivedNotification(String caseNumber, CaseData data) {
-        final CicCase cicCase = data.getCicCase();
-
-        if (isNotEmpty(cicCase.getSubjectCIC())) {
-            applicationReceivedNotification.sendToSubject(data, caseNumber);
-        }
-
-        if (isNotEmpty(cicCase.getApplicantCIC())) {
-            applicationReceivedNotification.sendToApplicant(data, caseNumber);
-        }
-
-        if (isNotEmpty(cicCase.getRepresentativeCIC())) {
-            applicationReceivedNotification.sendToRepresentative(data, caseNumber);
         }
     }
 

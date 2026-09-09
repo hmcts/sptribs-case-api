@@ -200,14 +200,14 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
         final CaseData caseData = details.getData();
         String caseNumber = caseData.getHyphenatedCaseRef();
 
-        NotificationContextRequest request = NotificationContextRequest.builder()
+        NotificationContextRequest notificationContextRequest = NotificationContextRequest.builder()
             .caseData(caseData)
             .caseReference(caseNumber)
             .notification(dssUpdateCaseSubmissionNotification)
             .build();
 
-        NotificationContext notificationContext = NotificationConstantProfiles.DSS_UPDATE_CASE.buildContext(
-            request);
+        NotificationContext notificationContext = NotificationConstantProfiles.DSS_UPDATE_CASE
+            .buildContext(notificationContextRequest);
 
         notificationDispatcher.sendToCorrespondenceParties(notificationContext);
 

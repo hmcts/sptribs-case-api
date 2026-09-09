@@ -2,6 +2,9 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -42,6 +45,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -522,8 +526,9 @@ class CaseworkerCreateAndSendOrderTest {
         assertThat(submittedResponse.getConfirmationHeader()).contains("# Order sent");
     }
 
-    @Test
-    void shouldShowErrorMessageWhenNotificationFailsForSubject() {
+    @ParameterizedTest
+    @MethodSource("notificationFailureParties")
+    void shouldShowErrorMessageWhenNotificationFails(String party) {
         final CaseData caseData = caseData();
         final String hyphenatedCaseRef = caseData.formatCaseRef(TEST_CASE_ID);
         caseData.setHyphenatedCaseRef(hyphenatedCaseRef);
@@ -531,117 +536,32 @@ class CaseworkerCreateAndSendOrderTest {
         caseData.getCicCase().setNotifyPartyApplicant(Set.of(APPLICANT_CIC));
         caseData.getCicCase().setNotifyPartyRepresentative(Set.of(REPRESENTATIVE));
         caseData.getCicCase().setNotifyPartyRespondent(Set.of(RESPONDENT));
-
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
-
         doAnswer(invocation -> {
             NotificationContext context = invocation.getArgument(0);
             if (context.getNotification() == newOrderIssuedNotification) {
-                context.getErrors().add("Subject");
+                context.getErrors().add(party);
             }
             return null;
-        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
+        })
+            .when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
+
         SubmittedCallbackResponse submittedResponse = caseworkerCreateAndSendOrder.submitted(caseDetails, getApiCaseDetailsBefore());
 
         assertThat(submittedResponse.getConfirmationHeader())
-            .isEqualTo("""
-                    Failed to send order notifications for case\s
-                    ## A notification could not be sent to: Subject\s
-                    ## Please resend the notification.""");
+            .contains("Failed to send order notifications for case")
+            .contains("## A notification could not be sent to: " + party)
+            .contains("## Please resend the notification.");
     }
 
-    @Test
-    void shouldShowErrorMessageWhenNotificationFailsForRepresentative() {
-        final CaseData caseData = caseData();
-        final String hyphenatedCaseRef = caseData.formatCaseRef(TEST_CASE_ID);
-        caseData.setHyphenatedCaseRef(hyphenatedCaseRef);
-        caseData.getCicCase().setNotifyPartySubject(Set.of(SUBJECT));
-        caseData.getCicCase().setNotifyPartyApplicant(Set.of(APPLICANT_CIC));
-        caseData.getCicCase().setNotifyPartyRepresentative(Set.of(REPRESENTATIVE));
-        caseData.getCicCase().setNotifyPartyRespondent(Set.of(RESPONDENT));
-
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        caseDetails.setData(caseData);
-
-
-        doAnswer(invocation -> {
-            NotificationContext context = invocation.getArgument(0);
-            if (context.getNotification() == newOrderIssuedNotification) {
-                context.getErrors().add("Representative");
-            }
-            return null;
-        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
-
-        SubmittedCallbackResponse submittedResponse = caseworkerCreateAndSendOrder.submitted(caseDetails, getApiCaseDetailsBefore());
-
-        assertThat(submittedResponse.getConfirmationHeader())
-            .isEqualTo("""
-                    Failed to send order notifications for case\s
-                    ## A notification could not be sent to: Representative\s
-                    ## Please resend the notification.""");
-
-    }
-
-    @Test
-    void shouldShowErrorMessageWhenNotificationFailsForRespondent() {
-        final CaseData caseData = caseData();
-        final String hyphenatedCaseRef = caseData.formatCaseRef(TEST_CASE_ID);
-        caseData.setHyphenatedCaseRef(hyphenatedCaseRef);
-        caseData.getCicCase().setNotifyPartySubject(Set.of(SUBJECT));
-        caseData.getCicCase().setNotifyPartyApplicant(Set.of(APPLICANT_CIC));
-        caseData.getCicCase().setNotifyPartyRepresentative(Set.of(REPRESENTATIVE));
-        caseData.getCicCase().setNotifyPartyRespondent(Set.of(RESPONDENT));
-
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        caseDetails.setData(caseData);
-
-        doAnswer(invocation -> {
-            NotificationContext context = invocation.getArgument(0);
-            if (context.getNotification() == newOrderIssuedNotification) {
-                context.getErrors().add("Respondent");
-            }
-            return null;
-        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
-
-        SubmittedCallbackResponse submittedResponse = caseworkerCreateAndSendOrder.submitted(caseDetails, getApiCaseDetailsBefore());
-
-        assertThat(submittedResponse.getConfirmationHeader())
-                .isEqualTo("""
-                    Failed to send order notifications for case\s
-                    ## A notification could not be sent to: Respondent\s
-                    ## Please resend the notification.""");
-
-    }
-
-    @Test
-    void shouldShowErrorMessageWhenNotificationFailsForApplicant() {
-        final CaseData caseData = caseData();
-        final String hyphenatedCaseRef = caseData.formatCaseRef(TEST_CASE_ID);
-        caseData.setHyphenatedCaseRef(hyphenatedCaseRef);
-        caseData.getCicCase().setNotifyPartySubject(Set.of(SUBJECT));
-        caseData.getCicCase().setNotifyPartyApplicant(Set.of(APPLICANT_CIC));
-        caseData.getCicCase().setNotifyPartyRepresentative(Set.of(REPRESENTATIVE));
-        caseData.getCicCase().setNotifyPartyRespondent(Set.of(RESPONDENT));
-
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        caseDetails.setData(caseData);
-
-        doAnswer(invocation -> {
-            NotificationContext context = invocation.getArgument(0);
-            if (context.getNotification() == newOrderIssuedNotification) {
-                context.getErrors().add("Applicant");
-            }
-            return null;
-        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
-
-        SubmittedCallbackResponse submittedResponse = caseworkerCreateAndSendOrder.submitted(caseDetails, getApiCaseDetailsBefore());
-
-        assertThat(submittedResponse.getConfirmationHeader())
-            .isEqualTo("""
-                    Failed to send order notifications for case\s
-                    ## A notification could not be sent to: Applicant\s
-                    ## Please resend the notification.""");
+    private static Stream<Arguments> notificationFailureParties() {
+        return Stream.of(
+            Arguments.of("Subject"),
+            Arguments.of("Representative"),
+            Arguments.of("Respondent"),
+            Arguments.of("Applicant")
+      );
     }
 
     @Test

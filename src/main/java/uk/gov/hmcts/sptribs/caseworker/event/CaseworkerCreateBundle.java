@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -73,11 +72,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
 
     private final BundlingService bundlingService;
     private final NotificationDispatcher notificationDispatcher;
-
-    @Autowired
     private final Clock clock;
-
-    @Autowired
     private final BundleCreatedNotification bundleCreatedNotification;
 
     @Override

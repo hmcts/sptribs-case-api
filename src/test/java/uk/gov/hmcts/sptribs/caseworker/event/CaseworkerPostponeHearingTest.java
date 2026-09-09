@@ -2,7 +2,6 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.provider.Arguments;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -28,13 +27,11 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.notification.dispatcher.HearingPostponedNotification;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
-import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -192,27 +189,5 @@ class CaseworkerPostponeHearingTest {
             .contains("A notification could not be sent to: Subject")
             .contains("Please resend the notification");
 
-    }
-
-    private static Stream<Arguments> notificationExceptionCicCase() {
-        final CicCase cicCaseSubject = CicCase.builder()
-            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
-            .build();
-        final CicCase cicCaseRepresentative = CicCase.builder()
-            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
-            .build();
-        final CicCase cicCaseRespondent = CicCase.builder()
-            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
-            .build();
-
-        final Exception sendToSubjectException = new NotificationException(new Exception("Failed to send to subject"));
-        final Exception sendToRepresentativeException = new NotificationException(new Exception("Failed to send to representative"));
-        final Exception sendToRespondentException = new NotificationException(new Exception("Failed to send to respondent"));
-
-        return Stream.of(
-            Arguments.arguments(SubjectCIC.SUBJECT.name(), cicCaseSubject, sendToSubjectException),
-            Arguments.arguments(RepresentativeCIC.REPRESENTATIVE.name(), cicCaseRepresentative, sendToRepresentativeException),
-            Arguments.arguments(RespondentCIC.RESPONDENT.name(), cicCaseRespondent, sendToRespondentException)
-        );
     }
 }

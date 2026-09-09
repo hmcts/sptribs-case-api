@@ -9,7 +9,6 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
@@ -75,14 +74,14 @@ public class CaseworkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
         final CaseData caseData = details.getData();
         String caseNumber = caseData.getHyphenatedCaseRef();
 
-        NotificationContextRequest request = NotificationContextRequest.builder()
+        NotificationContextRequest notificationContextRequest = NotificationContextRequest.builder()
             .caseData(caseData)
             .caseReference(caseNumber)
             .notification(caseLinkedNotification)
             .build();
 
-        NotificationContext notificationContext = NotificationConstantProfiles.LINK_CASE.buildContext(
-            request);
+        NotificationContext notificationContext = NotificationConstantProfiles.LINK_CASE
+            .buildContext(notificationContextRequest);
 
         notificationDispatcher.sendToCorrespondenceParties(notificationContext);
 
@@ -98,19 +97,6 @@ public class CaseworkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
                         generateSimpleErrorMessage(notificationContext.getErrors()))
                 )
                 .build();
-        }
-    }
-
-    private void linkedCaseNotification(String caseNumber, CaseData data) {
-        CicCase cicCase = data.getCicCase();
-        if (cicCase.getSubjectCIC() != null && !cicCase.getSubjectCIC().isEmpty()) {
-            caseLinkedNotification.sendToSubject(data, caseNumber);
-        }
-        if (cicCase.getApplicantCIC() != null && !cicCase.getApplicantCIC().isEmpty()) {
-            caseLinkedNotification.sendToApplicant(data, caseNumber);
-        }
-        if (cicCase.getRepresentativeCIC() != null && !cicCase.getRepresentativeCIC().isEmpty()) {
-            caseLinkedNotification.sendToRepresentative(data, caseNumber);
         }
     }
 }

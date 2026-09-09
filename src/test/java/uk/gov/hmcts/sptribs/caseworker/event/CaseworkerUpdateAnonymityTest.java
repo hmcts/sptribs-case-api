@@ -4,9 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
@@ -65,11 +63,7 @@ class CaseworkerUpdateAnonymityTest {
 
     @Mock
     private AnonymisationService anonymisationService;
-
-    void setUp() {
-        anonymisationService = Mockito.spy(new AnonymisationService(anonymisationRepository));
-        ReflectionTestUtils.setField(caseworkerUpdateAnonymity, "anonymisationService", anonymisationService);
-    }
+    
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {

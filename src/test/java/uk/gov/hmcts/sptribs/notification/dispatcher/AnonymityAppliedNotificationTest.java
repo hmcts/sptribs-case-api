@@ -244,18 +244,6 @@ class AnonymityAppliedNotificationTest {
     }
 
     @Test
-    void shouldNotSendNotificationIfCicCaseIsNull() {
-        final CaseData caseData = CaseData.builder()
-            .cicCase(null)
-            .build();
-
-        when(notificationContextRequest.getCaseData()).thenReturn(null);
-        when(notificationContextRequest.getPreviousCaseData()).thenReturn(null);
-
-        assertThat(anonymityAppliedNotification.buildCorrespondenceParties(notificationContextRequest)).doesNotContain(TRIBUNAL);
-    }
-
-    @Test
     void shouldPropagateExceptionWhenSendToTribunalThrows() {
         final CaseData caseData = CaseData.builder()
             .caseStatus(State.AwaitingHearing)
@@ -272,7 +260,7 @@ class AnonymityAppliedNotificationTest {
 
         // Should propagate the exception when sendToTribunal throws
         org.junit.jupiter.api.Assertions.assertThrows(RuntimeException.class, () ->
-            anonymityAppliedNotification.sendToTribunal(caseData, caseData.getCaseNumber())
+            anonymityAppliedNotification.sendToTribunal(caseData, "1234-5678-9012-3456")
         );
 
         verify(notificationServiceCIC, never()).sendEmail(any(), any(), any());

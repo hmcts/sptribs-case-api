@@ -19,7 +19,6 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionSelectTempla
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionUpload;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -162,20 +161,19 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
         final CaseData caseData = details.getData();
-        final CicCase cicCase = caseData.getCicCase();
         final String caseReference = caseData.getHyphenatedCaseRef();
 
         Document finalDecisionGuidance = getFinalDecisionGuidanceDocument(details.getId());
         caseData.getCaseIssueFinalDecision().setFinalDecisionGuidance(finalDecisionGuidance);
 
-        NotificationContextRequest request = NotificationContextRequest.builder()
+        NotificationContextRequest notificationContextRequest = NotificationContextRequest.builder()
             .caseData(caseData)
             .caseReference(caseReference)
             .notification(caseFinalDecisionIssuedNotification)
             .build();
 
         NotificationContext notificationContext = NotificationConstantProfiles.ISSUE_FINAL_DECISION
-            .buildContext(request);
+            .buildContext(notificationContextRequest);
 
         notificationDispatcher.sendToCorrespondenceParties(notificationContext);
 

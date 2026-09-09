@@ -251,9 +251,6 @@ class CaseworkerContactPartiesTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        final int docAttachLimit = 10;
-        Map<String, String> emailDocs = getDocumentUploadMap();
-
         doAnswer(invocation -> {
             NotificationContext context = invocation.getArgument(0);
             if (context.getNotification() == contactPartiesNotification) {
