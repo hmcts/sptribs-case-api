@@ -98,7 +98,6 @@ public class Bundle {
         ignore = true,
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    @JsonIgnore
     private String stitchingFailureMessage;
 
     @CCD(
