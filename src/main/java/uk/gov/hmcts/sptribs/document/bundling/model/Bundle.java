@@ -108,7 +108,6 @@ public class Bundle {
 
     @CCD(
         label = "Stitch status",
-        ignore = true,
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String stitchStatus;
