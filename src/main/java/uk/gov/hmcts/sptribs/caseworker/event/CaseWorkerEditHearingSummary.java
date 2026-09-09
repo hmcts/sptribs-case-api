@@ -26,6 +26,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
@@ -47,7 +48,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.getAddedDocuments;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.getDocumentsWithUpdatedCategory;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.getRemovedDocuments;
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.uploadRecFile;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateUploadedDocumentCategory;
 import static uk.gov.hmcts.sptribs.document.model.CaseDocumentType.HEARING_RECORD;
 
 @Component
@@ -132,8 +133,9 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
         caseData.getListing().getSummary().setJudgeList(null);
         final String hearingName = caseData.getCicCase().getHearingSummaryList().getValue().getLabel();
         final List<ListValue<CaseworkerCICDocument>> existingRecordings = getHearingRecordings(beforeDetails.getData(), hearingName);
-        uploadRecFile(caseData);
-        final List<ListValue<CaseworkerCICDocument>> recordings = caseData.getListing().getSummary().getRecFile();
+        final List<ListValue<CaseworkerCICDocument>> recordings = resolveUpdatedRecordings(caseData, existingRecordings);
+        caseData.getListing().getSummary().setRecFile(recordings);
+        caseData.getListing().getSummary().setRecFileUpload(new ArrayList<>());
         errors.addAll(documentsService.saveDocuments(
             details.getId(), getAddedDocuments(recordings, existingRecordings), HEARING_RECORD));
         errors.addAll(documentsService.updateDocumentCategories(
@@ -164,6 +166,26 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
             .filter(Objects::nonNull)
             .findFirst()
             .orElse(List.of());
+    }
+
+    private List<ListValue<CaseworkerCICDocument>> resolveUpdatedRecordings(
+        CaseData caseData,
+        List<ListValue<CaseworkerCICDocument>> existingRecordings
+    ) {
+        List<ListValue<CaseworkerCICDocumentUpload>> uploadedRecordings = caseData.getListing().getSummary().getRecFileUpload();
+        if (uploadedRecordings != null) {
+            if (uploadedRecordings.isEmpty()) {
+                return List.of();
+            }
+            return updateUploadedDocumentCategory(uploadedRecordings, false);
+        }
+
+        List<ListValue<CaseworkerCICDocument>> currentRecordings = caseData.getListing().getSummary().getRecFile();
+        if (currentRecordings != null) {
+            return currentRecordings;
+        }
+
+        return existingRecordings;
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
