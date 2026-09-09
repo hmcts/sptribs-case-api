@@ -94,7 +94,7 @@ public class Bundle {
 
     @CCD(
         label = "Error from stitching service",
-//        ignore = true,
+        ignore = true,
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String stitchingFailureMessage;
@@ -108,6 +108,7 @@ public class Bundle {
 
     @CCD(
         label = "Stitch status",
+        ignore = true,
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String stitchStatus;
