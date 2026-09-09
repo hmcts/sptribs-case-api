@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.PostponeHearingNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingState;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
@@ -182,13 +183,13 @@ class CaseworkerPostponeHearingTest {
         final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         if (notifyParty.equals(SubjectCIC.SUBJECT.name())) {
-            doThrow(exception).when(hearingPostponedNotification).sendToSubject(any(CriminalInjuriesCompensationData.class), anyString());
+            doThrow(exception).when(hearingPostponedNotification).sendToSubject(any(CaseData.class), anyString());
         }
         if (notifyParty.equals(RepresentativeCIC.REPRESENTATIVE.name())) {
-            doThrow(exception).when(hearingPostponedNotification).sendToRepresentative(any(CriminalInjuriesCompensationData.class), anyString());
+            doThrow(exception).when(hearingPostponedNotification).sendToRepresentative(any(CaseData.class), anyString());
         }
         if (notifyParty.equals(RespondentCIC.RESPONDENT.name())) {
-            doThrow(exception).when(hearingPostponedNotification).sendToRespondent(any(CriminalInjuriesCompensationData.class), anyString());
+            doThrow(exception).when(hearingPostponedNotification).sendToRespondent(any(CaseData.class), anyString());
         }
 
         final SubmittedCallbackResponse response = caseworkerPostponeHearing.submitted(updatedCaseDetails, beforeCaseDetails);

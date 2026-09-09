@@ -1,8 +1,8 @@
 package uk.gov.hmcts.sptribs.ciccase.util;
 
 import org.junit.jupiter.api.Test;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -14,7 +14,9 @@ public class CasePartyUtilTest {
     public void shouldReturnNullWhenCaseDataOrCicCaseOrEmailIsNull() {
         assertNull(CasePartyUtil.determineParty(null, "email@test.com"));
         assertNull(CasePartyUtil.determineParty(CriminalInjuriesCompensationData.builder().build(), "email@test.com"));
-        assertNull(CasePartyUtil.determineParty(CriminalInjuriesCompensationData.builder().cicCase(CicCase.builder().build()).build(), null));
+        assertNull(
+            CasePartyUtil.determineParty(CriminalInjuriesCompensationData.builder().cicCase(CicCase.builder().build()).build(), null)
+        );
     }
 
     @Test

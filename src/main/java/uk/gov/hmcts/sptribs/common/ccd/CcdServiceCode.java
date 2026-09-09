@@ -7,7 +7,7 @@ import lombok.Getter;
 /**
  * Every CCD case type this service registers, one constant apiece.
  *
- * This is the single registry the rest of the service reads: definition loading
+ * <p>This is the single registry the rest of the service reads: definition loading
  * ({@link HighLevelDataSetupApp}) and local seeding (CftLibConfig) both iterate
  * {@code values()}, so adding a case type is one constant here rather than an
  * edit in several places that can silently disagree.

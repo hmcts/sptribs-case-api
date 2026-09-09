@@ -15,9 +15,9 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
@@ -133,7 +133,10 @@ public class SystemCreateTestCaseTest {
         when(mapper.readValue(anyString(), eq(CriminalInjuriesCompensationData.class))).thenReturn(caseData());
         when(caseDocumentClientApi.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
 
-        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = createTestCase.aboutToSubmit(caseDetails, caseDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = createTestCase.aboutToSubmit(
+            caseDetails,
+            caseDetails
+        );
 
         assertThat(response.getState()).isEqualTo(Submitted);
         assertThat(response.getData().getHyphenatedCaseRef()).isEqualTo(TEST_CASE_ID_HYPHENATED);

@@ -18,7 +18,6 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionFooter;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionSelectTemplate;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
@@ -27,6 +26,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentSaveException;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.content.DecisionTemplateContent;
@@ -143,7 +143,10 @@ class CaseworkerIssueDecisionTest {
         details.setData(caseData);
 
         //When
-        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = issueDecision.aboutToSubmit(details, beforeDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = issueDecision.aboutToSubmit(
+            details,
+            beforeDetails
+        );
 
         //Then
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
@@ -173,7 +176,10 @@ class CaseworkerIssueDecisionTest {
         details.setData(caseData);
 
         //When
-        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = issueDecision.aboutToSubmit(details, beforeDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = issueDecision.aboutToSubmit(
+            details,
+            beforeDetails
+        );
 
         //Then
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
@@ -221,7 +227,10 @@ class CaseworkerIssueDecisionTest {
         caseDetails.setData(caseData);
 
         //When
-        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = issueDecisionSelectTemplate.midEvent(caseDetails, caseDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = issueDecisionSelectTemplate.midEvent(
+            caseDetails,
+            caseDetails
+        );
 
         //Then
         Assertions.assertEquals(DocmosisTemplateConstants.ELIGIBILITY_MAIN_CONTENT, response.getData().getDecisionMainContent());
@@ -268,7 +277,10 @@ class CaseworkerIssueDecisionTest {
             .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(DocumentType.TRIBUNAL_DIRECTION),
                 eq(CaseDocumentType.DECISION));
 
-        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = issueDecision.aboutToSubmit(details, beforeDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = issueDecision.aboutToSubmit(
+            details,
+            beforeDetails
+        );
 
         assertThat(response.getErrors()).hasSize(1);
         assertThat(response.getErrors()).contains("Error saving document with filename: " + document.getDocumentLink().getFilename());
@@ -282,7 +294,10 @@ class CaseworkerIssueDecisionTest {
         caseData.setCaseIssueDecision(decision);
         details.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> nullFilenameResponse = issueDecision.aboutToSubmit(details, beforeDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> nullFilenameResponse = issueDecision.aboutToSubmit(
+            details,
+            beforeDetails
+        );
 
         assertThat(nullFilenameResponse.getErrors()).hasSize(1);
         assertThat(nullFilenameResponse.getErrors()).contains("Error saving document with no filename");
@@ -292,7 +307,10 @@ class CaseworkerIssueDecisionTest {
         caseData.setCaseIssueDecision(decision);
         details.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> emptyFilenameResponse = issueDecision.aboutToSubmit(details, beforeDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> emptyFilenameResponse = issueDecision.aboutToSubmit(
+            details,
+            beforeDetails
+        );
 
         assertThat(emptyFilenameResponse.getErrors()).hasSize(1);
         assertThat(emptyFilenameResponse.getErrors()).contains("Error saving document with no filename");

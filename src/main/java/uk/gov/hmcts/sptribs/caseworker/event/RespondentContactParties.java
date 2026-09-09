@@ -15,10 +15,9 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.RespondentPartiesToContact;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.service.ContactPartiesService;
@@ -102,7 +101,9 @@ public class RespondentContactParties implements CCDConfig<CriminalInjuriesCompe
         resPartiesToContact.addTo(pageBuilder);
     }
 
-    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStart(CaseDetails<CriminalInjuriesCompensationData, State> details) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStart(
+        CaseDetails<CriminalInjuriesCompensationData, State> details
+    ) {
         final CriminalInjuriesCompensationData caseData = details.getData();
         caseData.setContactParties(new ContactParties());
         DynamicMultiSelectList documentList = DocumentListUtil.prepareContactPartiesDocumentList(caseData, baseUrl);
@@ -135,7 +136,11 @@ public class RespondentContactParties implements CCDConfig<CriminalInjuriesCompe
             .build();
     }
 
-    private void sendContactPartiesNotification(CaseDetails<CriminalInjuriesCompensationData, State> details, CriminalInjuriesCompensationData data, String caseNumber) {
+    private void sendContactPartiesNotification(
+        CaseDetails<CriminalInjuriesCompensationData, State> details,
+        CriminalInjuriesCompensationData data,
+        String caseNumber
+    ) {
         final ContactParties contactParties = data.getContactParties();
         final CriminalInjuriesCompensationData caseData = details.getData();
         final Map<String, String> uploadedDocuments = notificationHelper

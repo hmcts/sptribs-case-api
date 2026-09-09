@@ -17,8 +17,8 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
@@ -84,7 +84,10 @@ class ContactPartiesSelectDocumentTest {
                 .build();
             caseDetails.setData(caseData);
 
-            final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
+            final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = contactPartiesSelectDocument.midEvent(
+                caseDetails,
+                caseDetails
+            );
             assertTrue(response.getErrors().isEmpty());
         }
 
@@ -107,7 +110,10 @@ class ContactPartiesSelectDocumentTest {
                 .build();
             caseDetails.setData(caseData);
 
-            final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
+            final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = contactPartiesSelectDocument.midEvent(
+                caseDetails,
+                caseDetails
+            );
             assertThat(response.getErrors()).hasSize(1);
             assertThat(response.getErrors()).contains("Select up to 10 documents");
         }
@@ -141,7 +147,10 @@ class ContactPartiesSelectDocumentTest {
                 .build();
             caseDetails.setData(caseData);
 
-            final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
+            final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = contactPartiesSelectDocument.midEvent(
+                caseDetails,
+                caseDetails
+            );
             String displayName = label.substring(label.indexOf('[') + 1, label.indexOf(']'));
             assertThat(response.getErrors()).containsExactly("Unable to proceed because " + displayName + " is larger than 2MB");
         }
@@ -173,7 +182,10 @@ class ContactPartiesSelectDocumentTest {
                 .build();
             caseDetails.setData(caseData);
 
-            final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
+            final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = contactPartiesSelectDocument.midEvent(
+                caseDetails,
+                caseDetails
+            );
             assertThat(response.getErrors()).isEmpty();
         }
 
@@ -270,7 +282,10 @@ class ContactPartiesSelectDocumentTest {
                 .build();
             caseDetails.setData(caseData);
 
-            final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
+            final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = contactPartiesSelectDocument.midEvent(
+                caseDetails,
+                caseDetails
+            );
             String displayName = label.substring(label.indexOf('[') + 1, label.indexOf(']'));
             assertThat(response.getErrors()).containsExactly("Unable to proceed because " + displayName + " is larger than 2MB");
         }
@@ -317,7 +332,10 @@ class ContactPartiesSelectDocumentTest {
             .build();
         caseDetails.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = contactPartiesSelectDocument.midEvent(
+            caseDetails,
+            caseDetails
+        );
         assertThat(response.getErrors()).isEmpty();
     }
 

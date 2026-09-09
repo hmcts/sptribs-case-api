@@ -15,9 +15,9 @@ import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
@@ -713,7 +713,8 @@ public class DocumentListUtilTest {
         final List<ListValue<CaseworkerCICDocument>> applicantDocuments =
             List.of(ListValue.<CaseworkerCICDocument>builder().value(cicDocument).build());
 
-        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = CaseDetails.<CriminalInjuriesCompensationData, State>builder()
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails =
+            CaseDetails.<CriminalInjuriesCompensationData, State>builder()
             .data(CriminalInjuriesCompensationData.builder()
                 .cicCase(CicCase.builder()
                     .fullName("Test Name")

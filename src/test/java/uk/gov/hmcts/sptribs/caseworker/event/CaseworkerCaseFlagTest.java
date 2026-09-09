@@ -14,10 +14,10 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.repositories.AnonymisationRepository;
 import uk.gov.hmcts.sptribs.common.service.AnonymisationService;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
@@ -96,8 +96,12 @@ class CaseworkerCaseFlagTest {
                 .build())
             .build();
 
-        CaseDetails<CriminalInjuriesCompensationData, State> details = CaseDetails.<CriminalInjuriesCompensationData, State>builder().data(caseData).build();
-        CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = CaseDetails.<CriminalInjuriesCompensationData, State>builder().data(beforeData).build();
+        CaseDetails<CriminalInjuriesCompensationData, State> details = CaseDetails.<CriminalInjuriesCompensationData, State>builder()
+            .data(caseData)
+            .build();
+        CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = CaseDetails.<CriminalInjuriesCompensationData, State>builder()
+            .data(beforeData)
+            .build();
 
         doReturn("AC").when(anonymisationService).getOrCreateAnonymisation();
 

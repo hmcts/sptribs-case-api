@@ -19,11 +19,10 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.ContactPartiesSelectDocument;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.PartiesToContact;
@@ -117,7 +116,9 @@ public class CaseworkerContactParties implements CCDConfig<CriminalInjuriesCompe
         partiesToContact.addTo(pageBuilder);
     }
 
-    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStart(CaseDetails<CriminalInjuriesCompensationData, State> details) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStart(
+        CaseDetails<CriminalInjuriesCompensationData, State> details
+    ) {
         final CriminalInjuriesCompensationData caseData = details.getData();
         caseData.setContactParties(new ContactParties());
         DynamicMultiSelectList documentList = DocumentListUtil.prepareContactPartiesDocumentList(caseData, baseUrl);
@@ -130,7 +131,8 @@ public class CaseworkerContactParties implements CCDConfig<CriminalInjuriesCompe
     }
 
     @SneakyThrows
-    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(CaseDetails<CriminalInjuriesCompensationData, State> details,
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(
+        CaseDetails<CriminalInjuriesCompensationData, State> details,
                                                                        CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
         final CriminalInjuriesCompensationData caseData = details.getData();
 
@@ -175,7 +177,11 @@ public class CaseworkerContactParties implements CCDConfig<CriminalInjuriesCompe
         }
     }
 
-    private void sendContactPartiesNotification(CaseDetails<CriminalInjuriesCompensationData, State> details, CicCase cicCase, String caseNumber) {
+    private void sendContactPartiesNotification(
+        CaseDetails<CriminalInjuriesCompensationData, State> details,
+        CicCase cicCase,
+        String caseNumber
+    ) {
 
         final Map<String, String> uploadedDocuments = notificationHelper
             .buildDocumentList(details.getData().getContactPartiesDocuments().getDocumentList(), DOC_ATTACH_LIMIT);

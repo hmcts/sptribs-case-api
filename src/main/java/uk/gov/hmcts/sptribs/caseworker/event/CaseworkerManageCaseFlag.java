@@ -65,9 +65,14 @@ public class CaseworkerManageCaseFlag implements CCDConfig<CriminalInjuriesCompe
                 null, null, null, null, "#ARGUMENT(UPDATE)");
     }
 
-    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(CaseDetails<CriminalInjuriesCompensationData, State> details,
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(
+        CaseDetails<CriminalInjuriesCompensationData, State> details,
                                                                        CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
-        CriminalInjuriesCompensationData caseData = details.getData() == null ? CriminalInjuriesCompensationData.builder().build() : details.getData();
+        CriminalInjuriesCompensationData caseData = details
+            .getData() == null ? CriminalInjuriesCompensationData
+            .builder()
+            .build() : details
+            .getData();
         CriminalInjuriesCompensationData beforeData = beforeDetails == null ? null : beforeDetails.getData();
         List<String> errors = new ArrayList<>();
 

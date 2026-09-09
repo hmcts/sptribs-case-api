@@ -11,9 +11,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.sptribs.caseworker.model.EditCicaCaseDetails;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.notification.DssNotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
@@ -82,7 +83,7 @@ class DssApplicationReceivedNotificationTest {
 
             when(dssNotificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
                 .thenReturn(NotificationRequest.builder().build());
-            when(dssNotificationHelper.getSubjectCommonVars(any(), any(CriminalInjuriesCompensationData.class))).thenReturn(templateVars);
+            when(dssNotificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(templateVars);
             when(notificationService.sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER), eq(null))).thenReturn(notificationResponse);
 
             dssApplicationReceivedNotification.sendToSubject(caseData, CASE_NUMBER);
@@ -100,7 +101,11 @@ class DssApplicationReceivedNotificationTest {
             final DssCaseData dssCaseData = getMockDssCaseData();
             dssCaseData.setSubjectEmailAddress("subject@outlook.com");
             dssCaseData.setLanguagePreference(ENGLISH);
-            final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().dssCaseData(dssCaseData).editCicaCaseDetails(CICA_CASE_DETAILS).build();
+            final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData
+                .builder()
+                .dssCaseData(dssCaseData)
+                .editCicaCaseDetails(CICA_CASE_DETAILS)
+                .build();
             final NotificationResponse notificationResponse = getMockNotificationResponse();
 
             Map<String, Object> templateVars = new HashMap<>();
@@ -111,7 +116,7 @@ class DssApplicationReceivedNotificationTest {
 
             when(dssNotificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
                 .thenReturn(NotificationRequest.builder().build());
-            when(dssNotificationHelper.getSubjectCommonVars(any(), any(CriminalInjuriesCompensationData.class))).thenReturn(templateVars);
+            when(dssNotificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(templateVars);
             when(notificationService.sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER), eq(null))).thenReturn(notificationResponse);
 
             dssApplicationReceivedNotification.sendToSubject(caseData, CASE_NUMBER);
@@ -138,7 +143,7 @@ class DssApplicationReceivedNotificationTest {
 
             when(dssNotificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
                 .thenReturn(NotificationRequest.builder().build());
-            when(dssNotificationHelper.getSubjectCommonVars(any(), any(CriminalInjuriesCompensationData.class))).thenReturn(templateVars);
+            when(dssNotificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(templateVars);
             when(notificationService.sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER), eq(null))).thenReturn(notificationResponse);
 
             dssApplicationReceivedNotification.sendToSubject(caseData, CASE_NUMBER);
@@ -157,7 +162,11 @@ class DssApplicationReceivedNotificationTest {
             dssCaseData.setRepresentativeFullName("Rep Full Name");
             dssCaseData.setRepresentativeEmailAddress("rep@outlook.com");
             dssCaseData.setLanguagePreference(ENGLISH);
-            final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().dssCaseData(dssCaseData).editCicaCaseDetails(CICA_CASE_DETAILS).build();
+            final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData
+                .builder()
+                .dssCaseData(dssCaseData)
+                .editCicaCaseDetails(CICA_CASE_DETAILS)
+                .build();
             final NotificationResponse notificationResponse = getMockNotificationResponse();
 
             Map<String, Object> templateVars = new HashMap<>();
@@ -168,7 +177,7 @@ class DssApplicationReceivedNotificationTest {
 
             when(dssNotificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
                 .thenReturn(NotificationRequest.builder().build());
-            when(dssNotificationHelper.getRepresentativeCommonVars(any(), any(CriminalInjuriesCompensationData.class))).thenReturn(templateVars);
+            when(dssNotificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(templateVars);
             when(notificationService.sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER), eq(null))).thenReturn(notificationResponse);
 
             dssApplicationReceivedNotification.sendToRepresentative(caseData, CASE_NUMBER);
@@ -196,7 +205,7 @@ class DssApplicationReceivedNotificationTest {
 
             when(dssNotificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
                 .thenReturn(NotificationRequest.builder().build());
-            when(dssNotificationHelper.getRepresentativeCommonVars(any(), any(CriminalInjuriesCompensationData.class))).thenReturn(templateVars);
+            when(dssNotificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(templateVars);
             when(notificationService.sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER), eq(null))).thenReturn(notificationResponse);
 
             dssApplicationReceivedNotification.sendToRepresentative(caseData, CASE_NUMBER);
@@ -237,7 +246,7 @@ class DssApplicationReceivedNotificationTest {
 
             when(dssNotificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
                 .thenReturn(NotificationRequest.builder().build());
-            when(dssNotificationHelper.getSubjectCommonVars(any(), any(CriminalInjuriesCompensationData.class))).thenReturn(templateVars);
+            when(dssNotificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(templateVars);
             when(notificationService.sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER), eq(null))).thenReturn(notificationResponse);
 
             dssApplicationReceivedNotification.sendToSubject(caseData, CASE_NUMBER);
@@ -265,7 +274,7 @@ class DssApplicationReceivedNotificationTest {
 
             when(dssNotificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
                 .thenReturn(NotificationRequest.builder().build());
-            when(dssNotificationHelper.getSubjectCommonVars(any(), any(CriminalInjuriesCompensationData.class))).thenReturn(templateVars);
+            when(dssNotificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(templateVars);
             when(notificationService.sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER), eq(null))).thenReturn(notificationResponse);
 
             dssApplicationReceivedNotification.sendToSubject(caseData, CASE_NUMBER);

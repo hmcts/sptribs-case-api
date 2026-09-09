@@ -17,13 +17,14 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.constants.CommonConstants;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
@@ -326,8 +327,8 @@ class CicSubmitCaseEventTest {
 
         assertThat(submittedResponse.getConfirmationHeader())
             .isEqualTo("# Application Received \n## A notification has been sent to: Subject, Representative");
-        verify(dssApplicationReceivedNotification).sendToSubject(any(CriminalInjuriesCompensationData.class), any());
-        verify(dssApplicationReceivedNotification).sendToRepresentative(any(CriminalInjuriesCompensationData.class), any());
+        verify(dssApplicationReceivedNotification).sendToSubject(any(CaseData.class), any());
+        verify(dssApplicationReceivedNotification).sendToRepresentative(any(CaseData.class), any());
     }
 
     @Test
@@ -387,7 +388,7 @@ class CicSubmitCaseEventTest {
 
         doThrow(NotificationException.class)
             .when(dssApplicationReceivedNotification)
-            .sendToSubject(any(CriminalInjuriesCompensationData.class), anyString());
+            .sendToSubject(any(CaseData.class), anyString());
         doThrow(NotificationException.class)
             .when(dssApplicationReceivedNotification)
             .sendToRepresentative(any(DssCaseData.class), anyString());

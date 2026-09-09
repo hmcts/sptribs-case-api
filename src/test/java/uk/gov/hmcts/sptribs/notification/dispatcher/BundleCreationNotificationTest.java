@@ -10,8 +10,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
@@ -61,7 +62,7 @@ public class BundleCreationNotificationTest {
             //When
             when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
                 .thenReturn(NotificationRequest.builder().build());
-            when(notificationHelper.getApplicantCommonVars(any(), any(CriminalInjuriesCompensationData.class))).thenReturn(new HashMap<>());
+            when(notificationHelper.getApplicantCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
 
             bundleCreatedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
@@ -84,7 +85,7 @@ public class BundleCreationNotificationTest {
             //When
             when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
                 .thenReturn(NotificationRequest.builder().build());
-            when(notificationHelper.getRepresentativeCommonVars(any(), any(CriminalInjuriesCompensationData.class))).thenReturn(new HashMap<>());
+            when(notificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
 
             bundleCreatedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
@@ -106,7 +107,7 @@ public class BundleCreationNotificationTest {
             //When
             when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
                 .thenReturn(NotificationRequest.builder().build());
-            when(notificationHelper.getRespondentCommonVars(any(), any(CriminalInjuriesCompensationData.class))).thenReturn(new HashMap<>());
+            when(notificationHelper.getRespondentCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
 
             bundleCreatedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
@@ -138,7 +139,7 @@ public class BundleCreationNotificationTest {
             //When
             when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
                 .thenReturn(NotificationRequest.builder().build());
-            when(notificationHelper.getApplicantCommonVars(any(), any(CriminalInjuriesCompensationData.class))).thenReturn(new HashMap<>());
+            when(notificationHelper.getApplicantCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
 
             bundleCreatedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 

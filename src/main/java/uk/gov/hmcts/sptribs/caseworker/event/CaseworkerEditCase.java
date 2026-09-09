@@ -10,11 +10,10 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil;
 import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.ApplicantDetails;
@@ -87,7 +86,8 @@ public class CaseworkerEditCase implements CCDConfig<CriminalInjuriesCompensatio
         editFurtherDetails.addTo(pageBuilder);
     }
 
-    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(CaseDetails<CriminalInjuriesCompensationData, State> details,
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(
+        CaseDetails<CriminalInjuriesCompensationData, State> details,
                                                                        CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
         CriminalInjuriesCompensationData data = details.getData();
         CriminalInjuriesCompensationData beforeData = beforeDetails.getData();
@@ -137,7 +137,9 @@ public class CaseworkerEditCase implements CCDConfig<CriminalInjuriesCompensatio
             .build();
     }
 
-    private PageBuilder<CriminalInjuriesCompensationData> addEventConfig(ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+    private PageBuilder<CriminalInjuriesCompensationData> addEventConfig(
+        ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder
+    ) {
         Event.EventBuilder<CriminalInjuriesCompensationData, UserRole, State> eventBuilder = configBuilder
             .event(CASEWORKER_EDIT_CASE)
             .forStates(DSS_Submitted, Submitted, CaseManagement, ReadyToList, AwaitingHearing, AwaitingOutcome)

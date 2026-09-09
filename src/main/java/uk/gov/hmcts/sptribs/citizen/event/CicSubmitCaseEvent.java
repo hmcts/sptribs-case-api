@@ -19,7 +19,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssMessage;
@@ -185,7 +184,11 @@ public class CicSubmitCaseEvent implements CCDConfig<CriminalInjuriesCompensatio
         }
     }
 
-    private CriminalInjuriesCompensationData getCaseData(final CriminalInjuriesCompensationData caseData, final DssCaseData dssCaseData, List<String> errors) {
+    private CriminalInjuriesCompensationData getCaseData(
+        final CriminalInjuriesCompensationData caseData,
+        final DssCaseData dssCaseData,
+        List<String> errors
+    ) {
         populateCoreCaseData(caseData, dssCaseData);
         populateRepresentativeData(caseData, dssCaseData);
         addAdditionalInformationMessageIfPresent(caseData, dssCaseData);

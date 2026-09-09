@@ -14,9 +14,10 @@ import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.caseworker.model.NoticeOption;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
@@ -85,7 +86,7 @@ public class DecisionIssuedNotificationTest {
             //When
             when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
                 .thenReturn(NotificationRequest.builder().build());
-            when(notificationHelper.getSubjectCommonVars(any(), any(CriminalInjuriesCompensationData.class))).thenReturn(new HashMap<>());
+            when(notificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
 
             decisionIssuedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
@@ -116,7 +117,7 @@ public class DecisionIssuedNotificationTest {
             //When
             when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
                 .thenReturn(NotificationRequest.builder().build());
-            when(notificationHelper.getSubjectCommonVars(any(), any(CriminalInjuriesCompensationData.class))).thenReturn(new HashMap<>());
+            when(notificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
 
             decisionIssuedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
@@ -151,7 +152,7 @@ public class DecisionIssuedNotificationTest {
             //When
             when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
                 .thenReturn(NotificationRequest.builder().build());
-            when(notificationHelper.getSubjectCommonVars(any(), any(CriminalInjuriesCompensationData.class))).thenReturn(new HashMap<>());
+            when(notificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
             doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
             decisionIssuedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
@@ -184,7 +185,7 @@ public class DecisionIssuedNotificationTest {
             //When
             when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
                 .thenReturn(NotificationRequest.builder().build());
-            when(notificationHelper.getRespondentCommonVars(any(), any(CriminalInjuriesCompensationData.class))).thenReturn(new HashMap<>());
+            when(notificationHelper.getRespondentCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
             decisionIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
             //Then
@@ -210,7 +211,7 @@ public class DecisionIssuedNotificationTest {
             //When
             when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
                 .thenReturn(NotificationRequest.builder().build());
-            when(notificationHelper.getRespondentCommonVars(any(), any(CriminalInjuriesCompensationData.class))).thenReturn(new HashMap<>());
+            when(notificationHelper.getRespondentCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
 
             decisionIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
@@ -251,7 +252,7 @@ public class DecisionIssuedNotificationTest {
             //When
             when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
                 .thenReturn(NotificationRequest.builder().build());
-            when(notificationHelper.getRepresentativeCommonVars(any(), any(CriminalInjuriesCompensationData.class))).thenReturn(new HashMap<>());
+            when(notificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
 
             decisionIssuedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
@@ -281,7 +282,7 @@ public class DecisionIssuedNotificationTest {
             //When
             when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
                 .thenReturn(NotificationRequest.builder().build());
-            when(notificationHelper.getRepresentativeCommonVars(any(), any(CriminalInjuriesCompensationData.class))).thenReturn(new HashMap<>());
+            when(notificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
 
             decisionIssuedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
@@ -310,7 +311,7 @@ public class DecisionIssuedNotificationTest {
             //When
             when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
                 .thenReturn(NotificationRequest.builder().build());
-            when(notificationHelper.getRepresentativeCommonVars(any(), any(CriminalInjuriesCompensationData.class))).thenReturn(new HashMap<>());
+            when(notificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
             doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
             decisionIssuedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
@@ -341,7 +342,7 @@ public class DecisionIssuedNotificationTest {
             //When
             when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
                 .thenReturn(NotificationRequest.builder().build());
-            when(notificationHelper.getApplicantCommonVars(any(), any(CriminalInjuriesCompensationData.class))).thenReturn(new HashMap<>());
+            when(notificationHelper.getApplicantCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
 
             decisionIssuedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
@@ -370,7 +371,7 @@ public class DecisionIssuedNotificationTest {
             //When
             when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
                 .thenReturn(NotificationRequest.builder().build());
-            when(notificationHelper.getApplicantCommonVars(any(), any(CriminalInjuriesCompensationData.class))).thenReturn(new HashMap<>());
+            when(notificationHelper.getApplicantCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
 
             decisionIssuedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
@@ -398,7 +399,7 @@ public class DecisionIssuedNotificationTest {
             //When
             when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
                 .thenReturn(NotificationRequest.builder().build());
-            when(notificationHelper.getApplicantCommonVars(any(), any(CriminalInjuriesCompensationData.class))).thenReturn(new HashMap<>());
+            when(notificationHelper.getApplicantCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
             doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
             decisionIssuedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
@@ -438,7 +439,7 @@ public class DecisionIssuedNotificationTest {
             //When
             when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
                 .thenReturn(NotificationRequest.builder().build());
-            when(notificationHelper.getSubjectCommonVars(any(), any(CriminalInjuriesCompensationData.class))).thenReturn(new HashMap<>());
+            when(notificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
 
             decisionIssuedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 

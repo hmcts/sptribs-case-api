@@ -16,7 +16,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_RESPONDENT;
 /**
  * Root CCD config for the Criminal Injuries Compensation case type.
  *
- * The events, tabs, search and work-basket configs are separate {@code CCDConfig} beans in
+ * <p>The events, tabs, search and work-basket configs are separate {@code CCDConfig} beans in
  * the packages below. They used to declare {@code CCDConfig<CaseData, …>} and be replayed
  * onto this case type by hand, via an upcast in {@link ConfigBuilderHelper}. They now
  * declare {@code CriminalInjuriesCompensationData} directly, so

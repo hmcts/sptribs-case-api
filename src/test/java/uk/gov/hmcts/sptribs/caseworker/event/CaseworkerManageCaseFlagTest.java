@@ -15,10 +15,10 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.repositories.AnonymisationRepository;
 import uk.gov.hmcts.sptribs.common.service.AnonymisationService;
 
@@ -111,8 +111,12 @@ class CaseworkerManageCaseFlagTest {
             .caseFlags(Flags.builder()
                 .details(List.of(buildAnonymityFlag("1", "Inactive", "Old comment", YesOrNo.NO))).build()).build();
 
-        CaseDetails<CriminalInjuriesCompensationData, State> details = CaseDetails.<CriminalInjuriesCompensationData, State>builder().data(caseData).build();
-        CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = CaseDetails.<CriminalInjuriesCompensationData, State>builder().data(beforeData).build();
+        CaseDetails<CriminalInjuriesCompensationData, State> details = CaseDetails.<CriminalInjuriesCompensationData, State>builder()
+            .data(caseData)
+            .build();
+        CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = CaseDetails.<CriminalInjuriesCompensationData, State>builder()
+            .data(beforeData)
+            .build();
         var response = caseworkerManageCaseFlag.aboutToSubmit(details, beforeDetails);
 
         assertThat(response.getData().getCicCase().getAnonymiseYesOrNo())
@@ -146,8 +150,13 @@ class CaseworkerManageCaseFlagTest {
             .details(List.of(buildAnonymityFlag("1", "Inactive", null, null)))
             .build());
 
-        CaseDetails<CriminalInjuriesCompensationData, State> details = CaseDetails.<CriminalInjuriesCompensationData, State>builder().data(caseData).build();
-        var response = caseworkerManageCaseFlag.aboutToSubmit(details, CaseDetails.<CriminalInjuriesCompensationData, State>builder().build());
+        CaseDetails<CriminalInjuriesCompensationData, State> details = CaseDetails.<CriminalInjuriesCompensationData, State>builder()
+            .data(caseData)
+            .build();
+        var response = caseworkerManageCaseFlag.aboutToSubmit(
+            details,
+            CaseDetails.<CriminalInjuriesCompensationData, State>builder().build()
+        );
 
         assertThat(response.getData().getCicCase().getAnonymiseYesOrNo()).isEqualTo(YesOrNo.NO);
         assertThat(response.getData().getCaseFlags().getDetails()).hasSize(1);

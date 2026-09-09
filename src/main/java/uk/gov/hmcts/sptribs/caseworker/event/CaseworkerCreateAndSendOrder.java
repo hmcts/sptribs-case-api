@@ -29,7 +29,6 @@ import uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.DynamicListUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -197,7 +196,11 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CriminalInjuriesC
         return orderBuilder.build();
     }
 
-    private void populateDraftOrder(Order.OrderBuilder orderBuilder, CriminalInjuriesCompensationData caseData, CicCase cicCase, List<String> errors,
+    private void populateDraftOrder(
+        Order.OrderBuilder orderBuilder,
+        CriminalInjuriesCompensationData caseData,
+        CicCase cicCase,
+        List<String> errors,
                                     long caseReferenceNumber) {
         if (!CREATE_AND_SEND_NEW_ORDER.equals(cicCase.getOrderIssuingType())) {
             return;

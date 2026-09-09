@@ -16,9 +16,9 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SelectBundles;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleIdAndTimestamp;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
@@ -223,7 +223,10 @@ class CaseworkerRemoveBundlesTest {
         String bundleUUID3 = caseData.getCaseBundles().get(2).getValue().getId();
 
         AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
-            caseworkerRemoveBundles.aboutToSubmit(updatedCaseDetails, CaseDetails.<CriminalInjuriesCompensationData, State>builder().build());
+            caseworkerRemoveBundles.aboutToSubmit(
+                updatedCaseDetails,
+                CaseDetails.<CriminalInjuriesCompensationData, State>builder().build()
+            );
 
         //Stitched Document isn't generated yet so binary will always be null
         verify(documentsService, times(2)).removeEntryFromDocumentTableByBinaryURL(null);

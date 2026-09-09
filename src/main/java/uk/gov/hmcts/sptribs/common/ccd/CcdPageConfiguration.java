@@ -21,7 +21,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
  *     CaseDetails&lt;CaseData,State&gt;
  * </pre>
  *
- * With a named parameter the implementation can declare its callback on {@code T} and the
+ * <p>With a named parameter the implementation can declare its callback on {@code T} and the
  * call site infers it from the builder.
  *
  * @param <T> the case-data class of the case type this page is being added to

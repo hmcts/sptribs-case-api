@@ -199,7 +199,8 @@ public class CreateCaseIT {
                 .build()
         );
 
-        //verify the CicCase object is the same as the CriminalInjuriesCompensationData object with have the same value but is a different object
+        //verify the CicCase object matches by value: the case data reaching the helper is a
+        //different object holding an equal CicCase
         doThrow(NotificationException.class)
             .when(notificationHelper).getSubjectCommonVars(eq(TEST_CASE_ID_HYPHENATED),
                     argThat(cd -> cd.getCicCase().equals(caseData.getCicCase())));

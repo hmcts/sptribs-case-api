@@ -25,7 +25,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingDate;
@@ -35,6 +34,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.HearingType;
 import uk.gov.hmcts.sptribs.ciccase.model.PanelMember;
 import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
@@ -167,7 +167,11 @@ public class TestDataHelper {
             .build();
     }
 
-    public static CallbackRequest callbackRequest(final CriminalInjuriesCompensationData caseData, final CriminalInjuriesCompensationData caseDataBefore, final String eventId) {
+    public static CallbackRequest callbackRequest(
+        final CriminalInjuriesCompensationData caseData,
+        final CriminalInjuriesCompensationData caseDataBefore,
+        final String eventId
+    ) {
         OBJECT_MAPPER.registerModule(new JavaTimeModule());
         return CallbackRequest
             .builder()
@@ -201,7 +205,17 @@ public class TestDataHelper {
     }
 
     public static uk.gov.hmcts.ccd.sdk.api.CaseDetails<CriminalInjuriesCompensationData, State> getApiCaseDetailsBefore() {
-        final uk.gov.hmcts.ccd.sdk.api.CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new uk.gov.hmcts.ccd.sdk.api.CaseDetails<>();
+        final uk
+            .gov
+            .hmcts
+            .ccd
+            .sdk
+            .api.CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new uk
+            .gov
+            .hmcts
+            .ccd
+            .sdk
+            .api.CaseDetails<>();
         final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         caseDetails.setData(caseData);
         return caseDetails;

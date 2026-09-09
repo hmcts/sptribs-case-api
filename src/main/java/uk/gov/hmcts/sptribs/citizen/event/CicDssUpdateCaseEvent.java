@@ -13,12 +13,11 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssMessage;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CitizenCICDocument;
@@ -105,11 +104,16 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CriminalInjuriesCompensa
                 .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
     }
 
-    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(CaseDetails<CriminalInjuriesCompensationData, State> details,
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(
+        CaseDetails<CriminalInjuriesCompensationData, State> details,
                                                                        CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
         final List<String> errors = new ArrayList<>();
 
-        final CriminalInjuriesCompensationData caseData = addDocumentsToCaseData(details.getData(), details.getData().getDssCaseData(), errors);
+        final CriminalInjuriesCompensationData caseData = addDocumentsToCaseData(
+            details.getData(),
+            details.getData().getDssCaseData(),
+            errors
+        );
 
         return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
                 .data(caseData)
@@ -117,7 +121,11 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CriminalInjuriesCompensa
                 .build();
     }
 
-    private CriminalInjuriesCompensationData addDocumentsToCaseData(final CriminalInjuriesCompensationData caseData, final DssCaseData dssCaseData, List<String> errors)
+    private CriminalInjuriesCompensationData addDocumentsToCaseData(
+        final CriminalInjuriesCompensationData caseData,
+        final DssCaseData dssCaseData,
+        List<String> errors
+    )
         throws RuntimeException {
         final List<CaseworkerCICDocument> documentList = new ArrayList<>();
         final List<ListValue<DssMessage>> messagesList = new ArrayList<>();

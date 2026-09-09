@@ -852,7 +852,10 @@ class CaseworkerSendOrderTest {
         details.setData(caseData);
 
         // When
-        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = caseworkerSendOrder.aboutToSubmit(details, details);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = caseworkerSendOrder.aboutToSubmit(
+            details,
+            details
+        );
 
         // Then
         assertThat(response.getData().getCicCase().getOrderList().getFirst().getValue().getUploadedFile())
