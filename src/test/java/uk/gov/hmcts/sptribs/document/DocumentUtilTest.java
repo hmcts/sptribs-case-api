@@ -10,7 +10,7 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
@@ -412,7 +412,7 @@ class DocumentUtilTest {
     @Test
     void shouldSuccessfullyAddDocument() {
         //Given
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         DocumentManagement documentManagement = DocumentManagement.builder()
             .caseworkerCICDocument(getCaseworkerCICDocumentList(PDF_FILE))
             .build();
@@ -644,7 +644,7 @@ class DocumentUtilTest {
         documentUploadListValue.setValue(documentUpload);
         final List<ListValue<CaseworkerCICDocumentUpload>> documentUploadList = new ArrayList<>();
         documentUploadList.add(documentUploadListValue);
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final HearingSummary summary = HearingSummary.builder()
             .recFileUpload(documentUploadList)
             .build();

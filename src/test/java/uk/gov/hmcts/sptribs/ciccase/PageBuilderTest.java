@@ -8,7 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.Event.EventBuilder;
 import uk.gov.hmcts.ccd.sdk.api.FieldCollection.FieldCollectionBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.MidEvent;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
 class PageBuilderTest {
 
     @Mock
-    private EventBuilder<CaseData, UserRole, State> eventBuilder;
+    private EventBuilder<CriminalInjuriesCompensationData, UserRole, State> eventBuilder;
 
     @InjectMocks
     private PageBuilder pageBuilder;

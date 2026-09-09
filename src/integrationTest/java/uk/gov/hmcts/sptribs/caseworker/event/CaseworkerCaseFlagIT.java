@@ -16,7 +16,7 @@ import uk.gov.hmcts.ccd.sdk.type.FlagDetail;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
@@ -111,7 +111,7 @@ public class CaseworkerCaseFlagIT {
 
     @Test
     void shouldMergeAnonymityFlagsPreservingOriginalIdOnAboutToSubmit() throws Exception {
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .anonymiseYesOrNo(YesOrNo.YES)
                 .anonymisedAppellantName("AC")
@@ -123,7 +123,7 @@ public class CaseworkerCaseFlagIT {
             )).build())
             .build();
 
-        CaseData beforeData = CaseData.builder()
+        CriminalInjuriesCompensationData beforeData = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .anonymiseYesOrNo(YesOrNo.YES)
                 .anonymisedAppellantName("AC")
@@ -176,7 +176,7 @@ public class CaseworkerCaseFlagIT {
 
     @Test
     void shouldDispatchAnonymityEmailWhenAnonymityNewlyAppliedOnSubmitted() throws Exception {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .caseNumber(TEST_CASE_ID.toString())
             .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
             .cicCase(CicCase.builder()
@@ -186,7 +186,7 @@ public class CaseworkerCaseFlagIT {
                 .build())
             .build();
 
-        final CaseData caseDataBefore = CaseData.builder()
+        final CriminalInjuriesCompensationData caseDataBefore = CriminalInjuriesCompensationData.builder()
             .caseNumber(TEST_CASE_ID.toString())
             .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
             .cicCase(CicCase.builder()
@@ -221,7 +221,7 @@ public class CaseworkerCaseFlagIT {
 
     @Test
     void shouldNotDispatchAnonymityEmailWhenAnonymityAlreadyAppliedOnSubmitted() throws Exception {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .caseNumber(TEST_CASE_ID.toString())
             .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
             .cicCase(CicCase.builder()
@@ -232,7 +232,7 @@ public class CaseworkerCaseFlagIT {
                 .build())
             .build();
 
-        final CaseData caseDataBefore = CaseData.builder()
+        final CriminalInjuriesCompensationData caseDataBefore = CriminalInjuriesCompensationData.builder()
             .caseNumber(TEST_CASE_ID.toString())
             .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
             .cicCase(CicCase.builder()

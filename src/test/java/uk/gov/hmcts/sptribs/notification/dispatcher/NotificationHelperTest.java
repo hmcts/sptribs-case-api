@@ -14,7 +14,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.sptribs.caseworker.model.EditCicaCaseDetails;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
@@ -237,7 +237,7 @@ public class NotificationHelperTest {
         final CicCase cicCase = CicCase.builder()
             .respondentName("respondent name")
             .build();
-        final CaseData caseData = CaseData.builder().cicCase(cicCase).build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().cicCase(cicCase).build();
         // When
         final Map<String, Object> commonVars = notificationHelper.getRespondentCommonVars("case number", caseData);
 
@@ -251,7 +251,7 @@ public class NotificationHelperTest {
         // Given
         final CicCase cicCase = CicCase.builder()
             .build();
-        final CaseData caseData = CaseData.builder().cicCase(cicCase).build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().cicCase(cicCase).build();
         // When
         final Map<String, Object> commonVars = notificationHelper.getTribunalCommonVars("case number", caseData);
 
@@ -265,7 +265,7 @@ public class NotificationHelperTest {
         final CicCase cicCase = CicCase.builder()
             .fullName("subject name")
             .build();
-        final CaseData caseData = CaseData.builder().cicCase(cicCase).build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().cicCase(cicCase).build();
         // When
         final Map<String, Object> commonVars = notificationHelper.getSubjectCommonVars("case number", caseData);
 
@@ -281,7 +281,7 @@ public class NotificationHelperTest {
         final CicCase cicCase = CicCase.builder()
                 .fullName("subject name")
                 .build();
-        final CaseData caseData = CaseData.builder().cicCase(cicCase).editCicaCaseDetails(CICA_CASE_DETAILS).build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().cicCase(cicCase).editCicaCaseDetails(CICA_CASE_DETAILS).build();
         // When
         final Map<String, Object> commonVars = notificationHelper.getSubjectCommonVars("case number", caseData);
 
@@ -297,7 +297,7 @@ public class NotificationHelperTest {
         final CicCase cicCase = CicCase.builder()
             .applicantFullName("app name")
             .build();
-        final CaseData caseData = CaseData.builder().cicCase(cicCase).build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().cicCase(cicCase).build();
         // When
         final Map<String, Object> commonVars = notificationHelper.getApplicantCommonVars("case number", caseData);
 
@@ -313,7 +313,7 @@ public class NotificationHelperTest {
         final CicCase cicCase = CicCase.builder()
                 .applicantFullName("app name")
                 .build();
-        final CaseData caseData = CaseData.builder().cicCase(cicCase).editCicaCaseDetails(CICA_CASE_DETAILS).build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().cicCase(cicCase).editCicaCaseDetails(CICA_CASE_DETAILS).build();
         // When
         final Map<String, Object> commonVars = notificationHelper.getApplicantCommonVars("case number", caseData);
 
@@ -329,7 +329,7 @@ public class NotificationHelperTest {
         final CicCase cicCase = CicCase.builder()
             .representativeFullName("repr name")
             .build();
-        final CaseData caseData = CaseData.builder().cicCase(cicCase).build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().cicCase(cicCase).build();
 
         // When
         final Map<String, Object> commonVars = notificationHelper.getRepresentativeCommonVars("case number", caseData);
@@ -346,7 +346,7 @@ public class NotificationHelperTest {
         final CicCase cicCase = CicCase.builder()
                 .representativeFullName("repr name")
                 .build();
-        final CaseData caseData = CaseData.builder().cicCase(cicCase).editCicaCaseDetails(CICA_CASE_DETAILS).build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().cicCase(cicCase).editCicaCaseDetails(CICA_CASE_DETAILS).build();
 
         // When
         final Map<String, Object> commonVars = notificationHelper.getRepresentativeCommonVars("case number", caseData);

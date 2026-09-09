@@ -17,7 +17,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundleResponse;
@@ -303,7 +302,7 @@ public class CaseworkerCreateBundleIT {
         assertThat(bundleIdsAndTimestamps).hasSize(1);
     }
 
-    private void populateCaseDocuments(final CaseData caseData) {
+    private void populateCaseDocuments(final CriminalInjuriesCompensationData caseData) {
         final Order order = Order.builder().uploadedFile(getCICDocumentList("test.pdf")).build();
         final ListValue<Order> orderListValue = new ListValue<>();
         orderListValue.setValue(order);

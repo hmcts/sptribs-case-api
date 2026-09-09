@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ShowDraftOrders;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
@@ -50,7 +49,7 @@ class CaseworkerDeleteDraftOrderTest {
     @Test
     void shouldAddConfigurationToConfigBuilder() {
         //Given
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         //When
         caseworkerDeleteDraftOrder.configure(configBuilder);
@@ -104,7 +103,7 @@ class CaseworkerDeleteDraftOrderTest {
 
         beforeDetails.setData(caseData);
 
-        final CaseData newData = caseData();
+        final CriminalInjuriesCompensationData newData = caseData();
 
         CicCase cicCaseNew = CicCase.builder()
             .draftOrderCICList(new ArrayList<>())

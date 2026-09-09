@@ -12,7 +12,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
@@ -200,7 +199,7 @@ public class CreateCaseIT {
                 .build()
         );
 
-        //verify the CicCase object is the same as the CaseData object with have the same value but is a different object
+        //verify the CicCase object is the same as the CriminalInjuriesCompensationData object with have the same value but is a different object
         doThrow(NotificationException.class)
             .when(notificationHelper).getSubjectCommonVars(eq(TEST_CASE_ID_HYPHENATED),
                     argThat(cd -> cd.getCicCase().equals(caseData.getCicCase())));

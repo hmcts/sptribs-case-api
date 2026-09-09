@@ -612,8 +612,8 @@ class CaseworkerEditCaseTest {
     @Test
     void shouldNotDeleteDownloadStatusesWhenRepresentativeEmailChangesButNameDoesNot() {
         //Given
-        final CaseData afterData = caseData();
-        final CaseData beforeData = caseData();
+        final CriminalInjuriesCompensationData afterData = caseData();
+        final CriminalInjuriesCompensationData beforeData = caseData();
 
         Set<PartiesCIC> parties = new HashSet<>();
         parties.add(PartiesCIC.SUBJECT);
@@ -634,17 +634,17 @@ class CaseworkerEditCaseTest {
         afterData.setCicCase(newCicCase);
         beforeData.setCicCase(beforeCicCase);
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(beforeData);
         updatedCaseDetails.setData(afterData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        when(submissionService.submitApplication(any())).thenReturn(updatedCaseDetails);
+        when(submissionService.<CriminalInjuriesCompensationData>submitApplication(any())).thenReturn(updatedCaseDetails);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerEditCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //Then
@@ -656,8 +656,8 @@ class CaseworkerEditCaseTest {
     @Test
     void shouldDeleteDownloadStatusesWhenRepresentativeNameAndEmailChanges() {
         //Given
-        final CaseData afterData = caseData();
-        final CaseData beforeData = caseData();
+        final CriminalInjuriesCompensationData afterData = caseData();
+        final CriminalInjuriesCompensationData beforeData = caseData();
 
         Set<PartiesCIC> parties = new HashSet<>();
         parties.add(PartiesCIC.SUBJECT);
@@ -678,17 +678,17 @@ class CaseworkerEditCaseTest {
         afterData.setCicCase(newCicCase);
         beforeData.setCicCase(beforeCicCase);
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(beforeData);
         updatedCaseDetails.setData(afterData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        when(submissionService.submitApplication(any())).thenReturn(updatedCaseDetails);
+        when(submissionService.<CriminalInjuriesCompensationData>submitApplication(any())).thenReturn(updatedCaseDetails);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerEditCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //Then

@@ -7,7 +7,7 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
@@ -54,7 +54,7 @@ public class DocumentManagementUtilTest {
     void shouldCheckList() {
         //Given
 
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
 
         CicCase cicCase = CicCase.builder()
             .decisionDocumentList(new ArrayList<>())
@@ -75,7 +75,7 @@ public class DocumentManagementUtilTest {
     void shouldCheckListWithEmpty() {
         //Given
 
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
 
         CicCase cicCase = CicCase.builder()
             .decisionDocumentList(new ArrayList<>())

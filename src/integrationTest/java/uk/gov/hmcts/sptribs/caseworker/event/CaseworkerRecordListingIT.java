@@ -17,7 +17,6 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
@@ -252,9 +251,9 @@ public class CaseworkerRecordListingIT {
             .isString()
             .contains("# Listing record created \n## A notification has been sent to: Subject, Respondent, Representative, Applicant");
 
-        verify(listingCreatedNotification, times(1)).sendToSubject((CaseData) any(), anyString());
+        verify(listingCreatedNotification, times(1)).sendToSubject((CriminalInjuriesCompensationData) any(), anyString());
         verify(listingCreatedNotification, times(1)).sendToRespondent(any(), anyString());
-        verify(listingCreatedNotification, times(1)).sendToRepresentative((CaseData) any(), anyString());
+        verify(listingCreatedNotification, times(1)).sendToRepresentative((CriminalInjuriesCompensationData) any(), anyString());
         verify(listingCreatedNotification, times(1)).sendToApplicant(any(), anyString());
         verifyNoMoreInteractions(listingCreatedNotification);
     }

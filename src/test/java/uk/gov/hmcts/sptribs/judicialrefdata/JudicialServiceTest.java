@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Judge;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.judicialrefdata.model.UserProfileRefreshResponse;
@@ -90,7 +90,7 @@ class JudicialServiceTest {
                 .build();
         List<UserProfileRefreshResponse> responseEntity =
                 List.of(userResponse1, userResponse2, userResponse3, userResponse4, userResponse5);
-        final CaseData caseData = CaseData.builder().build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
 
         //When
         final CICUser user = TestDataHelper.getUser();
@@ -173,7 +173,7 @@ class JudicialServiceTest {
     @Test
     void shouldPopulateJudicialIdBasedOnDynamicListValue() {
         final UUID selectedJudgeUuid = UUID.randomUUID();
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .listing(
                 Listing.builder()
                     .summary(
@@ -222,7 +222,7 @@ class JudicialServiceTest {
 
     @Test
     void shouldPopulateJudicialIdAsEmptyStringWhenJudgeListDoesNotContainMatch() {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .listing(
                 Listing.builder()
                     .summary(
@@ -261,7 +261,7 @@ class JudicialServiceTest {
 
     @Test
     void shouldPopulateJudicialIdAsEmptyStringWhenJudgeListIsEmpty() {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .listing(
                 Listing.builder()
                     .summary(
@@ -291,7 +291,7 @@ class JudicialServiceTest {
     @Test
     void shouldPopulateJudicialIdAsEmptyStringWhenJudgeIsNull() {
         final UUID selectedJudgeUuid = UUID.randomUUID();
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .listing(
                 Listing.builder()
                     .summary(

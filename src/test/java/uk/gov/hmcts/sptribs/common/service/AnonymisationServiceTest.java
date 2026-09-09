@@ -12,7 +12,7 @@ import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.repositories.AnonymisationRepository;
 
@@ -102,7 +102,7 @@ class AnonymisationServiceTest {
     @Test
     void shouldProcessAnonymityFlagWhenCicCaseIsNull() {
         // Given
-        CaseData caseData = CaseData.builder().build();
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         List<String> errors = new ArrayList<>();
 
         // When
@@ -116,7 +116,7 @@ class AnonymisationServiceTest {
     @Test
     void shouldSetAnonymiseYesWhenActiveAnonymityFlagExists() {
         // Given
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder().build())
             .build();
 
@@ -141,7 +141,7 @@ class AnonymisationServiceTest {
     @Test
     void shouldSetAnonymiseNoWhenNoActiveAnonymityFlagExists() {
         // Given
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .anonymiseYesOrNo(YesOrNo.YES)
                 .anonymisedAppellantName("AB")

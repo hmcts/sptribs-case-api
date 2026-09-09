@@ -112,7 +112,7 @@ public class CreateTestCase implements CCDConfig<CriminalInjuriesCompensationDat
             resourceLoader.getResource(TEST_CASE_DATA_FILE).getInputStream(),
             Charset.defaultCharset()
         );
-        final CriminalInjuriesCompensationData caseData = objectMapper.readValue(json, CaseData.class);
+        final CriminalInjuriesCompensationData caseData = objectMapper.readValue(json, CriminalInjuriesCompensationData.class);
         uploadTestDocumentAndUpdateCaseData(caseData);
         caseData.setHyphenatedCaseRef(caseData.formatCaseRef(details.getId()));
         setDefaultCaseDetails(caseData);

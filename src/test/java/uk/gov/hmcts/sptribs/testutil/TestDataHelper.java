@@ -25,7 +25,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
@@ -96,13 +95,13 @@ public class TestDataHelper {
             .build();
     }
 
-    public static CaseData closedCaseData() {
+    public static CriminalInjuriesCompensationData closedCaseData() {
         return CriminalInjuriesCompensationData.builder()
             .caseStatus(State.CaseManagement)
             .build();
     }
 
-    public static CaseData awaitingOutcomeData() {
+    public static CriminalInjuriesCompensationData awaitingOutcomeData() {
 
         CloseCase closeCase = new CloseCase();
         closeCase.setCloseCaseReason(CloseReason.Rejected);
@@ -168,7 +167,7 @@ public class TestDataHelper {
             .build();
     }
 
-    public static CallbackRequest callbackRequest(final CriminalInjuriesCompensationData caseData, final CaseData caseDataBefore, final String eventId) {
+    public static CallbackRequest callbackRequest(final CriminalInjuriesCompensationData caseData, final CriminalInjuriesCompensationData caseDataBefore, final String eventId) {
         OBJECT_MAPPER.registerModule(new JavaTimeModule());
         return CallbackRequest
             .builder()

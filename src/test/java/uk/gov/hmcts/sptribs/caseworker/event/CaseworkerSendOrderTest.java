@@ -686,7 +686,7 @@ class CaseworkerSendOrderTest {
     @Test
     void shouldStoreErrorsWhenBuildAndSaveNewDocumentEntityThrowsRuntimeExceptionForDraftOrder() {
         // Given
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         final DynamicListElement element = DynamicListElement.builder()
             .code(UUID.randomUUID())
             .label(OrderTemplate.CIC6_GENERAL_DIRECTIONS.getLabel() + "--[Test Name]--09-05-2024 09:04:04.pdf")
@@ -720,7 +720,7 @@ class CaseworkerSendOrderTest {
             .orderFile(documentList)
             .orderIssuingType(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)
             .build();
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .build();
         caseDetails.setData(caseData);
@@ -728,7 +728,7 @@ class CaseworkerSendOrderTest {
         doThrow(new RuntimeException("Error saving document entity to database"))
             .when(documentsService).updateDocumentToNonDraft(anyString());
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerSendOrder
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = caseworkerSendOrder
             .aboutToSubmit(caseDetails, getApiCaseDetailsBefore());
 
         assertThat(response.getErrors()).hasSize(1);
@@ -738,7 +738,7 @@ class CaseworkerSendOrderTest {
 
     @Test
     void shouldStoreErrorsWhenBuildAndSaveNewDocumentEntityThrowsRuntimeExceptionForUploadedOrder() {
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         details.setId(TEST_CASE_ID);
         List<ListValue<CICDocument>> uploadedOrderDocuments = new ArrayList<>();
 
@@ -758,7 +758,7 @@ class CaseworkerSendOrderTest {
 
         uploadedOrderDocuments.add(cicDocumentListValue);
 
-        final CaseData caseData = CaseData.builder().build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         CicCase cicCase = getCicCase(UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER, YesOrNo.NO, null, null);
         cicCase.setOrderFile(uploadedOrderDocuments);
         caseData.setCicCase(cicCase);
@@ -807,7 +807,7 @@ class CaseworkerSendOrderTest {
     void shouldSuccessfullySaveNewDocumentEntityForSendUploadedOrders() {
 
         //given
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         details.setId(TEST_CASE_ID);
 
         Document document = Document.builder()
@@ -842,7 +842,7 @@ class CaseworkerSendOrderTest {
         uploadedOrderDocuments.add(cicDocumentListValue);
         uploadedOrderDocuments.add(cicDocumentListValue2);
 
-        final CaseData caseData = CaseData.builder().build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         CicCase cicCase = getCicCase(UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER, YesOrNo.NO, null, null);
         cicCase.setOrderFile(uploadedOrderDocuments);
         caseData.setCicCase(cicCase);
@@ -852,7 +852,7 @@ class CaseworkerSendOrderTest {
         details.setData(caseData);
 
         // When
-        final AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerSendOrder.aboutToSubmit(details, details);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = caseworkerSendOrder.aboutToSubmit(details, details);
 
         // Then
         assertThat(response.getData().getCicCase().getOrderList().getFirst().getValue().getUploadedFile())

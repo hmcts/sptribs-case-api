@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.service.OrderService;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
@@ -63,7 +62,7 @@ class CaseworkerCreateDraftOrderTest {
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
 
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         caseworkerCreateDraftOrder.configure(configBuilder);
 
@@ -125,7 +124,7 @@ class CaseworkerCreateDraftOrderTest {
             eq(DocumentType.TRIBUNAL_DIRECTION), eq(CaseDocumentType.DRAFT_ORDER));
 
         assertThat(response).isNotNull();
-        CaseData responseData = response.getData();
+        CriminalInjuriesCompensationData responseData = response.getData();
         assertThat(responseData.getCicCase().getDraftOrderCICList()).hasSize(1);
         assertThat(responseData.getCicCase().getDraftOrderCICList().getFirst().getValue()).isEqualTo(expectedDraftOrderCIC);
 

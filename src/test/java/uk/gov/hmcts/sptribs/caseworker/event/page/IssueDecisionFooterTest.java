@@ -10,7 +10,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -43,8 +43,8 @@ class IssueDecisionFooterTest {
         //Given
         final CaseIssueDecision caseIssueDecision = new CaseIssueDecision();
         caseIssueDecision.setIssueDecisionTemplate(DecisionTemplate.ELIGIBILITY);
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder()
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
                 .caseIssueDecision(caseIssueDecision)
                 .build();
         caseDetails.setData(caseData);
@@ -57,7 +57,7 @@ class IssueDecisionFooterTest {
                 .thenReturn(document);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response = issueDecisionFooter.midEvent(caseDetails, caseDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = issueDecisionFooter.midEvent(caseDetails, caseDetails);
 
         //Then
         assertThat(response.getErrors()).isNull();

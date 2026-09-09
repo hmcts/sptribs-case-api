@@ -172,11 +172,11 @@ public class CreateTestCaseTest {
         testListValueCaseworkerCICDocument1.setValue(testCaseworkerCICDocument1);
         testDocumentList.add(testListValueCaseworkerCICDocument1);
 
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setHyphenatedCaseRef(caseData.formatCaseRef(TEST_CASE_ID));
         caseData.getCicCase().setApplicantDocumentsUploaded(testDocumentList);
 
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setId(TEST_CASE_ID);
         caseDetails.setData(caseData);
         caseDetails.setState(Submitted);

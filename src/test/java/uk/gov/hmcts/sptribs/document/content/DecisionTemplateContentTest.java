@@ -8,7 +8,6 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingState;
@@ -98,7 +97,7 @@ public class DecisionTemplateContentTest {
             .build();
 
         //Using a spy as getLatestCompletedHearing cannot handle a null date
-        final CaseData caseDataMock = spy(caseData);
+        final CriminalInjuriesCompensationData caseDataMock = spy(caseData);
         when(caseDataMock.getLatestCompletedHearing()).thenReturn(listing);
 
         final Map<String, Object> result = templateContent.apply(caseDataMock, TEST_CASE_ID);

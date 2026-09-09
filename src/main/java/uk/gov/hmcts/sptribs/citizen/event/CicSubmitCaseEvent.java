@@ -185,7 +185,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CriminalInjuriesCompensatio
         }
     }
 
-    private CaseData getCaseData(final CriminalInjuriesCompensationData caseData, final DssCaseData dssCaseData, List<String> errors) {
+    private CriminalInjuriesCompensationData getCaseData(final CriminalInjuriesCompensationData caseData, final DssCaseData dssCaseData, List<String> errors) {
         populateCoreCaseData(caseData, dssCaseData);
         populateRepresentativeData(caseData, dssCaseData);
         addAdditionalInformationMessageIfPresent(caseData, dssCaseData);

@@ -15,7 +15,7 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
@@ -77,7 +77,7 @@ public class SystemCreateTestCaseTest {
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         createTestCase.configure(configBuilder);
 
@@ -88,15 +88,15 @@ public class SystemCreateTestCaseTest {
 
     @Test
     void shouldMoveCaseIntoSubmittedStateAndCreateTestCase() throws JsonProcessingException {
-        final CaseData caseData =
-            CaseData.builder()
+        final CriminalInjuriesCompensationData caseData =
+            CriminalInjuriesCompensationData.builder()
                 .caseStatus(CaseManagement)
                 .build();
         final AppsConfig.AppsDetails appsDetails = new AppsConfig.AppsDetails();
         appsDetails.setCaseType("CriminalInjuriesCompensation");
         appsDetails.setJurisdiction("ST_CIC");
 
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setId(TEST_CASE_ID);
         caseDetails.setData(caseData);
 
@@ -130,10 +130,10 @@ public class SystemCreateTestCaseTest {
         UploadResponse expectedResponse = new UploadResponse();
         expectedResponse.setDocuments(expectedDocuments);
         when(appsConfig.getApps()).thenReturn(List.of(appsDetails));
-        when(mapper.readValue(anyString(), eq(CaseData.class))).thenReturn(caseData());
+        when(mapper.readValue(anyString(), eq(CriminalInjuriesCompensationData.class))).thenReturn(caseData());
         when(caseDocumentClientApi.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = createTestCase.aboutToSubmit(caseDetails, caseDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = createTestCase.aboutToSubmit(caseDetails, caseDetails);
 
         assertThat(response.getState()).isEqualTo(Submitted);
         assertThat(response.getData().getHyphenatedCaseRef()).isEqualTo(TEST_CASE_ID_HYPHENATED);
@@ -143,9 +143,9 @@ public class SystemCreateTestCaseTest {
 
     @Test
     void shouldSubmitSupplementaryDataToCcdWhenSubmittedEventTriggered() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
 
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
         caseDetails.setState(Submitted);
         caseDetails.setId(TEST_CASE_ID);

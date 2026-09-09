@@ -10,7 +10,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 
@@ -21,8 +21,8 @@ import java.util.UUID;
 @ExtendWith(MockitoExtension.class)
 class DraftRemoveListUtilTest {
 
-    CaseData caseDataNew = new CaseData();
-    CaseData caseDataOld = new CaseData();
+    CriminalInjuriesCompensationData caseDataNew = new CriminalInjuriesCompensationData();
+    CriminalInjuriesCompensationData caseDataOld = new CriminalInjuriesCompensationData();
     ListValue<DraftOrderCIC> lv1 = new ListValue<>();
     ListValue<DraftOrderCIC> lv2 = new ListValue<>();
     ListValue<DraftOrderCIC> lv3 = new ListValue<>();
@@ -115,7 +115,7 @@ class DraftRemoveListUtilTest {
                 .build())
             .build());
 
-        CaseData result = DraftRemoveListUtil.setDraftListForRemoval(caseDataNew, caseDataOld);
+        CriminalInjuriesCompensationData result = DraftRemoveListUtil.setDraftListForRemoval(caseDataNew, caseDataOld);
 
         Assertions.assertEquals(1, result.getCicCase().getRemovedDraftList().size());
     }
@@ -137,7 +137,7 @@ class DraftRemoveListUtilTest {
             .build());
 
 
-        CaseData result = DraftRemoveListUtil.setDraftListForRemoval(caseDataNew, caseDataOld);
+        CriminalInjuriesCompensationData result = DraftRemoveListUtil.setDraftListForRemoval(caseDataNew, caseDataOld);
 
         Assertions.assertNull(result.getCicCase().getRemovedDraftList());
     }
@@ -159,7 +159,7 @@ class DraftRemoveListUtilTest {
             .build());
 
 
-        CaseData result = DraftRemoveListUtil.setDraftListForRemoval(caseDataNew, caseDataOld);
+        CriminalInjuriesCompensationData result = DraftRemoveListUtil.setDraftListForRemoval(caseDataNew, caseDataOld);
 
         Assertions.assertEquals(lv4.getValue(), result.getCicCase().getRemovedDraftList().getFirst().getValue());
     }

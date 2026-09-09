@@ -5,7 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.repositories.exception.correspondencedocument.CorrespondenceDocumentSaveException;
 import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentLookupException;
 import uk.gov.hmcts.sptribs.document.service.CorrespondenceDocumentService;
@@ -44,7 +44,7 @@ class ContactPartiesServiceTest {
         correspondenceIds.add(correspondenceId3);
 
         List<Long> documentIds = List.of(1L,2L);
-        CaseData caseData = new CaseData();
+        CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
         Map<String, String> uploadedDocuments = Map.of(
             "doc1", "yes",
             "doc2", "yes"
@@ -65,7 +65,7 @@ class ContactPartiesServiceTest {
     @Test
     void shouldContinueLinkingCorrespondenceIdsToDocumentsAfterAFailure() {
         //given
-        CaseData caseData = new CaseData();
+        CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
         Map<String, String> uploadedDocuments = Map.of(
             "doc1", "yes",
             "doc2", "yes"
@@ -111,7 +111,7 @@ class ContactPartiesServiceTest {
     @Test
     void shouldCatchDocumentLookupException() {
         //given
-        CaseData caseData = new CaseData();
+        CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
         Map<String, String> uploadedDocuments = Map.of(
             "doc1", "yes"
         );

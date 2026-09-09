@@ -7,7 +7,7 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
@@ -130,7 +130,7 @@ public class OrderDocumentListUtilTest {
         List<ListValue<Order>> ordersList = new ArrayList<>();
         ordersList.add(orderListValue);
 
-        CaseData caseData = CaseData.builder().cicCase(CicCase.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().cicCase(CicCase.builder()
                 .orderList(ordersList)
                 .decisionDocumentList(new ArrayList<>())
                 .finalDecisionDocumentList(new ArrayList<>())
@@ -158,7 +158,7 @@ public class OrderDocumentListUtilTest {
 
         List<ListValue<CaseworkerCICDocument>> caseDocuments = getDocument();
 
-        CaseData caseData = CaseData.builder().cicCase(CicCase.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().cicCase(CicCase.builder()
                 .orderList(ordersList)
                 .finalDecisionDocumentList(caseDocuments)
                 .applicantDocumentsUploaded(caseDocuments)
@@ -187,7 +187,7 @@ public class OrderDocumentListUtilTest {
         List<ListValue<Order>> ordersList = new ArrayList<>();
         ordersList.add(orderListValue);
 
-        CaseData caseData = CaseData.builder().cicCase(CicCase.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().cicCase(CicCase.builder()
                 .orderList(ordersList)
                 .decisionDocumentList(new ArrayList<>())
                 .finalDecisionDocumentList(new ArrayList<>())
@@ -217,7 +217,7 @@ public class OrderDocumentListUtilTest {
         List<ListValue<Order>> ordersList = new ArrayList<>();
         ordersList.add(orderListValue);
 
-        CaseData caseData = CaseData.builder().cicCase(CicCase.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().cicCase(CicCase.builder()
                 .orderList(ordersList)
                 .decisionDocumentList(new ArrayList<>())
                 .finalDecisionDocumentList(new ArrayList<>())
@@ -248,7 +248,7 @@ public class OrderDocumentListUtilTest {
         List<ListValue<Order>> ordersList = new ArrayList<>();
         ordersList.add(orderListValue);
 
-        CaseData caseData = CaseData.builder().cicCase(CicCase.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().cicCase(CicCase.builder()
                 .orderList(ordersList)
                 .decisionDocumentList(new ArrayList<>())
                 .finalDecisionDocumentList(new ArrayList<>())
@@ -279,7 +279,7 @@ public class OrderDocumentListUtilTest {
         List<ListValue<Order>> ordersList = new ArrayList<>();
         ordersList.add(orderListValue);
 
-        CaseData caseData = CaseData.builder().cicCase(CicCase.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().cicCase(CicCase.builder()
                 .orderList(ordersList)
                 .decisionDocumentList(new ArrayList<>())
                 .finalDecisionDocumentList(new ArrayList<>())
@@ -303,7 +303,7 @@ public class OrderDocumentListUtilTest {
     void givenNullOrderList_whenRemoveNonDraftOrder_thenDoNothing() {
         //Given
 
-        CaseData caseData = CaseData.builder().cicCase(CicCase.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().cicCase(CicCase.builder()
                 .decisionDocumentList(new ArrayList<>())
                 .finalDecisionDocumentList(new ArrayList<>())
                 .applicantDocumentsUploaded(getDocument())
@@ -328,7 +328,7 @@ public class OrderDocumentListUtilTest {
         List<ListValue<Order>> ordersList = new ArrayList<>();
         ordersList.add(orderListValue);
 
-        CaseData caseData = CaseData.builder().cicCase(CicCase.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().cicCase(CicCase.builder()
                 .orderList(ordersList)
                 .decisionDocumentList(new ArrayList<>())
                 .finalDecisionDocumentList(new ArrayList<>())

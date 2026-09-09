@@ -11,7 +11,6 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -50,7 +49,7 @@ class CaseworkerBundleStitchCompleteTest {
 
     @Test
     void shouldAddConfigurationToConfigBuilder() throws Exception {
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         caseworkerBundleStitchComplete.configure(configBuilder);
 
@@ -81,7 +80,7 @@ class CaseworkerBundleStitchCompleteTest {
         List<ListValue<Bundle>> bundles = new ArrayList<>();
         bundles.add(listValue);
 
-        CriminalInjuriesCompensationData caseData = new CaseData();
+        CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
         caseData.setCaseBundles(bundles);
         details.setData(caseData);
 
@@ -130,7 +129,7 @@ class CaseworkerBundleStitchCompleteTest {
 
         sortBundlesByTime(bundles);
 
-        CriminalInjuriesCompensationData caseData = new CaseData();
+        CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
         caseData.setCaseBundles(bundles);
         details.setData(caseData);
 
@@ -166,7 +165,7 @@ class CaseworkerBundleStitchCompleteTest {
         List<ListValue<Bundle>> bundles = new ArrayList<>();
         bundles.add(listValue);
 
-        CriminalInjuriesCompensationData caseData = new CaseData();
+        CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
         caseData.setCaseBundles(bundles);
         details.setData(caseData);
 
@@ -203,7 +202,7 @@ class CaseworkerBundleStitchCompleteTest {
         List<ListValue<Bundle>> bundles = new ArrayList<>();
         bundles.add(listValue);
 
-        CriminalInjuriesCompensationData caseData = new CaseData();
+        CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
         caseData.setCaseBundles(bundles);
         details.setData(caseData);
 

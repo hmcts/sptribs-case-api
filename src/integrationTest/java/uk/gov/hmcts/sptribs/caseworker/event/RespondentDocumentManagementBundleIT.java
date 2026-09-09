@@ -153,7 +153,7 @@ class RespondentDocumentManagementBundleIT {
             )
         );
 
-        CaseData afterFirstRun = triggerAboutToSubmit(RESPONDENT_DOCUMENT_MANAGEMENT, caseData);
+        CriminalInjuriesCompensationData afterFirstRun = triggerAboutToSubmit(RESPONDENT_DOCUMENT_MANAGEMENT, caseData);
         afterFirstRun.setNewBundleOrderEnabled(YesNo.YES);
         assertThat(afterFirstRun.getInitialCicaDocuments()).hasSize(2);
 
@@ -164,7 +164,7 @@ class RespondentDocumentManagementBundleIT {
             )
         );
 
-        CaseData afterSecondRun = triggerAboutToSubmit(RESPONDENT_DOCUMENT_MANAGEMENT, afterFirstRun);
+        CriminalInjuriesCompensationData afterSecondRun = triggerAboutToSubmit(RESPONDENT_DOCUMENT_MANAGEMENT, afterFirstRun);
         afterSecondRun.setNewBundleOrderEnabled(YesNo.YES);
         assertThat(afterSecondRun.getFurtherUploadedDocuments()).hasSize(2);
 
@@ -172,7 +172,7 @@ class RespondentDocumentManagementBundleIT {
             createUploads(new DocumentUploadSpec("caseworker-direction.pdf", DocumentType.TRIBUNAL_DIRECTION))
         );
 
-        CaseData afterCaseworkerUpload = triggerAboutToSubmit(CASEWORKER_DOCUMENT_MANAGEMENT, afterSecondRun);
+        CriminalInjuriesCompensationData afterCaseworkerUpload = triggerAboutToSubmit(CASEWORKER_DOCUMENT_MANAGEMENT, afterSecondRun);
         afterCaseworkerUpload.setNewBundleOrderEnabled(YesNo.YES);
         assertThat(afterCaseworkerUpload.getFurtherUploadedDocuments()).hasSize(3);
 
@@ -192,7 +192,7 @@ class RespondentDocumentManagementBundleIT {
             return buildBundleResponse(callbackCaseData);
         });
 
-        CaseData afterBundleCreation = triggerAboutToSubmit(CREATE_BUNDLE, afterCaseworkerUpload);
+        CriminalInjuriesCompensationData afterBundleCreation = triggerAboutToSubmit(CREATE_BUNDLE, afterCaseworkerUpload);
 
         assertThat(caseDocumentNames.get())
             .containsExactlyInAnyOrder("initial-application.pdf", "initial-linked.pdf");
@@ -220,14 +220,14 @@ class RespondentDocumentManagementBundleIT {
             .doesNotContain("initial-application.pdf", "initial-linked.pdf");
     }
 
-    private CaseData prepareInitialCaseData() {
+    private CriminalInjuriesCompensationData prepareInitialCaseData() {
         CriminalInjuriesCompensationData data = caseData();
         data.setNewBundleOrderEnabled(YesNo.YES);
         ensureDocumentManagementCollections(data);
         return data;
     }
 
-    private CaseData triggerAboutToSubmit(String eventId, CriminalInjuriesCompensationData data) throws Exception {
+    private CriminalInjuriesCompensationData triggerAboutToSubmit(String eventId, CriminalInjuriesCompensationData data) throws Exception {
         String response = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
                 .contentType(APPLICATION_JSON)
                 .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
@@ -243,7 +243,7 @@ class RespondentDocumentManagementBundleIT {
         @SuppressWarnings("unchecked")
         Map<String, Object> dataMap = (Map<String, Object>) responseMap.get("data");
 
-        CriminalInjuriesCompensationData updatedCaseData = objectMapper.convertValue(dataMap, CaseData.class);
+        CriminalInjuriesCompensationData updatedCaseData = objectMapper.convertValue(dataMap, CriminalInjuriesCompensationData.class);
         ensureDocumentManagementCollections(updatedCaseData);
         return updatedCaseData;
     }
@@ -275,7 +275,7 @@ class RespondentDocumentManagementBundleIT {
         }
     }
 
-    private BundleResponse buildBundleResponse(CriminalInjuriesCompensationData caseData) {
+    private BundleResponse buildBundleResponse(CaseData caseData) {
         LinkedHashMap<String, Object> data = new LinkedHashMap<>();
         data.put(CASE_BUNDLES, buildCaseBundlesResponse(caseData));
         return BundleResponse.builder()
@@ -285,7 +285,7 @@ class RespondentDocumentManagementBundleIT {
             .build();
     }
 
-    private List<LinkedHashMap<String, Object>> buildCaseBundlesResponse(CriminalInjuriesCompensationData caseData) {
+    private List<LinkedHashMap<String, Object>> buildCaseBundlesResponse(CaseData caseData) {
         LinkedHashMap<String, Object> bundleValue = new LinkedHashMap<>();
         bundleValue.put(ID, "bundle-1");
         bundleValue.put(TITLE, "CIC Bundle");
@@ -301,7 +301,7 @@ class RespondentDocumentManagementBundleIT {
         return List.of(bundleEntry);
     }
 
-    private List<LinkedHashMap<String, Object>> buildResponseFolders(CriminalInjuriesCompensationData caseData) {
+    private List<LinkedHashMap<String, Object>> buildResponseFolders(CaseData caseData) {
         Map<String, List<Map<String, Object>>> folderDocuments = new LinkedHashMap<>();
         FOLDER_ORDER.forEach(folder -> folderDocuments.put(folder, new ArrayList<>()));
 

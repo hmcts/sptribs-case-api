@@ -11,7 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.dispatcher.BundleCreatedNotification;
@@ -53,7 +53,7 @@ public class BundleCreatedNotificationIT {
 
         @Test
         void shouldSendEmailToRepresentative() {
-            final CaseData data = CaseData.builder()
+            final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
                 .cicCase(CicCase.builder()
                     .representativeFullName("Representative Name")
                     .representativeEmailAddress("representative@email.com")
@@ -80,7 +80,7 @@ public class BundleCreatedNotificationIT {
 
         @Test
         void shouldSendEmailToApplicant() {
-            final CaseData data = CaseData.builder()
+            final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
                 .cicCase(CicCase.builder()
                     .contactPreferenceType(EMAIL)
                     .applicantFullName("Applicant Name")
@@ -108,7 +108,7 @@ public class BundleCreatedNotificationIT {
 
         @Test
         void shouldSendEmailToRespondent() {
-            final CaseData data = CaseData.builder()
+            final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
                 .cicCase(CicCase.builder()
                     .contactPreferenceType(EMAIL)
                     .respondentName("Respondent Name")
@@ -149,7 +149,7 @@ public class BundleCreatedNotificationIT {
 
         @Test
         void shouldSendEmailToRepresentative() {
-            final CaseData data = CaseData.builder()
+            final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
                 .cicCase(CicCase.builder()
                     .representativeFullName("Representative Name")
                     .representativeEmailAddress("representative@email.com")

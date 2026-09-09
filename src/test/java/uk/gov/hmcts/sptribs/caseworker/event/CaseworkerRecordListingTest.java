@@ -19,7 +19,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
@@ -234,13 +233,13 @@ class CaseworkerRecordListingTest {
         updatedCaseDetails.setData(caseData);
         switch (notificationParty) {
             case SUBJECT ->
-                doThrow(sendToException).when(listingCreatedNotification).sendToSubject(any(CaseData.class), anyString());
+                doThrow(sendToException).when(listingCreatedNotification).sendToSubject(any(CriminalInjuriesCompensationData.class), anyString());
             case REPRESENTATIVE ->
-                doThrow(sendToException).when(listingCreatedNotification).sendToRepresentative(any(CaseData.class), anyString());
+                doThrow(sendToException).when(listingCreatedNotification).sendToRepresentative(any(CriminalInjuriesCompensationData.class), anyString());
             case RESPONDENT ->
-                doThrow(sendToException).when(listingCreatedNotification).sendToRespondent(any(CaseData.class), anyString());
+                doThrow(sendToException).when(listingCreatedNotification).sendToRespondent(any(CriminalInjuriesCompensationData.class), anyString());
             case APPLICANT ->
-                doThrow(sendToException).when(listingCreatedNotification).sendToApplicant(any(CaseData.class), anyString());
+                doThrow(sendToException).when(listingCreatedNotification).sendToApplicant(any(CriminalInjuriesCompensationData.class), anyString());
             default -> doNothing();
         }
 
@@ -267,13 +266,13 @@ class CaseworkerRecordListingTest {
         updatedCaseDetails.setData(caseData);
         switch (notificationParty) {
             case SUBJECT ->
-                doNothing().when(listingCreatedNotification).sendToSubject(any(CaseData.class), anyString());
+                doNothing().when(listingCreatedNotification).sendToSubject(any(CriminalInjuriesCompensationData.class), anyString());
             case REPRESENTATIVE ->
-                doNothing().when(listingCreatedNotification).sendToRepresentative(any(CaseData.class), anyString());
+                doNothing().when(listingCreatedNotification).sendToRepresentative(any(CriminalInjuriesCompensationData.class), anyString());
             case RESPONDENT ->
-                doNothing().when(listingCreatedNotification).sendToRespondent(any(CaseData.class), anyString());
+                doNothing().when(listingCreatedNotification).sendToRespondent(any(CriminalInjuriesCompensationData.class), anyString());
             case APPLICANT ->
-                doNothing().when(listingCreatedNotification).sendToApplicant(any(CaseData.class), anyString());
+                doNothing().when(listingCreatedNotification).sendToApplicant(any(CriminalInjuriesCompensationData.class), anyString());
             default -> doNothing();
         }
 
@@ -285,28 +284,28 @@ class CaseworkerRecordListingTest {
 
         switch (notificationParty) {
             case SUBJECT -> {
-                verify(listingCreatedNotification, times(1)).sendToSubject(any(CaseData.class), anyString());
-                verify(listingCreatedNotification, times(0)).sendToRepresentative(any(CaseData.class), anyString());
-                verify(listingCreatedNotification, times(0)).sendToRespondent(any(CaseData.class), anyString());
-                verify(listingCreatedNotification, times(0)).sendToApplicant(any(CaseData.class), anyString());
+                verify(listingCreatedNotification, times(1)).sendToSubject(any(CriminalInjuriesCompensationData.class), anyString());
+                verify(listingCreatedNotification, times(0)).sendToRepresentative(any(CriminalInjuriesCompensationData.class), anyString());
+                verify(listingCreatedNotification, times(0)).sendToRespondent(any(CriminalInjuriesCompensationData.class), anyString());
+                verify(listingCreatedNotification, times(0)).sendToApplicant(any(CriminalInjuriesCompensationData.class), anyString());
             }
             case REPRESENTATIVE -> {
-                verify(listingCreatedNotification, times(0)).sendToSubject(any(CaseData.class), anyString());
-                verify(listingCreatedNotification, times(1)).sendToRepresentative(any(CaseData.class), anyString());
-                verify(listingCreatedNotification, times(0)).sendToRespondent(any(CaseData.class), anyString());
-                verify(listingCreatedNotification, times(0)).sendToApplicant(any(CaseData.class), anyString());
+                verify(listingCreatedNotification, times(0)).sendToSubject(any(CriminalInjuriesCompensationData.class), anyString());
+                verify(listingCreatedNotification, times(1)).sendToRepresentative(any(CriminalInjuriesCompensationData.class), anyString());
+                verify(listingCreatedNotification, times(0)).sendToRespondent(any(CriminalInjuriesCompensationData.class), anyString());
+                verify(listingCreatedNotification, times(0)).sendToApplicant(any(CriminalInjuriesCompensationData.class), anyString());
             }
             case RESPONDENT -> {
-                verify(listingCreatedNotification, times(0)).sendToSubject(any(CaseData.class), anyString());
-                verify(listingCreatedNotification, times(0)).sendToRepresentative(any(CaseData.class), anyString());
-                verify(listingCreatedNotification, times(1)).sendToRespondent(any(CaseData.class), anyString());
-                verify(listingCreatedNotification, times(0)).sendToApplicant(any(CaseData.class), anyString());
+                verify(listingCreatedNotification, times(0)).sendToSubject(any(CriminalInjuriesCompensationData.class), anyString());
+                verify(listingCreatedNotification, times(0)).sendToRepresentative(any(CriminalInjuriesCompensationData.class), anyString());
+                verify(listingCreatedNotification, times(1)).sendToRespondent(any(CriminalInjuriesCompensationData.class), anyString());
+                verify(listingCreatedNotification, times(0)).sendToApplicant(any(CriminalInjuriesCompensationData.class), anyString());
             }
             case APPLICANT -> {
-                verify(listingCreatedNotification, times(0)).sendToSubject(any(CaseData.class), anyString());
-                verify(listingCreatedNotification, times(0)).sendToRepresentative(any(CaseData.class), anyString());
-                verify(listingCreatedNotification, times(0)).sendToRespondent(any(CaseData.class), anyString());
-                verify(listingCreatedNotification, times(1)).sendToApplicant(any(CaseData.class), anyString());
+                verify(listingCreatedNotification, times(0)).sendToSubject(any(CriminalInjuriesCompensationData.class), anyString());
+                verify(listingCreatedNotification, times(0)).sendToRepresentative(any(CriminalInjuriesCompensationData.class), anyString());
+                verify(listingCreatedNotification, times(0)).sendToRespondent(any(CriminalInjuriesCompensationData.class), anyString());
+                verify(listingCreatedNotification, times(1)).sendToApplicant(any(CriminalInjuriesCompensationData.class), anyString());
             }
             default -> { }
         }

@@ -1,7 +1,7 @@
 package uk.gov.hmcts.sptribs.ciccase.util;
 
 import org.junit.jupiter.api.Test;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.notification.model.Party;
 
@@ -13,13 +13,13 @@ public class CasePartyUtilTest {
     @Test
     public void shouldReturnNullWhenCaseDataOrCicCaseOrEmailIsNull() {
         assertNull(CasePartyUtil.determineParty(null, "email@test.com"));
-        assertNull(CasePartyUtil.determineParty(CaseData.builder().build(), "email@test.com"));
-        assertNull(CasePartyUtil.determineParty(CaseData.builder().cicCase(CicCase.builder().build()).build(), null));
+        assertNull(CasePartyUtil.determineParty(CriminalInjuriesCompensationData.builder().build(), "email@test.com"));
+        assertNull(CasePartyUtil.determineParty(CriminalInjuriesCompensationData.builder().cicCase(CicCase.builder().build()).build(), null));
     }
 
     @Test
     public void shouldReturnSubjectWhenEmailMatchesSubject() {
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .email("subject@test.com")
                 .build())
@@ -31,7 +31,7 @@ public class CasePartyUtilTest {
 
     @Test
     public void shouldReturnApplicantWhenEmailMatchesApplicant() {
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .applicantEmailAddress("applicant@test.com")
                 .build())
@@ -42,7 +42,7 @@ public class CasePartyUtilTest {
 
     @Test
     public void shouldReturnRepresentativeWhenEmailMatchesRepresentative() {
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .representativeEmailAddress("representative@test.com")
                 .build())
@@ -54,7 +54,7 @@ public class CasePartyUtilTest {
 
     @Test
     public void shouldReturnNullWhenEmailDoesNotMatchAnyParty() {
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .email("subject@test.com")
                 .build())

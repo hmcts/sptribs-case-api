@@ -66,7 +66,7 @@ public class ApplyAnonymity implements CcdPageConfiguration {
             && YesOrNo.YES.equals(cicCase.getAnonymiseYesOrNo());
     }
 
-    private static void updateIssuingAndTemplateOptions(CriminalInjuriesCompensationData caseData, boolean firstTimeAnonymisationJourney) {
+    private static void updateIssuingAndTemplateOptions(CaseData caseData, boolean firstTimeAnonymisationJourney) {
         CicCase cicCase = caseData.getCicCase();
         if (firstTimeAnonymisationJourney) {
             DynamicList restrictedIssueOptions = DynamicListUtil.createDynamicListFromEnumSet(

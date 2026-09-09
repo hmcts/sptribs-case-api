@@ -15,7 +15,6 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ApplyAnonymity;
 import uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -62,7 +61,7 @@ class CaseworkerUpdateAnonymityTest {
     @Test
     void shouldAddConfigurationToConfigBuilder() {
 
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
         caseworkerUpdateAnonymity.configure(configBuilder);
 
         assertThat(getEventsFrom(configBuilder).values())
@@ -136,7 +135,7 @@ class CaseworkerUpdateAnonymityTest {
 
     @Test
     void shouldSendAnonymityNotificationWhenAnonymityIsNewlyApplied() {
-        CaseData caseDataAfter = CriminalInjuriesCompensationData.builder()
+        CriminalInjuriesCompensationData caseDataAfter = CriminalInjuriesCompensationData.builder()
             .hyphenatedCaseRef("1234-5678-9012-3456")
             .cicCase(CicCase.builder()
                 .anonymiseYesOrNo(YesOrNo.YES)
@@ -144,7 +143,7 @@ class CaseworkerUpdateAnonymityTest {
                 .build())
             .build();
 
-        CaseData caseDataBefore = CriminalInjuriesCompensationData.builder()
+        CriminalInjuriesCompensationData caseDataBefore = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .anonymiseYesOrNo(YesOrNo.NO)
                 .anonymityAlreadyApplied(YesOrNo.NO)
@@ -165,7 +164,7 @@ class CaseworkerUpdateAnonymityTest {
 
     @Test
     void shouldNotSendAnonymityNotificationWhenAlreadyAppliedBefore() {
-        CaseData caseDataAfter = CriminalInjuriesCompensationData.builder()
+        CriminalInjuriesCompensationData caseDataAfter = CriminalInjuriesCompensationData.builder()
             .hyphenatedCaseRef("1234-5678-9012-3456")
             .cicCase(CicCase.builder()
                 .anonymiseYesOrNo(YesOrNo.YES)
@@ -173,7 +172,7 @@ class CaseworkerUpdateAnonymityTest {
                 .build())
             .build();
 
-        CaseData caseDataBefore = CriminalInjuriesCompensationData.builder()
+        CriminalInjuriesCompensationData caseDataBefore = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .anonymiseYesOrNo(YesOrNo.YES)
                 .anonymityAlreadyApplied(YesOrNo.YES)

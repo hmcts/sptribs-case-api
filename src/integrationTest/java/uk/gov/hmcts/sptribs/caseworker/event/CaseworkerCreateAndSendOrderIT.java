@@ -23,7 +23,6 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.DueDateOptions;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
@@ -400,7 +399,7 @@ public class CaseworkerCreateAndSendOrderIT {
                 .build())
             .build();
 
-        final CaseData caseDataBefore = CriminalInjuriesCompensationData.builder()
+        final CriminalInjuriesCompensationData caseDataBefore = CriminalInjuriesCompensationData.builder()
             .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
             .cicCase(CicCase.builder()
                 .anonymiseYesOrNo(YesOrNo.NO)
@@ -468,7 +467,7 @@ public class CaseworkerCreateAndSendOrderIT {
                 .build())
             .build();
 
-        final CaseData caseDataBefore = CriminalInjuriesCompensationData.builder()
+        final CriminalInjuriesCompensationData caseDataBefore = CriminalInjuriesCompensationData.builder()
             .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
             .cicCase(CicCase.builder()
                 .anonymiseYesOrNo(YesOrNo.YES)

@@ -137,7 +137,7 @@ public class CaseworkerEditCase implements CCDConfig<CriminalInjuriesCompensatio
             .build();
     }
 
-    private PageBuilder addEventConfig(ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+    private PageBuilder<CriminalInjuriesCompensationData> addEventConfig(ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
         Event.EventBuilder<CriminalInjuriesCompensationData, UserRole, State> eventBuilder = configBuilder
             .event(CASEWORKER_EDIT_CASE)
             .forStates(DSS_Submitted, Submitted, CaseManagement, ReadyToList, AwaitingHearing, AwaitingOutcome)

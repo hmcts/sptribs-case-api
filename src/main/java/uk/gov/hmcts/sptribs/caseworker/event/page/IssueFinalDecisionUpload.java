@@ -40,7 +40,7 @@ public class IssueFinalDecisionUpload implements CcdPageConfiguration {
 
     public <T extends CaseData> AboutToStartOrSubmitResponse<T, State> midEvent(CaseDetails<T, State> details,
                                                                   CaseDetails<T, State> detailsBefore) {
-        final CaseData data = details.getData();
+        final T data = details.getData();
         CICDocument uploadedDocument = data.getCaseIssueFinalDecision().getDocument();
         final List<String> errors = validateDecisionDocumentFormat(uploadedDocument);
 

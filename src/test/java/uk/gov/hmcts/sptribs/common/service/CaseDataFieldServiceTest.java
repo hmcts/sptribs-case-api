@@ -2,7 +2,7 @@ package uk.gov.hmcts.sptribs.common.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 
 import java.lang.reflect.Field;
@@ -38,7 +38,7 @@ class CaseDataFieldServiceTest {
     @Test
     void shouldReturnTrueWhenDirectFieldExists() {
         // Given
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .hyphenatedCaseRef("1234-5678-9012-3456")
             .build();
 
@@ -52,7 +52,7 @@ class CaseDataFieldServiceTest {
         CicCase cicCase = CicCase.builder()
             .fullName("Test Name")
             .build();
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .build();
 
@@ -63,7 +63,7 @@ class CaseDataFieldServiceTest {
     @Test
     void shouldReturnFalseWhenFieldDoesNotExist() {
         // Given
-        CaseData caseData = CaseData.builder().build();
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
 
         // When/Then
         assertThat(caseDataFieldService.fieldExists("nonExistentField", caseData)).isFalse();
@@ -75,7 +75,7 @@ class CaseDataFieldServiceTest {
         CicCase cicCase = CicCase.builder()
             .fullName("Test Name")
             .build();
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .build();
 
@@ -86,7 +86,7 @@ class CaseDataFieldServiceTest {
     @Test
     void shouldDeleteDirectField() throws Exception {
         // Given
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .hyphenatedCaseRef("1234-5678-9012-3456")
             .build();
 
@@ -105,7 +105,7 @@ class CaseDataFieldServiceTest {
             .fullName("Test Name")
             .email("test@test.com")
             .build();
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .build();
 
@@ -121,7 +121,7 @@ class CaseDataFieldServiceTest {
     @Test
     void shouldReturnFalseWhenDeletingNonExistentField() throws Exception {
         // Given
-        CaseData caseData = CaseData.builder().build();
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
 
         // When
         boolean deleted = caseDataFieldService.deleteField("nonExistentField", caseData);
@@ -137,7 +137,7 @@ class CaseDataFieldServiceTest {
             .fullName("Test Name")
             .email("test@test.com")
             .build();
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .build();
 
@@ -153,7 +153,7 @@ class CaseDataFieldServiceTest {
     @Test
     void shouldDeleteNoteField() throws Exception {
         // Given
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .note("Test note")
             .build();
 
@@ -168,7 +168,7 @@ class CaseDataFieldServiceTest {
     @Test
     void shouldDeleteCaseNumberField() throws Exception {
         // Given
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .caseNumber("12345678")
             .build();
 
@@ -183,7 +183,7 @@ class CaseDataFieldServiceTest {
     @Test
     void shouldHandleFieldExistsWithNullNestedObject() {
         // Given - cicCase is null by default if not initialized
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(null)
             .build();
 
@@ -194,7 +194,7 @@ class CaseDataFieldServiceTest {
     @Test
     void shouldHandleDeleteWithNullNestedObject() throws Exception {
         // Given - cicCase is null
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(null)
             .build();
 
@@ -208,7 +208,7 @@ class CaseDataFieldServiceTest {
     @Test
     void shouldFindFieldInCloseCase() {
         // Given
-        CaseData caseData = CaseData.builder().build();
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
 
         // When/Then - closeCase fields should be discoverable
         // The prefix "close" maps to closeCase field
@@ -218,7 +218,7 @@ class CaseDataFieldServiceTest {
     @Test
     void shouldFindFieldInReferToJudge() {
         // Given
-        CaseData caseData = CaseData.builder().build();
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
 
         // When/Then - referToJudge fields should be discoverable
         assertThat(caseDataFieldService.getPrefixToFieldMap()).containsKey("referToJudge");

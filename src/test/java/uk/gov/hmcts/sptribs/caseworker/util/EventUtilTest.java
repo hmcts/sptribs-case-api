@@ -6,7 +6,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
@@ -311,7 +311,7 @@ public class EventUtilTest {
     @Test
     void shouldSuccessfullyCheckRecipients() {
         //Given
-        final CaseData data = new CaseData();
+        final CriminalInjuriesCompensationData data = new CriminalInjuriesCompensationData();
 
         //When
         List<String> result = EventUtil.checkRecipient(data);
@@ -327,7 +327,7 @@ public class EventUtilTest {
             .caseSubcategory(CaseSubcategory.MINOR)
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .partiesCIC(Set.of(PartiesCIC.SUBJECT)).build();
-        final CaseData data = new CaseData();
+        final CriminalInjuriesCompensationData data = new CriminalInjuriesCompensationData();
         data.setCicCase(cicCase);
 
         //When
@@ -344,7 +344,7 @@ public class EventUtilTest {
             .caseSubcategory(CaseSubcategory.FATAL)
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .partiesCIC(Set.of(PartiesCIC.SUBJECT)).build();
-        final CaseData data = new CaseData();
+        final CriminalInjuriesCompensationData data = new CriminalInjuriesCompensationData();
         data.setCicCase(cicCase);
 
         //When

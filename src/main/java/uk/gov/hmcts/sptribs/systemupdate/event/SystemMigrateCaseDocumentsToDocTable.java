@@ -8,7 +8,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentSaveException;
@@ -31,14 +31,14 @@ import static uk.gov.hmcts.sptribs.document.model.CaseDocumentType.BUNDLE;
 @RequiredArgsConstructor
 @Component
 @Slf4j
-public class SystemMigrateCaseDocumentsToDocTable implements CCDConfig<CaseData, State, UserRole> {
+public class SystemMigrateCaseDocumentsToDocTable implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
     public static final String SYSTEM_MIGRATE_CASE_DOCUMENTS_TO_TABLE = "migrate-to-document-table";
     private final MigrationDocumentService documentsService;
 
     final Map<String, String> failedDocs = new HashMap<>();
 
     @Override
-    public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    public void configure(ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
         configBuilder
             .event(SYSTEM_MIGRATE_CASE_DOCUMENTS_TO_TABLE)
             .forAllStates()
@@ -48,12 +48,12 @@ public class SystemMigrateCaseDocumentsToDocTable implements CCDConfig<CaseData,
             .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE, SUPER_USER);
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> caseDetails,
-                                                                       CaseDetails<CaseData, State> beforeDetails) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(CaseDetails<CriminalInjuriesCompensationData, State> caseDetails,
+                                                                       CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
 
 
 
-        CaseData caseData = caseDetails.getData();
+        CriminalInjuriesCompensationData caseData = caseDetails.getData();
         Long reference = caseDetails.getId();
 
         long startTime = System.currentTimeMillis();
@@ -80,12 +80,12 @@ public class SystemMigrateCaseDocumentsToDocTable implements CCDConfig<CaseData,
             reference,
             duration);
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .build();
     }
 
-    private void saveBundlesToDocTable(CaseData caseData, Long reference) {
+    private void saveBundlesToDocTable(CriminalInjuriesCompensationData caseData, Long reference) {
         caseData.getCaseBundles().forEach(bundle ->
             saveDocument(
                 bundle.getValue().getStitchedDocument(),

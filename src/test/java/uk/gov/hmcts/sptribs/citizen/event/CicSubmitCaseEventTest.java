@@ -17,7 +17,6 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
@@ -70,7 +69,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestFileUtil.loadJson;
 
 @ExtendWith({MockitoExtension.class})
 class CicSubmitCaseEventTest {
-    final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+    final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
     @InjectMocks
     private CicSubmitCaseEvent cicSubmitCaseEvent;
@@ -288,7 +287,7 @@ class CicSubmitCaseEventTest {
     void shouldSubmitEventThroughSubmittedCallbackWithNotification() throws IOException {
         final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
         String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
-        final CaseData caseBeforeData = mapper.readValue(caseDataJson, CaseData.class);
+        final CriminalInjuriesCompensationData caseBeforeData = mapper.readValue(caseDataJson, CriminalInjuriesCompensationData.class);
 
         final CaseDetails<CriminalInjuriesCompensationData, State> beforeCaseDetails = new CaseDetails<>();
         beforeCaseDetails.setData(caseBeforeData);
@@ -297,7 +296,7 @@ class CicSubmitCaseEventTest {
         beforeCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
-        CriminalInjuriesCompensationData caseData = mapper.readValue(caseDataJson, CaseData.class);
+        CriminalInjuriesCompensationData caseData = mapper.readValue(caseDataJson, CriminalInjuriesCompensationData.class);
         caseDetails.setData(caseData);
         caseDetails.setState(State.Submitted);
         caseDetails.setId(TEST_CASE_ID);
@@ -327,15 +326,15 @@ class CicSubmitCaseEventTest {
 
         assertThat(submittedResponse.getConfirmationHeader())
             .isEqualTo("# Application Received \n## A notification has been sent to: Subject, Representative");
-        verify(dssApplicationReceivedNotification).sendToSubject(any(CaseData.class), any());
-        verify(dssApplicationReceivedNotification).sendToRepresentative(any(CaseData.class), any());
+        verify(dssApplicationReceivedNotification).sendToSubject(any(CriminalInjuriesCompensationData.class), any());
+        verify(dssApplicationReceivedNotification).sendToRepresentative(any(CriminalInjuriesCompensationData.class), any());
     }
 
     @Test
     void shouldSubmitEventThroughSubmittedCallbackWithoutNotificationParties() throws IOException {
         final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
         String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
-        final CaseData caseBeforeData = mapper.readValue(caseDataJson, CaseData.class);
+        final CriminalInjuriesCompensationData caseBeforeData = mapper.readValue(caseDataJson, CriminalInjuriesCompensationData.class);
 
         final CaseDetails<CriminalInjuriesCompensationData, State> beforeCaseDetails = new CaseDetails<>();
         beforeCaseDetails.setData(caseBeforeData);
@@ -344,7 +343,7 @@ class CicSubmitCaseEventTest {
         beforeCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
-        CriminalInjuriesCompensationData caseData = mapper.readValue(caseDataJson, CaseData.class);
+        CriminalInjuriesCompensationData caseData = mapper.readValue(caseDataJson, CriminalInjuriesCompensationData.class);
         caseDetails.setData(caseData);
         caseDetails.setState(State.Submitted);
         caseDetails.setId(TEST_CASE_ID);
@@ -388,7 +387,7 @@ class CicSubmitCaseEventTest {
 
         doThrow(NotificationException.class)
             .when(dssApplicationReceivedNotification)
-            .sendToSubject(any(CaseData.class), anyString());
+            .sendToSubject(any(CriminalInjuriesCompensationData.class), anyString());
         doThrow(NotificationException.class)
             .when(dssApplicationReceivedNotification)
             .sendToRepresentative(any(DssCaseData.class), anyString());

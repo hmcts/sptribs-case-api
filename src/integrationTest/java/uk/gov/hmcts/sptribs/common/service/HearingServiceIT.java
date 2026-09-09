@@ -132,7 +132,7 @@ public class HearingServiceIT {
     void shouldSetHearingDateOnAddListingAndClearOnCompleteInIntegration() {
         // Given
         final Listing listing = getRecordListing(); // status Listed, date 2023-04-21
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .hearingList(new ArrayList<>())
             .build();
 
@@ -154,7 +154,7 @@ public class HearingServiceIT {
     void shouldUpdateHearingDateOnUpdateHearingListInIntegration() {
         // Given
         final Listing listing = getRecordListing(); // status Listed, date 2023-04-21
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .listing(listing)
             .hearingList(getHearingList()) // contains Final on 2024-08-14
             .build();

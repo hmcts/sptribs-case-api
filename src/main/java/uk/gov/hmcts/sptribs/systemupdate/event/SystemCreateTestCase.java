@@ -28,6 +28,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -67,7 +68,7 @@ import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_WA_CASE_REGI
 @RequiredArgsConstructor
 @Component
 @Slf4j
-public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole> {
+public class SystemCreateTestCase implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
     public static final String SYSTEM_CREATE_TEST_CASE = "system-create-test-case";
     private final DocumentsService documentsService;
     private static final String TEST_CASE_DATA_FILE = "classpath:data/st_cic_test_case.json";
@@ -86,7 +87,7 @@ public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole
     private final HttpServletRequest request;
 
     @Override
-    public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    public void configure(ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
         configBuilder
             .event(SYSTEM_CREATE_TEST_CASE)
             .initialState(Draft)
@@ -99,15 +100,15 @@ public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole
 
 
     @SneakyThrows
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
-                                                                       CaseDetails<CaseData, State> beforeDetails) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                                       CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
 
         final DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
         final String json = IOUtils.toString(
             resourceLoader.getResource(TEST_CASE_DATA_FILE).getInputStream(),
             Charset.defaultCharset()
         );
-        final CaseData caseData = objectMapper.readValue(json, CaseData.class);
+        final CriminalInjuriesCompensationData caseData = objectMapper.readValue(json, CriminalInjuriesCompensationData.class);
         uploadTestDocumentAndUpdateCaseData(caseData);
         addOrderDocument(caseData);
         addDraftOrderDocument(caseData, details.getId());
@@ -118,16 +119,16 @@ public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole
         caseData.setHyphenatedCaseRef(caseData.formatCaseRef(details.getId()));
         setDefaultCaseDetails(caseData);
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .state(Submitted)
             .build();
     }
 
-    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                               CaseDetails<CaseData, State> beforeDetails) {
+    public SubmittedCallbackResponse submitted(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                               CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
 
-        final CaseData caseData = details.getData();
+        final CriminalInjuriesCompensationData caseData = details.getData();
         final String caseReference = caseData.getHyphenatedCaseRef();
 
         setSupplementaryData(details.getId());
@@ -137,7 +138,7 @@ public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole
             .build();
     }
 
-    private void setDefaultCaseDetails(CaseData data) {
+    private void setDefaultCaseDetails(CriminalInjuriesCompensationData data) {
         CaseManagementLocation caseManagementLocation = new CaseManagementLocation(ST_CIC_WA_CASE_BASE_LOCATION, ST_CIC_WA_CASE_REGION);
         log.info("Case Management base location {}, region {}",
             caseManagementLocation.getBaseLocation(), caseManagementLocation.getRegion());
@@ -170,7 +171,7 @@ public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole
         );
     }
 
-    private void uploadTestDocumentAndUpdateCaseData(CaseData caseData) {
+    private void uploadTestDocumentAndUpdateCaseData(CriminalInjuriesCompensationData caseData) {
         final UploadResponse uploadResponse = uploadApplicantDocument();
 
         if (uploadResponse != null) {
@@ -212,7 +213,7 @@ public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole
         return null;
     }
 
-    private void addOrderDocument(CaseData caseData) {
+    private void addOrderDocument(CriminalInjuriesCompensationData caseData) {
         final UploadResponse uploadResponse = uploadApplicantDocument();
 
         if (uploadResponse != null) {
@@ -242,7 +243,7 @@ public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole
         }
     }
 
-    private void addDraftOrderDocument(CaseData caseData,Long caseId) {
+    private void addDraftOrderDocument(CriminalInjuriesCompensationData caseData,Long caseId) {
 
         Calendar cal = Calendar.getInstance();
         String date = simpleDateFormat.format(cal.getTime());
@@ -276,7 +277,7 @@ public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole
         caseData.getCicCase().setDraftOrderCICList(listValues);
     }
 
-    private void addDecisionDocument(CaseData caseData) {
+    private void addDecisionDocument(CriminalInjuriesCompensationData caseData) {
         final UploadResponse uploadResponse = uploadApplicantDocument();
 
 
@@ -299,7 +300,7 @@ public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole
         }
     }
 
-    private void addFinalDecisionDocument(CaseData caseData) {
+    private void addFinalDecisionDocument(CriminalInjuriesCompensationData caseData) {
         final UploadResponse uploadResponse = uploadApplicantDocument();
 
         if (uploadResponse != null) {
@@ -316,7 +317,7 @@ public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole
         }
     }
 
-    private void addDocumentManagementDocument(CaseData caseData) {
+    private void addDocumentManagementDocument(CriminalInjuriesCompensationData caseData) {
         final UploadResponse uploadResponse = uploadApplicantDocument();
 
         if (uploadResponse != null) {

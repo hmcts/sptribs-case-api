@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
@@ -20,7 +20,7 @@ public class CheckRequiredUtilTest {
     @Test
     void shouldSuccessfullyCheckNullSubjectRepresentativeRespondent() {
         //Given
-        final CaseData caseData = new CaseData();
+        final CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
         final CicCase cicCase = new CicCase();
         caseData.setCicCase(cicCase);
 
@@ -34,7 +34,7 @@ public class CheckRequiredUtilTest {
     @Test
     void shouldSuccessfullyCheckNullSubjectRepresentativeRespondentWithRepresentatvie() {
         //Given
-        final CaseData caseData = new CaseData();
+        final CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
         final CicCase cicCase = new CicCase();
         cicCase.setNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE));
         caseData.setCicCase(cicCase);
@@ -49,7 +49,7 @@ public class CheckRequiredUtilTest {
     @Test
     void shouldSuccessfullyCheckNullSubjectRepresentativeRespondentWithSubject() {
         //Given
-        final CaseData caseData = new CaseData();
+        final CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
         final CicCase cicCase = new CicCase();
         cicCase.setNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
         caseData.setCicCase(cicCase);
@@ -64,7 +64,7 @@ public class CheckRequiredUtilTest {
     @Test
     void shouldSuccessfullyCheckNullSubjectRepresentativeRespondentWithRespondent() {
         //Given
-        final CaseData caseData = new CaseData();
+        final CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
         final CicCase cicCase = new CicCase();
         cicCase.setNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT));
         caseData.setCicCase(cicCase);
@@ -79,7 +79,7 @@ public class CheckRequiredUtilTest {
     @Test
     void shouldSuccessfullyCheckNullSubjectRepresentativeRespondentWithApplicant() {
         //Given
-        final CaseData caseData = new CaseData();
+        final CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
         final CicCase cicCase = new CicCase();
         cicCase.setNotifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC));
         caseData.setCicCase(cicCase);
@@ -94,7 +94,7 @@ public class CheckRequiredUtilTest {
     @Test
     void shouldSuccessfullyCheckNullSubjectRepresentativeApplicant() {
         //Given
-        final CaseData caseData = new CaseData();
+        final CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
         final CicCase cicCase = new CicCase();
         caseData.setCicCase(cicCase);
 
@@ -108,7 +108,7 @@ public class CheckRequiredUtilTest {
     @Test
     void shouldSuccessfullyCheckMultiSubjectRepresentativeApplicant() {
         //Given
-        final CaseData caseData = new CaseData();
+        final CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
         final CicCase cicCase = new CicCase();
         caseData.setCicCase(cicCase);
 
@@ -122,7 +122,7 @@ public class CheckRequiredUtilTest {
     @Test
     void shouldSuccessfullyCheckMultiSubjectRepresentativeApplicantWithApplicant() {
         //Given
-        final CaseData caseData = new CaseData();
+        final CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
         final CicCase cicCase = CicCase.builder()
             .applicantCIC(Set.of(ApplicantCIC.APPLICANT_CIC))
             .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
@@ -139,7 +139,7 @@ public class CheckRequiredUtilTest {
     @Test
     void shouldSuccessfullyCheckMultiSubjectRepresentativeApplicantWithRepresentative() {
         //Given
-        final CaseData caseData = new CaseData();
+        final CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
         final CicCase cicCase = CicCase.builder()
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .build();
@@ -155,7 +155,7 @@ public class CheckRequiredUtilTest {
     @Test
     void shouldSuccessfullyCheckMultiSubjectRepresentativeApplicantWithRepresentativeSubject() {
         //Given
-        final CaseData caseData = new CaseData();
+        final CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
         final CicCase cicCase = CicCase.builder()
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
@@ -172,7 +172,7 @@ public class CheckRequiredUtilTest {
     @Test
     void shouldSuccessfullyCheckMultiSubjectRepresentativeApplicantWithRepresentativeApplicantSubject() {
         //Given
-        final CaseData caseData = new CaseData();
+        final CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
         final CicCase cicCase = CicCase.builder()
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
@@ -190,7 +190,7 @@ public class CheckRequiredUtilTest {
     @Test
     void shouldSuccessfullyCheckMultiSubjectRepresentativeApplicantWithRepresentativeApplicant() {
         //Given
-        final CaseData caseData = new CaseData();
+        final CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
         final CicCase cicCase = CicCase.builder()
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
@@ -208,7 +208,7 @@ public class CheckRequiredUtilTest {
     @Test
     void shouldSuccessfullyCheckMultiSubjectRepresentativeApplicantWithSubject() {
         //Given
-        final CaseData caseData = new CaseData();
+        final CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
         final CicCase cicCase = CicCase.builder()
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .build();
@@ -225,7 +225,7 @@ public class CheckRequiredUtilTest {
     @Test
     void shouldSuccessfullyCheckMultiSubjectApplicantWithSubject() {
         //Given
-        final CaseData caseData = new CaseData();
+        final CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
         final CicCase cicCase = CicCase.builder()
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))

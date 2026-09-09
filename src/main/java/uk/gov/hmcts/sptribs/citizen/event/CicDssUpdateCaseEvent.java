@@ -117,7 +117,7 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CriminalInjuriesCompensa
                 .build();
     }
 
-    private CaseData addDocumentsToCaseData(final CriminalInjuriesCompensationData caseData, final DssCaseData dssCaseData, List<String> errors)
+    private CriminalInjuriesCompensationData addDocumentsToCaseData(final CriminalInjuriesCompensationData caseData, final DssCaseData dssCaseData, List<String> errors)
         throws RuntimeException {
         final List<CaseworkerCICDocument> documentList = new ArrayList<>();
         final List<ListValue<DssMessage>> messagesList = new ArrayList<>();

@@ -5,7 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.sptribs.caseworker.model.EditCicaCaseDetails;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
@@ -40,7 +40,7 @@ public class DssNotificationHelperTest {
     @Test
     void shouldSetSubjectCommonVars() {
         final DssCaseData dssCaseData = getMockDssCaseData();
-        final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().dssCaseData(dssCaseData).build();
         Map<String, Object> templateVars = dssNotificationHelper.getSubjectCommonVars(CASE_NUMBER, caseData);
 
         assertThat(templateVars)
@@ -55,7 +55,7 @@ public class DssNotificationHelperTest {
     @Test
     void shouldSetRepresentativeCommonVars() {
         final DssCaseData dssCaseData = getMockDssCaseData();
-        final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().dssCaseData(dssCaseData).build();
         Map<String, Object> templateVars = dssNotificationHelper.getRepresentativeCommonVars(CASE_NUMBER, caseData);
 
         assertThat(templateVars).containsEntry(TRIBUNAL_NAME, CIC)
@@ -69,7 +69,7 @@ public class DssNotificationHelperTest {
     @Test
     void shouldSetRepresentativeCommonVarsWithCicaReference() {
         final DssCaseData dssCaseData = getMockDssCaseData();
-        final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).editCicaCaseDetails(CICA_CASE_DETAILS).build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().dssCaseData(dssCaseData).editCicaCaseDetails(CICA_CASE_DETAILS).build();
         Map<String, Object> templateVars = dssNotificationHelper.getRepresentativeCommonVars(CASE_NUMBER, caseData);
 
         assertThat(templateVars).containsEntry(TRIBUNAL_NAME, CIC)
@@ -83,7 +83,7 @@ public class DssNotificationHelperTest {
     @Test
     void shouldSetSubjectCommonVarsWithCicaReference() {
         final DssCaseData dssCaseData = getMockDssCaseData();
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
                 .dssCaseData(dssCaseData)
                 .editCicaCaseDetails(CICA_CASE_DETAILS)
                 .build();
@@ -100,7 +100,7 @@ public class DssNotificationHelperTest {
     @Test
     void shouldSetRepresentativeCommonVarsWithEmptyCicaReference() {
         final DssCaseData dssCaseData = getMockDssCaseData();
-        final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).editCicaCaseDetails(EMPTY_CICA_CASE_DETAILS).build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().dssCaseData(dssCaseData).editCicaCaseDetails(EMPTY_CICA_CASE_DETAILS).build();
         Map<String, Object> templateVars = dssNotificationHelper.getRepresentativeCommonVars(CASE_NUMBER, caseData);
 
         assertThat(templateVars).containsEntry(TRIBUNAL_NAME, CIC)
@@ -114,7 +114,7 @@ public class DssNotificationHelperTest {
     @Test
     void shouldSetSubjectCommonVarsWithEmptyCicaReference() {
         final DssCaseData dssCaseData = getMockDssCaseData();
-        final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).editCicaCaseDetails(EMPTY_CICA_CASE_DETAILS).build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().dssCaseData(dssCaseData).editCicaCaseDetails(EMPTY_CICA_CASE_DETAILS).build();
         Map<String, Object> templateVars = dssNotificationHelper.getSubjectCommonVars(CASE_NUMBER, caseData);
 
         assertThat(templateVars).containsEntry(TRIBUNAL_NAME, CIC)
@@ -128,7 +128,7 @@ public class DssNotificationHelperTest {
     @Test
     void shouldBuildEmailNotificationRequest() {
         final DssCaseData dssCaseData = getMockDssCaseData();
-        final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().dssCaseData(dssCaseData).build();
         Map<String, Object> templateVars = dssNotificationHelper.getSubjectCommonVars(CASE_NUMBER, caseData);
 
         NotificationRequest notificationRequest = dssNotificationHelper.buildEmailNotificationRequest(

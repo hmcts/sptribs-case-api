@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.RemoveCaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.StayRemoveReason;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -134,9 +133,9 @@ class CaseworkerRemoveStayTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        doNothing().when(caseUnstayedNotification).sendToSubject(any(CaseData.class), eq(null));
-        doNothing().when(caseUnstayedNotification).sendToApplicant(any(CaseData.class), eq(null));
-        doNothing().when(caseUnstayedNotification).sendToRepresentative(any(CaseData.class), eq(null));
+        doNothing().when(caseUnstayedNotification).sendToSubject(any(CriminalInjuriesCompensationData.class), eq(null));
+        doNothing().when(caseUnstayedNotification).sendToApplicant(any(CriminalInjuriesCompensationData.class), eq(null));
+        doNothing().when(caseUnstayedNotification).sendToRepresentative(any(CriminalInjuriesCompensationData.class), eq(null));
 
         AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerRemoveStay.aboutToSubmit(updatedCaseDetails, beforeDetails);

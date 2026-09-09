@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
@@ -292,9 +291,9 @@ public class CaseworkerEditRecordListingIT {
                 ##  If any changes are made to this hearing,  remember to make those changes in this listing record.\s
                 ## A notification has been sent to: Subject, Respondent, Representative""");
 
-        verify(listingUpdatedNotification, times(1)).sendToSubject((CaseData) any(), anyString());
+        verify(listingUpdatedNotification, times(1)).sendToSubject((CriminalInjuriesCompensationData) any(), anyString());
         verify(listingUpdatedNotification, times(1)).sendToRespondent(any(), anyString());
-        verify(listingUpdatedNotification, times(1)).sendToRepresentative((CaseData) any(), anyString());
+        verify(listingUpdatedNotification, times(1)).sendToRepresentative((CriminalInjuriesCompensationData) any(), anyString());
         verifyNoMoreInteractions(listingUpdatedNotification);
     }
 
@@ -345,7 +344,7 @@ public class CaseworkerEditRecordListingIT {
         final List<ListValue<Listing>> hearingList = new ArrayList<>();
         hearingList.add(new ListValue<>("1", hearing));
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .fullName("Test Name")
                 .hearingList(DynamicList.builder()
@@ -388,7 +387,7 @@ public class CaseworkerEditRecordListingIT {
         hearingList.add(new ListValue<>("1", earliestHearing));
         hearingList.add(new ListValue<>("2", laterHearing));
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .fullName("Test Name")
                 .hearingList(DynamicList.builder()
@@ -436,7 +435,7 @@ public class CaseworkerEditRecordListingIT {
         hearingList.add(new ListValue<>("1", earliestHearing));
         hearingList.add(new ListValue<>("2", laterHearing));
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .fullName("Test Name")
                 .hearingList(DynamicList.builder()

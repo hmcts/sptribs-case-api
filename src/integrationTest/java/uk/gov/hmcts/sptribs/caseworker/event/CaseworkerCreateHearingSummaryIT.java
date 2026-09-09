@@ -254,7 +254,7 @@ public class CaseworkerCreateHearingSummaryIT {
             .summary(hearingSummary)
             .build();
 
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setHearingList(hearingList);
         caseData.setHearingDate(LocalDate.of(2023, 4, 21));
         caseData.setListing(listing);
@@ -309,7 +309,7 @@ public class CaseworkerCreateHearingSummaryIT {
             .summary(hearingSummary)
             .build();
 
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setHearingList(hearingList);
         caseData.setHearingDate(LocalDate.of(2023, 4, 21));
         caseData.setListing(listing);

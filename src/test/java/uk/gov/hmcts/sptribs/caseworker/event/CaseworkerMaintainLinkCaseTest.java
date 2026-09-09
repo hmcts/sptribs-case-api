@@ -10,7 +10,6 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -69,9 +68,9 @@ class CaseworkerMaintainLinkCaseTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
         //When
-        doNothing().when(caseUnlinkedNotification).sendToSubject(any(CaseData.class), eq(null));
-        doNothing().when(caseUnlinkedNotification).sendToApplicant(any(CaseData.class), eq(null));
-        doNothing().when(caseUnlinkedNotification).sendToRepresentative(any(CaseData.class), eq(null));
+        doNothing().when(caseUnlinkedNotification).sendToSubject(any(CriminalInjuriesCompensationData.class), eq(null));
+        doNothing().when(caseUnlinkedNotification).sendToApplicant(any(CriminalInjuriesCompensationData.class), eq(null));
+        doNothing().when(caseUnlinkedNotification).sendToRepresentative(any(CriminalInjuriesCompensationData.class), eq(null));
         SubmittedCallbackResponse response =
             caseWorkerMaintainLinkCase.submitted(updatedCaseDetails, beforeDetails);
         //Then
@@ -92,7 +91,7 @@ class CaseworkerMaintainLinkCaseTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
         // When
-        doThrow(new RuntimeException("Notification error")).when(caseUnlinkedNotification).sendToSubject(any(CaseData.class), anyString());
+        doThrow(new RuntimeException("Notification error")).when(caseUnlinkedNotification).sendToSubject(any(CriminalInjuriesCompensationData.class), anyString());
         SubmittedCallbackResponse response = caseWorkerMaintainLinkCase.submitted(updatedCaseDetails, beforeDetails);
         // Then
         assertThat(response).isNotNull();

@@ -10,7 +10,7 @@ import org.springframework.dao.DataAccessResourceFailureException;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.util.CasePartyUtil;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentDeleteException;
@@ -174,7 +174,7 @@ public class DocumentsServiceTest {
         DocumentManagement documentManagement = DocumentManagement.builder().caseworkerCICDocument(
             List.of(caseDocument1, caseDocument2)).build();
 
-        CaseData caseData = CaseData.builder().allDocManagement(documentManagement).build();
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().allDocManagement(documentManagement).build();
 
         Map<String, String> uploadedDocuments = buildUploadedDocuments();
 
@@ -199,7 +199,7 @@ public class DocumentsServiceTest {
         DocumentManagement documentManagement = DocumentManagement.builder().caseworkerCICDocument(
             List.of(caseDocument1, caseDocument2, caseDocument3, caseDocument4)).build();
 
-        CaseData caseData = CaseData.builder().allDocManagement(documentManagement).build();
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().allDocManagement(documentManagement).build();
 
         Map<String, String> uploadedDocuments = buildUploadedDocuments();
 
@@ -219,7 +219,7 @@ public class DocumentsServiceTest {
         DocumentManagement documentManagement = DocumentManagement.builder().caseworkerCICDocument(
             List.of(caseDocument1)).build();
 
-        CaseData caseData = CaseData.builder().allDocManagement(documentManagement).build();
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().allDocManagement(documentManagement).build();
 
         Map<String, String> uploadedDocuments = buildUploadedDocuments();
         doThrow(new DataAccessResourceFailureException("DB error"))

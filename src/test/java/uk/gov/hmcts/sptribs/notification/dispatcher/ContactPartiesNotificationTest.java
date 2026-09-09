@@ -16,7 +16,6 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
@@ -498,7 +497,7 @@ class ContactPartiesNotificationTest {
 
     }
 
-    private CaseData getMockCaseData() {
+    private CriminalInjuriesCompensationData getMockCaseData() {
         final CicCase cicCase = CicCase.builder().fullName("fullName").caseNumber(TEST_CASE_ID.toString()).build();
 
         return CriminalInjuriesCompensationData.builder()
@@ -506,7 +505,7 @@ class ContactPartiesNotificationTest {
             .build();
     }
 
-    private CaseData withSelectedContactPartiesDocument(CriminalInjuriesCompensationData caseData) {
+    private CriminalInjuriesCompensationData withSelectedContactPartiesDocument(CriminalInjuriesCompensationData caseData) {
         caseData.setContactPartiesDocuments(ContactPartiesDocuments.builder().build());
 
         List<ListValue<CaseworkerCICDocument>> cicDocumentList = TestDataHelper.getCaseworkerCICDocumentList("test.pdf");

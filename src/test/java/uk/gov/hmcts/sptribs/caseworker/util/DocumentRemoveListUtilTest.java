@@ -12,7 +12,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 
@@ -30,7 +30,7 @@ public class DocumentRemoveListUtilTest {
     @Test
     void shouldSuccessfullyRemoveDocs() {
         //Given
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         CICDocument doc = CICDocument.builder()
             .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build()).build();
         caseData.setCaseIssueFinalDecision(CaseIssueFinalDecision.builder().document(doc).build());
@@ -61,7 +61,7 @@ public class DocumentRemoveListUtilTest {
             .documents(getDocument())
             .build();
         caseData.setCloseCase(closeCase);
-        final CaseData oldData = caseData();
+        final CriminalInjuriesCompensationData oldData = caseData();
         CloseCase closeCaseOld = CloseCase.builder()
             .documents(get2Document())
             .build();
@@ -84,7 +84,7 @@ public class DocumentRemoveListUtilTest {
         oldData.setCloseCase(CloseCase.builder().documents(get2Document()).build());
 
         //When
-        CaseData result = DocumentRemoveListUtil.setDocumentsListForRemoval(caseData, oldData);
+        CriminalInjuriesCompensationData result = DocumentRemoveListUtil.setDocumentsListForRemoval(caseData, oldData);
 
         //Then
         assertThat(result).isNotNull();
@@ -93,7 +93,7 @@ public class DocumentRemoveListUtilTest {
     @Test
     void shouldSuccessfullyRemoveDocsSizeDec() {
         //Given
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         CICDocument doc = CICDocument.builder()
             .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build()).build();
         caseData.setCaseIssueFinalDecision(CaseIssueFinalDecision.builder().document(doc).build());
@@ -123,7 +123,7 @@ public class DocumentRemoveListUtilTest {
             .documents(new ArrayList<>())
             .build();
         caseData.setCloseCase(closeCase);
-        final CaseData oldData = caseData();
+        final CriminalInjuriesCompensationData oldData = caseData();
         CloseCase closeCaseOld = CloseCase.builder()
             .documents(get2Document())
             .build();
@@ -146,7 +146,7 @@ public class DocumentRemoveListUtilTest {
         oldData.setCloseCase(CloseCase.builder().documents(get2Document()).build());
 
         //When
-        CaseData result = DocumentRemoveListUtil.setDocumentsListForRemoval(caseData, oldData);
+        CriminalInjuriesCompensationData result = DocumentRemoveListUtil.setDocumentsListForRemoval(caseData, oldData);
 
         //Then
         assertThat(result).isNotNull();

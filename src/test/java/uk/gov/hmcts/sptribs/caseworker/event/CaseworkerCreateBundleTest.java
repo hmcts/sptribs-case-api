@@ -161,7 +161,7 @@ class CaseworkerCreateBundleTest {
     @Test
     void shouldSuccessfullySendNotificationToRepresentative() {
 
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList();
         final CicCase cicCase = CicCase.builder().build();
         cicCase.setApplicantDocumentsUploaded(cicDocuments);
@@ -169,7 +169,7 @@ class CaseworkerCreateBundleTest {
         caseData.setHyphenatedCaseRef("1234-5678-3456");
         cicCase.setRepresentativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE));
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -185,7 +185,7 @@ class CaseworkerCreateBundleTest {
         }).when(bundleCreatedNotification).sendToRepresentative((CaseData) any(), any());
 
         SubmittedCallbackResponse createBundleSubmittedResponse =
-            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CriminalInjuriesCompensationData, State>builder().build());
 
         assertThat(createBundleSubmittedResponse.getConfirmationHeader())
             .isEqualTo("# Bundle created. \n## A notification has been sent to: Representative, Respondent");
@@ -194,7 +194,7 @@ class CaseworkerCreateBundleTest {
     @Test
     void shouldSuccessfullySendNotificationToApplicant() {
 
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList();
         final CicCase cicCase = CicCase.builder().build();
         cicCase.setApplicantDocumentsUploaded(cicDocuments);
@@ -202,7 +202,7 @@ class CaseworkerCreateBundleTest {
         caseData.setHyphenatedCaseRef("1234-5678-3456");
         cicCase.setApplicantCIC(Set.of(ApplicantCIC.APPLICANT_CIC));
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -218,7 +218,7 @@ class CaseworkerCreateBundleTest {
         }).when(bundleCreatedNotification).sendToApplicant(any(), any());
 
         SubmittedCallbackResponse createBundleSubmittedResponse =
-            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CriminalInjuriesCompensationData, State>builder().build());
 
         assertThat(createBundleSubmittedResponse.getConfirmationHeader())
             .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent, Applicant");
@@ -227,14 +227,14 @@ class CaseworkerCreateBundleTest {
     @Test
     void shouldReturnFailedToSendNotificationOnError() {
 
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList();
         final CicCase cicCase = CicCase.builder().build();
         cicCase.setApplicantDocumentsUploaded(cicDocuments);
         caseData.setCicCase(cicCase);
         cicCase.setRepresentativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE));
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -243,7 +243,7 @@ class CaseworkerCreateBundleTest {
         doThrow(new RuntimeException("Notification Failed")).when(bundleCreatedNotification).sendToRepresentative((CaseData) any(), any());
 
         SubmittedCallbackResponse createBundleSubmittedResponse =
-            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CriminalInjuriesCompensationData, State>builder().build());
 
         assertThat(createBundleSubmittedResponse.getConfirmationHeader())
             .isEqualTo("""

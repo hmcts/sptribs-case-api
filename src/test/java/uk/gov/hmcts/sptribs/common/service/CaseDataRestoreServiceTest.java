@@ -14,7 +14,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentRemoveListUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.SendOrderUtil;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.dto.RemoveEventWithPrecedingData;
@@ -57,7 +56,7 @@ class CaseDataRestoreServiceTest {
                 REFERENCE, CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE, START_DATE, END_DATE))
                 .thenReturn(List.of());
 
-            CaseData currentData = buildCaseDataWithOrders(List.of());
+            CriminalInjuriesCompensationData currentData = buildCaseDataWithOrders(List.of());
 
             try (MockedStatic<SendOrderUtil> sendOrderUtil = mockStatic(SendOrderUtil.class);
                  MockedStatic<DocumentRemoveListUtil> documentRemoveListUtil = mockStatic(DocumentRemoveListUtil.class)) {
@@ -78,8 +77,8 @@ class CaseDataRestoreServiceTest {
             ListValue<Order> orderToRestore = buildOrderWithUploadedFile("order-1", "doc-url-1");
             ListValue<Order> remainingOrder = buildOrderWithUploadedFile("order-2", "doc-url-2");
 
-            CaseData precedingData = buildCaseDataWithOrders(List.of(orderToRestore, remainingOrder));
-            CaseData currentEventData = buildCaseDataWithOrders(List.of(remainingOrder));
+            CriminalInjuriesCompensationData precedingData = buildCaseDataWithOrders(List.of(orderToRestore, remainingOrder));
+            CriminalInjuriesCompensationData currentEventData = buildCaseDataWithOrders(List.of(remainingOrder));
 
             currentEventData.getCicCase().setRemovedDocumentList(List.of(buildCaseworkerCICDocument("doc-url-other")));
 
@@ -94,7 +93,7 @@ class CaseDataRestoreServiceTest {
                 REFERENCE, CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE, START_DATE, END_DATE))
                 .thenReturn(List.of(event));
 
-            CaseData currentData = buildCaseDataWithOrders(List.of(remainingOrder));
+            CriminalInjuriesCompensationData currentData = buildCaseDataWithOrders(List.of(remainingOrder));
 
             try (MockedStatic<SendOrderUtil> sendOrderUtil = mockStatic(SendOrderUtil.class);
                  MockedStatic<DocumentRemoveListUtil> documentRemoveListUtil = mockStatic(DocumentRemoveListUtil.class)) {
@@ -111,8 +110,8 @@ class CaseDataRestoreServiceTest {
             ListValue<Order> removedOrder = buildOrderWithUploadedFile("order-1", "doc-url-1");
             ListValue<Order> remainingOrder = buildOrderWithUploadedFile("order-2", "doc-url-2");
 
-            CaseData precedingData = buildCaseDataWithOrders(List.of(removedOrder, remainingOrder));
-            CaseData currentEventData = buildCaseDataWithOrders(List.of(remainingOrder));
+            CriminalInjuriesCompensationData precedingData = buildCaseDataWithOrders(List.of(removedOrder, remainingOrder));
+            CriminalInjuriesCompensationData currentEventData = buildCaseDataWithOrders(List.of(remainingOrder));
 
             currentEventData.getCicCase().setRemovedDocumentList(List.of(buildCaseworkerCICDocument("doc-url-1")));
 
@@ -127,7 +126,7 @@ class CaseDataRestoreServiceTest {
                     REFERENCE, CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE, START_DATE, END_DATE))
                     .thenReturn(List.of(event));
 
-            CaseData currentData = buildCaseDataWithOrders(List.of(remainingOrder));
+            CriminalInjuriesCompensationData currentData = buildCaseDataWithOrders(List.of(remainingOrder));
 
             try (MockedStatic<SendOrderUtil> sendOrderUtil = mockStatic(SendOrderUtil.class);
                  MockedStatic<DocumentRemoveListUtil> documentRemoveListUtil = mockStatic(DocumentRemoveListUtil.class)) {
@@ -143,8 +142,8 @@ class CaseDataRestoreServiceTest {
             ListValue<Order> removedOrder = buildOrderWithDraftOrderCIC("order-1", "draft-doc-url-1");
             ListValue<Order> remainingOrder = buildOrderWithUploadedFile("order-2", "doc-url-2");
 
-            CaseData precedingData = buildCaseDataWithOrders(List.of(removedOrder, remainingOrder));
-            CaseData currentEventData = buildCaseDataWithOrders(List.of(remainingOrder));
+            CriminalInjuriesCompensationData precedingData = buildCaseDataWithOrders(List.of(removedOrder, remainingOrder));
+            CriminalInjuriesCompensationData currentEventData = buildCaseDataWithOrders(List.of(remainingOrder));
 
             currentEventData.getCicCase().setRemovedDocumentList(List.of(buildCaseworkerCICDocument("draft-doc-url-1")));
 
@@ -159,7 +158,7 @@ class CaseDataRestoreServiceTest {
                     REFERENCE, CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE, START_DATE, END_DATE))
                     .thenReturn(List.of(event));
 
-            CaseData currentData = buildCaseDataWithOrders(List.of(remainingOrder));
+            CriminalInjuriesCompensationData currentData = buildCaseDataWithOrders(List.of(remainingOrder));
 
             try (MockedStatic<SendOrderUtil> sendOrderUtil = mockStatic(SendOrderUtil.class);
                  MockedStatic<DocumentRemoveListUtil> documentRemoveListUtil = mockStatic(DocumentRemoveListUtil.class)) {
@@ -174,8 +173,8 @@ class CaseDataRestoreServiceTest {
         void shouldNotRestoreOrderAlreadyPresentInCurrentData() {
             ListValue<Order> existingOrder = buildOrderWithUploadedFile("order-1", "doc-url-1");
 
-            CaseData precedingData = buildCaseDataWithOrders(List.of(existingOrder));
-            CaseData currentEventData = buildCaseDataWithOrders(List.of());
+            CriminalInjuriesCompensationData precedingData = buildCaseDataWithOrders(List.of(existingOrder));
+            CriminalInjuriesCompensationData currentEventData = buildCaseDataWithOrders(List.of());
             currentEventData.getCicCase().setRemovedDocumentList(List.of());
 
             RemoveEventWithPrecedingData event = RemoveEventWithPrecedingData.builder()
@@ -189,7 +188,7 @@ class CaseDataRestoreServiceTest {
                 REFERENCE, CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE, START_DATE, END_DATE))
                 .thenReturn(List.of(event));
 
-            CaseData currentData = buildCaseDataWithOrders(List.of(existingOrder));
+            CriminalInjuriesCompensationData currentData = buildCaseDataWithOrders(List.of(existingOrder));
 
             try (MockedStatic<SendOrderUtil> sendOrderUtil = mockStatic(SendOrderUtil.class);
                  MockedStatic<DocumentRemoveListUtil> documentRemoveListUtil = mockStatic(DocumentRemoveListUtil.class)) {
@@ -202,8 +201,8 @@ class CaseDataRestoreServiceTest {
 
         @Test
         void shouldReturnEarlyWhenPrecedingDataHasNoOrdersList() {
-            CaseData precedingData = buildCaseDataWithOrders(List.of());
-            CaseData currentEventData = buildCaseDataWithOrders(List.of());
+            CriminalInjuriesCompensationData precedingData = buildCaseDataWithOrders(List.of());
+            CriminalInjuriesCompensationData currentEventData = buildCaseDataWithOrders(List.of());
             currentEventData.getCicCase().setRemovedDocumentList(List.of());
 
             RemoveEventWithPrecedingData event = RemoveEventWithPrecedingData.builder()
@@ -217,7 +216,7 @@ class CaseDataRestoreServiceTest {
                 REFERENCE, CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE, START_DATE, END_DATE))
                 .thenReturn(List.of(event));
 
-            CaseData currentData = buildCaseDataWithOrders(List.of());
+            CriminalInjuriesCompensationData currentData = buildCaseDataWithOrders(List.of());
 
             try (MockedStatic<SendOrderUtil> sendOrderUtil = mockStatic(SendOrderUtil.class);
                  MockedStatic<DocumentRemoveListUtil> documentRemoveListUtil = mockStatic(DocumentRemoveListUtil.class)) {
@@ -234,12 +233,12 @@ class CaseDataRestoreServiceTest {
             ListValue<Order> secondRemovedOrder = buildOrderWithUploadedFile("order-2", "doc-url-2");
             ListValue<Order> remainingOrder = buildOrderWithUploadedFile("order-3", "doc-url-3");
 
-            CaseData precedingDataFirst = buildCaseDataWithOrders(List.of(firstRemovedOrder, remainingOrder));
-            CaseData currentEventDataFirst = buildCaseDataWithOrders(List.of(remainingOrder));
+            CriminalInjuriesCompensationData precedingDataFirst = buildCaseDataWithOrders(List.of(firstRemovedOrder, remainingOrder));
+            CriminalInjuriesCompensationData currentEventDataFirst = buildCaseDataWithOrders(List.of(remainingOrder));
             currentEventDataFirst.getCicCase().setRemovedDocumentList(List.of(buildCaseworkerCICDocument("doc-url-other")));
 
-            CaseData precedingDataSecond = buildCaseDataWithOrders(List.of(secondRemovedOrder, remainingOrder));
-            CaseData currentEventDataSecond = buildCaseDataWithOrders(List.of(remainingOrder));
+            CriminalInjuriesCompensationData precedingDataSecond = buildCaseDataWithOrders(List.of(secondRemovedOrder, remainingOrder));
+            CriminalInjuriesCompensationData currentEventDataSecond = buildCaseDataWithOrders(List.of(remainingOrder));
             currentEventDataSecond.getCicCase().setRemovedDocumentList(List.of(buildCaseworkerCICDocument("doc-url-other")));
 
             RemoveEventWithPrecedingData firstEvent = RemoveEventWithPrecedingData.builder()
@@ -260,7 +259,7 @@ class CaseDataRestoreServiceTest {
                 REFERENCE, CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE, START_DATE, END_DATE))
                 .thenReturn(List.of(secondEvent, firstEvent)); // intentionally out of order
 
-            CaseData currentData = buildCaseDataWithOrders(List.of(remainingOrder));
+            CriminalInjuriesCompensationData currentData = buildCaseDataWithOrders(List.of(remainingOrder));
 
             try (MockedStatic<SendOrderUtil> sendOrderUtil = mockStatic(SendOrderUtil.class);
                  MockedStatic<DocumentRemoveListUtil> documentRemoveListUtil = mockStatic(DocumentRemoveListUtil.class)) {
@@ -284,7 +283,7 @@ class CaseDataRestoreServiceTest {
             when(caseEventRepository.getFirstEventDataForCase(REFERENCE, RESPONDENT_DOCUMENT_MANAGEMENT))
                 .thenReturn(List.of());
 
-            CaseData currentCaseData = CaseData.builder().build();
+            CriminalInjuriesCompensationData currentCaseData = CriminalInjuriesCompensationData.builder().build();
 
             try (MockedStatic<DocumentListUtil> documentListUtil = mockStatic(DocumentListUtil.class)) {
                 caseDataRestoreService.updateInitialCaseDocuments(REFERENCE, currentCaseData);
@@ -318,7 +317,7 @@ class CaseDataRestoreServiceTest {
             List<ListValue<CaseworkerCICDocument>> allDocuments = List.of(doc1, doc2);
 
             CriminalInjuriesCompensationData caseDataBefore = CriminalInjuriesCompensationData.builder().build();
-            CaseData currentCaseData = CaseData.builder().build();
+            CriminalInjuriesCompensationData currentCaseData = CriminalInjuriesCompensationData.builder().build();
 
             when(caseEventRepository.getFirstEventDataForCase(REFERENCE, RESPONDENT_DOCUMENT_MANAGEMENT))
                 .thenReturn(List.of(caseDataBefore));
@@ -357,8 +356,8 @@ class CaseDataRestoreServiceTest {
 
             List<ListValue<CaseworkerCICDocument>> currentAllDocuments = List.of(doc1);
 
-            CaseData caseDataBefore = CaseData.builder().build();
-            CaseData currentCaseData = CaseData.builder().build();
+            CriminalInjuriesCompensationData caseDataBefore = CriminalInjuriesCompensationData.builder().build();
+            CriminalInjuriesCompensationData currentCaseData = CriminalInjuriesCompensationData.builder().build();
 
             when(caseEventRepository.getFirstEventDataForCase(REFERENCE, RESPONDENT_DOCUMENT_MANAGEMENT))
                     .thenReturn(List.of(caseDataBefore));
@@ -382,7 +381,7 @@ class CaseDataRestoreServiceTest {
         @Test
         void shouldSetEmptyListWhenNoDocumentsAtRespondentUpload() {
             CriminalInjuriesCompensationData caseDataBefore = CriminalInjuriesCompensationData.builder().build();
-            CaseData currentCaseData = CaseData.builder().build();
+            CriminalInjuriesCompensationData currentCaseData = CriminalInjuriesCompensationData.builder().build();
 
             when(caseEventRepository.getFirstEventDataForCase(REFERENCE, RESPONDENT_DOCUMENT_MANAGEMENT))
                 .thenReturn(List.of(caseDataBefore));
@@ -399,15 +398,15 @@ class CaseDataRestoreServiceTest {
 
         @Test
         void shouldUseFirstEventDataWhenMultipleResultsReturned() {
-            CaseData firstEventData = CaseData.builder().caseNumber("1").build();
-            CaseData secondEventData = CaseData.builder().caseNumber("2").build();
+            CriminalInjuriesCompensationData firstEventData = CriminalInjuriesCompensationData.builder().caseNumber("1").build();
+            CriminalInjuriesCompensationData secondEventData = CriminalInjuriesCompensationData.builder().caseNumber("2").build();
 
             ListValue<CaseworkerCICDocument> doc = ListValue.<CaseworkerCICDocument>builder()
                 .id("doc-1")
                 .value(CaseworkerCICDocument.builder().build())
                 .build();
 
-            CaseData currentCaseData = CaseData.builder().build();
+            CriminalInjuriesCompensationData currentCaseData = CriminalInjuriesCompensationData.builder().build();
 
             when(caseEventRepository.getFirstEventDataForCase(REFERENCE, RESPONDENT_DOCUMENT_MANAGEMENT))
                     .thenReturn(List.of(firstEventData, secondEventData));

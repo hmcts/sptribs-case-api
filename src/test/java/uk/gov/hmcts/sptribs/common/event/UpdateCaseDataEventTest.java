@@ -11,7 +11,6 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
@@ -84,7 +83,7 @@ class UpdateCaseDataEventTest {
             caseDetails.setData(caseData);
             caseDetails.setState(State.CaseManagement);
 
-            when(caseDataFieldService.fieldExists(eq("hyphenatedCaseRef"), any(CaseData.class)))
+            when(caseDataFieldService.fieldExists(eq("hyphenatedCaseRef"), any(CriminalInjuriesCompensationData.class)))
                 .thenReturn(true);
 
             // When
@@ -93,7 +92,7 @@ class UpdateCaseDataEventTest {
 
             // Then
             assertThat(response.getErrors()).isEmpty();
-            verify(caseDataFieldService).fieldExists(eq("hyphenatedCaseRef"), any(CaseData.class));
+            verify(caseDataFieldService).fieldExists(eq("hyphenatedCaseRef"), any(CriminalInjuriesCompensationData.class));
         }
 
         @Test
@@ -108,7 +107,7 @@ class UpdateCaseDataEventTest {
             caseDetails.setData(caseData);
             caseDetails.setState(State.CaseManagement);
 
-            when(caseDataFieldService.fieldExists(eq("nonExistentField"), any(CaseData.class)))
+            when(caseDataFieldService.fieldExists(eq("nonExistentField"), any(CriminalInjuriesCompensationData.class)))
                 .thenReturn(false);
 
             // When
@@ -217,7 +216,7 @@ class UpdateCaseDataEventTest {
             caseDetails.setData(caseData);
             caseDetails.setState(State.CaseManagement);
 
-            when(caseDataFieldService.fieldExists(eq("cicCaseFullName"), any(CaseData.class)))
+            when(caseDataFieldService.fieldExists(eq("cicCaseFullName"), any(CriminalInjuriesCompensationData.class)))
                 .thenReturn(true);
 
             // When
@@ -240,7 +239,7 @@ class UpdateCaseDataEventTest {
             caseDetails.setData(caseData);
             caseDetails.setState(State.CaseManagement);
 
-            when(caseDataFieldService.fieldExists(eq("cicCaseInvalidField"), any(CaseData.class)))
+            when(caseDataFieldService.fieldExists(eq("cicCaseInvalidField"), any(CriminalInjuriesCompensationData.class)))
                 .thenReturn(false);
 
             // When
@@ -270,7 +269,7 @@ class UpdateCaseDataEventTest {
             caseDetails.setId(TEST_CASE_ID);
             caseDetails.setState(State.CaseManagement);
 
-            when(caseDataFieldService.deleteField(eq("hyphenatedCaseRef"), any(CaseData.class)))
+            when(caseDataFieldService.deleteField(eq("hyphenatedCaseRef"), any(CriminalInjuriesCompensationData.class)))
                 .thenReturn(true);
 
             // When
@@ -281,7 +280,7 @@ class UpdateCaseDataEventTest {
             assertThat(response.getErrors()).isEmpty();
             assertThat(response.getData().getDeleteField()).isNull();
             assertThat(response.getData().getDeleteFieldName()).isNull();
-            verify(caseDataFieldService).deleteField(eq("hyphenatedCaseRef"), any(CaseData.class));
+            verify(caseDataFieldService).deleteField(eq("hyphenatedCaseRef"), any(CriminalInjuriesCompensationData.class));
         }
 
         @Test
@@ -347,7 +346,7 @@ class UpdateCaseDataEventTest {
             caseDetails.setId(TEST_CASE_ID);
             caseDetails.setState(State.CaseManagement);
 
-            when(caseDataFieldService.deleteField(eq("nonExistentField"), any(CaseData.class)))
+            when(caseDataFieldService.deleteField(eq("nonExistentField"), any(CriminalInjuriesCompensationData.class)))
                 .thenReturn(false);
 
             // When
@@ -372,7 +371,7 @@ class UpdateCaseDataEventTest {
             caseDetails.setId(TEST_CASE_ID);
             caseDetails.setState(State.CaseManagement);
 
-            when(caseDataFieldService.deleteField(eq("someField"), any(CaseData.class)))
+            when(caseDataFieldService.deleteField(eq("someField"), any(CriminalInjuriesCompensationData.class)))
                 .thenThrow(new IllegalAccessException("Access denied"));
 
             // When
@@ -398,7 +397,7 @@ class UpdateCaseDataEventTest {
             caseDetails.setId(TEST_CASE_ID);
             caseDetails.setState(State.CaseManagement);
 
-            when(caseDataFieldService.deleteField(eq("note"), any(CaseData.class)))
+            when(caseDataFieldService.deleteField(eq("note"), any(CriminalInjuriesCompensationData.class)))
                 .thenReturn(true);
 
             // When
@@ -472,7 +471,7 @@ class UpdateCaseDataEventTest {
             caseDetails.setId(TEST_CASE_ID);
             caseDetails.setState(State.AwaitingHearing);
 
-            when(caseDataFieldService.deleteField(eq("note"), any(CaseData.class)))
+            when(caseDataFieldService.deleteField(eq("note"), any(CriminalInjuriesCompensationData.class)))
                 .thenReturn(true);
 
             // When

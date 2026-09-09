@@ -22,7 +22,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
@@ -101,7 +100,7 @@ class CaseworkerCreateAndSendOrderTest {
     @Test
     void shouldAddConfigurationToConfigBuilder() {
 
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
         caseworkerCreateAndSendOrder.configure(configBuilder);
 
         assertThat(getEventsFrom(configBuilder).values())
@@ -539,11 +538,11 @@ class CaseworkerCreateAndSendOrderTest {
                 .isEqualTo("""
                     # Send order notification failed\s
                     ## Please resend the order""");
-        verify(newOrderIssuedNotification, times(1)).sendToSubject(any(CaseData.class), anyString());
+        verify(newOrderIssuedNotification, times(1)).sendToSubject(any(CriminalInjuriesCompensationData.class), anyString());
 
-        verify(newOrderIssuedNotification, never()).sendToRepresentative(any(CaseData.class), anyString());
-        verify(newOrderIssuedNotification, never()).sendToRespondent(any(CaseData.class), anyString());
-        verify(newOrderIssuedNotification, never()).sendToApplicant(any(CaseData.class), anyString());
+        verify(newOrderIssuedNotification, never()).sendToRepresentative(any(CriminalInjuriesCompensationData.class), anyString());
+        verify(newOrderIssuedNotification, never()).sendToRespondent(any(CriminalInjuriesCompensationData.class), anyString());
+        verify(newOrderIssuedNotification, never()).sendToApplicant(any(CriminalInjuriesCompensationData.class), anyString());
     }
 
     @Test
@@ -569,11 +568,11 @@ class CaseworkerCreateAndSendOrderTest {
                 .isEqualTo("""
                     # Send order notification failed\s
                     ## Please resend the order""");
-        verify(newOrderIssuedNotification, times(1)).sendToSubject(any(CaseData.class), anyString());
-        verify(newOrderIssuedNotification, times(1)).sendToRepresentative(any(CaseData.class), anyString());
+        verify(newOrderIssuedNotification, times(1)).sendToSubject(any(CriminalInjuriesCompensationData.class), anyString());
+        verify(newOrderIssuedNotification, times(1)).sendToRepresentative(any(CriminalInjuriesCompensationData.class), anyString());
 
-        verify(newOrderIssuedNotification, never()).sendToRespondent(any(CaseData.class), anyString());
-        verify(newOrderIssuedNotification, never()).sendToApplicant(any(CaseData.class), anyString());
+        verify(newOrderIssuedNotification, never()).sendToRespondent(any(CriminalInjuriesCompensationData.class), anyString());
+        verify(newOrderIssuedNotification, never()).sendToApplicant(any(CriminalInjuriesCompensationData.class), anyString());
 
     }
 
@@ -600,11 +599,11 @@ class CaseworkerCreateAndSendOrderTest {
                 .isEqualTo("""
                     # Send order notification failed\s
                     ## Please resend the order""");
-        verify(newOrderIssuedNotification, times(1)).sendToSubject(any(CaseData.class), anyString());
-        verify(newOrderIssuedNotification, times(1)).sendToRepresentative(any(CaseData.class), anyString());
-        verify(newOrderIssuedNotification, times(1)).sendToRespondent(any(CaseData.class), anyString());
+        verify(newOrderIssuedNotification, times(1)).sendToSubject(any(CriminalInjuriesCompensationData.class), anyString());
+        verify(newOrderIssuedNotification, times(1)).sendToRepresentative(any(CriminalInjuriesCompensationData.class), anyString());
+        verify(newOrderIssuedNotification, times(1)).sendToRespondent(any(CriminalInjuriesCompensationData.class), anyString());
 
-        verify(newOrderIssuedNotification, never()).sendToApplicant(any(CaseData.class), anyString());
+        verify(newOrderIssuedNotification, never()).sendToApplicant(any(CriminalInjuriesCompensationData.class), anyString());
     }
 
     @Test
@@ -630,10 +629,10 @@ class CaseworkerCreateAndSendOrderTest {
                 .isEqualTo("""
                     # Send order notification failed\s
                     ## Please resend the order""");
-        verify(newOrderIssuedNotification, times(1)).sendToSubject(any(CaseData.class), anyString());
-        verify(newOrderIssuedNotification, times(1)).sendToRepresentative(any(CaseData.class), anyString());
-        verify(newOrderIssuedNotification, times(1)).sendToRespondent(any(CaseData.class), anyString());
-        verify(newOrderIssuedNotification, times(1)).sendToApplicant(any(CaseData.class), anyString());
+        verify(newOrderIssuedNotification, times(1)).sendToSubject(any(CriminalInjuriesCompensationData.class), anyString());
+        verify(newOrderIssuedNotification, times(1)).sendToRepresentative(any(CriminalInjuriesCompensationData.class), anyString());
+        verify(newOrderIssuedNotification, times(1)).sendToRespondent(any(CriminalInjuriesCompensationData.class), anyString());
+        verify(newOrderIssuedNotification, times(1)).sendToApplicant(any(CriminalInjuriesCompensationData.class), anyString());
     }
 
     @Test

@@ -10,7 +10,6 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -69,9 +68,9 @@ class CaseworkerLinkCaseTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
         //When
-        doNothing().when(caseLinkedNotification).sendToSubject(any(CaseData.class), eq(null));
-        doNothing().when(caseLinkedNotification).sendToApplicant(any(CaseData.class), eq(null));
-        doNothing().when(caseLinkedNotification).sendToRepresentative(any(CaseData.class), eq(null));
+        doNothing().when(caseLinkedNotification).sendToSubject(any(CriminalInjuriesCompensationData.class), eq(null));
+        doNothing().when(caseLinkedNotification).sendToApplicant(any(CriminalInjuriesCompensationData.class), eq(null));
+        doNothing().when(caseLinkedNotification).sendToRepresentative(any(CriminalInjuriesCompensationData.class), eq(null));
         SubmittedCallbackResponse response =
             caseWorkerLinkCase.submitted(updatedCaseDetails, beforeDetails);
         //Then
@@ -92,7 +91,7 @@ class CaseworkerLinkCaseTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
         // When
-        doThrow(new RuntimeException("Notification error")).when(caseLinkedNotification).sendToSubject(any(CaseData.class), anyString());
+        doThrow(new RuntimeException("Notification error")).when(caseLinkedNotification).sendToSubject(any(CriminalInjuriesCompensationData.class), anyString());
         SubmittedCallbackResponse response = caseWorkerLinkCase.submitted(updatedCaseDetails, beforeDetails);
         // Then
         assertThat(response).isNotNull();
