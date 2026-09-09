@@ -199,7 +199,8 @@ public class BundlingService {
     private Bundle buildBundle(LinkedHashMap<String, Object> objectLinkedHashMap, Long caseNumber) {
 
         Document stitchedDocument = getStitchedDocument(objectLinkedHashMap, caseNumber);
-        String stitchingFailureMessage = MapUtils.getString(objectLinkedHashMap, STITCHING_FAILURE_MESSAGE, "");
+//        String stitchingFailureMessage = MapUtils.getString(objectLinkedHashMap, STITCHING_FAILURE_MESSAGE, "");
+        String stitchingFailureMessage = "Failure message should not display on XUI";
 
         return Bundle.builder()
             .stitchStatus(NEW)
