@@ -401,11 +401,16 @@ public class CaseworkerCreateHearingSummaryIT extends IntegrationTestBase {
 
         stubForIdamDetails(TEST_AUTHORIZATION_TOKEN, CASEWORKER_USER_ID, ST_CIC_CASEWORKER);
 
+        var request = callbackRequest(caseData, CASEWORKER_CREATE_HEARING_SUMMARY);
+        request.getCaseDetails().getData().put(
+            "recFileUpload",
+            objectMapper.convertValue(hearingSummary.getRecFileUpload(),Object.class)
+        );
         mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
                 .contentType(APPLICATION_JSON)
                 .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
                 .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
-                .content(objectMapper.writeValueAsString(callbackRequest(caseData, CASEWORKER_CREATE_HEARING_SUMMARY)))
+                .content(objectMapper.writeValueAsString(request))
                 .accept(APPLICATION_JSON))
             .andExpect(status().isOk());
 
