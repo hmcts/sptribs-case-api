@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
@@ -36,12 +37,14 @@ import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.String.format;
@@ -83,6 +86,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
     private final SendOrderOrderDueDates orderDueDates;
     private final DocumentsService documentsService;
     private final ContactPartiesService contactPartiesService;
+    private final NotificationHelper notificationHelper;
 
 
     @Override
@@ -246,11 +250,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                           CaseDetails<CaseData, State> beforeDetails) {
         try {
-            contactPartiesService.sendOrderNotification(
-                details.getData().getHyphenatedCaseRef(),
-                details.getData(),
-                newOrderIssuedNotification
-            );
+            sendOrderNotification(details.getData().getHyphenatedCaseRef(), details.getData());
         } catch (Exception notificationException) {
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Send order notification failed %n## Please resend the order"))
@@ -261,6 +261,45 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             .confirmationHeader(format("# Order sent %n## %s",
                 MessageUtil.generateSimpleMessage(details.getData().getCicCase())))
             .build();
+    }
+
+    private void sendOrderNotification(String caseNumber, CaseData caseData) {
+        Map<String, String> uploadedDocuments = notificationHelper.buildDocumentList(
+            caseData.getContactPartiesDocuments().getDocumentList(),
+            10
+        );
+        List<String> correspondenceIds = new ArrayList<>();
+
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartySubject())) {
+            addCorrespondenceId(correspondenceIds,
+                newOrderIssuedNotification.sendToSubject(caseData, caseNumber, uploadedDocuments));
+        }
+
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRepresentative())) {
+            addCorrespondenceId(correspondenceIds,
+                newOrderIssuedNotification.sendToRepresentative(caseData, caseNumber, uploadedDocuments));
+        }
+
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRespondent())) {
+            addCorrespondenceId(correspondenceIds,
+                newOrderIssuedNotification.sendToRespondent(caseData, caseNumber, uploadedDocuments));
+        }
+
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyApplicant())) {
+            addCorrespondenceId(correspondenceIds,
+                newOrderIssuedNotification.sendToApplicant(caseData, caseNumber, uploadedDocuments));
+        }
+
+        if (!correspondenceIds.isEmpty()) {
+            contactPartiesService.linkCorrespondenceIdsToDocuments(caseData, uploadedDocuments, correspondenceIds);
+        }
+
+    }
+
+    private void addCorrespondenceId(List<String> correspondenceIds, String correspondenceId) {
+        if (correspondenceId != null) {
+            correspondenceIds.add(correspondenceId);
+        }
     }
 
 

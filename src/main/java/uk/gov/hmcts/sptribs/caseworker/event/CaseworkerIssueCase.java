@@ -16,7 +16,6 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.IssueCaseSelectDocument;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
-import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -27,7 +26,6 @@ import uk.gov.hmcts.sptribs.notification.dispatcher.CaseIssuedNotification;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -143,46 +141,44 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
                                                CaseDetails<CaseData, State> beforeDetails) {
 
         final CaseData data = details.getData();
+        final CicCase cicCase = data.getCicCase();
         final String caseNumber = data.getHyphenatedCaseRef();
         final List<String> errors = new ArrayList<>();
         final Map<String, String> uploadedDocuments = Optional
             .ofNullable(caseIssuedNotification.getUploadedDocuments(data))
             .orElseGet(Map::of);
-        final Map<NotificationParties, ContactPartiesService.NotificationSender> sendersByParty = new LinkedHashMap<>();
-        sendersByParty.put(NotificationParties.SUBJECT, () -> {
+
+        final List<String> correspondenceIds = new ArrayList<>();
+
+        if (!isEmpty(cicCase.getNotifyPartySubject())) {
             try {
                 caseIssuedNotification.sendToSubject(details.getData(), caseNumber);
             } catch (Exception notificationException) {
                 errors.add(SUBJECT.getLabel());
             }
-            return null;
-        });
-        sendersByParty.put(NotificationParties.APPLICANT, () -> {
+        }
+        if (!isEmpty(cicCase.getNotifyPartyApplicant())) {
             try {
                 caseIssuedNotification.sendToApplicant(details.getData(), caseNumber);
             } catch (Exception notificationException) {
                 errors.add(APPLICANT.getLabel());
             }
-            return null;
-        });
-        sendersByParty.put(NotificationParties.REPRESENTATIVE, () -> {
+        }
+        if (!isEmpty(cicCase.getNotifyPartyRepresentative())) {
             try {
                 caseIssuedNotification.sendToRepresentative(details.getData(), caseNumber);
             } catch (Exception notificationException) {
                 errors.add(REPRESENTATIVE.getLabel());
             }
-            return null;
-        });
-        sendersByParty.put(NotificationParties.RESPONDENT, () -> {
+        }
+        if (!isEmpty(cicCase.getNotifyPartyRespondent())) {
             try {
-                return caseIssuedNotification.sendToRespondent(details.getData(), caseNumber, uploadedDocuments);
+                addCorrespondenceId(correspondenceIds,
+                    caseIssuedNotification.sendToRespondent(details.getData(), caseNumber, uploadedDocuments));
             } catch (Exception notificationException) {
                 errors.add(RESPONDENT.getLabel());
-                return null;
             }
-        });
-
-        final List<String> correspondenceIds = contactPartiesService.sendNotificationsToSelectedParties(data, sendersByParty);
+        }
 
         if (isEmpty(errors) && !correspondenceIds.isEmpty() && !uploadedDocuments.isEmpty()) {
             contactPartiesService.linkCorrespondenceIdsToDocuments(data, uploadedDocuments, correspondenceIds);
@@ -200,6 +196,12 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
                         generateSimpleErrorMessage(errors))
                 )
                 .build();
+        }
+    }
+
+    private void addCorrespondenceId(List<String> correspondenceIds, String correspondenceId) {
+        if (correspondenceId != null) {
+            correspondenceIds.add(correspondenceId);
         }
     }
 

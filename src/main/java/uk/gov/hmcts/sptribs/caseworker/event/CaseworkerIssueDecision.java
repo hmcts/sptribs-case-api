@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
@@ -18,7 +19,6 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionSelectTemplate;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionUploadNotice;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -34,7 +34,6 @@ import uk.gov.hmcts.sptribs.notification.dispatcher.DecisionIssuedNotification;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -155,28 +154,33 @@ public class CaseworkerIssueDecision implements CCDConfig<CaseData, State, UserR
         final Map<String, String> uploadedDocuments = Optional
             .ofNullable(decisionIssuedNotification.getUploadedDocuments(data))
             .orElseGet(Map::of);
-        final Map<NotificationParties, ContactPartiesService.NotificationSender> sendersByParty = new LinkedHashMap<>();
-        sendersByParty.put(
-            NotificationParties.SUBJECT,
-            () -> decisionIssuedNotification.sendToSubject(data, caseNumber, uploadedDocuments)
-        );
-        sendersByParty.put(
-            NotificationParties.RESPONDENT,
-            () -> decisionIssuedNotification.sendToRespondent(data, caseNumber, uploadedDocuments)
-        );
-        sendersByParty.put(
-            NotificationParties.REPRESENTATIVE,
-            () -> decisionIssuedNotification.sendToRepresentative(data, caseNumber, uploadedDocuments)
-        );
-        sendersByParty.put(
-            NotificationParties.APPLICANT,
-            () -> decisionIssuedNotification.sendToApplicant(data, caseNumber, uploadedDocuments)
-        );
+        final List<String> correspondenceIds = new ArrayList<>();
 
-        final List<String> correspondenceIds = contactPartiesService.sendNotificationsToSelectedParties(data, sendersByParty);
+        if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartySubject())) {
+            addCorrespondenceId(correspondenceIds,
+                decisionIssuedNotification.sendToSubject(data, caseNumber, uploadedDocuments));
+        }
+        if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRespondent())) {
+            addCorrespondenceId(correspondenceIds,
+                decisionIssuedNotification.sendToRespondent(data, caseNumber, uploadedDocuments));
+        }
+        if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRepresentative())) {
+            addCorrespondenceId(correspondenceIds,
+                decisionIssuedNotification.sendToRepresentative(data, caseNumber, uploadedDocuments));
+        }
+        if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyApplicant())) {
+            addCorrespondenceId(correspondenceIds,
+                decisionIssuedNotification.sendToApplicant(data, caseNumber, uploadedDocuments));
+        }
 
         if (!correspondenceIds.isEmpty() && !uploadedDocuments.isEmpty()) {
             contactPartiesService.linkCorrespondenceIdsToDocuments(data, uploadedDocuments, correspondenceIds);
+        }
+    }
+
+    private void addCorrespondenceId(List<String> correspondenceIds, String correspondenceId) {
+        if (correspondenceId != null) {
+            correspondenceIds.add(correspondenceId);
         }
     }
 
