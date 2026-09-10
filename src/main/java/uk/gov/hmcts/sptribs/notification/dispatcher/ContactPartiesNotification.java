@@ -220,10 +220,20 @@ public class ContactPartiesNotification implements PartiesNotification {
     }
 
     private Map<String, String> legacyUploadedDocuments(CaseData caseData) {
+        if (caseData == null
+            || caseData.getContactPartiesDocuments() == null
+            || caseData.getContactPartiesDocuments().getDocumentList() == null) {
+            return Collections.emptyMap();
+        }
         return notificationHelper.buildDocumentList(caseData.getContactPartiesDocuments().getDocumentList(), DOC_ATTACH_LIMIT);
     }
 
     private List<CaseworkerCICDocument> legacySelectedDocuments(CaseData caseData) {
+        if (caseData == null
+            || caseData.getContactPartiesDocuments() == null
+            || caseData.getContactPartiesDocuments().getDocumentList() == null) {
+            return Collections.emptyList();
+        }
         return DocumentListUtil.getSelectedDocumentsFromDynamicList(
             caseData,
             caseData.getContactPartiesDocuments().getDocumentList()

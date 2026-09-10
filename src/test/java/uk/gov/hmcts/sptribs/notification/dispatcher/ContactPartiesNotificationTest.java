@@ -368,7 +368,7 @@ class ContactPartiesNotificationTest {
                 .thenReturn(notificationResponse);
 
             String correspondenceId =
-                contactPartiesNotification.sendToRespondent(data, TEST_CASE_ID.toString(), uploadedDocuments);
+                contactPartiesNotification.sendToRespondent(data, TEST_CASE_ID.toString(), uploadedDocuments, List.of());
 
             //Then
             assertThat(correspondenceId).isEqualTo(NOTIFICATION_RESPONSE_ID);
