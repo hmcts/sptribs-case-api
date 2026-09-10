@@ -126,8 +126,10 @@ public final class DocumentUtil {
 
     public static void uploadRecFile(CaseData data) {
         List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = data.getListing().getSummary().getRecFileUpload();
-        List<ListValue<CaseworkerCICDocument>> documents = updateUploadedDocumentCategory(uploadedDocuments, false);
-        data.getListing().getSummary().setRecFile(documents);
+        if (CollectionUtils.isNotEmpty(uploadedDocuments)) {
+            List<ListValue<CaseworkerCICDocument>> documents = updateUploadedDocumentCategory(uploadedDocuments, false);
+            data.getListing().getSummary().setRecFile(documents);
+        }
         data.getListing().getSummary().setRecFileUpload(new ArrayList<>());
     }
 
