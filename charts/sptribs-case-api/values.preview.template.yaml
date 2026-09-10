@@ -71,7 +71,12 @@ ccd:
   consulIP: ${CONSUL_LB_IP}
 
   global:
-    idamApiUrl: https://idam-web-public.aat.platform.hmcts.net
+    # idam-api, not idam-web-public. The two are different services and this one is the API:
+    # ccd-data-store resolves the acting user with GET /api/v1/users/{id}, which idam-web-public
+    # does not route — it answers 404, the create fails with a 500, and the citizen is told only
+    # that their appeal was not sent. idam-web-public is the *sign-in* host, and stays below.
+    # Every other CCD service in the workspace sets this to idam-api.
+    idamApiUrl: https://idam-api.aat.platform.hmcts.net
     idamWebUrl: https://idam-web-public.aat.platform.hmcts.net
     dmStoreUrl: http://dm-store-aat.service.core-compute-aat.internal
     ccdAdminWebIngress: admin-web-${SERVICE_FQDN}
