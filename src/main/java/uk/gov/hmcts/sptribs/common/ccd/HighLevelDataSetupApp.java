@@ -7,13 +7,16 @@ import uk.gov.hmcts.befta.dse.ccd.CcdRoleConfig;
 import uk.gov.hmcts.befta.dse.ccd.DataLoaderToDefinitionStore;
 import uk.gov.hmcts.befta.exception.ImportException;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
 @Slf4j
 public class HighLevelDataSetupApp extends DataLoaderToDefinitionStore {
 
-    private static final CcdRoleConfig[] CCD_ROLES_NEEDED_FOR_ST_CIC = {
+    // Shared by every case type in this service: CCD roles are service-wide, not
+    // per case type.
+    private static final CcdRoleConfig[] CCD_ROLES = {
         new CcdRoleConfig("caseworker-sptribs-superuser", "PUBLIC"),
         new CcdRoleConfig("caseworker", "PUBLIC"),
         new CcdRoleConfig("caseworker-sptribs-systemupdate", "PUBLIC"),
@@ -62,7 +65,7 @@ public class HighLevelDataSetupApp extends DataLoaderToDefinitionStore {
 
     @Override
     public void addCcdRoles() {
-        for (CcdRoleConfig roleConfig : CCD_ROLES_NEEDED_FOR_ST_CIC) {
+        for (CcdRoleConfig roleConfig : CCD_ROLES) {
             try {
                 log.info("\n\nAdding CCD Role {}.", roleConfig);
                 addCcdRole(roleConfig);
@@ -79,8 +82,11 @@ public class HighLevelDataSetupApp extends DataLoaderToDefinitionStore {
     @Override
     protected List<String> getAllDefinitionFilesToLoadAt(String definitionsPath) {
         String environmentName = environment.name().toLowerCase(Locale.UK);
-        return List.of(
-            "build/ccd-config/ccd-" + CcdServiceCode.ST_CIC.getCaseType().getCaseTypeName() + "-" + environmentName + ".xlsx"
-        );
+        // One spreadsheet per case type, discovered from the enum rather than
+        // listed here, so registering a case type is a single enum constant and
+        // not an edit in two places that can silently disagree.
+        return Arrays.stream(CcdServiceCode.values())
+            .map(serviceCode -> "build/ccd-config/ccd-" + serviceCode.getCaseType().getCaseTypeName() + "-" + environmentName + ".xlsx")
+            .toList();
     }
 }

@@ -16,7 +16,7 @@ public class HearingAttendees implements CcdPageConfiguration {
     private static final String ALWAYS_HIDE = "venueNotListedOption=\"ALWAYS_HIDE\"";
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
         pageBuilder.page("hearingAttendees")
             .pageLabel("Hearing attendees")
             .label("LabelHearingAttendees","")

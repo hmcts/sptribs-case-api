@@ -23,7 +23,7 @@ public class IssueCaseNotifyParties implements CcdPageConfiguration {
     private static final String RECIPIENT_LABEL = "Issue Case information recipient";
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
 
         pageBuilder.page("issueCaseNotifyParties", this::midEvent)
             .pageLabel("Notify other parties")
@@ -45,9 +45,9 @@ public class IssueCaseNotifyParties implements CcdPageConfiguration {
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                  CaseDetails<CaseData, State> detailsBefore) {
-        final CaseData caseData = details.getData();
+    public <T extends CaseData> AboutToStartOrSubmitResponse<T, State> midEvent(CaseDetails<T, State> details,
+                                                                  CaseDetails<T, State> detailsBefore) {
+        final T caseData = details.getData();
         final List<String> errors = new ArrayList<>();
 
         if (checkNullSubjectRepresentativeRespondent(caseData)) {
@@ -57,7 +57,7 @@ public class IssueCaseNotifyParties implements CcdPageConfiguration {
             && !CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartySubject())) {
             errors.add(MINOR_FATAL_SUBJECT_ERROR_MESSAGE);
         }
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<T, State>builder()
             .data(caseData)
             .errors(errors)
             .build();

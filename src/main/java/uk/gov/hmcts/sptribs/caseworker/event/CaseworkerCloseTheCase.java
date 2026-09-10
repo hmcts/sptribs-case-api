@@ -27,6 +27,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
@@ -56,7 +57,7 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateUploadedDocumen
 
 @Component
 @Slf4j
-public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerCloseTheCase implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     private static final CcdPageConfiguration closeCaseWarning = new CloseCaseWarning();
     private static final CcdPageConfiguration closeCaseReasonSelect = new CloseCaseReasonSelect();
@@ -75,9 +76,9 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
     private CaseWithdrawnNotification caseWithdrawnNotification;
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
 
-        final PageBuilder pageBuilder = closeCase(configBuilder);
+        final PageBuilder<CriminalInjuriesCompensationData> pageBuilder = closeCase(configBuilder);
         closeCaseWarning.addTo(pageBuilder);
         closeCaseReasonSelect.addTo(pageBuilder);
         closeCaseWithdrawalDetails.addTo(pageBuilder);
@@ -90,8 +91,9 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
         closeCaseSelectRecipients.addTo(pageBuilder);
     }
 
-    public PageBuilder closeCase(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
+    public PageBuilder<CriminalInjuriesCompensationData> closeCase(final ConfigBuilder<CriminalInjuriesCompensationData, State,
+        UserRole> configBuilder) {
+        Event.EventBuilder<CriminalInjuriesCompensationData, UserRole, State> eventBuilder =
             configBuilder.event(CASEWORKER_CLOSE_THE_CASE)
                 .forStates(CaseManagement, ReadyToList)
                 .name("Case: Close case")
@@ -105,10 +107,10 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
                 .grantHistoryOnly(ST_CIC_JUDGE)
                 .publishToCamunda();
 
-        return new PageBuilder(eventBuilder);
+        return new PageBuilder<>(eventBuilder);
     }
 
-    private void uploadDocuments(PageBuilder pageBuilder) {
+    private void uploadDocuments(PageBuilder<CriminalInjuriesCompensationData> pageBuilder) {
         String pageNameUpload = "closeCaseUploadDocuments";
         pageBuilder.page(pageNameUpload, this::midEvent)
             .pageLabel("Upload case documents")
@@ -132,21 +134,23 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                  CaseDetails<CaseData, State> detailsBefore) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> midEvent(CaseDetails<CriminalInjuriesCompensationData,
+        State> details,
+                                                                  CaseDetails<CriminalInjuriesCompensationData, State> detailsBefore) {
 
-        final CaseData data = details.getData();
+        final CriminalInjuriesCompensationData data = details.getData();
         final List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = data.getCloseCase().getDocumentsUpload();
         final List<String> errors = validateUploadedDocuments(uploadedDocuments);
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(data)
             .errors(errors)
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-        final CaseData caseData = details.getData();
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStart(CaseDetails<CriminalInjuriesCompensationData,
+        State> details) {
+        final CriminalInjuriesCompensationData caseData = details.getData();
         caseData.setCurrentEvent(CASEWORKER_CLOSE_THE_CASE);
 
         final DynamicList judicialUsersDynamicList = judicialService.getAllUsers(caseData);
@@ -157,27 +161,28 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
         final List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = convertToCaseworkerCICDocument(documents);
         caseData.getCloseCase().setDocumentsUpload(uploadedDocuments);
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
-                                                                       CaseDetails<CaseData, State> beforeDetails) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+        State> aboutToSubmit(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                                       CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
 
-        final CaseData caseData = details.getData();
+        final CriminalInjuriesCompensationData caseData = details.getData();
         List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = caseData.getCloseCase().getDocumentsUpload();
         List<ListValue<CaseworkerCICDocument>> documents = updateUploadedDocumentCategory(uploadedDocuments, false);
         caseData.getCloseCase().setDocuments(documents);
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .state(CaseClosed)
             .build();
     }
 
-    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                               CaseDetails<CaseData, State> beforeDetails) {
+    public SubmittedCallbackResponse submitted(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                               CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
 
         String message = MessageUtil.generateSimpleMessage(
             details.getData().getCicCase(),

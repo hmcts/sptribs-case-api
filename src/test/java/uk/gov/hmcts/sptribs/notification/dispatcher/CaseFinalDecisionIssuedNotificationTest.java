@@ -20,6 +20,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.StayReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.document.DocumentUtil;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
@@ -76,7 +77,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         void shouldNotifySubjectOfCaseFinalDecisionIssuedWithEmail() {
             //Given
             final LocalDate expDate = LocalDate.now();
-            final CaseData data = getMockCaseData(expDate);
+            final CriminalInjuriesCompensationData data = getMockCaseData(expDate);
             data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
             data.getCicCase().setEmail("testsubject@outlook.com");
 
@@ -121,7 +122,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         void shouldNotifySubjectOfCaseFinalDecisionIssuedWithEmailWithoutDecisionDocument() {
             //Given
             final LocalDate expDate = LocalDate.now();
-            final CaseData data = getMockCaseData(expDate);
+            final CriminalInjuriesCompensationData data = getMockCaseData(expDate);
             data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
             data.getCicCase().setEmail("testsubject@outlook.com");
 
@@ -160,7 +161,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         void shouldNotifySubjectOfCaseFinalDecisionIssuedWithPost() {
             //Given
             LocalDate expDate = LocalDate.now();
-            final CaseData data = getMockCaseData(expDate);
+            final CriminalInjuriesCompensationData data = getMockCaseData(expDate);
             data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
             data.getCicCase().setAddress(AddressGlobalUK.builder().build());
             data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
@@ -183,7 +184,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         void shouldNotifyRespondentOfCaseFinalDecisionIssuedWithEmail() {
             //Given
             LocalDate expDate = LocalDate.now();
-            final CaseData data = getMockCaseData(expDate);
+            final CriminalInjuriesCompensationData data = getMockCaseData(expDate);
             data.getCicCase().setRespondentName("respondentName");
             data.getCicCase().setRespondentEmail("testrepr@outlook.com");
 
@@ -223,7 +224,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         void shouldNotifyRespondentOfCaseFinalDecisionIssuedWithEmailWithoutDecisionNotice() {
             //Given
             LocalDate expDate = LocalDate.now();
-            final CaseData data = getMockCaseData(expDate);
+            final CriminalInjuriesCompensationData data = getMockCaseData(expDate);
             data.getCicCase().setRespondentName("respondentName");
             data.getCicCase().setRespondentEmail("testrepr@outlook.com");
 
@@ -261,7 +262,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         void shouldNotifyRepresentativeOfCaseFinalDecisionIssuedWithEmail() {
             //Given
             LocalDate expDate = LocalDate.now();
-            final CaseData data = getMockCaseData(expDate);
+            final CriminalInjuriesCompensationData data = getMockCaseData(expDate);
             data.getCicCase().setRepresentativeFullName("repFullName");
             data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
             data.getCicCase().setRepresentativeEmailAddress("testrepr@outlook.com");
@@ -306,7 +307,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         void shouldNotifyRepresentativeOfCaseFinalDecisionIssuedWithEmailWithoutDecisionDraft() {
             //Given
             LocalDate expDate = LocalDate.now();
-            final CaseData data = getMockCaseData(expDate);
+            final CriminalInjuriesCompensationData data = getMockCaseData(expDate);
             data.getCicCase().setRepresentativeFullName("repFullName");
             data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
             data.getCicCase().setRepresentativeEmailAddress("testrepr@outlook.com");
@@ -350,7 +351,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         void shouldNotifyRepresentativeOfCaseFinalDecisionIssuedWithPost() {
             //Given
             LocalDate expDate = LocalDate.now();
-            final CaseData data = getMockCaseData(expDate);
+            final CriminalInjuriesCompensationData data = getMockCaseData(expDate);
             data.getCicCase().setRepresentativeFullName("repFullName");
             data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.POST);
             data.getCicCase().setRepresentativeAddress(AddressGlobalUK.builder().build());
@@ -373,7 +374,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         void shouldNotifyApplicantOfCaseFinalDecisionIssuedWithEmail() {
             //Given
             LocalDate expDate = LocalDate.now();
-            final CaseData data = getMockCaseData(expDate);
+            final CriminalInjuriesCompensationData data = getMockCaseData(expDate);
             data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
             data.getCicCase().setApplicantEmailAddress("testapp@outlook.com");
 
@@ -422,7 +423,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         void shouldNotifyApplicantOfCaseFinalDecisionIssuedWithPost() {
             //Given
             LocalDate expDate = LocalDate.now();
-            final CaseData data = getMockCaseData(expDate);
+            final CriminalInjuriesCompensationData data = getMockCaseData(expDate);
             data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
             data.getCicCase().setApplicantAddress(AddressGlobalUK.builder().build());
             data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
@@ -454,7 +455,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         void shouldNotifySubjectOfCaseFinalDecisionIssuedWithEmail() {
             //Given
             final LocalDate expDate = LocalDate.now();
-            final CaseData data = getMockCaseData(expDate);
+            final CriminalInjuriesCompensationData data = getMockCaseData(expDate);
             data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
             data.getCicCase().setEmail("testsubject@outlook.com");
 
@@ -498,7 +499,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         }
     }
 
-    private CaseData getMockCaseData(LocalDate stayCaseExpDate) {
+    private CriminalInjuriesCompensationData getMockCaseData(LocalDate stayCaseExpDate) {
         final CicCase cicCase = CicCase.builder()
             .fullName("fullName").caseNumber(TEST_CASE_ID.toString())
             .build();
@@ -507,7 +508,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
             .stayReason(StayReason.OTHER)
             .additionalDetail("addlDetail")
             .build();
-        return CaseData.builder()
+        return CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .caseStay(caseStay)
             .build();

@@ -13,9 +13,9 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SelectBundles;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleIdAndTimestamp;
@@ -43,7 +43,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 @Setter
 @RequiredArgsConstructor
-public class CaseworkerRemoveBundles implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerRemoveBundles implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
 
     private static final SelectBundles selectBundles = new SelectBundles();
@@ -53,8 +53,8 @@ public class CaseworkerRemoveBundles implements CCDConfig<CaseData, State, UserR
     private final DocumentsService documentsService;
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        PageBuilder pageBuilder = new PageBuilder(configBuilder
+    public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+        PageBuilder<CriminalInjuriesCompensationData> pageBuilder = new PageBuilder<>(configBuilder
             .event(REMOVE_BUNDLES)
             .forStates(CaseManagement, AwaitingHearing)
             .showCondition("caseBundles!=\"[]\"")
@@ -78,7 +78,8 @@ public class CaseworkerRemoveBundles implements CCDConfig<CaseData, State, UserR
         selectBundles.addTo(pageBuilder);
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStart(CaseDetails<CriminalInjuriesCompensationData,
+        State> details) {
         var caseData = details.getData();
         var cicCase = caseData.getCicCase();
 
@@ -102,18 +103,18 @@ public class CaseworkerRemoveBundles implements CCDConfig<CaseData, State, UserR
 
         cicCase.setRemoveBundlesList(bundleList);
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .build();
 
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
-        final CaseDetails<CaseData, State> details,
-        final CaseDetails<CaseData, State> beforeDetails
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(
+        final CaseDetails<CriminalInjuriesCompensationData, State> details,
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails
     ) {
 
-        final CaseData caseData = details.getData();
+        final CriminalInjuriesCompensationData caseData = details.getData();
 
         List<DynamicListElement> selectedBundleLabels = caseData.getCicCase().getRemoveBundlesList().getValue();
         List<String> timestampsOfBundlesToDelete = collectTimestampsOfBundlesToDelete(selectedBundleLabels);
@@ -135,13 +136,13 @@ public class CaseworkerRemoveBundles implements CCDConfig<CaseData, State, UserR
         fixListValueIds(allBundles, caseData.getCaseBundleIdsAndTimestamps());
         caseData.getCicCase().setRemoveBundlesList(new DynamicMultiSelectList());
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .build();
     }
 
-    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                               CaseDetails<CaseData, State> beforeDetails) {
+    public SubmittedCallbackResponse submitted(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                               CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
             .confirmationHeader("# Case Updated")
             .build();

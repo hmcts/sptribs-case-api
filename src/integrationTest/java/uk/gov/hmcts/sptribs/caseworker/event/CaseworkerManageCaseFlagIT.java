@@ -16,8 +16,8 @@ import uk.gov.hmcts.ccd.sdk.type.FlagDetail;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
@@ -90,7 +90,7 @@ public class CaseworkerManageCaseFlagIT {
 
     @Test
     void shouldSetAnonymiseNoAndMergeInactiveAnonymityFlagsOnAboutToSubmit() throws Exception {
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder().anonymiseYesOrNo(YesOrNo.YES).anonymityAlreadyApplied(YesOrNo.YES).build())
             .caseFlags(Flags.builder().details(List.of(
                 buildAnonymityFlag("new-id", "Inactive", LocalDateTime.of(2025, 1, 1, 10, 0)),
@@ -98,7 +98,7 @@ public class CaseworkerManageCaseFlagIT {
             )).build())
             .build();
 
-        CaseData beforeData = CaseData.builder()
+        CriminalInjuriesCompensationData beforeData = CriminalInjuriesCompensationData.builder()
             .caseFlags(Flags.builder().details(List.of(
                 buildAnonymityFlag("original-id", "Inactive", LocalDateTime.of(2024, 1, 1, 10, 0))
             )).build())

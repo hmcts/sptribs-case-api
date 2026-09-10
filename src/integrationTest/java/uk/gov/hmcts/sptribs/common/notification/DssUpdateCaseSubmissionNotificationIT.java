@@ -9,8 +9,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.dispatcher.DssUpdateCaseSubmissionNotification;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
@@ -48,7 +48,7 @@ public class DssUpdateCaseSubmissionNotificationIT {
 
     @Test
     void shouldSendEmailToApplicant() {
-        final CaseData data = CaseData.builder()
+        final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .contactPreferenceType(EMAIL)
                 .fullName("Subject Name")
@@ -79,7 +79,7 @@ public class DssUpdateCaseSubmissionNotificationIT {
 
     @Test
     void shouldSendEmailToTribunal() {
-        final CaseData data = CaseData.builder()
+        final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .fullName("Subject Name")
                 .build())

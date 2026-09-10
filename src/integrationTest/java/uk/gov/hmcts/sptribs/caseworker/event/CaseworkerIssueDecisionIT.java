@@ -16,10 +16,10 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.sptribs.IntegrationTestBase;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
@@ -107,7 +107,7 @@ public class CaseworkerIssueDecisionIT extends IntegrationTestBase {
 
     @Test
     void shouldClearDecisionSignatureInAboutToStart() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
 
         String response = mockMvc.perform(post(ABOUT_TO_START_URL)
@@ -137,7 +137,7 @@ public class CaseworkerIssueDecisionIT extends IntegrationTestBase {
             .issueDecisionTemplate(DecisionTemplate.ELIGIBILITY)
             .build();
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .caseIssueDecision(caseIssueDecision)
             .build();
 
@@ -206,7 +206,7 @@ public class CaseworkerIssueDecisionIT extends IntegrationTestBase {
             .decisionDocument(document)
             .build();
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
             .caseIssueDecision(caseIssueDecision)
             .build();
@@ -230,7 +230,7 @@ public class CaseworkerIssueDecisionIT extends IntegrationTestBase {
 
     @Test
     void shouldReturnConfirmationMessageIfNotificationsDispatchedOnSubmitted() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         caseData.setCicCase(
             CicCase.builder()
@@ -278,7 +278,7 @@ public class CaseworkerIssueDecisionIT extends IntegrationTestBase {
 
     @Test
     void shouldReturnErrorMessageIfNotificationsFailOnSubmitted() throws Exception {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .notifyPartySubject(Set.of(SUBJECT))
                 .notifyPartyRepresentative(Set.of(REPRESENTATIVE))

@@ -13,7 +13,7 @@ public class PostponeHearingSelectHearing implements CcdPageConfiguration {
 
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
         pageBuilder
             .page("caseworkerPostponeHearingSelectHearing")
             .pageLabel("Select hearing")

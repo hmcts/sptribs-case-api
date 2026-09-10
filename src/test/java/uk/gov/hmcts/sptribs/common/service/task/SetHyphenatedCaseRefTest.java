@@ -7,6 +7,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -34,7 +35,7 @@ public class SetHyphenatedCaseRefTest {
     @Test
     void shouldNotThrowNPEWhenCaseIdIsNull() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseDetails.setData(caseData);
         caseDetails.setId(null);
 
@@ -45,7 +46,7 @@ public class SetHyphenatedCaseRefTest {
     void shouldFormatCaseIdToHyphenated16DigitNumber() {
         //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseDetails.setData(caseData);
         caseDetails.setId(1234567890123456L);
 

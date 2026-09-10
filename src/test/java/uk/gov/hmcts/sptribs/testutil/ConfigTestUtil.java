@@ -9,7 +9,6 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.HasRole;
 import uk.gov.hmcts.ccd.sdk.api.Search;
 import uk.gov.hmcts.ccd.sdk.api.Search.SearchBuilder;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
@@ -27,9 +26,9 @@ public final class ConfigTestUtil {
     private ConfigTestUtil() {
     }
 
-    public static ConfigBuilderImpl<CaseData, State, UserRole> createCaseDataConfigBuilder() {
+    public static ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> createCaseDataConfigBuilder() {
         return new ConfigBuilderImpl<>(new ResolvedCCDConfig<>(
-            CaseData.class,
+            CriminalInjuriesCompensationData.class,
             State.class,
             UserRole.class,
             new HashMap<>(),

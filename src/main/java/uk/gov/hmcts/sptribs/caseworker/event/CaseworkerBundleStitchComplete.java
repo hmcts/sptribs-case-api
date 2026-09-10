@@ -9,9 +9,9 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
@@ -34,15 +34,15 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 @Setter
 @RequiredArgsConstructor
-public class CaseworkerBundleStitchComplete implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerBundleStitchComplete implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     private static final String ALWAYS_HIDE = "[STATE]=\"ALWAYS_HIDE\"";
 
     private final DocumentsService documentsService;
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        new PageBuilder(configBuilder
+    public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+        new PageBuilder<>(configBuilder
             .event(ASYNC_STITCH_COMPLETE)
             .forStates(CaseManagement, AwaitingHearing, ReadyToList, CaseClosed)
             .name("Bundle: Async Stitching Comp")
@@ -58,8 +58,8 @@ public class CaseworkerBundleStitchComplete implements CCDConfig<CaseData, State
             .done();
     }
 
-    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                               CaseDetails<CaseData, State> beforeDetails) {
+    public SubmittedCallbackResponse submitted(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                               CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
 
         Long caseId = details.getId();
 

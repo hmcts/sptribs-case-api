@@ -31,7 +31,7 @@ public class HearingVenues implements CcdPageConfiguration {
     private static final String ADDITIONAL_INFO = "Additional instructions and directions";
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
         pageBuilder.page("listingDetails", this::midEvent)
             .pageLabel("Listing Details")
             .label("LabelListingDetails", "")
@@ -60,9 +60,9 @@ public class HearingVenues implements CcdPageConfiguration {
 
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                   CaseDetails<CaseData, State> detailsBefore) {
-        final CaseData data = details.getData();
+    public <T extends CaseData> AboutToStartOrSubmitResponse<T, State> midEvent(CaseDetails<T, State> details,
+                                                                   CaseDetails<T, State> detailsBefore) {
+        final T data = details.getData();
         final List<String> errors = new ArrayList<>();
         final Listing listing = data.getListing();
 
@@ -82,7 +82,7 @@ public class HearingVenues implements CcdPageConfiguration {
 
         data.setListing(listing);
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<T, State>builder()
             .data(data)
             .errors(errors)
             .build();

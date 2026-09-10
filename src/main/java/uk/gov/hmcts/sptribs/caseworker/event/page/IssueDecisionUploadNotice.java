@@ -17,7 +17,7 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateDecisionDocumen
 public class IssueDecisionUploadNotice implements CcdPageConfiguration {
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
         pageBuilder.page("issueDecisionUploadNotice", this::midEvent)
             .pageLabel("Upload decision notice")
             .pageShowConditions(issueDecisionShowConditions())
@@ -40,13 +40,13 @@ public class IssueDecisionUploadNotice implements CcdPageConfiguration {
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                   CaseDetails<CaseData, State> detailsBefore) {
-        final CaseData data = details.getData();
+    public <T extends CaseData> AboutToStartOrSubmitResponse<T, State> midEvent(CaseDetails<T, State> details,
+                                                                   CaseDetails<T, State> detailsBefore) {
+        final T data = details.getData();
         CICDocument uploadedDocument = data.getCaseIssueDecision().getDecisionDocument();
         final List<String> errors = validateDecisionDocumentFormat(uploadedDocument);
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<T, State>builder()
             .data(data)
             .errors(errors)
             .build();

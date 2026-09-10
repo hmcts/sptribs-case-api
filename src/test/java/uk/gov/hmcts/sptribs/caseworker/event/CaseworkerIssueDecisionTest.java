@@ -18,7 +18,6 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionFooter;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionSelectTemplate;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
@@ -27,6 +26,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentSaveException;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.content.DecisionTemplateContent;
@@ -101,7 +101,7 @@ class CaseworkerIssueDecisionTest {
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
 
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         issueDecision.configure(configBuilder);
 
@@ -127,11 +127,11 @@ class CaseworkerIssueDecisionTest {
     @Test
     void shouldSetStateOnAboutToSubmitWhenUploadedFromComputer() {
         //Given
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         details.setId(TEST_CASE_ID);
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setId(TEST_CASE_ID);
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final CaseIssueDecision decision = new CaseIssueDecision();
         final CICDocument document = CICDocument.builder()
             .documentLink(Document.builder().binaryUrl("url").url("url").filename("file.txt").build())
@@ -143,7 +143,10 @@ class CaseworkerIssueDecisionTest {
         details.setData(caseData);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response = issueDecision.aboutToSubmit(details, beforeDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = issueDecision.aboutToSubmit(
+            details,
+            beforeDetails
+        );
 
         //Then
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
@@ -160,11 +163,11 @@ class CaseworkerIssueDecisionTest {
     @Test
     void shouldSetStateOnAboutToSubmitWhenCreatedFromTemplate() {
         //Given
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         details.setId(TEST_CASE_ID);
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setId(TEST_CASE_ID);
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final CaseIssueDecision decision = new CaseIssueDecision();
         final Document document = Document.builder().binaryUrl("url").url("url").filename("file.txt").build();
         decision.setIssueDecisionDraft(document);
@@ -173,7 +176,10 @@ class CaseworkerIssueDecisionTest {
         details.setData(caseData);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response = issueDecision.aboutToSubmit(details, beforeDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = issueDecision.aboutToSubmit(
+            details,
+            beforeDetails
+        );
 
         //Then
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
@@ -187,9 +193,9 @@ class CaseworkerIssueDecisionTest {
     @Test
     void shouldShowCorrectMessageWhenSubmitted() {
         //Given
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        final CaseData caseData = caseData();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final CaseIssueDecision decision = new CaseIssueDecision();
         final CicCase cicCase = CicCase.builder()
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
@@ -214,14 +220,17 @@ class CaseworkerIssueDecisionTest {
         //Given
         final CaseIssueDecision caseIssueDecision = new CaseIssueDecision();
         caseIssueDecision.setIssueDecisionTemplate(DecisionTemplate.ELIGIBILITY);
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder()
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .caseIssueDecision(caseIssueDecision)
             .build();
         caseDetails.setData(caseData);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response = issueDecisionSelectTemplate.midEvent(caseDetails, caseDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = issueDecisionSelectTemplate.midEvent(
+            caseDetails,
+            caseDetails
+        );
 
         //Then
         Assertions.assertEquals(DocmosisTemplateConstants.ELIGIBILITY_MAIN_CONTENT, response.getData().getDecisionMainContent());
@@ -230,15 +239,15 @@ class CaseworkerIssueDecisionTest {
     @Test
     void shouldRunAboutToStart() {
         //Given
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder().build();
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .build();
         updatedCaseDetails.setData(caseData);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response = issueDecision.aboutToStart(updatedCaseDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = issueDecision.aboutToStart(updatedCaseDetails);
 
         //Then
         assertThat(response).isNotNull();
@@ -247,11 +256,11 @@ class CaseworkerIssueDecisionTest {
 
     @Test
     void shouldStoreErrorsWhenBuildAndSaveNewDocumentEntityThrowsRuntimeException() {
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         details.setId(TEST_CASE_ID);
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setId(TEST_CASE_ID);
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final CaseIssueDecision decision = new CaseIssueDecision();
         final CICDocument document = CICDocument.builder()
             .documentLink(Document.builder().binaryUrl("url").url("url").filename("file.txt").build())
@@ -268,7 +277,10 @@ class CaseworkerIssueDecisionTest {
             .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(DocumentType.TRIBUNAL_DIRECTION),
                 eq(CaseDocumentType.DECISION));
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = issueDecision.aboutToSubmit(details, beforeDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = issueDecision.aboutToSubmit(
+            details,
+            beforeDetails
+        );
 
         assertThat(response.getErrors()).hasSize(1);
         assertThat(response.getErrors()).contains("Error saving document with filename: " + document.getDocumentLink().getFilename());
@@ -282,7 +294,10 @@ class CaseworkerIssueDecisionTest {
         caseData.setCaseIssueDecision(decision);
         details.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> nullFilenameResponse = issueDecision.aboutToSubmit(details, beforeDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> nullFilenameResponse = issueDecision.aboutToSubmit(
+            details,
+            beforeDetails
+        );
 
         assertThat(nullFilenameResponse.getErrors()).hasSize(1);
         assertThat(nullFilenameResponse.getErrors()).contains("Error saving document with no filename");
@@ -292,7 +307,10 @@ class CaseworkerIssueDecisionTest {
         caseData.setCaseIssueDecision(decision);
         details.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> emptyFilenameResponse = issueDecision.aboutToSubmit(details, beforeDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> emptyFilenameResponse = issueDecision.aboutToSubmit(
+            details,
+            beforeDetails
+        );
 
         assertThat(emptyFilenameResponse.getErrors()).hasSize(1);
         assertThat(emptyFilenameResponse.getErrors()).contains("Error saving document with no filename");
@@ -300,9 +318,9 @@ class CaseworkerIssueDecisionTest {
 
     @Test
     void shouldNotSaveDecisionDocumentToDBWhenDecisionDocumentIsNullAndWhenDocumentLinkIsNull() {
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        final CaseData caseData = caseData();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final CaseIssueDecision decision = new CaseIssueDecision();
         caseData.setCaseIssueDecision(decision);
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);

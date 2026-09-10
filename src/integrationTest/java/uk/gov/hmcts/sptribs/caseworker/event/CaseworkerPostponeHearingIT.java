@@ -20,12 +20,12 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.model.PostponeReason;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.notification.dispatcher.HearingPostponedNotification;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
@@ -113,7 +113,7 @@ public class CaseworkerPostponeHearingIT {
 
     @Test
     void shouldPopulateHearingListOnAboutToStart() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setHearingList(getHearingList());
 
         String response = mockMvc.perform(post(ABOUT_TO_START_URL)
@@ -139,7 +139,7 @@ public class CaseworkerPostponeHearingIT {
     @ParameterizedTest
     @EnumSource(PostponeReason.class)
     void shouldSuccessfullyPostponeHearingForAnyValidPostponeReason(PostponeReason postponeReason) throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
 
         final Set<NotificationParties> parties = new HashSet<>();
         final CicCase cicCase = CicCase.builder()
@@ -198,7 +198,7 @@ public class CaseworkerPostponeHearingIT {
 
     @Test
     void shouldSuccessfullyDispatchNotificationsOnSubmitted() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         caseData.setCicCase(
             CicCase.builder()
@@ -242,9 +242,9 @@ public class CaseworkerPostponeHearingIT {
                 ## The hearing has been postponed, the case has been updated\s
                 ## A notification has been sent to: Subject, Respondent, Representative""");
 
-        verify(hearingPostponedNotification, times(1)).sendToSubject((CaseData) any(), anyString());
+        verify(hearingPostponedNotification, times(1)).sendToSubject((CriminalInjuriesCompensationData) any(), anyString());
         verify(hearingPostponedNotification, times(1)).sendToRespondent(any(), anyString());
-        verify(hearingPostponedNotification, times(1)).sendToRepresentative((CaseData) any(), anyString());
+        verify(hearingPostponedNotification, times(1)).sendToRepresentative((CriminalInjuriesCompensationData) any(), anyString());
         verifyNoMoreInteractions(hearingPostponedNotification);
     }
 
@@ -290,7 +290,7 @@ public class CaseworkerPostponeHearingIT {
             .postponeReason(PostponeReason.BEREAVEMENT)
             .build();
 
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setHearingList(hearingList);
         caseData.setHearingDate(LocalDate.of(2023, 4, 21));
         caseData.setListing(postponeListing);
@@ -342,7 +342,7 @@ public class CaseworkerPostponeHearingIT {
             .postponeReason(PostponeReason.BEREAVEMENT)
             .build();
 
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setHearingList(hearingList);
         caseData.setHearingDate(LocalDate.of(2023, 4, 21));
         caseData.setListing(postponeListing);
@@ -401,7 +401,7 @@ public class CaseworkerPostponeHearingIT {
             .hearingTime(earliestHearing.getHearingTime())
             .build();
 
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setHearingList(hearingList);
         caseData.setHearingDate(LocalDate.of(2023, 4, 21));
         caseData.setListing(postponeListing);

@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
@@ -26,6 +25,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ListingUpdatedNotification;
 
 import java.util.HashSet;
@@ -64,10 +64,10 @@ class CaseworkerEditRecordListingTest {
     private ListingUpdatedNotification listingUpdatedNotification;
 
     @Mock
-    private CaseData caseDataBefore;
+    private CriminalInjuriesCompensationData caseDataBefore;
 
     @Mock
-    private CaseData caseDataAfter;
+    private CriminalInjuriesCompensationData caseDataAfter;
     @Mock
     private Listing listingBefore;
     @Mock
@@ -78,7 +78,7 @@ class CaseworkerEditRecordListingTest {
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
 
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         caseworkerEditRecordList.configure(configBuilder);
 
@@ -109,9 +109,9 @@ class CaseworkerEditRecordListingTest {
         hearingNotificationPartiesSet.add(NotificationParties.REPRESENTATIVE);
         hearingNotificationPartiesSet.add(NotificationParties.RESPONDENT);
         Listing listing = getRecordListing();
-        final CaseData caseData = caseData();
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = caseData();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         CicCase cicCase = getMockCicCase();
         cicCase.setHearingNotificationParties(hearingNotificationPartiesSet);
         cicCase.setHearingList(DynamicList.builder()
@@ -129,7 +129,7 @@ class CaseworkerEditRecordListingTest {
         Mockito.doNothing().when(listingUpdatedNotification).sendToRespondent(caseData, caseData.getHyphenatedCaseRef());
         when(recordListHelper.checkAndUpdateVenueInformation(any())).thenReturn(listing);
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerEditRecordList.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
 
@@ -145,7 +145,7 @@ class CaseworkerEditRecordListingTest {
     @Test
     void shouldAboutToStartMethodSuccessfullyPopulateRegionData() {
         //Given
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setCurrentEvent(CASEWORKER_EDIT_RECORD_LISTING);
         caseData.getCicCase().setNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
         final Listing listing = Listing.builder()
@@ -153,13 +153,14 @@ class CaseworkerEditRecordListingTest {
             .hearingVenueNameAndAddress("asa")
             .build();
         caseData.setListing(listing);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerEditRecordList.aboutToStart(updatedCaseDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+            State> response = caseworkerEditRecordList.aboutToStart(updatedCaseDetails);
 
         //Then
         assertThat(response.getState().getName()).isEqualTo("CaseManagement");
@@ -170,16 +171,17 @@ class CaseworkerEditRecordListingTest {
     @Test
     void shouldAboutToStartMethodSuccessfullyPopulateRegionDataCheck() {
         //Given
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setCurrentEvent(CASEWORKER_EDIT_RECORD_LISTING);
         caseData.getCicCase().setNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerEditRecordList.aboutToStart(updatedCaseDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+            State> response = caseworkerEditRecordList.aboutToStart(updatedCaseDetails);
 
         //Then
         assertThat(response.getState().getName()).isEqualTo("CaseManagement");
@@ -189,9 +191,9 @@ class CaseworkerEditRecordListingTest {
     @Test
     void shouldMidEventMethodSuccessfullyPopulateHearingVenueData() {
         //Given
-        final CaseData caseData = caseData();
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = caseData();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         final Listing listing = new Listing();
         caseData.setCurrentEvent(CASEWORKER_EDIT_RECORD_LISTING);
         listing.setHearingFormat(HearingFormat.FACE_TO_FACE);
@@ -209,7 +211,7 @@ class CaseworkerEditRecordListingTest {
         }
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerEditRecordList.midEvent(updatedCaseDetails, beforeDetails);
 
         //Then
@@ -220,8 +222,8 @@ class CaseworkerEditRecordListingTest {
     @Test
     void shouldMidEventMethodSuccessfullyPopulateHearingVenues() {
         //Given
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         DynamicList hearingVenueList = getMockedHearingVenueData();
         when(caseDataBefore.getListing()).thenReturn(listingBefore);
         when(caseDataAfter.getListing()).thenReturn(listingAfter);
@@ -242,8 +244,8 @@ class CaseworkerEditRecordListingTest {
     @Test
     void shouldMidEventMethodSuccessfullyPopulateHearingVenuesWhenHearingNameIsNull() {
         //Given
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         when(caseDataBefore.getListing()).thenReturn(listingBefore);
         when(listingBefore.getReadOnlyHearingVenueName()).thenReturn(null);
         updatedCaseDetails.setData(caseDataAfter);
@@ -258,8 +260,8 @@ class CaseworkerEditRecordListingTest {
     @Test
     void shouldMidEventMethodSuccessfullyPopulateHearingVenuesWhenRegionIsNull() {
         //Given
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         when(caseDataBefore.getListing()).thenReturn(listingBefore);
         when(caseDataAfter.getListing()).thenReturn(listingAfter);
         when(listingBefore.getReadOnlyHearingVenueName()).thenReturn("Read Only Hearing Venue Name");
@@ -276,8 +278,8 @@ class CaseworkerEditRecordListingTest {
     @Test
     void shouldMidEventMethodSuccessfullyPopulateHearingVenuesWhenRegionValChanges() {
         //Given
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         when(caseDataBefore.getListing()).thenReturn(listingBefore);
         when(caseDataAfter.getListing()).thenReturn(listingAfter);
         when(listingBefore.getReadOnlyHearingVenueName()).thenReturn("Read Only Hearing Venue Name");
@@ -295,8 +297,8 @@ class CaseworkerEditRecordListingTest {
     @Test
     void shouldMidEventMethodSuccessfullyPopulateHearingVenuesWhenHearingVenuesAreNull() {
         //Given
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         when(caseDataBefore.getListing()).thenReturn(listingBefore);
         when(caseDataAfter.getListing()).thenReturn(listingAfter);
         when(listingBefore.getReadOnlyHearingVenueName()).thenReturn("Read Only Hearing Venue Name");
@@ -313,21 +315,21 @@ class CaseworkerEditRecordListingTest {
 
     @Test
     void shouldNotReturnErrorsIfCaseDataIsValid() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
 
         caseData.getCicCase().setNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
         caseData.getCicCase().setHearingList(DynamicList.builder()
             .value(DynamicListElement.builder().label("1 - Final - 21 Apr 2023 10:00").build())
             .build()
         );
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
 
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerEditRecordList.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         assertThat(response.getErrors()).isEmpty();
@@ -336,9 +338,9 @@ class CaseworkerEditRecordListingTest {
 
     @Test
     void shouldHearingVenueEqualIfRegionValIsEqual() {
-        final CaseData caseData = caseData();
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = caseData();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         final Listing listing = new Listing();
         caseData.setCurrentEvent(CASEWORKER_EDIT_RECORD_LISTING);
         listing.setHearingFormat(HearingFormat.FACE_TO_FACE);
@@ -359,7 +361,7 @@ class CaseworkerEditRecordListingTest {
 
         }
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerEditRecordList.midEvent(updatedCaseDetails, beforeDetails);
 
         assertThat(response.getData()).isEqualTo(beforeDetails.getData());
@@ -368,9 +370,9 @@ class CaseworkerEditRecordListingTest {
 
     @Test
     void shouldNotReturnErrorsIfEditCaseDataIsValid() {
-        final CaseData caseData = caseData();
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = caseData();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         final Listing listing = new Listing();
         caseData.setCurrentEvent(CASEWORKER_EDIT_RECORD_LISTING);
         listing.setHearingFormat(HearingFormat.FACE_TO_FACE);
@@ -386,7 +388,7 @@ class CaseworkerEditRecordListingTest {
         }
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerEditRecordList.midEvent(updatedCaseDetails, beforeDetails);
 
         assertThat(response.getErrors()).isNull();
@@ -395,20 +397,21 @@ class CaseworkerEditRecordListingTest {
 
     @Test
     void shouldReturnErrorsIfCaseDataIsNull() {
-        final CaseData caseData = CaseData.builder().build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         caseData.getCicCase().setHearingList(DynamicList.builder()
             .value(DynamicListElement.builder().label("1 - Final - 21 Apr 2023 10:00").build())
             .build()
         );
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
 
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         when(recordListHelper.getErrorMsg(any())).thenReturn(List.of("One party must be selected."));
-        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerEditRecordList.aboutToSubmit(updatedCaseDetails, beforeDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+            State> response = caseworkerEditRecordList.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         assertThat(response.getErrors()).hasSize(1);
 
@@ -426,17 +429,17 @@ class CaseworkerEditRecordListingTest {
                     .build()
             )
             .build();
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .build();
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
 
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response
             = caseworkerEditRecordList.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         assertThat(response.getState().getName()).isEqualTo("AwaitingHearing");

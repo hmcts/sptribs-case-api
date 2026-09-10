@@ -9,7 +9,9 @@ import lombok.Getter;
 @Getter
 public enum CcdCaseType {
 
-    CIC("CIC", "CriminalInjuriesCompensation", "Criminal Injuries Compensation");
+    CIC("CIC", "CriminalInjuriesCompensation", "Criminal Injuries Compensation"),
+
+    SEND35("StSend35", "StSend35", "Appeal a decision about an education, health and care (EHC) plan");
 
     private final String caseTypeAcronym;
     @JsonValue

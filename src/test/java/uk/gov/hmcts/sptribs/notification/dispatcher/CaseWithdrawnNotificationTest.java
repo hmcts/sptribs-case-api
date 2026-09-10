@@ -11,6 +11,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.ReinstateReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
@@ -46,7 +47,7 @@ public class CaseWithdrawnNotificationTest {
 
     @Test
     void shouldNotifySubjectCaseWithdrawnWithEmailWithoutAdditionalDetail() {
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCloseCase().setCloseCaseReason(DeathOfAppellant);
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setEmail("testSubject@outlook.com");
@@ -68,7 +69,7 @@ public class CaseWithdrawnNotificationTest {
 
     @Test
     void shouldNotifySubjectWithEmailCaseWithdrawnWithDeathOfAppellantReason() {
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setEmail("testSubject@outlook.com");
         data.getCloseCase().setAdditionalDetail("");
@@ -89,7 +90,7 @@ public class CaseWithdrawnNotificationTest {
 
     @Test
     void shouldNotifySubjectCaseWithdrawnWithPost() {
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
         data.getCicCase().setAddress(AddressGlobalUK.builder().build());
 
@@ -110,7 +111,7 @@ public class CaseWithdrawnNotificationTest {
 
     @Test
     void shouldNotifyRespondentCaseWithdrawnWithEmail() {
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setRespondentName("respondentName");
         data.getCicCase().setRespondentEmail("testrespondent@outlook.com");
         data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
@@ -131,7 +132,7 @@ public class CaseWithdrawnNotificationTest {
 
     @Test
     void shouldNotifyRepresentativeCaseWithdrawnWithEmail() {
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
         data.getCicCase().setRepresentativeEmailAddress("testrepr@outlook.com");
@@ -152,7 +153,7 @@ public class CaseWithdrawnNotificationTest {
 
     @Test
     void shouldNotifyRepresentativeCaseWithdrawnWithPost() {
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.POST);
         data.getCicCase().setRepresentativeAddress(AddressGlobalUK.builder().build());
@@ -173,7 +174,7 @@ public class CaseWithdrawnNotificationTest {
 
     @Test
     void shouldNotifyApplicantCaseWithdrawnWithEmail() {
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setApplicantEmailAddress("testApplicant@outlook.com");
 
@@ -193,7 +194,7 @@ public class CaseWithdrawnNotificationTest {
 
     @Test
     void shouldNotifyApplicantCaseWithdrawnWithPost() {
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
         data.getCicCase().setApplicantAddress(AddressGlobalUK.builder().build());
 
@@ -211,7 +212,7 @@ public class CaseWithdrawnNotificationTest {
             TemplateName.CASE_WITHDRAWN_POST);
     }
 
-    private CaseData getMockCaseData() {
+    private CriminalInjuriesCompensationData getMockCaseData() {
         CicCase cicCase = CicCase.builder()
             .fullName("fullName").caseNumber(TEST_CASE_ID.toString())
             .build();
@@ -220,7 +221,7 @@ public class CaseWithdrawnNotificationTest {
             .additionalDetail("additionalDet")
             .build();
 
-        return CaseData.builder()
+        return CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .closeCase(closeCase)
             .build();

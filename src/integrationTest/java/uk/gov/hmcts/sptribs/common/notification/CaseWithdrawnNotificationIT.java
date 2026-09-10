@@ -11,8 +11,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseWithdrawnNotification;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
@@ -57,7 +57,7 @@ public class CaseWithdrawnNotificationIT {
 
     @Test
     void shouldSendEmailToSubject() {
-        final CaseData data = CaseData.builder()
+        final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .contactPreferenceType(EMAIL)
                 .fullName("Subject Name")
@@ -93,7 +93,7 @@ public class CaseWithdrawnNotificationIT {
 
     @Test
     void shouldSendLetterToSubject() {
-        final CaseData data = CaseData.builder()
+        final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .contactPreferenceType(POST)
                 .fullName("Subject Name")
@@ -133,7 +133,7 @@ public class CaseWithdrawnNotificationIT {
 
     @Test
     void shouldSendEmailToRepresentative() {
-        final CaseData data = CaseData.builder()
+        final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .fullName("Subject Name")
                 .representativeContactDetailsPreference(EMAIL)
@@ -169,7 +169,7 @@ public class CaseWithdrawnNotificationIT {
 
     @Test
     void shouldSendLetterToRepresentative() {
-        final CaseData data = CaseData.builder()
+        final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .fullName("Subject Name")
                 .representativeContactDetailsPreference(POST)
@@ -211,7 +211,7 @@ public class CaseWithdrawnNotificationIT {
 
     @Test
     void shouldSendEmailToRespondent() {
-        final CaseData data = CaseData.builder()
+        final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .fullName("Subject Name")
                 .respondentName("Respondent Name")
@@ -246,7 +246,7 @@ public class CaseWithdrawnNotificationIT {
 
     @Test
     void shouldSendEmailToApplicant() {
-        final CaseData data = CaseData.builder()
+        final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .contactPreferenceType(EMAIL)
                 .fullName("Subject Name")
@@ -283,7 +283,7 @@ public class CaseWithdrawnNotificationIT {
 
     @Test
     void shouldSendLetterToApplicant() {
-        final CaseData data = CaseData.builder()
+        final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .contactPreferenceType(POST)
                 .fullName("Subject Name")

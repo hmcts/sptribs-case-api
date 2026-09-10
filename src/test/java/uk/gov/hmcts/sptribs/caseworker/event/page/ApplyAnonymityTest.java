@@ -10,10 +10,10 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.repositories.AnonymisationRepository;
 import uk.gov.hmcts.sptribs.common.service.AnonymisationService;
 
@@ -42,13 +42,13 @@ class ApplyAnonymityTest {
 
     @Test
     void shouldSuccessfullyApplyAnonymity() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setId(123L);
         final CicCase cicCase = CicCase.builder()
             .anonymiseYesOrNo(YesOrNo.YES)
             .anonymisedAppellantName(null)
             .build();
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .build();
         caseDetails.setData(caseData);
@@ -65,13 +65,13 @@ class ApplyAnonymityTest {
 
     @Test
     void shouldNotReapplyAnonymity() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setId(123L);
         final CicCase cicCase = CicCase.builder()
                 .anonymiseYesOrNo(YesOrNo.YES)
                 .anonymisedAppellantName("AC")
                 .build();
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
                 .cicCase(cicCase)
                 .build();
         caseDetails.setData(caseData);
@@ -85,11 +85,11 @@ class ApplyAnonymityTest {
 
     @Test
     void shouldNotApplyAnonymityWhenNoSelected() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder()
             .anonymiseYesOrNo(YesOrNo.NO)
             .build();
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .build();
         caseDetails.setData(caseData);
@@ -103,14 +103,14 @@ class ApplyAnonymityTest {
 
     @Test
     void shouldKeepAnonymisedNameWhenAnonymityRemoved() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder()
             .anonymiseYesOrNo(YesOrNo.NO)
             .anonymisedAppellantName("AC")
             .anonymityAlreadyApplied(YesOrNo.YES)
             .anonymisationDate(LocalDate.now())
             .build();
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .build();
         caseDetails.setData(caseData);
@@ -126,12 +126,12 @@ class ApplyAnonymityTest {
 
     @Test
     void shouldRestrictOrderIssuingAndTemplateOptionsForFirstTimeAnonymisationJourney() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder()
             .anonymiseYesOrNo(YesOrNo.YES)
             .anonymityAlreadyApplied(YesOrNo.NO)
             .build();
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .draftOrderContentCIC(new DraftOrderContentCIC())
             .build();

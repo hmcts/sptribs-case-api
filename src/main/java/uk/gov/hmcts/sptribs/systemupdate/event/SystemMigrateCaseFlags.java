@@ -12,6 +12,7 @@ import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 @Setter
-public class SystemMigrateCaseFlags implements CCDConfig<CaseData, State, UserRole> {
+public class SystemMigrateCaseFlags implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     public static final String SYSTEM_MIGRATE_CASE_FLAGS = "system-migrate-case-flags";
 
@@ -34,7 +35,7 @@ public class SystemMigrateCaseFlags implements CCDConfig<CaseData, State, UserRo
     }
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
         configBuilder
             .event(SYSTEM_MIGRATE_CASE_FLAGS)
             .forAllStates()
@@ -44,15 +45,17 @@ public class SystemMigrateCaseFlags implements CCDConfig<CaseData, State, UserRo
             .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE);
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
-                                                                       final CaseDetails<CaseData, State> beforeDetails) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+        State> aboutToSubmit(final CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                                       final CaseDetails<CriminalInjuriesCompensationData,
+                                                                           State> beforeDetails) {
 
         log.info("Migrating case flags for case Id: {}", details.getId());
-        CaseData data = details.getData();
+        CriminalInjuriesCompensationData data = details.getData();
         initialiseFlags(data);
         setSupplementaryData(details.getId());
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(details.getData())
             .build();
     }

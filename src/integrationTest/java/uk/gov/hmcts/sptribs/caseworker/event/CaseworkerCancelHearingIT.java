@@ -16,8 +16,8 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
@@ -96,7 +96,7 @@ public class CaseworkerCancelHearingIT {
 
     @Test
     void shouldPopulateCicCaseHearingListOnAboutToStart() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setHearingList(getHearingList());
 
         String response = mockMvc.perform(post(ABOUT_TO_START_URL)
@@ -121,7 +121,7 @@ public class CaseworkerCancelHearingIT {
 
     @Test
     void shouldClearPreviouslyPopulatedHearingOptionsOnAboutToSubmit() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setHearingList(getHearingList());
         DynamicListElement hearingElement1 = DynamicListElement.builder()
             .code(UUID.randomUUID())
@@ -160,7 +160,7 @@ public class CaseworkerCancelHearingIT {
 
     @Test
     void shouldSuccessfullyDispatchNotificationsOnSubmitted() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         caseData.setCicCase(
             CicCase.builder()
@@ -207,7 +207,7 @@ public class CaseworkerCancelHearingIT {
 
     @Test
     void shouldReturnErrorMessageIfNotificationsFailOnSubmitted() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         caseData.setCicCase(
             CicCase.builder()
@@ -252,7 +252,7 @@ public class CaseworkerCancelHearingIT {
         hearingList.add(new ListValue<>("1", hearing1));
         hearingList.add(new ListValue<>("2", hearing2));
 
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setHearingList(hearingList);
         caseData.setHearingDate(LocalDate.of(2023, 4, 21));
         caseData.setListing(new Listing());
@@ -295,7 +295,7 @@ public class CaseworkerCancelHearingIT {
         hearingList.add(new ListValue<>("1", hearing1));
         hearingList.add(new ListValue<>("2", hearing2));
 
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setHearingList(hearingList);
         caseData.setHearingDate(LocalDate.of(2023, 4, 21));
         caseData.setListing(new Listing());

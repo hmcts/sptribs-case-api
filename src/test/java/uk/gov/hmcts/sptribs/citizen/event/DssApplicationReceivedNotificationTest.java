@@ -14,6 +14,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.EditCicaCaseDetails;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.notification.DssNotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
@@ -71,7 +72,7 @@ class DssApplicationReceivedNotificationTest {
             final DssCaseData dssCaseData = getMockDssCaseData();
             dssCaseData.setSubjectEmailAddress("subject@outlook.com");
             dssCaseData.setLanguagePreference(ENGLISH);
-            final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).build();
+            final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().dssCaseData(dssCaseData).build();
             final NotificationResponse notificationResponse = getMockNotificationResponse();
 
             Map<String, Object> templateVars = new HashMap<>();
@@ -100,7 +101,11 @@ class DssApplicationReceivedNotificationTest {
             final DssCaseData dssCaseData = getMockDssCaseData();
             dssCaseData.setSubjectEmailAddress("subject@outlook.com");
             dssCaseData.setLanguagePreference(ENGLISH);
-            final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).editCicaCaseDetails(CICA_CASE_DETAILS).build();
+            final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData
+                .builder()
+                .dssCaseData(dssCaseData)
+                .editCicaCaseDetails(CICA_CASE_DETAILS)
+                .build();
             final NotificationResponse notificationResponse = getMockNotificationResponse();
 
             Map<String, Object> templateVars = new HashMap<>();
@@ -129,7 +134,7 @@ class DssApplicationReceivedNotificationTest {
             final DssCaseData dssCaseData = getMockDssCaseData();
             dssCaseData.setSubjectEmailAddress("subject@outlook.com");
             dssCaseData.setLanguagePreference(WELSH);
-            final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).build();
+            final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().dssCaseData(dssCaseData).build();
             final NotificationResponse notificationResponse = getMockNotificationResponse();
 
             Map<String, Object> templateVars = new HashMap<>();
@@ -157,7 +162,11 @@ class DssApplicationReceivedNotificationTest {
             dssCaseData.setRepresentativeFullName("Rep Full Name");
             dssCaseData.setRepresentativeEmailAddress("rep@outlook.com");
             dssCaseData.setLanguagePreference(ENGLISH);
-            final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).editCicaCaseDetails(CICA_CASE_DETAILS).build();
+            final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData
+                .builder()
+                .dssCaseData(dssCaseData)
+                .editCicaCaseDetails(CICA_CASE_DETAILS)
+                .build();
             final NotificationResponse notificationResponse = getMockNotificationResponse();
 
             Map<String, Object> templateVars = new HashMap<>();
@@ -187,7 +196,7 @@ class DssApplicationReceivedNotificationTest {
             dssCaseData.setRepresentativeFullName("Rep Full Name");
             dssCaseData.setRepresentativeEmailAddress("rep@outlook.com");
             dssCaseData.setLanguagePreference(ENGLISH);
-            final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).build();
+            final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().dssCaseData(dssCaseData).build();
             final NotificationResponse notificationResponse = getMockNotificationResponse();
 
             Map<String, Object> templateVars = new HashMap<>();
@@ -226,7 +235,7 @@ class DssApplicationReceivedNotificationTest {
             final DssCaseData dssCaseData = getMockDssCaseData();
             dssCaseData.setSubjectEmailAddress("subject@outlook.com");
             dssCaseData.setLanguagePreference(ENGLISH);
-            final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).build();
+            final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().dssCaseData(dssCaseData).build();
             final NotificationResponse notificationResponse = getMockNotificationResponse();
 
             Map<String, Object> templateVars = new HashMap<>();
@@ -256,7 +265,7 @@ class DssApplicationReceivedNotificationTest {
             final DssCaseData dssCaseData = getMockDssCaseData();
             dssCaseData.setSubjectEmailAddress("subject@outlook.com");
             dssCaseData.setLanguagePreference(WELSH);
-            final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).build();
+            final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().dssCaseData(dssCaseData).build();
             final NotificationResponse notificationResponse = getMockNotificationResponse();
 
             Map<String, Object> templateVars = new HashMap<>();

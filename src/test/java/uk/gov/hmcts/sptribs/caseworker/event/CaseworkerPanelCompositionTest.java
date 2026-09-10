@@ -8,9 +8,9 @@ import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_PANEL_COMPOSITION;
@@ -28,7 +28,7 @@ public class CaseworkerPanelCompositionTest {
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         caseworkerPanelComposition.configure(configBuilder);
 
@@ -39,11 +39,11 @@ public class CaseworkerPanelCompositionTest {
 
     @Test
     void shouldPopulatePanel1InAboutToStartCallback() {
-        final CaseData caseData = new CaseData();
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         details.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerPanelComposition.aboutToStart(details);
 
         assertThat(response.getData().getListing().getSummary().getPanel1())
@@ -52,15 +52,15 @@ public class CaseworkerPanelCompositionTest {
 
     @Test
     void shouldPopulatePanelCompositionInAboutToSubmitCallback() {
-        final CaseData caseData = new CaseData();
+        final CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
         caseData.getListing().getSummary().setPanel1("Tribunal Judge");
         caseData.getListing().getSummary().setPanel2(MEDICAL_MEMBER);
         caseData.getListing().getSummary().setPanel3(LAY_MEMBER);
 
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         details.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerPanelComposition.aboutToSubmit(details, details);
 
         assertThat(response.getData().getListing().getSummary().getPanelComposition())

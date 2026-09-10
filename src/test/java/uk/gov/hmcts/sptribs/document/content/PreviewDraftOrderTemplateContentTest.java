@@ -9,12 +9,12 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingState;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.SchemeCic;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -40,7 +40,7 @@ class PreviewDraftOrderTemplateContentTest {
 
     @Test
     void shouldSuccessfullyPreviewDraftOrderContent() {
-        CaseData caseData = buildCaseData();
+        CriminalInjuriesCompensationData caseData = buildCaseData();
         final HearingSummary summary = HearingSummary.builder()
             .memberList(getMembers())
             .subjectName("John Smith")
@@ -65,7 +65,7 @@ class PreviewDraftOrderTemplateContentTest {
 
     @Test
     void shouldSuccessfullyApplyPreviewDraftOrderContentNoMembers() {
-        final CaseData caseData = buildCaseData();
+        final CriminalInjuriesCompensationData caseData = buildCaseData();
         final HearingSummary summary = HearingSummary.builder()
             .build();
         final Listing listing = Listing.builder()
@@ -85,7 +85,7 @@ class PreviewDraftOrderTemplateContentTest {
 
     @Test
     void shouldSuccessfullyApplyPreviewDraftOrderContentWithEmptyDate() {
-        final CaseData caseData = buildCaseData();
+        final CriminalInjuriesCompensationData caseData = buildCaseData();
         final HearingSummary summary = HearingSummary.builder()
             .subjectName("John Smith")
             .build();
@@ -96,7 +96,7 @@ class PreviewDraftOrderTemplateContentTest {
             .build();
 
         //Using a spy as getLatestCompletedHearing cannot handle a null date
-        final CaseData caseDataMock = spy(caseData);
+        final CriminalInjuriesCompensationData caseDataMock = spy(caseData);
         when(caseDataMock.getLatestCompletedHearing()).thenReturn(listing);
 
         final Map<String, Object> result = previewDraftOrderTemplateContent.apply(caseDataMock, TEST_CASE_ID);
@@ -109,7 +109,7 @@ class PreviewDraftOrderTemplateContentTest {
 
     @Test
     void shouldSuccessfullyPreviewDraftOrderContentWithFatalSubcategory() {
-        CaseData caseData = buildCaseDataWithSubcategory(CaseSubcategory.FATAL, true);
+        CriminalInjuriesCompensationData caseData = buildCaseDataWithSubcategory(CaseSubcategory.FATAL, true);
         final HearingSummary summary = HearingSummary.builder()
             .memberList(getMembers())
             .subjectName("John Smith")
@@ -134,7 +134,7 @@ class PreviewDraftOrderTemplateContentTest {
 
     @Test
     void shouldSuccessfullyPreviewDraftOrderContentWithMinorSubcategory() {
-        CaseData caseData = buildCaseDataWithSubcategory(CaseSubcategory.MINOR, true);
+        CriminalInjuriesCompensationData caseData = buildCaseDataWithSubcategory(CaseSubcategory.MINOR, true);
         final HearingSummary summary = HearingSummary.builder()
             .memberList(getMembers())
             .subjectName("John Smith")
@@ -159,7 +159,7 @@ class PreviewDraftOrderTemplateContentTest {
 
     @Test
     void shouldSuccessfullyPreviewDraftOrderContentWithFatalSubcategoryNoApplicant() {
-        CaseData caseData = buildCaseDataWithSubcategory(CaseSubcategory.FATAL, false);
+        CriminalInjuriesCompensationData caseData = buildCaseDataWithSubcategory(CaseSubcategory.FATAL, false);
         final HearingSummary summary = HearingSummary.builder()
             .memberList(getMembers())
             .subjectName("John Smith")
@@ -184,7 +184,7 @@ class PreviewDraftOrderTemplateContentTest {
 
     @Test
     void shouldSuccessfullyPreviewDraftOrderContentWithMinorSubcategoryNoApplicant() {
-        CaseData caseData = buildCaseDataWithSubcategory(CaseSubcategory.MINOR, false);
+        CriminalInjuriesCompensationData caseData = buildCaseDataWithSubcategory(CaseSubcategory.MINOR, false);
         final HearingSummary summary = HearingSummary.builder()
             .memberList(getMembers())
             .subjectName("John Smith")
@@ -209,7 +209,7 @@ class PreviewDraftOrderTemplateContentTest {
 
     @Test
     void shouldSuccessfullyPreviewAnonymisedDraftOrderContent() {
-        CaseData caseData = buildCaseData();
+        CriminalInjuriesCompensationData caseData = buildCaseData();
         caseData.getCicCase().setAnonymiseYesOrNo(YesOrNo.YES);
         caseData.getCicCase().setAnonymisedAppellantName("Anonymised Name");
         final HearingSummary summary = HearingSummary.builder()
@@ -236,7 +236,7 @@ class PreviewDraftOrderTemplateContentTest {
 
     @Test
     void shouldNotUseAnonymisedNameDraftOrderContent() {
-        CaseData caseData = buildCaseData();
+        CriminalInjuriesCompensationData caseData = buildCaseData();
         caseData.getCicCase().setAnonymiseYesOrNo(YesOrNo.NO);
         caseData.getCicCase().setAnonymisedAppellantName("Anonymised Name");
         final HearingSummary summary = HearingSummary.builder()
@@ -276,7 +276,7 @@ class PreviewDraftOrderTemplateContentTest {
                 .anonymisedAppellantName("Anonymised Name")
                 .build();
 
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
                 .draftOrderContentCIC(contentCIC)
                 .cicCase(cicCase)
                 .build();
@@ -301,7 +301,7 @@ class PreviewDraftOrderTemplateContentTest {
                 .anonymiseYesOrNo(YesOrNo.NO)
                 .build();
 
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
                 .draftOrderContentCIC(contentCIC)
                 .cicCase(cicCase)
                 .build();
@@ -311,19 +311,19 @@ class PreviewDraftOrderTemplateContentTest {
         assertThat(result.get(DocmosisTemplateConstants.MAIN_CONTENT)).isEqualTo(expectedMainContent);
     }
 
-    private CaseData buildCaseData() {
+    private CriminalInjuriesCompensationData buildCaseData() {
         final CicCase cicCase = CicCase.builder()
             .fullName("John Smith")
             .schemeCic(SchemeCic.Year1996)
             .anonymiseYesOrNo(YesOrNo.NO)
             .build();
 
-        return CaseData.builder()
+        return CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .build();
     }
 
-    private CaseData buildCaseDataWithSubcategory(CaseSubcategory caseSubcategory, boolean applicant) {
+    private CriminalInjuriesCompensationData buildCaseDataWithSubcategory(CaseSubcategory caseSubcategory, boolean applicant) {
         if (applicant) {
             final CicCase cicCase = CicCase.builder()
                 .fullName("John Smith")
@@ -333,7 +333,7 @@ class PreviewDraftOrderTemplateContentTest {
                 .anonymiseYesOrNo(YesOrNo.NO)
                 .build();
 
-            return CaseData.builder()
+            return CriminalInjuriesCompensationData.builder()
                 .cicCase(cicCase)
                 .build();
         } else {
@@ -344,7 +344,7 @@ class PreviewDraftOrderTemplateContentTest {
                 .anonymiseYesOrNo(YesOrNo.NO)
                 .build();
 
-            return CaseData.builder()
+            return CriminalInjuriesCompensationData.builder()
                 .cicCase(cicCase)
                 .build();
         }

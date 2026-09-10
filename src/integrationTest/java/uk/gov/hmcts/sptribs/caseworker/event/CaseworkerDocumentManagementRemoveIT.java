@@ -18,8 +18,8 @@ import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
@@ -95,7 +95,7 @@ public class CaseworkerDocumentManagementRemoveIT extends IntegrationTestBase {
                 .filename("name1")
                 .build()
             ).build();
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .orderList(List.of(orderListValue))
                 .applicantDocumentsUploaded(getCaseworkerCICDocumentList("evidence.pdf", APPLICATION_FORM))
@@ -137,7 +137,7 @@ public class CaseworkerDocumentManagementRemoveIT extends IntegrationTestBase {
 
     @Test
     void shouldClearRemovedDocumentListAndOrderDocumentListOnAboutToSubmit() throws Exception {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .removedDocumentList(getCaseworkerCICDocumentList())
                 .orderDocumentList(getCaseworkerCICDocumentList())
@@ -179,7 +179,7 @@ public class CaseworkerDocumentManagementRemoveIT extends IntegrationTestBase {
         ordersList.add(orderListValue);
 
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .removedDocumentList(getCaseworkerCICDocumentList())
                 .orderList(ordersList)

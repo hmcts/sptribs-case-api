@@ -10,11 +10,11 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
 import uk.gov.hmcts.sptribs.caseworker.util.EventUtil;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -33,34 +33,36 @@ public class IssueFinalDecisionSelectRecipientsTest {
 
     @Test
     void midEventIsSuccessfulForValidRecipients() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder().notifyPartySubject(Set.of(SubjectCIC.SUBJECT)).build();
         final CaseIssueFinalDecision finalDecision = CaseIssueFinalDecision.builder().build();
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .caseIssueFinalDecision(finalDecision)
             .cicCase(cicCase)
             .build();
         caseDetails.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = selectRecipients.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = selectRecipients.midEvent(caseDetails,
+            caseDetails);
         assertThat(response.getData().getCicCase().getNotifyPartySubject()).contains(SubjectCIC.SUBJECT);
         assertThat(response.getErrors()).isEmpty();
     }
 
     @Test
     void midEventReturnsErrorsForMissingRecipient() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         final CaseIssueFinalDecision finalDecision = CaseIssueFinalDecision.builder().build();
         final CicCase cicCase = CicCase.builder().build();
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .caseIssueFinalDecision(finalDecision)
             .cicCase(cicCase)
             .build();
         caseDetails.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = selectRecipients.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = selectRecipients.midEvent(caseDetails,
+            caseDetails);
 
         assertNull(response.getData().getCicCase().getNotifyPartySubject());
         assertNull(response.getData().getCicCase().getNotifyPartyRepresentative());
@@ -72,19 +74,20 @@ public class IssueFinalDecisionSelectRecipientsTest {
 
     @Test
     void midEventIsSuccessfulForRepresentative() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         Set<RepresentativeCIC> representativeCICSet = new HashSet<>();
         representativeCICSet.add(RepresentativeCIC.REPRESENTATIVE);
         final CicCase cicCase = CicCase.builder()
             .notifyPartyRepresentative(representativeCICSet)
             .representativeCIC(representativeCICSet).build();
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .build();
         caseDetails.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = selectRecipients.midEvent(caseDetails, caseDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = selectRecipients.midEvent(caseDetails,
+            caseDetails);
 
         assertThat(response.getData().getCicCase().getNotifyPartyRepresentative()).contains(RepresentativeCIC.REPRESENTATIVE);
         assertThat(response.getErrors()).isEmpty();
@@ -92,8 +95,8 @@ public class IssueFinalDecisionSelectRecipientsTest {
 
     @Test
     void midEventChecksRecipients() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder().build();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         caseDetails.setData(caseData);
         try (MockedStatic<EventUtil> mockedEventUtils = Mockito.mockStatic(EventUtil.class)) {
             mockedEventUtils.when(() -> EventUtil.checkRecipient(caseData))

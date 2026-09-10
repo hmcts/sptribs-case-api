@@ -19,7 +19,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssMessage;
@@ -29,6 +28,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
@@ -72,7 +72,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 @Setter
 @RequiredArgsConstructor
-public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> {
+public class CicSubmitCaseEvent implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     private final HttpServletRequest request;
     private final IdamService idamService;
@@ -81,8 +81,8 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
     private final DocumentsService documentsService;
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
+    public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+        Event.EventBuilder<CriminalInjuriesCompensationData, UserRole, State> eventBuilder =
             configBuilder
                 .event(AppsUtil.getExactAppsDetailsByCaseType(appsConfig, CcdCaseType.CIC.getCaseTypeName()).getEventIds()
                     .getSubmitEvent())
@@ -105,25 +105,26 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                 .publishToCamunda();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
-                                                                       CaseDetails<CaseData, State> beforeDetails) {
-        final CaseData data = details.getData();
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+        State> aboutToSubmit(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                                       CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
+        final CriminalInjuriesCompensationData data = details.getData();
         final DssCaseData dssData = details.getData().getDssCaseData();
         List<String> errors = new ArrayList<>();
-        final CaseData caseData = getCaseData(data, dssData, errors);
+        final CriminalInjuriesCompensationData caseData = getCaseData(data, dssData, errors);
         setDssMetaData(data);
         data.setNewBundleOrderEnabled(YesNo.YES);
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .errors(errors)
             .state(State.DSS_Submitted)
             .build();
     }
 
-    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                               CaseDetails<CaseData, State> beforeDetails) {
-        final CaseData data = details.getData();
+    public SubmittedCallbackResponse submitted(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                               CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
+        final CriminalInjuriesCompensationData data = details.getData();
         DssCaseData dssCaseData = data.getDssCaseData();
         generateNotifyParties(dssCaseData);
 
@@ -150,7 +151,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
             .build();
     }
 
-    private void setDssMetaData(CaseData data) {
+    private void setDssMetaData(CriminalInjuriesCompensationData data) {
         data.setDssQuestion1("Full Name");
         data.setDssQuestion2("Date of Birth");
         data.setDssAnswer1("case_data.dssCaseDataSubjectFullName");
@@ -172,7 +173,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         dssCaseData.setNotificationParties(notificationParties);
     }
 
-    private void sendApplicationReceivedNotification(String caseNumber, CaseData caseData) {
+    private void sendApplicationReceivedNotification(String caseNumber, CriminalInjuriesCompensationData caseData) {
         final DssCaseData dssCaseData = caseData.getDssCaseData();
         if (dssCaseData.getNotificationParties().contains(NotificationParties.SUBJECT)) {
             dssApplicationReceivedNotification.sendToSubject(caseData, caseNumber);
@@ -183,7 +184,11 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         }
     }
 
-    private CaseData getCaseData(final CaseData caseData, final DssCaseData dssCaseData, List<String> errors) {
+    private CriminalInjuriesCompensationData getCaseData(
+        final CriminalInjuriesCompensationData caseData,
+        final DssCaseData dssCaseData,
+        List<String> errors
+    ) {
         populateCoreCaseData(caseData, dssCaseData);
         populateRepresentativeData(caseData, dssCaseData);
         addAdditionalInformationMessageIfPresent(caseData, dssCaseData);
@@ -198,7 +203,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         return caseData;
     }
 
-    private void populateCoreCaseData(CaseData caseData, DssCaseData dssCaseData) {
+    private void populateCoreCaseData(CriminalInjuriesCompensationData caseData, DssCaseData dssCaseData) {
         caseData.getCicCase().setCaseReceivedDate(LocalDate.now());
         CicCaseFieldsUtil.calculateAndSetIsCaseInTime(caseData);
         caseData.getCicCase().setFullName(dssCaseData.getSubjectFullName());
@@ -223,7 +228,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         caseData.getCicCase().setSubjectCIC(subjects);
     }
 
-    private void populateRepresentativeData(CaseData caseData, DssCaseData dssCaseData) {
+    private void populateRepresentativeData(CriminalInjuriesCompensationData caseData, DssCaseData dssCaseData) {
         if (ObjectUtils.isEmpty(dssCaseData.getRepresentativeFullName())) {
             return;
         }
@@ -246,7 +251,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
             .build());
     }
 
-    private void addAdditionalInformationMessageIfPresent(CaseData caseData, DssCaseData dssCaseData) {
+    private void addAdditionalInformationMessageIfPresent(CriminalInjuriesCompensationData caseData, DssCaseData dssCaseData) {
         if (isNotBlank(dssCaseData.getAdditionalInformation())) {
             final CICUser caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
             final DssMessage message = DssMessage.builder()
@@ -315,7 +320,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         }
     }
 
-    private void persistDocumentsAndCollectErrors(CaseData caseData,
+    private void persistDocumentsAndCollectErrors(CriminalInjuriesCompensationData caseData,
                                                   List<String> errors,
                                                   List<ListValue<CaseworkerCICDocument>> applicantDocs) {
         for (ListValue<CaseworkerCICDocument> document : applicantDocs) {

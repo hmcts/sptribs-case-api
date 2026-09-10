@@ -18,7 +18,7 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateDocumentFormat;
 public class SendOrderUploadOrder implements CcdPageConfiguration {
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
         String pageNameUploadOrder = "caseworkerSendOrderUploadOrder";
         pageBuilder.page(pageNameUploadOrder, this::midEvent)
             .pageLabel("Upload an order")
@@ -44,15 +44,15 @@ public class SendOrderUploadOrder implements CcdPageConfiguration {
 
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                   CaseDetails<CaseData, State> detailsBefore) {
-        final CaseData data = details.getData();
+    public <T extends CaseData> AboutToStartOrSubmitResponse<T, State> midEvent(CaseDetails<T, State> details,
+                                                                   CaseDetails<T, State> detailsBefore) {
+        final T data = details.getData();
         List<ListValue<CICDocument>> uploadedDocuments = data.getCicCase().getOrderFile();
         final List<String> errors = validateDocumentFormat(uploadedDocuments);
 
         data.getCicCase().setOrderTemplateIssued(data.getCicCase().getOrderFile().getFirst().getValue().getDocumentLink());
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<T, State>builder()
             .data(data)
             .errors(errors)
             .build();

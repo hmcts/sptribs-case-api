@@ -6,10 +6,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.notification.NotificationConstants;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
@@ -53,7 +53,7 @@ class AnonymityAppliedNotificationTest {
 
     @Test
     void shouldSendAnonymityAppliedEmailToTribunal() {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .caseStatus(State.AwaitingHearing)
             .cicCase(CicCase.builder()
                 .anonymisationDate(LocalDate.of(2026, 7, 2))
@@ -91,7 +91,7 @@ class AnonymityAppliedNotificationTest {
 
     @Test
     void shouldSendAnonymityAppliedEmailToTribunalWithDefaultValuesWhenFieldsAreNullOrBlank() {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .caseStatus(null)
             .cicCase(CicCase.builder()
                 .anonymisationDate(null)
@@ -129,7 +129,7 @@ class AnonymityAppliedNotificationTest {
 
     @Test
     void shouldSendNotificationIfNewlyAppliedAndNoBeforeDetails() {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .caseStatus(State.AwaitingHearing)
             .hyphenatedCaseRef("1234-5678-9012-3456")
             .cicCase(CicCase.builder()
@@ -156,7 +156,7 @@ class AnonymityAppliedNotificationTest {
 
     @Test
     void shouldSendNotificationIfNewlyAppliedAndBeforeDetailsExistsButAnonymityWasNotApplied() {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .caseStatus(State.AwaitingHearing)
             .hyphenatedCaseRef("1234-5678-9012-3456")
             .cicCase(CicCase.builder()
@@ -166,7 +166,7 @@ class AnonymityAppliedNotificationTest {
                 .build())
             .build();
 
-        final CaseData beforeData = CaseData.builder()
+        final CriminalInjuriesCompensationData beforeData = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .anonymiseYesOrNo(YesOrNo.NO)
                 .anonymityAlreadyApplied(YesOrNo.NO)
@@ -190,7 +190,7 @@ class AnonymityAppliedNotificationTest {
 
     @Test
     void shouldNotSendNotificationIfNotNewlyApplied() {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .caseStatus(State.AwaitingHearing)
             .cicCase(CicCase.builder()
                 .anonymiseYesOrNo(YesOrNo.YES)
@@ -200,7 +200,7 @@ class AnonymityAppliedNotificationTest {
                 .build())
             .build();
 
-        final CaseData beforeCaseData = CaseData.builder()
+        final CriminalInjuriesCompensationData beforeCaseData = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .anonymiseYesOrNo(YesOrNo.YES)
                 .anonymityAlreadyApplied(YesOrNo.YES)
@@ -215,7 +215,7 @@ class AnonymityAppliedNotificationTest {
 
     @Test
     void shouldNotSendNotificationIfAnonymiseYesOrNoIsNotYes() {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .caseStatus(State.AwaitingHearing)
             .cicCase(CicCase.builder()
                 .anonymiseYesOrNo(YesOrNo.NO)
@@ -231,7 +231,7 @@ class AnonymityAppliedNotificationTest {
 
     @Test
     void shouldNotSendNotificationIfAnonymisedAppellantNameIsNull() {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .caseStatus(State.AwaitingHearing)
             .cicCase(CicCase.builder()
                 .anonymiseYesOrNo(YesOrNo.YES)
@@ -254,7 +254,7 @@ class AnonymityAppliedNotificationTest {
 
     @Test
     void shouldNotSendNotificationIfCicCaseIsNull() {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(null)
             .build();
 
@@ -265,7 +265,7 @@ class AnonymityAppliedNotificationTest {
 
     @Test
     void shouldPropagateExceptionWhenSendToTribunalThrows() {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .caseStatus(State.AwaitingHearing)
             .hyphenatedCaseRef("1234-5678-9012-3456")
             .cicCase(CicCase.builder()

@@ -19,11 +19,11 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionSelectRecipi
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionSelectTemplate;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionUpload;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentSaveException;
@@ -63,7 +63,7 @@ import static uk.gov.hmcts.sptribs.document.DocumentConstants.FINAL_DECISION_ANN
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerIssueFinalDecision implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -92,8 +92,8 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
     private final DocumentsService documentsService;
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
+    public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+        Event.EventBuilder<CriminalInjuriesCompensationData, UserRole, State> eventBuilder =
             configBuilder
                 .event(CASEWORKER_ISSUE_FINAL_DECISION)
                 .forStates(AwaitingOutcome)
@@ -108,7 +108,7 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_WA_CONFIG_USER)
                 .publishToCamunda();
 
-        PageBuilder pageBuilder = new PageBuilder(eventBuilder);
+        PageBuilder<CriminalInjuriesCompensationData> pageBuilder = new PageBuilder<>(eventBuilder);
         issueFinalDecisionNotice.addTo(pageBuilder);
         issueFinalDecisionSelectTemplate.addTo(pageBuilder);
         issueFinalDecisionMainContent.addTo(pageBuilder);
@@ -118,19 +118,22 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
         issueFinalDecisionSelectRecipients.addTo(pageBuilder);
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-        final CaseData caseData = details.getData();
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStart(
+        CaseDetails<CriminalInjuriesCompensationData, State> details
+    ) {
+        final CriminalInjuriesCompensationData caseData = details.getData();
 
         caseData.setDecisionSignature("");
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
-                                                                       CaseDetails<CaseData, State> beforeDetails) {
-        final CaseData caseData = details.getData();
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(
+        CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                                       CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
+        final CriminalInjuriesCompensationData caseData = details.getData();
         final CICDocument finalDecisionDocument = caseData.getCaseIssueFinalDecision().getDocument();
         final Document finalDecisionDocumentCreatedFromTemplate = caseData.getCaseIssueFinalDecision().getFinalDecisionDraft();
 
@@ -145,16 +148,16 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
 
         caseData.getCaseIssueFinalDecision().setFinalDecisionDate(LocalDate.now(this.clock));
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .state(CaseClosed)
             .errors(errors)
             .build();
     }
 
-    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                               CaseDetails<CaseData, State> beforeDetails) {
-        final CaseData data = details.getData();
+    public SubmittedCallbackResponse submitted(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                               CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
+        final CriminalInjuriesCompensationData data = details.getData();
         final CicCase cicCase = data.getCicCase();
         final String caseNumber = data.getHyphenatedCaseRef();
 

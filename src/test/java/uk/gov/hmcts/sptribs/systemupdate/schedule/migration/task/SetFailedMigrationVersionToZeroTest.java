@@ -10,6 +10,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.RetiredFields;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -27,7 +28,7 @@ class SetFailedMigrationVersionToZeroTest {
 
     @Test
     void shouldSetVersionToZero() {
-        final CaseData caseData = TestDataHelper.caseData();
+        final CriminalInjuriesCompensationData caseData = TestDataHelper.caseData();
         caseData.setRetiredFields(new RetiredFields());
         caseData.getRetiredFields().setDataVersion(1);
 

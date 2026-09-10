@@ -25,7 +25,7 @@ import java.util.List;
 public class HearingRecordingUploadPage implements CcdPageConfiguration {
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
         pageBuilder.page("hearingRecordingUploadPage", this::midEvent)
             .pageLabel("Upload hearing recording")
             .label("LabelHearingRecordingUploadPage", "")
@@ -57,9 +57,9 @@ public class HearingRecordingUploadPage implements CcdPageConfiguration {
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                  CaseDetails<CaseData, State> detailsBefore) {
-        final CaseData data = details.getData();
+    public <T extends CaseData> AboutToStartOrSubmitResponse<T, State> midEvent(CaseDetails<T, State> details,
+                                                                  CaseDetails<T, State> detailsBefore) {
+        final T data = details.getData();
         List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = data.getListing().getSummary().getRecFileUpload();
         List<String> errors = new ArrayList<>();
         if (!CollectionUtils.isEmpty(uploadedDocuments)) {
@@ -80,7 +80,7 @@ public class HearingRecordingUploadPage implements CcdPageConfiguration {
                 }
             }
         }
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<T, State>builder()
             .data(data)
             .errors(errors)
             .build();

@@ -18,6 +18,7 @@ import uk.gov.hmcts.sptribs.caseworker.service.OrderService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.DraftOrderMainContentPage;
@@ -50,7 +51,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class CaseworkerEditDraftOrder implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerEditDraftOrder implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     private static final CcdPageConfiguration editDraftOrder = new EditDraftOrder();
 
@@ -63,8 +64,8 @@ public class CaseworkerEditDraftOrder implements CCDConfig<CaseData, State, User
     private final OrderService orderService;
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
+    public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+        Event.EventBuilder<CriminalInjuriesCompensationData, UserRole, State> eventBuilder =
             configBuilder
                 .event(CASEWORKER_EDIT_DRAFT_ORDER)
                 .forStates(CaseManagement, ReadyToList, AwaitingHearing, CaseStayed, CaseClosed)
@@ -77,14 +78,14 @@ public class CaseworkerEditDraftOrder implements CCDConfig<CaseData, State, User
                 .grantHistoryOnly(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_JUDGE, ST_CIC_SENIOR_JUDGE)
                 .publishToCamunda();
 
-        PageBuilder pageBuilder = new PageBuilder(eventBuilder);
+        PageBuilder<CriminalInjuriesCompensationData> pageBuilder = new PageBuilder<>(eventBuilder);
         editDraftOrder.addTo(pageBuilder);
         draftOrderEditMainContentPage.addTo(pageBuilder);
         editDraftOrderAddDocumentFooter(pageBuilder);
         previewOrder.addTo(pageBuilder);
     }
 
-    private void editDraftOrderAddDocumentFooter(PageBuilder pageBuilder) {
+    private void editDraftOrderAddDocumentFooter(PageBuilder<CriminalInjuriesCompensationData> pageBuilder) {
         pageBuilder.page("editDraftOrderAddDocumentFooter", this::midEvent)
             .pageLabel("Document footer")
             .label("draftOrderDocFooter",
@@ -99,26 +100,26 @@ public class CaseworkerEditDraftOrder implements CCDConfig<CaseData, State, User
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(
-        CaseDetails<CaseData, State> details,
-        CaseDetails<CaseData, State> detailsBefore
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> midEvent(
+        CaseDetails<CriminalInjuriesCompensationData, State> details,
+        CaseDetails<CriminalInjuriesCompensationData, State> detailsBefore
     ) {
 
         Calendar cal = Calendar.getInstance();
         String date = simpleDateFormat.format(cal.getTime());
-        final CaseData caseData = orderService.generateOrderFile(details.getData(), details.getId(), date);
+        final CriminalInjuriesCompensationData caseData = orderService.generateOrderFile(details.getData(), details.getId(), date);
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
-        final CaseDetails<CaseData, State> details,
-        final CaseDetails<CaseData, State> beforeDetails
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(
+        final CaseDetails<CriminalInjuriesCompensationData, State> details,
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails
     ) {
 
-        CaseData caseData = details.getData();
+        CriminalInjuriesCompensationData caseData = details.getData();
         DynamicList dynamicList = caseData.getCicCase().getDraftOrderDynamicList();
         UUID code = dynamicList.getValue().getCode();
         String label = dynamicList.getValue().getLabel();
@@ -146,14 +147,14 @@ public class CaseworkerEditDraftOrder implements CCDConfig<CaseData, State, User
         caseData.getCicCase().getDraftOrderDynamicList().setValue(null);
         caseData.getCicCase().setOrderTemplateIssued(null);
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .state(details.getState())
             .build();
     }
 
-    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                                  CaseDetails<CaseData, State> beforeDetails) {
+    public SubmittedCallbackResponse submitted(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                  CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Draft order updated %n## Use "

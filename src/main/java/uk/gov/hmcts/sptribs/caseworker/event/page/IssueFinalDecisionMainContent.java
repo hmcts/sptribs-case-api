@@ -10,7 +10,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.PageShowConditionsUtil.issueF
 public class IssueFinalDecisionMainContent implements CcdPageConfiguration {
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
         pageBuilder.page("issueFinalDecisionMainContent")
             .pageLabel("Edit Final Decision")
             .label("LabelIssueFinalDecisionMainContent", "")

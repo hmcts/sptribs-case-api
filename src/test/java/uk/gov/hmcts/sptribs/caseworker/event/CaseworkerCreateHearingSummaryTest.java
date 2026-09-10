@@ -17,7 +17,6 @@ import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingState;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
@@ -26,6 +25,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
@@ -61,7 +61,7 @@ class CaseworkerCreateHearingSummaryTest {
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
 
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         caseWorkerCreateHearingSummary.configure(configBuilder);
 
@@ -86,9 +86,9 @@ class CaseworkerCreateHearingSummaryTest {
 
     @Test
     void shouldRunAboutToStart() {
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder().build();
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .build();
         updatedCaseDetails.setData(caseData);
@@ -96,7 +96,8 @@ class CaseworkerCreateHearingSummaryTest {
         when(hearingService.getListedHearingDynamicList(any())).thenReturn(null);
         when(judicialService.getAllUsers(caseData)).thenReturn(getDynamicList());
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerCreateHearingSummary.aboutToStart(updatedCaseDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+            State> response = caseWorkerCreateHearingSummary.aboutToStart(updatedCaseDetails);
 
         assertThat(response).isNotNull();
         assertThat(response.getData().getCicCase().getHearingList()).isNull();
@@ -105,7 +106,7 @@ class CaseworkerCreateHearingSummaryTest {
 
     @Test
     void shouldRunAboutToSubmit() {
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder()
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
@@ -116,7 +117,7 @@ class CaseworkerCreateHearingSummaryTest {
                     .build()
             )
             .build();
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .build();
 
@@ -129,11 +130,11 @@ class CaseworkerCreateHearingSummaryTest {
         recordListing.setSummary(hearingSummary);
 
         updatedCaseDetails.setData(caseData);
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         when(recordListHelper.saveSummary(any())).thenReturn(recordListing);
         when(judicialService.populateJudicialId(any())).thenReturn("personal_code");
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseWorkerCreateHearingSummary.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         assertThat(response).isNotNull();
@@ -151,8 +152,8 @@ class CaseworkerCreateHearingSummaryTest {
 
     @Test
     void shouldRunSubmitted() {
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
 
         SubmittedCallbackResponse response =
             caseWorkerCreateHearingSummary.summaryCreated(updatedCaseDetails, beforeDetails);

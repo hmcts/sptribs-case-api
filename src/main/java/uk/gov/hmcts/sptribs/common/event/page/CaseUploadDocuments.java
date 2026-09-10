@@ -17,7 +17,7 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateUploadedDocumen
 public class CaseUploadDocuments implements CcdPageConfiguration {
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
         pageBuilder.page("documentsUploadObject", this::midEvent)
             .pageLabel("Upload tribunal forms")
             .label("LabelCaseUploadDocuments",
@@ -35,14 +35,14 @@ public class CaseUploadDocuments implements CcdPageConfiguration {
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                  CaseDetails<CaseData, State> detailsBefore) {
-        final CaseData data = details.getData();
+    public <T extends CaseData> AboutToStartOrSubmitResponse<T, State> midEvent(CaseDetails<T, State> details,
+                                                                  CaseDetails<T, State> detailsBefore) {
+        final T data = details.getData();
 
         List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = data.getCicCase().getCaseDocumentsUpload();
         List<String> errors = validateUploadedDocuments(uploadedDocuments);
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<T, State>builder()
             .data(data)
             .errors(errors)
             .build();

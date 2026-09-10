@@ -21,6 +21,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
@@ -50,7 +51,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, UserRole> {
+public class CaseWorkerManageOrderDueDate implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     private static final CcdPageConfiguration manageSelectOrderTemplates = new ManageSelectOrders();
     private static final CcdPageConfiguration amendOrderDueDates = new AmendOrderDueDates();
@@ -59,8 +60,8 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
     private final Clock clock;
 
     @Override
-    public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
+    public void configure(ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+        Event.EventBuilder<CriminalInjuriesCompensationData, UserRole, State> eventBuilder =
             configBuilder
                 .event(CASEWORKER_AMEND_DUE_DATE)
                 .forStates(CaseManagement, ReadyToList, AwaitingHearing, CaseClosed, CaseStayed)
@@ -76,23 +77,26 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
                 .grantHistoryOnly(ST_CIC_JUDGE)
                 .publishToCamunda();
 
-        PageBuilder pageBuilder = new PageBuilder(eventBuilder);
+        PageBuilder<CriminalInjuriesCompensationData> pageBuilder = new PageBuilder<>(eventBuilder);
         manageSelectOrderTemplates.addTo(pageBuilder);
         amendOrderDueDates.addTo(pageBuilder);
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-        final CaseData caseData = details.getData();
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStart(CaseDetails<CriminalInjuriesCompensationData,
+        State> details) {
+        final CriminalInjuriesCompensationData caseData = details.getData();
         DynamicList orderDynamicList = orderService.getOrderDynamicList(details);
         caseData.getCicCase().setOrderDynamicList(orderDynamicList);
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
-                                                                       final CaseDetails<CaseData, State> beforeDetails) {
-        final CaseData caseData = details.getData();
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+        State> aboutToSubmit(final CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                                       final CaseDetails<CriminalInjuriesCompensationData,
+                                                                           State> beforeDetails) {
+        final CriminalInjuriesCompensationData caseData = details.getData();
         final CicCase cicCase = caseData.getCicCase();
         final String selectedOrder = caseData.getCicCase().getOrderDynamicList().getValue().getLabel();
         final String id = getId(selectedOrder);
@@ -111,7 +115,7 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
         caseData.getCicCase().setOrderList(orderList);
         caseData.setOrderDueDates(new ArrayList<>());
         cicCase.setFirstOrderDueDate(CicCaseFieldsUtil.calculateFirstDueDate(caseData.getCicCase().getOrderList()));
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .state(details.getState())
             .data(caseData)
             .build();
@@ -136,8 +140,8 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
         }
     }
 
-    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                                       CaseDetails<CaseData, State> beforeDetails) {
+    public SubmittedCallbackResponse submitted(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                       CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
             .confirmationHeader("# Due dates amended.")
             .build();

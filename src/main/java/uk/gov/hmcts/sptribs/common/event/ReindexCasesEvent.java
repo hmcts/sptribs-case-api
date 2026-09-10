@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import java.time.LocalDate;
@@ -24,13 +25,13 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 
 @Component
 @RequiredArgsConstructor
-public class ReindexCasesEvent implements CCDConfig<CaseData, State, UserRole> {
+public class ReindexCasesEvent implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     private final CaseReindexingService reindexQueueService;
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        PageBuilder pageBuilder = new PageBuilder(configBuilder
+    public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+        PageBuilder<CriminalInjuriesCompensationData> pageBuilder = new PageBuilder<>(configBuilder
             .event(SUPERUSER_REINDEX_CASES)
             .forAllStates()
             .name("Reindex cases")
@@ -57,17 +58,17 @@ public class ReindexCasesEvent implements CCDConfig<CaseData, State, UserRole> {
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(
-        CaseDetails<CaseData, State> details,
-        CaseDetails<CaseData, State> beforeDetails
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> midEvent(
+        CaseDetails<CriminalInjuriesCompensationData, State> details,
+        CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails
     ) {
-        CaseData caseData = details.getData();
+        CriminalInjuriesCompensationData caseData = details.getData();
         LocalDate since = caseData.getReindexCasesModifiedSince();
 
         List<String> errors = new ArrayList<>();
         if (since == null) {
             errors.add("Enter a date.");
-            return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
                 .data(caseData)
                 .errors(errors)
                 .build();
@@ -76,36 +77,36 @@ public class ReindexCasesEvent implements CCDConfig<CaseData, State, UserRole> {
         long matching = reindexQueueService.countCasesModifiedSince(since);
         caseData.setReindexCasesMatchingCount(matching);
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
-        CaseDetails<CaseData, State> details,
-        CaseDetails<CaseData, State> beforeDetails
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(
+        CaseDetails<CriminalInjuriesCompensationData, State> details,
+        CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails
     ) {
-        CaseData caseData = details.getData();
+        CriminalInjuriesCompensationData caseData = details.getData();
         LocalDate since = caseData.getReindexCasesModifiedSince();
 
         List<String> errors = new ArrayList<>();
         if (since == null) {
             errors.add("Enter a date.");
-            return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
                 .data(caseData)
                 .errors(errors)
                 .build();
         }
 
         reindexQueueService.enqueueCasesModifiedSince(since);
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .build();
     }
 
-    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                              CaseDetails<CaseData, State> beforeDetails) {
-        CaseData caseData = details.getData();
+    public SubmittedCallbackResponse submitted(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                              CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
+        CriminalInjuriesCompensationData caseData = details.getData();
         LocalDate since = caseData.getReindexCasesModifiedSince();
         if (since == null) {
             return SubmittedCallbackResponse.builder()

@@ -10,8 +10,8 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.RetiredFields;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ public class HearingServiceIT {
 
     @Test
     void shouldCreateListedHearingDynamicList() {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .hearingList(getHearingList())
             .build();
 
@@ -48,7 +48,7 @@ public class HearingServiceIT {
     void shouldAddOldExistingHearings() {
         final Listing listing = getRecordListing();
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .listing(listing)
             .retiredFields(new RetiredFields())
             .build();
@@ -65,7 +65,7 @@ public class HearingServiceIT {
         listings.get(0).getValue().setHearingStatus(Complete);
         listings.get(1).getValue().setHearingStatus(Complete);
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .hearingList(listings)
             .build();
 
@@ -80,7 +80,7 @@ public class HearingServiceIT {
     void shouldAddListingToHearingList() {
         final Listing listing = getRecordListing();
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .hearingList(new ArrayList<>())
             .build();
 
@@ -94,7 +94,7 @@ public class HearingServiceIT {
     void shouldUpdateHearingList() {
         final Listing listing = getRecordListing();
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .listing(listing)
             .hearingList(getHearingList())
             .build();
@@ -132,7 +132,7 @@ public class HearingServiceIT {
     void shouldSetHearingDateOnAddListingAndClearOnCompleteInIntegration() {
         // Given
         final Listing listing = getRecordListing(); // status Listed, date 2023-04-21
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .hearingList(new ArrayList<>())
             .build();
 
@@ -154,7 +154,7 @@ public class HearingServiceIT {
     void shouldUpdateHearingDateOnUpdateHearingListInIntegration() {
         // Given
         final Listing listing = getRecordListing(); // status Listed, date 2023-04-21
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .listing(listing)
             .hearingList(getHearingList()) // contains Final on 2024-08-14
             .build();

@@ -15,7 +15,7 @@ import java.util.List;
 public class SelectBundles implements CcdPageConfiguration {
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
         pageBuilder.page("selectBundles", this::midEvent)
             .pageLabel("Select bundles to delete")
             .complex(CaseData::getCicCase)
@@ -23,9 +23,9 @@ public class SelectBundles implements CcdPageConfiguration {
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                  CaseDetails<CaseData, State> beforeDetails) {
-        final CaseData data = details.getData();
+    public <T extends CaseData> AboutToStartOrSubmitResponse<T, State> midEvent(CaseDetails<T, State> details,
+                                                                  CaseDetails<T, State> beforeDetails) {
+        final T data = details.getData();
         final List<String> errors = new ArrayList<>();
 
         List<DynamicListElement> selectedBundlesToRemove = data.getCicCase().getRemoveBundlesList().getValue();
@@ -33,7 +33,7 @@ public class SelectBundles implements CcdPageConfiguration {
             errors.add("Select at least one bundle to remove");
         }
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<T, State>builder()
             .data(data)
             .errors(errors)
             .build();

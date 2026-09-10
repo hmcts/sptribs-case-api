@@ -13,8 +13,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
@@ -79,7 +79,7 @@ public class CaseworkerStayTheCaseIT {
 
     @Test
     void shouldSetIsCaseStayedValueOnAboutToSubmit() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
 
         mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
             .contentType(APPLICATION_JSON)
@@ -97,7 +97,7 @@ public class CaseworkerStayTheCaseIT {
 
     @Test
     void shouldSuccessfullyDispatchEmailsOnSubmitted() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         caseData.setCicCase(
             CicCase.builder()
@@ -148,7 +148,7 @@ public class CaseworkerStayTheCaseIT {
 
     @Test
     void shouldReturnErrorMessageIfNotificationsFailOnSubmitted() throws Exception {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .subjectCIC(Set.of(SUBJECT))
                 .representativeCIC(Set.of(REPRESENTATIVE))

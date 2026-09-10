@@ -6,10 +6,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.PanelMember;
 import uk.gov.hmcts.sptribs.ciccase.model.SchemeCic;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,7 +94,7 @@ class DocmosisTemplateHelperTest {
     @Test
     void shouldReplaceCommonFieldsInTemplate() {
         //Given
-        CaseData caseData = getCaseDataWithCICScheme(SchemeCic.Year1996);
+        CriminalInjuriesCompensationData caseData = getCaseDataWithCICScheme(SchemeCic.Year1996);
 
         //When
         Map<String, Object> templateContent = getCommonFields(caseData, ccdCaseReference);
@@ -109,7 +109,7 @@ class DocmosisTemplateHelperTest {
     @Test
     void shouldReplaceCommonFieldsInTemplateWithNoCICCase() {
         //Given
-        CaseData caseData = CaseData
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData
             .builder()
             .cicCase(null)
             .build();
@@ -127,7 +127,7 @@ class DocmosisTemplateHelperTest {
     @Test
     void shouldReplaceCommonFieldsInTemplateWithNoCICScheme() {
         //Given
-        CaseData caseData = getCaseDataWithCICScheme(null);
+        CriminalInjuriesCompensationData caseData = getCaseDataWithCICScheme(null);
 
         //When
         Map<String, Object> templateContent = getCommonFields(caseData, ccdCaseReference);
@@ -172,8 +172,8 @@ class DocmosisTemplateHelperTest {
             .build();
     }
 
-    private CaseData getCaseDataWithCICScheme(SchemeCic schemeCic) {
-        return CaseData
+    private CriminalInjuriesCompensationData getCaseDataWithCICScheme(SchemeCic schemeCic) {
+        return CriminalInjuriesCompensationData
             .builder()
             .cicCase(
                 CicCase

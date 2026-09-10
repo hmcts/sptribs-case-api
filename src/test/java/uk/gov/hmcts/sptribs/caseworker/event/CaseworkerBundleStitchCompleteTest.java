@@ -11,9 +11,9 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
@@ -49,7 +49,7 @@ class CaseworkerBundleStitchCompleteTest {
 
     @Test
     void shouldAddConfigurationToConfigBuilder() throws Exception {
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         caseworkerBundleStitchComplete.configure(configBuilder);
 
@@ -63,7 +63,7 @@ class CaseworkerBundleStitchCompleteTest {
     void shouldSuccessfullySaveBundleToDocumentService() throws Exception {
 
         //given
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         details.setId(CASE_ID);
 
         Document document = Document.builder()
@@ -80,7 +80,7 @@ class CaseworkerBundleStitchCompleteTest {
         List<ListValue<Bundle>> bundles = new ArrayList<>();
         bundles.add(listValue);
 
-        CaseData caseData = new CaseData();
+        CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
         caseData.setCaseBundles(bundles);
         details.setData(caseData);
 
@@ -98,7 +98,7 @@ class CaseworkerBundleStitchCompleteTest {
     void shouldSuccessfullySaveLatestBundleToDocumentService() throws Exception {
 
         //given
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         details.setId(CASE_ID);
 
         Document document1 = Document.builder()
@@ -129,7 +129,7 @@ class CaseworkerBundleStitchCompleteTest {
 
         sortBundlesByTime(bundles);
 
-        CaseData caseData = new CaseData();
+        CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
         caseData.setCaseBundles(bundles);
         details.setData(caseData);
 
@@ -148,7 +148,7 @@ class CaseworkerBundleStitchCompleteTest {
     void shouldReturnErrorResponseWhenDocumentServiceThrowsException() throws Exception {
 
         // given
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         details.setId(CASE_ID);
 
         Document document = Document.builder()
@@ -165,7 +165,7 @@ class CaseworkerBundleStitchCompleteTest {
         List<ListValue<Bundle>> bundles = new ArrayList<>();
         bundles.add(listValue);
 
-        CaseData caseData = new CaseData();
+        CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
         caseData.setCaseBundles(bundles);
         details.setData(caseData);
 
@@ -191,7 +191,7 @@ class CaseworkerBundleStitchCompleteTest {
     void shouldNotCallDocumentServiceWhenStitchedDocumentIsNull() {
 
         // given
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         details.setId(CASE_ID);
 
         Bundle bundle = createBundle(null, 0L);
@@ -202,7 +202,7 @@ class CaseworkerBundleStitchCompleteTest {
         List<ListValue<Bundle>> bundles = new ArrayList<>();
         bundles.add(listValue);
 
-        CaseData caseData = new CaseData();
+        CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
         caseData.setCaseBundles(bundles);
         details.setData(caseData);
 

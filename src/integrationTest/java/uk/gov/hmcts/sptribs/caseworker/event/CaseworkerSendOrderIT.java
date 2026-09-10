@@ -18,8 +18,8 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DueDateOptions;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
@@ -115,7 +115,7 @@ public class CaseworkerSendOrderIT {
 
     @Test
     void shouldSetOrderIssueTypesAndTemplatesInAboutToStartCallback() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
 
         String response = mockMvc.perform(post(ABOUT_TO_START_URL)
             .contentType(APPLICATION_JSON)
@@ -145,7 +145,7 @@ public class CaseworkerSendOrderIT {
             .information("due date for test")
             .build();
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .orderFile(getCICDocumentList("order.pdf"))
                 .notifyPartySubject(Set.of(SUBJECT))
@@ -188,7 +188,7 @@ public class CaseworkerSendOrderIT {
 
     @Test
     void shouldSuccessfullyDispatchEmailsOnSubmitted() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         caseData.setCicCase(
             CicCase.builder()
@@ -236,7 +236,7 @@ public class CaseworkerSendOrderIT {
 
     @Test
     void shouldReturnErrorMessageIfNotificationsFailOnSubmitted() throws Exception {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .notifyPartySubject(Set.of(SUBJECT))
                 .notifyPartyRespondent(Set.of(RESPONDENT))

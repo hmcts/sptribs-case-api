@@ -10,7 +10,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 public class HearingAttendeesRolePage implements CcdPageConfiguration {
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
 
         pageBuilder.page("hearingAttendeesRole")
             .pageLabel("Hearing attendees")

@@ -31,7 +31,7 @@ public class ApplyAnonymity implements CcdPageConfiguration {
     private final AnonymisationService anonymisationService;
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
         pageBuilder.page("caseworkerApplyAnonymity", this::midEvent)
                 .pageLabel("Anonymity")
                 .label("LabelCaseworkerApplyAnonymity", "")
@@ -45,16 +45,16 @@ public class ApplyAnonymity implements CcdPageConfiguration {
                 .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> caseDetails,
-                                                                   CaseDetails<CaseData, State> caseDetailsBefore) {
-        final CaseData caseData = caseDetails.getData();
+    public <T extends CaseData> AboutToStartOrSubmitResponse<T, State> midEvent(CaseDetails<T, State> caseDetails,
+                                                                   CaseDetails<T, State> caseDetailsBefore) {
+        final T caseData = caseDetails.getData();
         final CicCase cicCase = caseData.getCicCase();
         final List<String> errors = new ArrayList<>();
         boolean firstTimeAnonymisationJourney = isFirstTimeAnonymisationJourney(cicCase);
         anonymisationService.applyAnonymitySelection(cicCase, errors, !firstTimeAnonymisationJourney);
         updateIssuingAndTemplateOptions(caseData, firstTimeAnonymisationJourney);
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<T, State>builder()
             .data(caseData)
             .errors(errors)
             .build();

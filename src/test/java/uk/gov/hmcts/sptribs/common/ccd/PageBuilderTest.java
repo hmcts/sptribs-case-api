@@ -11,15 +11,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.FieldCollection;
 import uk.gov.hmcts.ccd.sdk.api.callback.MidEvent;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 
 @ExtendWith(MockitoExtension.class)
 class PageBuilderTest {
 
     @Mock
-    private Event.EventBuilder<CaseData, UserRole, State> eventBuilder;
+    private Event.EventBuilder<CriminalInjuriesCompensationData, UserRole, State> eventBuilder;
 
     @Mock
     private MidEvent midEvent;
@@ -27,11 +27,11 @@ class PageBuilderTest {
     private FieldCollection.FieldCollectionBuilder fieldsBuilder;
 
     @InjectMocks
-    private PageBuilder pageBuilder;
+    private PageBuilder<CriminalInjuriesCompensationData> pageBuilder;
 
     @BeforeEach
     void setUp() {
-        pageBuilder = new PageBuilder(eventBuilder);
+        pageBuilder = new PageBuilder<>(eventBuilder);
         fieldsBuilder = FieldCollection.FieldCollectionBuilder.builder(null, null, null, null);
     }
 

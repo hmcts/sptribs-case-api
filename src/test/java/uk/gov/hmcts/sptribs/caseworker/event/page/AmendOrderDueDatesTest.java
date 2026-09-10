@@ -9,9 +9,9 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DueDateOptions;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.GetAmendDateAsCompleted;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -46,14 +46,15 @@ class AmendOrderDueDatesTest {
 
         dateModels.add(dateModelListValue);
 
-        CaseDetails<CaseData, State> caseDetails = buildCaseDetails(dateModels);
+        CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = buildCaseDetails(dateModels);
 
         //when
-        AboutToStartOrSubmitResponse<CaseData, State> response = amendOrderDueDates.midEvent(caseDetails, caseDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = amendOrderDueDates.midEvent(caseDetails,
+            caseDetails);
 
         //then
 
-        CaseData actualCaseData = response.getData();
+        CriminalInjuriesCompensationData actualCaseData = response.getData();
         DateModel actualDateModel = actualCaseData.getOrderDueDates().getFirst().getValue();
         assertThat(actualDateModel.getDueDateOptions()).isEqualTo(DueDateOptions.OTHER);
         assertThat(actualDateModel.getUpdatedDueDate()).isEqualTo(dateModel.getDueDate());
@@ -78,14 +79,15 @@ class AmendOrderDueDatesTest {
 
         dateModels.add(dateModelListValue);
 
-        CaseDetails<CaseData, State> caseDetails = buildCaseDetails(dateModels);
+        CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = buildCaseDetails(dateModels);
 
         //when
-        AboutToStartOrSubmitResponse<CaseData, State> response = amendOrderDueDates.midEvent(caseDetails, caseDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = amendOrderDueDates.midEvent(caseDetails,
+            caseDetails);
 
         //then
 
-        CaseData actualCaseData = response.getData();
+        CriminalInjuriesCompensationData actualCaseData = response.getData();
         DateModel actualDateModel = actualCaseData.getOrderDueDates().getFirst().getValue();
         assertThat(actualDateModel.getDueDateOptions()).isEqualTo(DueDateOptions.OTHER);
         assertThat(actualDateModel.getUpdatedDueDate()).isEqualTo(dateModel.getDueDate());
@@ -111,10 +113,11 @@ class AmendOrderDueDatesTest {
 
         dateModels.add(dateModelListValue);
 
-        CaseDetails<CaseData, State> caseDetails = buildCaseDetails(dateModels);
+        CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = buildCaseDetails(dateModels);
 
         //when
-        AboutToStartOrSubmitResponse<CaseData, State> response = amendOrderDueDates.midEvent(caseDetails, caseDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = amendOrderDueDates.midEvent(caseDetails,
+            caseDetails);
 
         //then
         assertThat(response.getErrors().getFirst()).isEqualTo(MISSING_DUE_DATE);
@@ -139,14 +142,15 @@ class AmendOrderDueDatesTest {
 
         dateModels.add(dateModelListValue);
 
-        CaseDetails<CaseData, State> caseDetails = buildCaseDetails(dateModels);
+        CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = buildCaseDetails(dateModels);
 
         //when
-        AboutToStartOrSubmitResponse<CaseData, State> response = amendOrderDueDates.midEvent(caseDetails, caseDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = amendOrderDueDates.midEvent(caseDetails,
+            caseDetails);
 
         //then
 
-        CaseData actualCaseData = response.getData();
+        CriminalInjuriesCompensationData actualCaseData = response.getData();
         DateModel actualDateModel = actualCaseData.getOrderDueDates().getFirst().getValue();
         assertThat(actualDateModel.getDueDateOptions()).isEqualTo(DueDateOptions.DAY_COUNT_120);
         assertThat(response.getErrors()).isEmpty();
@@ -157,10 +161,11 @@ class AmendOrderDueDatesTest {
         //given
         List<ListValue<DateModel>> dateModels = new ArrayList<>();
 
-        CaseDetails<CaseData, State> caseDetails = buildCaseDetails(dateModels);
+        CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = buildCaseDetails(dateModels);
 
         //when
-        AboutToStartOrSubmitResponse<CaseData, State> response = amendOrderDueDates.midEvent(caseDetails, caseDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = amendOrderDueDates.midEvent(caseDetails,
+            caseDetails);
 
         //then
         assertThat(response.getErrors().getFirst()).isEqualTo(EMPTY_DATE_MODEL);
@@ -171,10 +176,11 @@ class AmendOrderDueDatesTest {
     void whenDateModelNull_thenAddErrorToResponse() {
         //given
 
-        CaseDetails<CaseData, State> caseDetails = buildCaseDetails(null);
+        CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = buildCaseDetails(null);
 
         //when
-        AboutToStartOrSubmitResponse<CaseData, State> response = amendOrderDueDates.midEvent(caseDetails, caseDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = amendOrderDueDates.midEvent(caseDetails,
+            caseDetails);
 
         //then
         assertThat(response.getErrors().getFirst()).isEqualTo(EMPTY_DATE_MODEL);
@@ -183,11 +189,11 @@ class AmendOrderDueDatesTest {
 
 
 
-    private CaseDetails<CaseData, State> buildCaseDetails(List<ListValue<DateModel>> dateModels) {
+    private CaseDetails<CriminalInjuriesCompensationData, State> buildCaseDetails(List<ListValue<DateModel>> dateModels) {
 
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
 
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .orderDueDates(dateModels)
             .build();
         caseDetails.setData(caseData);

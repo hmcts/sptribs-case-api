@@ -16,8 +16,8 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
@@ -122,7 +122,7 @@ public class CaseworkerCloseTheCaseIT {
 
     @Test
     void shouldNotReturnErrorsOnMidEvent() throws Exception {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .closeCase(CloseCase.builder()
                 .documentsUpload(getCaseworkerCICDocumentUploadList("test.pdf"))
                 .build()
@@ -161,7 +161,7 @@ public class CaseworkerCloseTheCaseIT {
         caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
         documentList.add(caseworkerCICDocumentListValue);
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .closeCase(CloseCase.builder()
                 .documentsUpload(documentList)
                 .build()
@@ -187,7 +187,7 @@ public class CaseworkerCloseTheCaseIT {
 
     @Test
     void shouldPopulateJudgesListAndCloseCaseDocumentsUploadedOnAboutToStart() throws Exception {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .closeCase(CloseCase.builder()
                 .documents(getCaseworkerCICDocumentList())
                 .build()
@@ -234,7 +234,7 @@ public class CaseworkerCloseTheCaseIT {
 
     @Test
     void shouldUpdateCaseStateAndCloseCaseDocumentsOnAboutToSubmit() throws Exception {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .closeCase(CloseCase.builder()
                 .documentsUpload(getCaseworkerCICDocumentUploadList("test.pdf"))
                 .build()
@@ -263,7 +263,7 @@ public class CaseworkerCloseTheCaseIT {
 
     @Test
     void shouldReturnConfirmationMessageIfNotificationsDispatchedOnSubmitted() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         caseData.setCicCase(
             CicCase.builder()
@@ -322,7 +322,7 @@ public class CaseworkerCloseTheCaseIT {
 
     @Test
     void shouldReturnErrorMessageIfNotificationsFailOnSubmitted() throws Exception {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .notifyPartySubject(Set.of(SUBJECT))
                 .notifyPartyRespondent(Set.of(RESPONDENT))

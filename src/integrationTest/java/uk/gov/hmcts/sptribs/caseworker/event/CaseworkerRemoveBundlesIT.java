@@ -16,7 +16,7 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.IntegrationTestBase;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleIdAndTimestamp;
@@ -102,7 +102,7 @@ public class CaseworkerRemoveBundlesIT extends IntegrationTestBase {
             .filename("3-cicBundle.pdf")
             .build();
 
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         List<ListValue<Bundle>> existingBundles = new ArrayList<>();
         existingBundles.add(ListValue.<Bundle>builder()
             .id("1")
@@ -171,7 +171,10 @@ public class CaseworkerRemoveBundlesIT extends IntegrationTestBase {
             .isEqualTo(json(expectedResponse(CASEWORKER_REMOVE_BUNDLES_ABOUT_TO_START_RESPONSE)));
 
         HashMap<String, Object> aboutToStartResponseMap = objectMapper.readValue(aboutToStartResponse, TYPE_REFERENCE);
-        CaseData caseDataAfterAboutToStart = objectMapper.convertValue(aboutToStartResponseMap.get("data"), CaseData.class);
+        CriminalInjuriesCompensationData caseDataAfterAboutToStart = objectMapper.convertValue(
+            aboutToStartResponseMap.get("data"),
+            CriminalInjuriesCompensationData.class
+        );
 
         List<DynamicListElement> removeBundlesLabels = caseDataAfterAboutToStart.getCicCase().getRemoveBundlesList().getListItems();
 
@@ -209,7 +212,10 @@ public class CaseworkerRemoveBundlesIT extends IntegrationTestBase {
             .isEqualTo(json(expectedResponse(CASEWORKER_REMOVE_BUNDLES_ABOUT_TO_SUBMIT_RESPONSE)));
 
         HashMap<String, Object> aboutToSubmitResponseMap = objectMapper.readValue(aboutToSubmitResponse, TYPE_REFERENCE);
-        CaseData caseDataAfterAboutToSubmit = objectMapper.convertValue(aboutToSubmitResponseMap.get("data"), CaseData.class);
+        CriminalInjuriesCompensationData caseDataAfterAboutToSubmit = objectMapper.convertValue(
+            aboutToSubmitResponseMap.get("data"),
+            CriminalInjuriesCompensationData.class
+        );
 
         assertThat(caseDataAfterAboutToSubmit.getCaseBundles()).hasSize(1);
         assertThat(caseDataAfterAboutToSubmit.getCaseBundles().getFirst().getId()).isEqualTo("1");
@@ -243,7 +249,7 @@ public class CaseworkerRemoveBundlesIT extends IntegrationTestBase {
             .filename("3-cicBundle.pdf")
             .build();
 
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         List<ListValue<Bundle>> existingBundles = new ArrayList<>();
         existingBundles.add(ListValue.<Bundle>builder()
             .id("1")
@@ -312,7 +318,10 @@ public class CaseworkerRemoveBundlesIT extends IntegrationTestBase {
             .isEqualTo(json(expectedResponse(CASEWORKER_REMOVE_BUNDLES_ABOUT_TO_START_RESPONSE)));
 
         HashMap<String, Object> aboutToStartResponseMap = objectMapper.readValue(aboutToStartResponse, TYPE_REFERENCE);
-        CaseData caseDataAfterAboutToStart = objectMapper.convertValue(aboutToStartResponseMap.get("data"), CaseData.class);
+        CriminalInjuriesCompensationData caseDataAfterAboutToStart = objectMapper.convertValue(
+            aboutToStartResponseMap.get("data"),
+            CriminalInjuriesCompensationData.class
+        );
 
         List<DynamicListElement> removeBundlesLabels = caseDataAfterAboutToStart.getCicCase().getRemoveBundlesList().getListItems();
 
@@ -346,7 +355,10 @@ public class CaseworkerRemoveBundlesIT extends IntegrationTestBase {
             .isEqualTo(json(expectedResponse(CASEWORKER_REMOVE_BUNDLES_ABOUT_TO_START_RESPONSE)));
 
         HashMap<String, Object> midEventResponseMap = objectMapper.readValue(midEventResponse, TYPE_REFERENCE);
-        CaseData caseDataAfterAboutToSubmit = objectMapper.convertValue(midEventResponseMap.get("data"), CaseData.class);
+        CriminalInjuriesCompensationData caseDataAfterAboutToSubmit = objectMapper.convertValue(
+            midEventResponseMap.get("data"),
+            CriminalInjuriesCompensationData.class
+        );
 
         assertThat(caseDataAfterAboutToSubmit.getCicCase().getRemoveBundlesList().getValue()).isEmpty();
 

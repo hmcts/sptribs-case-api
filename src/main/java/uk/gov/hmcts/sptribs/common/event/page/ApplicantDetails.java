@@ -18,7 +18,7 @@ import java.util.Map;
 public class ApplicantDetails implements CcdPageConfiguration {
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
         Map<String, String> map = new HashMap<>();
         map.put("applicantDetailsObjects", "cicCasePartiesCICCONTAINS \"ApplicantCIC\"");
         map.put("representativeDetailsObjects", "cicCasePartiesCICCONTAINS \"RepresentativeCIC\"");
@@ -36,10 +36,10 @@ public class ApplicantDetails implements CcdPageConfiguration {
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(
-        CaseDetails<CaseData, State> details,
-        CaseDetails<CaseData, State> detailsBefore) {
-        final CaseData data = details.getData();
+    public <T extends CaseData> AboutToStartOrSubmitResponse<T, State> midEvent(
+        CaseDetails<T, State> details,
+        CaseDetails<T, State> detailsBefore) {
+        final T data = details.getData();
         final List<String> errors = new ArrayList<>();
 
         if (null != data.getCicCase()
@@ -56,7 +56,7 @@ public class ApplicantDetails implements CcdPageConfiguration {
             }
         }
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<T, State>builder()
             .data(data)
             .errors(errors)
             .build();

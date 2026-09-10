@@ -63,7 +63,7 @@ public class ReferToJudgeReason implements CcdPageConfiguration {
         );
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
         pageBuilder.page("referToJudgeReason", this::midEvent)
             .pageLabel("Referral reasons")
             .complex(CaseData::getReferToJudge)
@@ -72,16 +72,16 @@ public class ReferToJudgeReason implements CcdPageConfiguration {
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                  CaseDetails<CaseData, State> detailsBefore) {
+    public <T extends CaseData> AboutToStartOrSubmitResponse<T, State> midEvent(CaseDetails<T, State> details,
+                                                                  CaseDetails<T, State> detailsBefore) {
         final State caseState = details.getState();
-        final CaseData data = details.getData();
+        final T data = details.getData();
         final List<String> errors = new ArrayList<>();
 
         if (!emptyIfNull(permittedStatesByReason.get(data.getReferToJudge().getReferralReason())).contains(caseState)) {
             errors.add(INCOMPATIBLE_REFERRAL_REASON);
         }
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<T, State>builder()
             .data(data)
             .errors(errors)
             .build();

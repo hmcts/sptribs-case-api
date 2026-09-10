@@ -14,7 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
@@ -58,7 +58,7 @@ public class CaseworkerPanelCompositionIT {
 
     @Test
     void shouldPopulatePanel1OnAboutToStart() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final HearingSummary hearingSummary = HearingSummary.builder().build();
         final Listing listing = Listing.builder()
             .summary(hearingSummary)
@@ -81,7 +81,7 @@ public class CaseworkerPanelCompositionIT {
 
     @Test
     void shouldPopulatePanelCompositionOnAboutToSubmit() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final HearingSummary hearingSummary = HearingSummary.builder().build();
         final Listing listing = Listing.builder()
             .summary(hearingSummary)

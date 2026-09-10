@@ -11,9 +11,9 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ReferToJudgeAdditionalInfo;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ReferToJudgeReason;
 import uk.gov.hmcts.sptribs.caseworker.model.ReferToJudge;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import java.time.LocalDate;
@@ -37,14 +37,14 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 
 @Component
 @Slf4j
-public class CaseWorkerReferToJudge implements CCDConfig<CaseData, State, UserRole> {
+public class CaseWorkerReferToJudge implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     private final ReferToJudgeReason referToJudgeReason = new ReferToJudgeReason();
     private final ReferToJudgeAdditionalInfo referToJudgeAdditionalInfo = new ReferToJudgeAdditionalInfo();
 
     @Override
-    public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
+    public void configure(ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+        Event.EventBuilder<CriminalInjuriesCompensationData, UserRole, State> eventBuilder =
             configBuilder
                 .event(CASEWORKER_REFER_TO_JUDGE)
                 .forStates(
@@ -68,37 +68,39 @@ public class CaseWorkerReferToJudge implements CCDConfig<CaseData, State, UserRo
                     ST_CIC_JUDGE)
                 .publishToCamunda();
 
-        PageBuilder pageBuilder = new PageBuilder(eventBuilder);
+        PageBuilder<CriminalInjuriesCompensationData> pageBuilder = new PageBuilder<>(eventBuilder);
         referToJudgeReason.addTo(pageBuilder);
         referToJudgeAdditionalInfo.addTo(pageBuilder);
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-        CaseData caseData = details.getData();
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStart(CaseDetails<CriminalInjuriesCompensationData,
+        State> details) {
+        CriminalInjuriesCompensationData caseData = details.getData();
         caseData.setReferToJudge(new ReferToJudge());
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
-                                                                       CaseDetails<CaseData, State> beforeDetails) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+        State> aboutToSubmit(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                                       CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
 
-        CaseData caseData = details.getData();
+        CriminalInjuriesCompensationData caseData = details.getData();
         caseData.getReferToJudge().setReferralDate(LocalDate.now());
         if (caseData.getReferToJudge() != null
                 && caseData.getReferToJudge().getReferralReason() != null) {
             caseData.getCicCase().setReferralTypeForWA(caseData.getReferToJudge().getReferralReason().getLabel());
         }
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .build();
     }
 
-    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                              CaseDetails<CaseData, State> beforeDetails) {
+    public SubmittedCallbackResponse submitted(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                              CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
             .confirmationHeader("# Referral completed")
             .build();

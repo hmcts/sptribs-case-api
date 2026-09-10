@@ -14,8 +14,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
 import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
 import uk.gov.hmcts.sptribs.controllers.mapper.CaseworkerCICDocumentMapper;
@@ -125,7 +125,7 @@ class DocumentControllerTest {
         when(user.getUserInfo()).thenReturn(userInfo);
         when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
 
-        final CaseData caseData = new CaseData();
+        final CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
         final CicCase cicCase = new CicCase();
         cicCase.setEmail("test-email@hmcts.net");
         caseData.setCicCase(cicCase);
@@ -216,7 +216,7 @@ class DocumentControllerTest {
         when(user.getUserInfo()).thenReturn(userInfo);
         when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
 
-        final CaseData caseData = new CaseData();
+        final CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
         final CicCase cicCase = new CicCase();
         cicCase.setEmail("test-email@hmcts.net");
         caseData.setCicCase(cicCase);
@@ -308,7 +308,7 @@ class DocumentControllerTest {
     @Test
     void shouldThrowExceptionWhenUserInfoMissingOnGetDocuments() {
         // Given
-        final CaseData caseData = new CaseData();
+        final CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
         final CicCase cicCase = new CicCase();
         cicCase.setEmail("test-email@hmcts.net");
         caseData.setCicCase(cicCase);

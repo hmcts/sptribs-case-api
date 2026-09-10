@@ -13,6 +13,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
@@ -52,7 +53,7 @@ public class ApplicationReceivedNotificationTest {
         @Test
         void shouldNotifySubjectOfApplicationReceivedWithEmail() {
             //Given
-            final CaseData data = getMockCaseData();
+            final CriminalInjuriesCompensationData data = getMockCaseData();
             data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
             data.getCicCase().setEmail("test@outlook.com");
 
@@ -73,7 +74,7 @@ public class ApplicationReceivedNotificationTest {
 
         @Test
         void shouldNotNotifySubjectOfApplicationIfContactPreferenceIsNull() {
-            final CaseData data = getMockCaseData();
+            final CriminalInjuriesCompensationData data = getMockCaseData();
             data.getCicCase().setContactPreferenceType(null);
             data.getCicCase().setEmail("test@outlook.com");
 
@@ -85,7 +86,7 @@ public class ApplicationReceivedNotificationTest {
         @Test
         void shouldNotifyApplicantOfApplicationReceivedWithEmail() {
             //Given
-            final CaseData data = getMockCaseData();
+            final CriminalInjuriesCompensationData data = getMockCaseData();
             data.getCicCase().setApplicantFullName("appFullName");
             data.getCicCase().setApplicantContactDetailsPreference(ContactPreferenceType.EMAIL);
             data.getCicCase().setApplicantEmailAddress("test@outlook.com");
@@ -107,7 +108,7 @@ public class ApplicationReceivedNotificationTest {
 
         @Test
         void shouldNotNotifyApplicantOfApplicationIfContactPreferenceIsNull() {
-            final CaseData data = getMockCaseData();
+            final CriminalInjuriesCompensationData data = getMockCaseData();
             data.getCicCase().setContactPreferenceType(null);
             data.getCicCase().setEmail("test@outlook.com");
 
@@ -119,7 +120,7 @@ public class ApplicationReceivedNotificationTest {
         @Test
         void shouldNotifyRepresentativeOfApplicationReceivedWithEmail() {
             //Given
-            final CaseData data = getMockCaseData();
+            final CriminalInjuriesCompensationData data = getMockCaseData();
             data.getCicCase().setRepresentativeFullName("repFullName");
             data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
             data.getCicCase().setRepresentativeEmailAddress("test@outlook.com");
@@ -141,7 +142,7 @@ public class ApplicationReceivedNotificationTest {
 
         @Test
         void shouldNotNotifyRepresentativeOfApplicationIfContactPreferenceIsNull() {
-            final CaseData data = getMockCaseData();
+            final CriminalInjuriesCompensationData data = getMockCaseData();
             data.getCicCase().setContactPreferenceType(null);
             data.getCicCase().setEmail("test@outlook.com");
 
@@ -165,7 +166,7 @@ public class ApplicationReceivedNotificationTest {
         @Test
         void shouldNotifyRepresentativeOfApplicationReceivedWithEmail() {
             //Given
-            final CaseData data = getMockCaseData();
+            final CriminalInjuriesCompensationData data = getMockCaseData();
             data.getCicCase().setRepresentativeFullName("repFullName");
             data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
             data.getCicCase().setRepresentativeEmailAddress("test@outlook.com");
@@ -186,10 +187,10 @@ public class ApplicationReceivedNotificationTest {
         }
     }
 
-    private CaseData getMockCaseData() {
+    private CriminalInjuriesCompensationData getMockCaseData() {
         CicCase cicCase = CicCase.builder().fullName("fullName").caseNumber(TEST_CASE_ID.toString()).build();
 
-        return CaseData.builder()
+        return CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .build();
     }

@@ -13,7 +13,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
@@ -58,7 +58,7 @@ public class IssueFinalDecisionSelectTemplateIT {
 
     @Test
     void shouldSetDecisionMainContentToEmptyStringIfDecisionGeneralDirectionsOnMidEvent() throws Exception {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .caseIssueFinalDecision(CaseIssueFinalDecision.builder()
                 .decisionTemplate(GENERAL_DIRECTIONS)
                 .build()
@@ -84,7 +84,7 @@ public class IssueFinalDecisionSelectTemplateIT {
 
     @Test
     void shouldPopulateDecisionMainContentOnMidEvent() throws Exception {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .caseIssueFinalDecision(CaseIssueFinalDecision.builder()
                 .decisionTemplate(PRO_FORMA_SUMMONS)
                 .build()

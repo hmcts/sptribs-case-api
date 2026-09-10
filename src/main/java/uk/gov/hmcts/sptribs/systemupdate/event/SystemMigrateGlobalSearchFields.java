@@ -12,9 +12,9 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseManagementLocation;
 import uk.gov.hmcts.sptribs.caseworker.service.ExtendedCaseDataService;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_WA_CASE_REGI
 
 @Component
 @Slf4j
-public class SystemMigrateGlobalSearchFields implements CCDConfig<CaseData, State, UserRole> {
+public class SystemMigrateGlobalSearchFields implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     public static final String SYSTEM_MIGRATE_GLOBAL_SEARCH_FIELDS = "system-migrate-global-search-fields";
 
@@ -51,7 +51,7 @@ public class SystemMigrateGlobalSearchFields implements CCDConfig<CaseData, Stat
     }
 
     @Override
-    public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    public void configure(ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
         configBuilder
             .event(SYSTEM_MIGRATE_GLOBAL_SEARCH_FIELDS)
             .forAllStates()
@@ -62,22 +62,24 @@ public class SystemMigrateGlobalSearchFields implements CCDConfig<CaseData, Stat
             .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE);
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
-                                                                       final CaseDetails<CaseData, State> beforeDetails) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+        State> aboutToSubmit(final CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                                       final CaseDetails<CriminalInjuriesCompensationData,
+                                                                           State> beforeDetails) {
         final Long caseId = details.getId();
-        final CaseData caseData = details.getData();
+        final CriminalInjuriesCompensationData caseData = details.getData();
         final Map<String, Object> dataClassification = setDataClassification(caseId);
         caseData.setCaseManagementCategory(setCaseManagementCategory());
         caseData.setCaseManagementLocation(setCaseManagementLocation());
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .dataClassification(dataClassification)
             .build();
     }
 
-    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                               CaseDetails<CaseData, State> beforeDetails) {
+    public SubmittedCallbackResponse submitted(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                               CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
 
         final Long caseId = details.getId();
 

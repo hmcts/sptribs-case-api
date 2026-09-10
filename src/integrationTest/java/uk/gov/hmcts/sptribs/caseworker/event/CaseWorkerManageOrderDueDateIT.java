@@ -20,8 +20,8 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DueDateOptions;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
@@ -113,7 +113,7 @@ public class CaseWorkerManageOrderDueDateIT {
             .orderList(list)
             .build();
 
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .build();
 
@@ -173,7 +173,7 @@ public class CaseWorkerManageOrderDueDateIT {
             .orderDynamicList(dynamicList)
             .build();
 
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .orderDueDates(dueDateList)
             .build();
@@ -196,7 +196,7 @@ public class CaseWorkerManageOrderDueDateIT {
 
     @Test
     void shouldReturnSuccessMessageInSubmitted() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
                 .contentType(APPLICATION_JSON)

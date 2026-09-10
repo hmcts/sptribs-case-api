@@ -11,9 +11,9 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import java.util.ArrayList;
@@ -48,15 +48,15 @@ public class EditHearingSummarySelectTest {
                     ).build()
             ).build();
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .hearingList(listValueList)
             .cicCase(cicCase)
             .build();
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             editHearingSummarySelect.midEvent(updatedCaseDetails, updatedCaseDetails);
 
         assertThat(response.getData().getListing().getSummary().getRecFileUpload()).hasSize(1);
@@ -87,15 +87,15 @@ public class EditHearingSummarySelectTest {
                     ).build()
             ).build();
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .hearingList(listValueList)
             .cicCase(cicCase)
             .build();
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             editHearingSummarySelect.midEvent(updatedCaseDetails, updatedCaseDetails);
 
         assertThat(response.getData().getListing().getSummary().getRecFileUpload()).isNull();
@@ -113,15 +113,15 @@ public class EditHearingSummarySelectTest {
                     ).build()
             ).build();
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .hearingList(new ArrayList<>())
             .cicCase(cicCase)
             .build();
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             editHearingSummarySelect.midEvent(updatedCaseDetails, updatedCaseDetails);
 
         assertThat(response.getData().getListing().getSummary().getRecFileUpload()).isNull();

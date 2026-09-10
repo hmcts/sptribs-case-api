@@ -17,7 +17,6 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
@@ -25,6 +24,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.document.DocumentUtil;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
@@ -72,7 +72,7 @@ class CaseWorkerCloseTheCaseTest {
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
 
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         caseworkerCloseTheCase.configure(configBuilder);
 
@@ -97,16 +97,17 @@ class CaseWorkerCloseTheCaseTest {
 
     @Test
     void shouldRunAboutToStart() {
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder().build();
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .build();
         updatedCaseDetails.setData(caseData);
         final DynamicList userList = new DynamicList();
         when(judicialService.getAllUsers(caseData)).thenReturn(userList);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerCloseTheCase.aboutToStart(updatedCaseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+            State> response = caseworkerCloseTheCase.aboutToStart(updatedCaseDetails);
 
         assertThat(response).isNotNull();
         assertThat(response.getData().getCloseCase().getRejectionName()).isEqualTo(userList);
@@ -116,7 +117,7 @@ class CaseWorkerCloseTheCaseTest {
 
     @Test
     void shouldSuccessfullyChangeCaseManagementStateToClosedState() {
-        final CaseData caseData = closedCaseData();
+        final CriminalInjuriesCompensationData caseData = closedCaseData();
         final CaseworkerCICDocumentUpload document = CaseworkerCICDocumentUpload.builder()
             .documentLink(Document.builder().build())
             .documentEmailContent("some email content")
@@ -145,14 +146,14 @@ class CaseWorkerCloseTheCaseTest {
             .build();
 
         caseData.setCicCase(cicCase);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         assertThat(caseData.getCaseStatus()).isEqualTo(State.CaseManagement);
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerCloseTheCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         final SubmittedCallbackResponse closedCase =
@@ -165,23 +166,24 @@ class CaseWorkerCloseTheCaseTest {
 
     @Test
     void shouldReturnErrorForInvalidUploadedDocument() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         final CloseCase closeCase = CloseCase.builder().documentsUpload(getCaseworkerCICDocumentUploadList("file.xml")).build();
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .closeCase(closeCase)
             .build();
         caseDetails.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerCloseTheCase.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = caseworkerCloseTheCase.midEvent(caseDetails,
+            caseDetails);
 
         assertThat(response.getErrors()).contains(DOCUMENT_VALIDATION_MESSAGE);
     }
 
     @Test
     void midEventShouldValidateUploadedDocumentsOnce() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         final CloseCase closeCase = CloseCase.builder().documentsUpload(getCaseworkerCICDocumentUploadList("file.xml")).build();
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .closeCase(closeCase)
             .build();
         caseDetails.setData(caseData);

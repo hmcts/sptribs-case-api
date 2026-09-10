@@ -12,7 +12,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 public class PostponeHearingSelectReason implements CcdPageConfiguration {
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
         pageBuilder
             .page("caseworkerPostponeHearingSelectReason")
             .pageLabel("Reasons for postponement")

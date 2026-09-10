@@ -11,9 +11,9 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.UploadCaseDocuments;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.service.AuditEventService;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
@@ -55,7 +55,7 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.uploadDocument;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class RespondentDocumentManagement implements CCDConfig<CaseData, State, UserRole> {
+public class RespondentDocumentManagement implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     private static final boolean DATE_INCLUDED = true;
     private final UploadCaseDocuments uploadCaseDocuments = new UploadCaseDocuments();
@@ -63,8 +63,8 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
     private final DocumentsService documentsService;
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
+    public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+        Event.EventBuilder<CriminalInjuriesCompensationData, UserRole, State> eventBuilder =
             configBuilder
                 .event(RESPONDENT_DOCUMENT_MANAGEMENT)
                 .forStates(Withdrawn,
@@ -93,14 +93,16 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
                 .submittedCallback(this::submitted)
                 .publishToCamunda();
 
-        PageBuilder pageBuilder = new PageBuilder(eventBuilder);
+        PageBuilder<CriminalInjuriesCompensationData> pageBuilder = new PageBuilder<>(eventBuilder);
         uploadCaseDocuments.addTo(pageBuilder);
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
-                                                                       final CaseDetails<CaseData, State> beforeDetails) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+        State> aboutToSubmit(final CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                                       final CaseDetails<CriminalInjuriesCompensationData,
+                                                                           State> beforeDetails) {
 
-        final CaseData caseData = details.getData();
+        final CriminalInjuriesCompensationData caseData = details.getData();
         List<ListValue<CaseworkerCICDocument>> allDocuments;
         List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = caseData.getNewDocManagement().getCaseworkerCICDocumentUpload();
         List<ListValue<CaseworkerCICDocument>> documents = convertToCaseworkerCICDocumentUpload(uploadedDocuments, DATE_INCLUDED);
@@ -132,15 +134,15 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
             }
         }
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .errors(errors)
             .build();
 
     }
 
-    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                               CaseDetails<CaseData, State> beforeDetails) {
+    public SubmittedCallbackResponse submitted(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                               CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader("# Case Updated")

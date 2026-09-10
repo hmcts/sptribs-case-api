@@ -24,6 +24,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.constants.CommonConstants;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
@@ -69,7 +70,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestFileUtil.loadJson;
 
 @ExtendWith({MockitoExtension.class})
 class CicSubmitCaseEventTest {
-    final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+    final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
     @InjectMocks
     private CicSubmitCaseEvent cicSubmitCaseEvent;
@@ -174,11 +175,11 @@ class CicSubmitCaseEventTest {
             .build();
 
         final CicCase cicCase = CicCase.builder().build();
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setCicCase(cicCase);
         caseData.setDssCaseData(dssCaseData);
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
@@ -187,9 +188,9 @@ class CicSubmitCaseEventTest {
         when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
 
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             cicSubmitCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
@@ -234,17 +235,17 @@ class CicSubmitCaseEventTest {
             .build();
 
         final CicCase cicCase = CicCase.builder().build();
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setCicCase(cicCase);
         caseData.setDssCaseData(dssCaseData);
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
         updatedCaseDetails.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             cicSubmitCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
@@ -287,16 +288,16 @@ class CicSubmitCaseEventTest {
     void shouldSubmitEventThroughSubmittedCallbackWithNotification() throws IOException {
         final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
         String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
-        final CaseData caseBeforeData = mapper.readValue(caseDataJson, CaseData.class);
+        final CriminalInjuriesCompensationData caseBeforeData = mapper.readValue(caseDataJson, CriminalInjuriesCompensationData.class);
 
-        final CaseDetails<CaseData, State> beforeCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeCaseDetails = new CaseDetails<>();
         beforeCaseDetails.setData(caseBeforeData);
         beforeCaseDetails.setState(State.Submitted);
         beforeCaseDetails.setId(TEST_CASE_ID);
         beforeCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
+        CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
+        CriminalInjuriesCompensationData caseData = mapper.readValue(caseDataJson, CriminalInjuriesCompensationData.class);
         caseDetails.setData(caseData);
         caseDetails.setState(State.Submitted);
         caseDetails.setId(TEST_CASE_ID);
@@ -310,7 +311,7 @@ class CicSubmitCaseEventTest {
         when(appsConfig.getApps()).thenReturn(List.of(cicAppDetail));
         cicSubmitCaseEvent.configure(configBuilder);
 
-        AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmitResponse = cicSubmitCaseEvent.aboutToSubmit(
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmitResponse = cicSubmitCaseEvent.aboutToSubmit(
             caseDetails,
             beforeCaseDetails
         );
@@ -334,16 +335,16 @@ class CicSubmitCaseEventTest {
     void shouldSubmitEventThroughSubmittedCallbackWithoutNotificationParties() throws IOException {
         final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
         String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
-        final CaseData caseBeforeData = mapper.readValue(caseDataJson, CaseData.class);
+        final CriminalInjuriesCompensationData caseBeforeData = mapper.readValue(caseDataJson, CriminalInjuriesCompensationData.class);
 
-        final CaseDetails<CaseData, State> beforeCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeCaseDetails = new CaseDetails<>();
         beforeCaseDetails.setData(caseBeforeData);
         beforeCaseDetails.setState(State.Submitted);
         beforeCaseDetails.setId(TEST_CASE_ID);
         beforeCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
+        CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
+        CriminalInjuriesCompensationData caseData = mapper.readValue(caseDataJson, CriminalInjuriesCompensationData.class);
         caseDetails.setData(caseData);
         caseDetails.setState(State.Submitted);
         caseDetails.setId(TEST_CASE_ID);
@@ -355,7 +356,7 @@ class CicSubmitCaseEventTest {
         when(appsConfig.getApps()).thenReturn(List.of(cicAppDetail));
         cicSubmitCaseEvent.configure(configBuilder);
 
-        AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmitResponse = cicSubmitCaseEvent.aboutToSubmit(
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmitResponse = cicSubmitCaseEvent.aboutToSubmit(
             caseDetails,
             beforeCaseDetails
         );
@@ -375,13 +376,13 @@ class CicSubmitCaseEventTest {
 
     @Test
     void shouldCatchErrorIfSendEmailNotificationFails() {
-        CaseData caseData = CaseData.builder().build();
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         DssCaseData dssCaseData = DssCaseData.builder().build();
         dssCaseData.setSubjectEmailAddress(TEST_UPDATE_CASE_EMAIL_ADDRESS);
         dssCaseData.setRepresentativeEmailAddress(TEST_UPDATE_CASE_EMAIL_ADDRESS);
         caseData.setDssCaseData(dssCaseData);
 
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         details.setId(TEST_CASE_ID);
         details.setData(caseData);
 
@@ -418,23 +419,23 @@ class CicSubmitCaseEventTest {
             .build();
 
         final CicCase cicCase = CicCase.builder().build();
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setCicCase(cicCase);
         caseData.setDssCaseData(dssCaseData);
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         updatedCaseDetails.setData(caseData);
 
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
 
         doThrow(new RuntimeException("Error saving document entity to database"))
             .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID),
                 eq(DocumentType.DSS_TRIBUNAL_FORM), eq(CaseDocumentType.APPLICATION));
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             cicSubmitCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         assertThat(response.getErrors()).hasSize(1);
@@ -450,7 +451,7 @@ class CicSubmitCaseEventTest {
         dssCaseData.setTribunalFormDocuments(List.of(tribunalFormDocListValue));
         updatedCaseDetails.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> nullFilenameResponse =
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> nullFilenameResponse =
             cicSubmitCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         assertThat(nullFilenameResponse.getErrors()).hasSize(1);
@@ -462,7 +463,7 @@ class CicSubmitCaseEventTest {
         dssCaseData.setTribunalFormDocuments(List.of(tribunalFormDocListValue));
         updatedCaseDetails.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> emptyFilenameResponse =
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> emptyFilenameResponse =
             cicSubmitCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         assertThat(emptyFilenameResponse.getErrors()).hasSize(1);
@@ -502,17 +503,17 @@ class CicSubmitCaseEventTest {
             .build();
 
         final CicCase cicCase = CicCase.builder().build();
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setCicCase(cicCase);
         caseData.setDssCaseData(dssCaseData);
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         updatedCaseDetails.setData(caseData);
 
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
 
         doThrow(new RuntimeException("Error saving document entity to database"))
             .when(documentsService).buildAndSaveNewDocumentEntity(
@@ -524,7 +525,7 @@ class CicSubmitCaseEventTest {
             argThat(doc -> "happy_file.pdf".equals(doc.getFilename())),
             eq(TEST_CASE_ID), eq(DocumentType.DSS_SUPPORTING), eq(CaseDocumentType.APPLICATION));
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             cicSubmitCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         assertThat(response.getErrors()).hasSize(2);

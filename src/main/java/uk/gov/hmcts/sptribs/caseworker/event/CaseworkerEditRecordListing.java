@@ -28,6 +28,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ListingUpdatedNotification;
@@ -52,7 +53,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 
 @Component
 @Slf4j
-public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerEditRecordListing implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     private static final CcdPageConfiguration selectHearing = new SelectHearing();
 
@@ -76,8 +77,8 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
     private ListingUpdatedNotification listingUpdatedNotification;
 
     @Override
-    public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
+    public void configure(ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+        Event.EventBuilder<CriminalInjuriesCompensationData, UserRole, State> eventBuilder =
             configBuilder
                 .event(CASEWORKER_EDIT_RECORD_LISTING)
                 .forStates(AwaitingHearing)
@@ -93,7 +94,7 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
                 .grantHistoryOnly(ST_CIC_JUDGE)
                 .publishToCamunda();
 
-        PageBuilder pageBuilder = new PageBuilder(eventBuilder);
+        PageBuilder<CriminalInjuriesCompensationData> pageBuilder = new PageBuilder<>(eventBuilder);
         selectHearing.addTo(pageBuilder);
         hearingTypeAndFormat.addTo(pageBuilder);
         addRegionInfo(pageBuilder);
@@ -104,9 +105,10 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
         recordNotifyParties.addTo(pageBuilder);
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStart(CaseDetails<CriminalInjuriesCompensationData,
+        State> details) {
 
-        final CaseData caseData = details.getData();
+        final CriminalInjuriesCompensationData caseData = details.getData();
         caseData.setCurrentEvent(CASEWORKER_EDIT_RECORD_LISTING);
 
         if (!StringUtils.isEmpty(caseData.getListing().getReadOnlyHearingVenueName())) {
@@ -119,15 +121,16 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
 
         DynamicList hearingDateDynamicList = hearingService.getListedHearingDynamicList(caseData);
         caseData.getCicCase().setHearingList(hearingDateDynamicList);
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .state(CaseManagement)
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                  CaseDetails<CaseData, State> detailsBefore) {
-        final CaseData caseData = details.getData();
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> midEvent(CaseDetails<CriminalInjuriesCompensationData,
+        State> details,
+                                                                  CaseDetails<CriminalInjuriesCompensationData, State> detailsBefore) {
+        final CriminalInjuriesCompensationData caseData = details.getData();
         final CaseData caseDataBefore = detailsBefore.getData();
 
         recordListHelper.populateVenuesData(caseData);
@@ -140,16 +143,17 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
             caseData.getListing().getHearingVenues().setValue(caseDataBefore.getListing().getHearingVenues().getValue());
 
         }
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .build();
     }
 
     @SneakyThrows
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
-                                                                       CaseDetails<CaseData, State> beforeDetails) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+        State> aboutToSubmit(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                                       CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
 
-        final CaseData caseData = details.getData();
+        final CriminalInjuriesCompensationData caseData = details.getData();
         final List<String> errors = recordListHelper.getErrorMsg(details.getData().getCicCase());
         if (null != caseData.getListing()
             && null != caseData.getListing().getNumberOfDays()
@@ -164,17 +168,17 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
 
         hearingService.updateHearingList(caseData, hearingName);
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .state(AwaitingHearing)
             .errors(errors)
             .build();
     }
 
-    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                               CaseDetails<CaseData, State> beforeDetails) {
+    public SubmittedCallbackResponse submitted(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                               CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
 
-        final CaseData caseData = details.getData();
+        final CriminalInjuriesCompensationData caseData = details.getData();
         final CicCase cicCase = caseData.getCicCase();
         Set<NotificationParties> notificationPartiesSet = cicCase.getHearingNotificationParties();
         String caseNumber = caseData.getHyphenatedCaseRef();
@@ -203,7 +207,7 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
             .build();
     }
 
-    private void addRegionInfo(PageBuilder pageBuilder) {
+    private void addRegionInfo(PageBuilder<CriminalInjuriesCompensationData> pageBuilder) {
         pageBuilder.page("regionInfo", this::midEvent)
             .pageLabel("Region Data")
             .label("labelEditRecordingRegionData", "")

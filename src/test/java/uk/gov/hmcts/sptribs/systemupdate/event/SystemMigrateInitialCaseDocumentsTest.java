@@ -11,9 +11,9 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.repositories.exception.CaseEventRepositoryException;
 import uk.gov.hmcts.sptribs.common.service.CaseDataRestoreService;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
@@ -42,7 +42,7 @@ class SystemMigrateInitialCaseDocumentsTest {
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
         systemMigrateInitialCaseDocuments.configure(configBuilder);
 
         assertThat(getEventsFrom(configBuilder).values())
@@ -52,9 +52,9 @@ class SystemMigrateInitialCaseDocumentsTest {
 
     @Test
     void shouldCallUpdateInitialCaseDocumentsWithCorrectArguments() {
-        CaseData caseData = CaseData.builder().build();
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
 
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setId(TEST_CASE_ID);
         caseDetails.setData(caseData);
 
@@ -68,16 +68,16 @@ class SystemMigrateInitialCaseDocumentsTest {
 
     @Test
     void shouldReturnCaseDataInResponse() {
-        CaseData caseData = CaseData.builder().build();
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
 
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setId(TEST_CASE_ID);
         caseDetails.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             systemMigrateInitialCaseDocuments.aboutToSubmit(caseDetails, null);
 
-        CaseData data = response.getData();
+        CriminalInjuriesCompensationData data = response.getData();
         assertThat(data).isEqualTo(caseData);
         assertThat(data.getNewBundleOrderEnabled()).isEqualTo(YesNo.YES);
     }
@@ -89,19 +89,19 @@ class SystemMigrateInitialCaseDocumentsTest {
             .value(CaseworkerCICDocument.builder().build())
             .build();
 
-        CaseData caseData = CaseData.builder().build();
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
 
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setId(TEST_CASE_ID);
         caseDetails.setData(caseData);
 
         doAnswer(invocation -> {
-            CaseData data = invocation.getArgument(1);
+            CriminalInjuriesCompensationData data = invocation.getArgument(1);
             data.setInitialCicaDocuments(List.of(doc));
             return null;
         }).when(caseDataRestoreService).updateInitialCaseDocuments(any(), any());
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             systemMigrateInitialCaseDocuments.aboutToSubmit(caseDetails, null);
 
         assertThat(response.getData().getInitialCicaDocuments())
@@ -112,9 +112,9 @@ class SystemMigrateInitialCaseDocumentsTest {
 
     @Test
     void shouldPropagateExceptionWhenServiceThrows() {
-        CaseData caseData = CaseData.builder().build();
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
 
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setId(TEST_CASE_ID);
         caseDetails.setData(caseData);
 

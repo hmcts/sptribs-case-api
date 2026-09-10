@@ -18,9 +18,9 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.IntegrationTestBase;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
@@ -75,8 +75,8 @@ public class CaseworkerDeleteDraftOrderIT extends IntegrationTestBase {
         IdamWireMock.stopAndReset();
     }
 
-    public CaseData buildTestCaseData() {
-        final CaseData caseData = caseData();
+    public CriminalInjuriesCompensationData buildTestCaseData() {
+        final CriminalInjuriesCompensationData caseData = caseData();
 
         final Document document = Document.builder()
             .url("test/documents/a57d1138-1f8d-4aeb-b5ad-3681aba68747")
@@ -117,7 +117,7 @@ public class CaseworkerDeleteDraftOrderIT extends IntegrationTestBase {
 
     @Test
     void shouldClearRemovedDraftListOnAboutToSubmit() throws Exception {
-        final CaseData caseData = buildTestCaseData();
+        final CriminalInjuriesCompensationData caseData = buildTestCaseData();
 
         caseData.getCicCase().setRemovedDraftList(caseData.getCicCase().getRemovedDraftList());
 
@@ -144,7 +144,7 @@ public class CaseworkerDeleteDraftOrderIT extends IntegrationTestBase {
 
     @Test
     void shouldCorrectlyRepopulateDraftListOnAboutToSubmit() throws Exception {
-        final CaseData caseData = buildTestCaseData();
+        final CriminalInjuriesCompensationData caseData = buildTestCaseData();
 
         final DynamicListElement listItem = DynamicListElement.builder()
             .label("CIC3 - Rule 27--09-05-2024 09:04:04.pdf--draft.pdf")

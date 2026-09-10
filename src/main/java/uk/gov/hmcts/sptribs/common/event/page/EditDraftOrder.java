@@ -23,7 +23,7 @@ public class EditDraftOrder implements CcdPageConfiguration {
     private static final String ALWAYS_HIDE = "cicCaseDraftOrderDynamicList = \"ALWAYS_HIDE\"";
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
         pageBuilder
             .page("editDraftOrder", this::midEvent)
             .pageLabel("Edit order")
@@ -37,9 +37,9 @@ public class EditDraftOrder implements CcdPageConfiguration {
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                   CaseDetails<CaseData, State> beforeDetails) {
-        CaseData caseData = details.getData();
+    public <T extends CaseData> AboutToStartOrSubmitResponse<T, State> midEvent(CaseDetails<T, State> details,
+                                                                   CaseDetails<T, State> beforeDetails) {
+        T caseData = details.getData();
         DynamicList dynamicList = caseData.getCicCase().getDraftOrderDynamicList();
         int listSize = dynamicList.getListItems().size();
         UUID code = dynamicList.getValue().getCode();
@@ -49,7 +49,7 @@ public class EditDraftOrder implements CcdPageConfiguration {
             .ifPresent(index -> caseData.setDraftOrderContentCIC(
                 // draftOrderCICList is in reverse order
                 caseData.getCicCase().getDraftOrderCICList().get(listSize - 1 - index).getValue().getDraftOrderContentCIC()));
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<T, State>builder()
             .data(caseData)
             .build();
     }

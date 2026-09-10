@@ -16,6 +16,7 @@ import uk.gov.hmcts.sptribs.caseworker.service.ExtendedCaseDataService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
@@ -39,7 +40,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 @Setter
-public class CaseworkerChangeSecurityClassification implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerChangeSecurityClassification implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     @Value("${feature.security-classification.enabled}")
     private boolean securityClassificationEnabled;
@@ -55,14 +56,14 @@ public class CaseworkerChangeSecurityClassification implements CCDConfig<CaseDat
 
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
         if (securityClassificationEnabled) {
             doConfigure(configBuilder);
         }
     }
 
-    private void doConfigure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        new PageBuilder(configBuilder
+    private void doConfigure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+        new PageBuilder<>(configBuilder
             .event(CHANGE_SECURITY_CLASS)
             .forAllStates()
             .name("Case: Security classification")
@@ -85,41 +86,44 @@ public class CaseworkerChangeSecurityClassification implements CCDConfig<CaseDat
             .mandatory(CaseData::getSecurityClass);
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
-                                                                       final CaseDetails<CaseData, State> beforeDetails) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+        State> aboutToSubmit(final CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                                       final CaseDetails<CriminalInjuriesCompensationData,
+                                                                           State> beforeDetails) {
 
-        final CaseData caseData = details.getData();
+        final CriminalInjuriesCompensationData caseData = details.getData();
 
         String securityClassification = caseData.getSecurityClass().getLabel();
         Map<String, Object> dataClassification = caseDataService.getDataClassification(details.getId().toString());
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .dataClassification(dataClassification)
             .securityClassification(securityClassification)
             .build();
     }
 
-    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                               CaseDetails<CaseData, State> beforeDetails) {
+    public SubmittedCallbackResponse submitted(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                               CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader("# Security classification changed")
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                  CaseDetails<CaseData, State> detailsBefore) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> midEvent(CaseDetails<CriminalInjuriesCompensationData,
+        State> details,
+                                                                  CaseDetails<CriminalInjuriesCompensationData, State> detailsBefore) {
 
         final List<String> errors = new ArrayList<>();
-        final CaseData caseData = details.getData();
+        final CriminalInjuriesCompensationData caseData = details.getData();
 
         final CICUser user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
         if (!checkAvailableForNewClass(user, caseData.getSecurityClass())) {
             errors.add("You do not have permission to change the case to the selected Security Classification");
         }
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .errors(errors)
             .build();

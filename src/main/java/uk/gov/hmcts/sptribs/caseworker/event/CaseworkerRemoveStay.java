@@ -16,6 +16,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseUnstayedNotification;
@@ -36,7 +37,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 
 @Component
 @Slf4j
-public class CaseworkerRemoveStay implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerRemoveStay implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     private static final CcdPageConfiguration removeStay = new RemoveStay();
 
@@ -44,13 +45,14 @@ public class CaseworkerRemoveStay implements CCDConfig<CaseData, State, UserRole
     private CaseUnstayedNotification caseUnstayedNotification;
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        final PageBuilder pageBuilder = remove(configBuilder);
+    public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+        final PageBuilder<CriminalInjuriesCompensationData> pageBuilder = remove(configBuilder);
         removeStay.addTo(pageBuilder);
     }
 
-    public PageBuilder remove(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        return new PageBuilder(configBuilder
+    public PageBuilder<CriminalInjuriesCompensationData> remove(final ConfigBuilder<CriminalInjuriesCompensationData, State,
+        UserRole> configBuilder) {
+        return new PageBuilder<>(configBuilder
             .event(CASEWORKER_REMOVE_STAY)
             .forStates(CaseStayed, ReadyToList)
             .name("Stays: Remove stay")
@@ -66,34 +68,37 @@ public class CaseworkerRemoveStay implements CCDConfig<CaseData, State, UserRole
                 ST_CIC_JUDGE));
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-        final CaseData caseData = details.getData();
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStart(CaseDetails<CriminalInjuriesCompensationData,
+        State> details) {
+        final CriminalInjuriesCompensationData caseData = details.getData();
         if (details.getState() == CaseStayed) {
             caseData.getRemoveCaseStay().setStayRemoveReason(null);
             caseData.getRemoveCaseStay().setStayRemoveOtherDescription(null);
             caseData.getRemoveCaseStay().setAdditionalDetail(null);
         }
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
-                                                                       final CaseDetails<CaseData, State> beforeDetails) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+        State> aboutToSubmit(final CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                                       final CaseDetails<CriminalInjuriesCompensationData,
+                                                                           State> beforeDetails) {
 
-        final CaseData caseData = details.getData();
+        final CriminalInjuriesCompensationData caseData = details.getData();
         caseData.getCaseStay().setIsCaseStayed(YesOrNo.NO);
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .state(CaseManagement)
             .build();
     }
 
-    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                                 CaseDetails<CaseData, State> beforeDetails) {
-        final CaseData caseData = details.getData();
+    public SubmittedCallbackResponse submitted(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                 CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
+        final CriminalInjuriesCompensationData caseData = details.getData();
         try {
             sendCaseUnStayedNotification(caseData.getHyphenatedCaseRef(), caseData);
         } catch (Exception notificationException) {

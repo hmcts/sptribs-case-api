@@ -21,9 +21,9 @@ import uk.gov.hmcts.sptribs.IntegrationTestBase;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.common.service.ContactPartiesService;
@@ -160,7 +160,7 @@ public class CaseworkerContactPartiesIT extends IntegrationTestBase {
 
     @Test
     void shouldClearContactPartiesAndPrepareContactPartiesDocumentsOnAboutToStart() throws Exception {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .applicantDocumentsUploaded(getCaseworkerCICDocumentList())
                 .build()
@@ -207,7 +207,7 @@ public class CaseworkerContactPartiesIT extends IntegrationTestBase {
             .value(elements)
             .listItems(elements)
             .build());
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         caseData.setCicCase(
             CicCase.builder()
@@ -289,7 +289,7 @@ public class CaseworkerContactPartiesIT extends IntegrationTestBase {
 
     @Test
     void shouldReturnErrorMessageIfNotificationsFailOnSubmitted() throws Exception {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .notifyPartySubject(Set.of(SUBJECT))
                 .notifyPartyRespondent(Set.of(RESPONDENT))

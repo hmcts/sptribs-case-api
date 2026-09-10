@@ -8,10 +8,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
@@ -41,7 +41,7 @@ public class ListingCreatedNotificationTest {
     @Test
     void shouldNotifySubjectOfListingCreatedCitizenWithEmail() {
         //Given
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setEmail("testSubject@outlook.com");
 
@@ -61,7 +61,7 @@ public class ListingCreatedNotificationTest {
     @Test
     void shouldNotifySubjectOfListingCreatedCitizenWithEmailWithFullRecordListing() {
         //Given
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setEmail("testSubject@outlook.com");
 
@@ -90,7 +90,7 @@ public class ListingCreatedNotificationTest {
     @Test
     void shouldNotifySubjectOfListingCreatedCitizenWithPost() {
         //Given
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
         data.getCicCase().setAddress(new AddressGlobalUK("11", "JOHN", "STREET", "WINCHESTER", "COUNTY", "TW4 5BH", "UK"));
 
@@ -110,7 +110,7 @@ public class ListingCreatedNotificationTest {
     @Test
     void shouldNotifyRepresentativeOfListingCreatedCitizenWithEmail() {
         //Given
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
         data.getCicCase().setRepresentativeEmailAddress("testrepr@outlook.com");
@@ -131,7 +131,7 @@ public class ListingCreatedNotificationTest {
     @Test
     void shouldNotifyRepresentativeOfListingCreatedCitizenWithPost() {
         //Given
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.POST);
         data.getCicCase().setRepresentativeAddress(new AddressGlobalUK("11", "JOHN", "STREET", "WINCHESTER", "COUNTY", "TW4 5BH", "UK"));
@@ -151,7 +151,7 @@ public class ListingCreatedNotificationTest {
     @Test
     void shouldNotifyRespondentOfListingCreatedCitizenWithEmail() {
         //Given
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setRespondentName("respFullName");
         data.getCicCase().setRespondentEmail("testrespondent@outlook.com");
 
@@ -172,7 +172,7 @@ public class ListingCreatedNotificationTest {
     @Test
     void shouldNotifyApplicantOfListingCreatedCitizenWithEmail() {
         //Given
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setApplicantEmailAddress("testapp@outlook.com");
         //When
@@ -191,7 +191,7 @@ public class ListingCreatedNotificationTest {
     @Test
     void shouldNotifyApplicantOfListingCreatedCitizenWithPost() {
         //Given
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
         data.getCicCase().setApplicantAddress(new AddressGlobalUK("11", "JOHN", "STREET", "WINCHESTER", "COUNTY", "TW4 5BH", "UK"));
 
@@ -207,10 +207,10 @@ public class ListingCreatedNotificationTest {
             TemplateName.HEARING_CREATED_POST);
     }
 
-    private CaseData getMockCaseData() {
+    private CriminalInjuriesCompensationData getMockCaseData() {
         CicCase cicCase = CicCase.builder().fullName("fullName").caseNumber(TEST_CASE_ID.toString()).build();
 
-        return CaseData.builder()
+        return CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .build();
     }

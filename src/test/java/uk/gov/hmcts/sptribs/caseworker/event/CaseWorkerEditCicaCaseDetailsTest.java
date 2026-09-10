@@ -8,9 +8,9 @@ import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
@@ -28,7 +28,7 @@ class CaseWorkerEditCicaCaseDetailsTest {
     void shouldAddConfigurationToConfigBuilder() {
 
         //Given
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         //When
         caseWorkerEditCicaCaseDetails.configure(configBuilder);
@@ -43,14 +43,16 @@ class CaseWorkerEditCicaCaseDetailsTest {
     void shouldSuccessfullySave() {
 
         //Given
-        final CaseDetails<CaseData, State> updatedCaseDetails = CaseDetails.<CaseData, State>builder()
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = CaseDetails.<CriminalInjuriesCompensationData,
+            State>builder()
             .id(12345L)
-            .data(CaseData.builder().build())
+            .data(CriminalInjuriesCompensationData.builder().build())
             .state(State.CaseManagement)
             .build();
-        final CaseDetails<CaseData, State> beforeDetails = CaseDetails.<CaseData, State>builder()
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = CaseDetails.<CriminalInjuriesCompensationData,
+            State>builder()
             .id(12345L)
-            .data(CaseData.builder().build())
+            .data(CriminalInjuriesCompensationData.builder().build())
             .state(State.CaseManagement)
             .build();
 

@@ -20,7 +20,7 @@ public class CreateNewOrder implements CcdPageConfiguration {
     public static final String HIDDEN = "LabelCreateNewOrder=\"HIDDEN\"";
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
         pageBuilder
                 .page("createNewOrder", this::midEvent)
                 .pageLabel("Create order")
@@ -37,10 +37,10 @@ public class CreateNewOrder implements CcdPageConfiguration {
                 .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                  CaseDetails<CaseData, State> detailsBefore) {
+    public <T extends CaseData> AboutToStartOrSubmitResponse<T, State> midEvent(CaseDetails<T, State> details,
+                                                                  CaseDetails<T, State> detailsBefore) {
 
-        final CaseData caseData = details.getData();
+        final T caseData = details.getData();
         final CicCase cicCase = caseData.getCicCase();
 
         if (cicCase.getTemplateDynamicList() != null) {
@@ -58,7 +58,7 @@ public class CreateNewOrder implements CcdPageConfiguration {
             caseData.getCicCase().setReferralTypeForWA("");
         }
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<T, State>builder()
                 .data(caseData)
                 .build();
     }

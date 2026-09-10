@@ -28,6 +28,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.notification.dispatcher.HearingPostponedNotification;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 
@@ -72,7 +73,7 @@ class CaseworkerPostponeHearingTest {
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
 
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         caseworkerPostponeHearing.configure(configBuilder);
 
@@ -97,15 +98,16 @@ class CaseworkerPostponeHearingTest {
 
     @Test
     void shouldRunAboutToStart() {
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder().build();
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .build();
         updatedCaseDetails.setData(caseData);
         when(hearingService.getListedHearingDynamicList(any())).thenReturn(null);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerPostponeHearing.aboutToStart(updatedCaseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+            State> response = caseworkerPostponeHearing.aboutToStart(updatedCaseDetails);
 
         assertThat(response).isNotNull();
         assertThat(response.getData().getCicCase().getHearingList()).isNull();
@@ -114,11 +116,12 @@ class CaseworkerPostponeHearingTest {
 
     @Test
     void shouldReturnErrorsIfNoNotificationPartySelected() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder().build();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         caseDetails.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = postponeHearingNotifyParties.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+            State> response = postponeHearingNotifyParties.midEvent(caseDetails, caseDetails);
 
         assertThat(response.getErrors()).hasSize(1);
     }
@@ -140,12 +143,12 @@ class CaseworkerPostponeHearingTest {
                     .build()
             )
             .build();
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .hyphenatedCaseRef("1234-5678-3456")
             .build();
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
 
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
@@ -156,7 +159,7 @@ class CaseworkerPostponeHearingTest {
         doNothing().when(hearingPostponedNotification).sendToRespondent(caseData, caseData.getHyphenatedCaseRef());
         doNothing().when(recordListHelper).getNotificationParties(any());
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response
             = caseworkerPostponeHearing.aboutToSubmit(updatedCaseDetails, beforeDetails);
         final SubmittedCallbackResponse submitted = caseworkerPostponeHearing.submitted(updatedCaseDetails, beforeDetails);
 
@@ -171,13 +174,13 @@ class CaseworkerPostponeHearingTest {
     @ParameterizedTest
     @MethodSource("notificationExceptionCicCase")
     void submittedShouldThrowExceptionWhenSendIsUnsuccessful(String notifyParty, CicCase cicCase, Exception exception) {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .hyphenatedCaseRef("1234-5678-3456")
             .build();
 
-        final CaseDetails<CaseData, State> beforeCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         if (notifyParty.equals(SubjectCIC.SUBJECT.name())) {
             doThrow(exception).when(hearingPostponedNotification).sendToSubject(any(CaseData.class), anyString());

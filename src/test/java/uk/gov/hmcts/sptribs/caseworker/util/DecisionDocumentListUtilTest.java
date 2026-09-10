@@ -7,8 +7,8 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
@@ -31,7 +31,7 @@ public class DecisionDocumentListUtilTest {
             .finalDecisionDraft(document)
             .build();
 
-        final CaseData caseData = CaseData.builder().build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         caseData.setCaseIssueFinalDecision(decision);
 
         //When
@@ -57,7 +57,7 @@ public class DecisionDocumentListUtilTest {
             .document(cicDocument)
             .build();
 
-        final CaseData caseData = CaseData.builder().build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         caseData.setCaseIssueFinalDecision(decision);
 
         //When
@@ -84,7 +84,7 @@ public class DecisionDocumentListUtilTest {
             .decisionDocument(cicDocument)
             .build();
 
-        final CaseData caseData = CaseData.builder().build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         caseData.setCaseIssueDecision(decision);
 
         //When
@@ -107,7 +107,7 @@ public class DecisionDocumentListUtilTest {
             .issueDecisionDraft(document)
             .build();
 
-        final CaseData caseData = CaseData.builder().build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         caseData.setCaseIssueDecision(decision);
 
         //When
@@ -124,7 +124,7 @@ public class DecisionDocumentListUtilTest {
     @Test
     void shouldSetFinalDecisionDocumentsForRemovalDraftDocument() {
         //Given
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
 
         final CicCase cicCase = CicCase.builder()
             .finalDecisionDocumentList(new ArrayList<>())
@@ -132,7 +132,7 @@ public class DecisionDocumentListUtilTest {
         caseData.setCicCase(cicCase);
 
 
-        final CaseData oldData = caseData();
+        final CriminalInjuriesCompensationData oldData = caseData();
         final Document document = Document.builder().url("url1").binaryUrl("url1").filename("name1").build();
         oldData.setCaseIssueFinalDecision(CaseIssueFinalDecision.builder().finalDecisionDraft(document).build());
 
@@ -155,7 +155,7 @@ public class DecisionDocumentListUtilTest {
     @Test
     void shouldSetFinalDecisionDocumentsForRemovalCICDocument() {
         //Given
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
 
         final CicCase cicCase = CicCase.builder()
                 .finalDecisionDocumentList(new ArrayList<>())
@@ -163,7 +163,7 @@ public class DecisionDocumentListUtilTest {
         caseData.setCicCase(cicCase);
 
 
-        final CaseData oldData = caseData();
+        final CriminalInjuriesCompensationData oldData = caseData();
         final Document document = Document.builder().url("url1").binaryUrl("url1").filename("name1").build();
         final CICDocument docOld = CICDocument.builder().documentLink(document).build();
         oldData.setCaseIssueFinalDecision(CaseIssueFinalDecision.builder().document(docOld).build());
@@ -195,7 +195,7 @@ public class DecisionDocumentListUtilTest {
         caseworkerCICDocumentListValue.setId("1");
         caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
 
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.getCaseIssueFinalDecision().setFinalDecisionDraft(document);
         final CicCase cicCase = CicCase.builder()
                 .removedDocumentList(List.of(caseworkerCICDocumentListValue))
@@ -221,7 +221,7 @@ public class DecisionDocumentListUtilTest {
         caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
 
         final CICDocument cicDocument = CICDocument.builder().documentLink(document).build();
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.getCaseIssueFinalDecision().setDocument(cicDocument);
         final CicCase cicCase = CicCase.builder()
                 .removedDocumentList(List.of(caseworkerCICDocumentListValue))
@@ -238,7 +238,7 @@ public class DecisionDocumentListUtilTest {
     @Test
     void shouldSetDecisionDocumentsForRemovalDraftDocument() {
         //Given
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
 
         final CicCase cicCase = CicCase.builder()
                 .decisionDocumentList(new ArrayList<>())
@@ -246,7 +246,7 @@ public class DecisionDocumentListUtilTest {
         caseData.setCicCase(cicCase);
 
 
-        final CaseData oldData = caseData();
+        final CriminalInjuriesCompensationData oldData = caseData();
         final Document document = Document.builder().url("url1").binaryUrl("url1").filename("name1").build();
         oldData.setCaseIssueDecision(CaseIssueDecision.builder().issueDecisionDraft(document).build());
 
@@ -269,7 +269,7 @@ public class DecisionDocumentListUtilTest {
     @Test
     void shouldSetDecisionDocumentsForRemovalCICDocument() {
         //Given
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
 
         final CicCase cicCase = CicCase.builder()
                 .decisionDocumentList(new ArrayList<>())
@@ -277,7 +277,7 @@ public class DecisionDocumentListUtilTest {
         caseData.setCicCase(cicCase);
 
 
-        final CaseData oldData = caseData();
+        final CriminalInjuriesCompensationData oldData = caseData();
         final Document document = Document.builder().url("url1").binaryUrl("url1").filename("name1").build();
         final CICDocument docOld = CICDocument.builder().documentLink(document).build();
         oldData.setCaseIssueDecision(CaseIssueDecision.builder().decisionDocument(docOld).build());
@@ -309,7 +309,7 @@ public class DecisionDocumentListUtilTest {
         caseworkerCICDocumentListValue.setId("1");
         caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
 
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.getCaseIssueDecision().setIssueDecisionDraft(document);
         final CicCase cicCase = CicCase.builder()
                 .removedDocumentList(List.of(caseworkerCICDocumentListValue))
@@ -335,7 +335,7 @@ public class DecisionDocumentListUtilTest {
         caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
 
         final CICDocument cicDocument = CICDocument.builder().documentLink(document).build();
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.getCaseIssueDecision().setDecisionDocument(cicDocument);
         final CicCase cicCase = CicCase.builder()
                 .removedDocumentList(List.of(caseworkerCICDocumentListValue))

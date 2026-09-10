@@ -37,7 +37,7 @@ public class OrderService {
     @Autowired
     private HttpServletRequest request;
 
-    public DynamicList getOrderDynamicList(final CaseDetails<CaseData, State> caseDetails) {
+    public DynamicList getOrderDynamicList(final CaseDetails<? extends CaseData, State> caseDetails) {
         CaseData data = caseDetails.getData();
         List<ListValue<Order>> orderList = data.getCicCase().getOrderList();
         List<String> orders = new ArrayList<>();
@@ -67,7 +67,7 @@ public class OrderService {
         return null;
     }
 
-    public CaseData generateOrderFile(CaseData caseData, Long caseId, String date) {
+    public <T extends CaseData> T generateOrderFile(T caseData, Long caseId, String date) {
         String subjectName = caseData.getCicCase().getFullName();
         if (caseData.getCicCase().getAnonymiseYesOrNo() != null && caseData.getCicCase().getAnonymiseYesOrNo().equals(YesOrNo.YES)
             && caseData.getCicCase().getAnonymisedAppellantName() != null) {

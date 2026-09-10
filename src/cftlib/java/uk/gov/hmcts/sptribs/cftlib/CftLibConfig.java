@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.CCDDefinitionGenerator;
 import uk.gov.hmcts.rse.ccd.lib.api.CFTLib;
 import uk.gov.hmcts.rse.ccd.lib.api.CFTLibConfigurer;
-import uk.gov.hmcts.sptribs.common.ccd.CcdJurisdiction;
 import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
 
 import java.io.File;
@@ -38,12 +37,34 @@ public class CftLibConfig implements CFTLibConfigurer {
 
         Map<String, List<String>> users = Map.of(
             "TEST_CASE_WORKER_USER@mailinator.com", roleList,
-            "TEST_SOLICITOR@mailinator.com", roleList);
+            "TEST_SOLICITOR@mailinator.com", roleList,
+            // The citizen-facing journeys need a citizen to sign in as. Without
+            // one, only caseworker paths are exercisable locally.
+            "TEST_CITIZEN_USER@mailinator.com", List.of("citizen"));
+
+        // CCD data-store's own service user. Not a person: ccd-data-store-api
+        // authenticates as this account to call the definition store and to
+        // resolve case-type metadata while handling a request, taking the
+        // username from `idam.data-store.system-user.username` (default
+        // `data.store.idam.system.user@gmail.com`).
+        //
+        // The IDAM simulator only issues tokens for accounts it has been told
+        // about, so without this seeding its `POST /o/token` answers 401 and
+        // every case *creation* fails with a Feign 401 — while the preceding
+        // event-trigger GET still returns 200, because that leg runs entirely
+        // as the calling user. That asymmetry is why the symptom looks like a
+        // problem with the POST body rather than a missing account.
+        lib.createIdamUser("data.store.idam.system.user@gmail.com",
+            "caseworker", "caseworker-st_cic", "ccd-import");
 
         for (Map.Entry<String, List<String>> p : users.entrySet()) {
             lib.createIdamUser(p.getKey(), p.getValue().toArray(new String[0]));
-            lib.createProfile(p.getKey(), CcdJurisdiction.CRIMINAL_INJURIES_COMPENSATION.getJurisdictionId(),
-                CcdServiceCode.ST_CIC.getCaseType().getCaseTypeName(), state);
+            // CCD needs a profile row per (user, jurisdiction, case type), so
+            // every user gets one for every case type this service registers.
+            for (CcdServiceCode serviceCode : CcdServiceCode.values()) {
+                lib.createProfile(p.getKey(), serviceCode.getJurisdiction().getJurisdictionId(),
+                    serviceCode.getCaseType().getCaseTypeName(), state);
+            }
         }
 
         lib.createRoles(
@@ -82,8 +103,10 @@ public class CftLibConfig implements CFTLibConfigurer {
         lib.configureRoleAssignments(json);
 
         configWriter.generateAllCaseTypesToJSON(new File(BUILD_DEFINITIONS));
-        // Load the JSON definitions for ST_CIC caseType.
-        lib.importJsonDefinition(new File(BUILD_DEFINITIONS + CcdServiceCode.ST_CIC.getCaseType().getCaseTypeName()));
+        // One definition directory per case type, named after the case type id.
+        for (CcdServiceCode serviceCode : CcdServiceCode.values()) {
+            lib.importJsonDefinition(new File(BUILD_DEFINITIONS + serviceCode.getCaseType().getCaseTypeName()));
+        }
     }
 
 }

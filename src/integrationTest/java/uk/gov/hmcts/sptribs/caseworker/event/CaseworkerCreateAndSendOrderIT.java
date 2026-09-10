@@ -23,10 +23,10 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.DueDateOptions;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.document.DocAssemblyService;
 import uk.gov.hmcts.sptribs.idam.IdamService;
@@ -135,7 +135,7 @@ public class CaseworkerCreateAndSendOrderIT {
 
     @Test
     void shouldSetOrderIssueTypesAndTemplatesInAboutToStartCallback() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
 
         String response = mockMvc.perform(post(ABOUT_TO_START_URL)
             .contentType(APPLICATION_JSON)
@@ -177,7 +177,7 @@ public class CaseworkerCreateAndSendOrderIT {
             .url("http://url/")
             .build();
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
             .draftOrderContentCIC(draftOrderContentCIC)
             .cicCase(CicCase.builder()
@@ -243,7 +243,7 @@ public class CaseworkerCreateAndSendOrderIT {
             .value(FlagDetail.builder().flagCode(ANONYMITY_FLAG_CODE).status("Inactive").build())
             .build();
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .draftOrderContentCIC(draftOrderContentCIC)
             .caseFlags(Flags.builder().details(List.of(inactiveAnonymityFlag)).build())
             .cicCase(CicCase.builder()
@@ -281,7 +281,7 @@ public class CaseworkerCreateAndSendOrderIT {
 
     @Test
     void shouldSuccessfullyDispatchEmailsOnSubmitted() throws Exception {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
             .cicCase(CicCase.builder()
                 .notifyPartySubject(Set.of(SUBJECT))
@@ -327,7 +327,7 @@ public class CaseworkerCreateAndSendOrderIT {
 
     @Test
     void shouldReturnErrorMessageWhenGovNotifyFailsOnSubmitted() throws Exception {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
             .cicCase(CicCase.builder()
                 .notifyPartySubject(Set.of(SUBJECT))
@@ -376,7 +376,7 @@ public class CaseworkerCreateAndSendOrderIT {
 
     @Test
     void shouldDispatchAnonymityEmailWhenAnonymityNewlyAppliedOnSubmitted() throws Exception {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
             .cicCase(CicCase.builder()
                 .anonymiseYesOrNo(YesOrNo.YES)
@@ -399,7 +399,7 @@ public class CaseworkerCreateAndSendOrderIT {
                 .build())
             .build();
 
-        final CaseData caseDataBefore = CaseData.builder()
+        final CriminalInjuriesCompensationData caseDataBefore = CriminalInjuriesCompensationData.builder()
             .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
             .cicCase(CicCase.builder()
                 .anonymiseYesOrNo(YesOrNo.NO)
@@ -443,7 +443,7 @@ public class CaseworkerCreateAndSendOrderIT {
 
     @Test
     void shouldNotDispatchAnonymityEmailWhenAnonymityAlreadyAppliedOnSubmitted() throws Exception {
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
             .cicCase(CicCase.builder()
                 .anonymiseYesOrNo(YesOrNo.YES)
@@ -467,7 +467,7 @@ public class CaseworkerCreateAndSendOrderIT {
                 .build())
             .build();
 
-        final CaseData caseDataBefore = CaseData.builder()
+        final CriminalInjuriesCompensationData caseDataBefore = CriminalInjuriesCompensationData.builder()
             .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
             .cicCase(CicCase.builder()
                 .anonymiseYesOrNo(YesOrNo.YES)

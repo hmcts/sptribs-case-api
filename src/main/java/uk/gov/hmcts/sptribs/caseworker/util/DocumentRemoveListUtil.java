@@ -16,7 +16,7 @@ public final class DocumentRemoveListUtil {
 
     }
 
-    public static CaseData setDocumentsListForRemoval(CaseData caseData, CaseData oldData) {
+    public static <T extends CaseData> T setDocumentsListForRemoval(T caseData, CaseData oldData) {
         addDecisionDocumentsForRemoval(caseData, oldData);
         addFinalDecisionDocumentsForRemoval(caseData, oldData);
         final CicCase cic = caseData.getCicCase();

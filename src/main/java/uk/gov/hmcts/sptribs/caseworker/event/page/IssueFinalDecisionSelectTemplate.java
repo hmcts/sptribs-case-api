@@ -20,7 +20,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.PageShowConditionsUtil.issueF
 public class IssueFinalDecisionSelectTemplate implements CcdPageConfiguration {
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
         pageBuilder.page("issueFinalDecisionSelectTemplate", this::midEvent)
             .pageLabel("Select a template")
             .pageShowConditions(issueFinalDecisionShowConditions())
@@ -29,14 +29,14 @@ public class IssueFinalDecisionSelectTemplate implements CcdPageConfiguration {
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                  CaseDetails<CaseData, State> detailsBefore) {
+    public <T extends CaseData> AboutToStartOrSubmitResponse<T, State> midEvent(CaseDetails<T, State> details,
+                                                                  CaseDetails<T, State> detailsBefore) {
 
-        final CaseData caseData = details.getData();
+        final T caseData = details.getData();
         final DecisionTemplate decision = caseData.getCaseIssueFinalDecision().getDecisionTemplate();
         caseData.setDecisionMainContent(EventUtil.getMainContent(decision));
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<T, State>builder()
             .data(caseData)
             .build();
     }

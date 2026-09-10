@@ -4,16 +4,16 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.SearchPartyField;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 
 import java.util.List;
 
 import static java.util.List.of;
 
 @Component
-public class SearchParty implements CCDConfig<CaseData, State, UserRole> {
+public class SearchParty implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     private static final List<SearchPartyField> SEARCH_PARTY_LIST = of(
         SearchPartyField.builder().searchPartyName("cicCaseApplicantFullName")
@@ -51,7 +51,7 @@ public class SearchParty implements CCDConfig<CaseData, State, UserRole> {
     );
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
         configBuilder.searchParty()
             .fields(SEARCH_PARTY_LIST);
     }

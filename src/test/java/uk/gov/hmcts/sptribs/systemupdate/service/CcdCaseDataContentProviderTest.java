@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.task.CaseTask;
 
 import java.util.HashMap;
@@ -67,7 +68,7 @@ class CcdCaseDataContentProviderTest {
                 .token(START_EVENT_TOKEN)
                 .build();
 
-        final CaseData data = CaseData.builder().build();
+        final CriminalInjuriesCompensationData data = CriminalInjuriesCompensationData.builder().build();
         final uk.gov.hmcts.ccd.sdk.api.CaseDetails<CaseData, State> caseDetails =
             new uk.gov.hmcts.ccd.sdk.api.CaseDetails<>();
         caseDetails.setData(data);

@@ -15,7 +15,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.util.DynamicListUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
@@ -24,6 +23,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.VenueNotListed;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
 import java.util.Collections;
@@ -56,8 +56,8 @@ class RecordListHelperTest {
 
     @Test
     void shouldAboutToStartMethodSuccessfullyPopulateRegionData() {
-        final CaseData caseData = caseData();
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = caseData();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         final Listing listing = new Listing();
         listing.setHearingFormat(HearingFormat.FACE_TO_FACE);
         listing.setRegionList(getMockedRegionData());
@@ -79,7 +79,7 @@ class RecordListHelperTest {
     @ParameterizedTest
     @MethodSource("emptyAndNullDynamicListSource")
     void shouldSetRegionMessageToUnableToRetrieveWhenRegionsListIsNullOrEmpty(DynamicList regionList) {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
 
         when(locationService.getAllRegions()).thenReturn(regionList);
         recordListHelper.regionData(caseData);
@@ -89,8 +89,8 @@ class RecordListHelperTest {
 
     @Test
     void shouldMidEventMethodSuccessfullyPopulateHearingVenueData() {
-        final CaseData caseData = caseData();
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = caseData();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
         final Listing listing = new Listing();
         listing.setHearingFormat(HearingFormat.FACE_TO_FACE);
         listing.setRegionList(getMockedRegionData());
@@ -114,7 +114,7 @@ class RecordListHelperTest {
     @ParameterizedTest
     @MethodSource("emptyAndNullDynamicListSource")
     void shouldSetHearingVenuesMessageToUnableToRetrieveWhenHearingVenueListIsNullOrEmpty(DynamicList dynamicList) {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final Listing listing = new Listing();
         listing.setHearingFormat(HearingFormat.FACE_TO_FACE);
         listing.setRegionList(getMockedRegionData());
@@ -129,7 +129,7 @@ class RecordListHelperTest {
 
     @Test
     void shouldNotSetHearingVenueWhenRegionIdIsNull() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final Listing listing = new Listing();
         listing.setHearingFormat(HearingFormat.FACE_TO_FACE);
         listing.setRegionList(getMockedRegionData());
@@ -151,7 +151,7 @@ class RecordListHelperTest {
 
     @Test
     void shouldSuccessfullyCheckNullRecordNotifyParties() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setNote("This is a test note");
         final CicCase cicCase = new CicCase();
 
@@ -172,7 +172,7 @@ class RecordListHelperTest {
 
     @Test
     void shouldGetErrorMessageForMissingNotificationParties() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final CicCase cicCase = new CicCase();
         caseData.setCicCase(cicCase);
 
@@ -184,8 +184,8 @@ class RecordListHelperTest {
 
     @Test
     void shouldSuccessfullyAddNotificationParties() {
-        final CaseData caseData = caseData();
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = caseData();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
 
         caseData.getCicCase().setNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
         caseData.getCicCase().setNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE));
@@ -208,7 +208,7 @@ class RecordListHelperTest {
 
     @Test
     void shouldGetEmptySetOfNotificationParties() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
 
         recordListHelper.getNotificationParties(caseData);
 
@@ -294,7 +294,7 @@ class RecordListHelperTest {
             .hearingVenues(getMockedHearingVenueData())
             .venueNotListedOption(venueNotListedOption)
             .build();
-        final CaseData data = caseData();
+        final CriminalInjuriesCompensationData data = caseData();
         data.setListing(listing);
         final CicCase cicCase = CicCase.builder()
             .fullName("John McNeil")
@@ -319,7 +319,7 @@ class RecordListHelperTest {
             .numberOfDays(YesOrNo.NO)
             .build();
         final Listing spyListing = spy(listing);
-        final CaseData data = caseData();
+        final CriminalInjuriesCompensationData data = caseData();
         data.setListing(spyListing);
         final CicCase cicCase = CicCase.builder()
             .fullName("John McNeil")
@@ -334,7 +334,7 @@ class RecordListHelperTest {
 
     @Test
     void shouldNotSaveSummaryAndReturnNullWhenListingIsNull() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setListing(null);
         final Listing result = recordListHelper.saveSummary(caseData);
         assertThat(result).isNull();

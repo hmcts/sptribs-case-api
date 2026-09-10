@@ -19,10 +19,10 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.ContactPartiesSelectDocument;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.PartiesToContact;
@@ -64,7 +64,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 @Setter
 @RequiredArgsConstructor
-public class CaseworkerContactParties implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerContactParties implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     @Value("${case-api.url}")
     private String baseUrl;
@@ -78,8 +78,8 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
     private static final int DOC_ATTACH_LIMIT = 10;
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
+    public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+        Event.EventBuilder<CriminalInjuriesCompensationData, UserRole, State> eventBuilder =
             configBuilder
                 .event(CASEWORKER_CONTACT_PARTIES)
                 .forStates(Draft,
@@ -111,27 +111,30 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
                     ST_CIC_JUDGE)
                 .publishToCamunda();
 
-        PageBuilder pageBuilder = new PageBuilder(eventBuilder);
+        PageBuilder<CriminalInjuriesCompensationData> pageBuilder = new PageBuilder<>(eventBuilder);
         contactPartiesSelectDocument.addTo(pageBuilder);
         partiesToContact.addTo(pageBuilder);
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-        final CaseData caseData = details.getData();
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStart(
+        CaseDetails<CriminalInjuriesCompensationData, State> details
+    ) {
+        final CriminalInjuriesCompensationData caseData = details.getData();
         caseData.setContactParties(new ContactParties());
         DynamicMultiSelectList documentList = DocumentListUtil.prepareContactPartiesDocumentList(caseData, baseUrl);
         caseData.getContactPartiesDocuments().setDocumentList(documentList);
         caseData.getCicCase().setNotifyPartyMessage("");
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .build();
     }
 
     @SneakyThrows
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
-                                                                       CaseDetails<CaseData, State> beforeDetails) {
-        final CaseData caseData = details.getData();
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(
+        CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                                       CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
+        final CriminalInjuriesCompensationData caseData = details.getData();
 
         StringBuilder sentDocListBuilder = new StringBuilder();
 
@@ -146,16 +149,16 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
 
         String sentDocList = sentDocListBuilder.toString();
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .eventMetadata(EventMetadata.builder().summary(numberOfSentDocs +  " Selected documents sent").description(sentDocList).build())
             .build();
     }
 
-    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                               CaseDetails<CaseData, State> beforeDetails) {
+    public SubmittedCallbackResponse submitted(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                               CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
 
-        final CaseData data = details.getData();
+        final CriminalInjuriesCompensationData data = details.getData();
         final CicCase cicCase = data.getCicCase();
         String caseNumber = data.getHyphenatedCaseRef();
 
@@ -174,7 +177,11 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
         }
     }
 
-    private void sendContactPartiesNotification(CaseDetails<CaseData, State> details, CicCase cicCase, String caseNumber) {
+    private void sendContactPartiesNotification(
+        CaseDetails<CriminalInjuriesCompensationData, State> details,
+        CicCase cicCase,
+        String caseNumber
+    ) {
 
         final Map<String, String> uploadedDocuments = notificationHelper
             .buildDocumentList(details.getData().getContactPartiesDocuments().getDocumentList(), DOC_ATTACH_LIMIT);

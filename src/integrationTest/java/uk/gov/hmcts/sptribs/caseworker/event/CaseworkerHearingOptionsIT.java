@@ -17,7 +17,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.recordlisting.model.HearingVenue;
 import uk.gov.hmcts.sptribs.recordlisting.model.Region;
@@ -96,7 +96,7 @@ public class CaseworkerHearingOptionsIT {
 
     @Test
     void shouldTransitionStateToReadyToListWhenPreStateIsCaseManagementAboutToSubmit() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final DynamicList hearingVenues = getMockedHearingVenueData();
         caseData.getListing().setHearingVenues(hearingVenues);
         caseData.getListing().setVenueNotListedOption(Set.of());
@@ -116,7 +116,7 @@ public class CaseworkerHearingOptionsIT {
 
     @Test
     void shouldNotTransitionStateWhenPreStateIsReadyToListAboutToSubmit() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final DynamicList hearingVenues = getMockedHearingVenueData();
         caseData.getListing().setHearingVenues(hearingVenues);
         caseData.getListing().setVenueNotListedOption(Set.of());
@@ -136,7 +136,7 @@ public class CaseworkerHearingOptionsIT {
 
     @Test
     void shouldPopulateRegionDataWhenRegionListIsNullAboutToStart() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         stubGetRegions(getRegionsResponse());
 
         when(serviceTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
@@ -163,7 +163,7 @@ public class CaseworkerHearingOptionsIT {
 
     @Test
     void shouldNotPopulateRegionDataWhenCallToLocationApiUnsuccessfulAboutToStart() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         stubGetRegionsForFailure();
 
         when(serviceTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
@@ -190,7 +190,7 @@ public class CaseworkerHearingOptionsIT {
 
     @Test
     void shouldPopulateVenueDataWhenVenueListIsNullMidEvent() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.getListing().setRegionList(
             DynamicList.builder()
                 .value(DynamicListElement.builder().label("1-London").build())
@@ -221,7 +221,7 @@ public class CaseworkerHearingOptionsIT {
 
     @Test
     void shouldNotPopulateVenueDataWhenCallToLocationApiUnsuccessfulMidEvent() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.getListing().setRegionList(
             DynamicList.builder()
                 .value(DynamicListElement.builder().label("1-London").build())

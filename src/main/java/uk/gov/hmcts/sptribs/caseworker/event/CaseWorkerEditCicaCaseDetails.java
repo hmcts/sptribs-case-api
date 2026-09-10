@@ -6,9 +6,9 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.EditCicaCaseDetailsPage;
@@ -32,13 +32,13 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 
 @Component
 @Slf4j
-public class CaseWorkerEditCicaCaseDetails implements CCDConfig<CaseData, State, UserRole> {
+public class CaseWorkerEditCicaCaseDetails implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     private static final CcdPageConfiguration editCicaCaseDetailsPage = new EditCicaCaseDetailsPage();
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        PageBuilder pageBuilder = new PageBuilder(
+    public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+        PageBuilder<CriminalInjuriesCompensationData> pageBuilder = new PageBuilder<>(
             configBuilder
                 .event(CASEWORKER_EDIT_CICA_CASE_DETAILS)
                 .forStates(CaseManagement, AwaitingHearing, AwaitingOutcome, CaseStayed, CaseClosed)
@@ -57,8 +57,8 @@ public class CaseWorkerEditCicaCaseDetails implements CCDConfig<CaseData, State,
         editCicaCaseDetailsPage.addTo(pageBuilder);
     }
 
-    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                                    CaseDetails<CaseData, State> beforeDetails) {
+    public SubmittedCallbackResponse submitted(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                    CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader("# Case details updated. ")

@@ -20,8 +20,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.sptribs.caseworker.model.EditCicaCaseDetails;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfigCIC;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
@@ -140,7 +140,7 @@ public class CicSubmitCaseEventIT {
 
         @Test
         void shouldSendSubjectEmailInEnglishWhenLanguagePreferenceIsEnglish() throws Exception {
-            final CaseData caseData = caseData();
+            final CriminalInjuriesCompensationData caseData = caseData();
             final DssCaseData dssCaseData = DssCaseData.builder()
                 .subjectFullName("Test Subject")
                 .subjectEmailAddress("test@subject.com")
@@ -188,7 +188,7 @@ public class CicSubmitCaseEventIT {
 
         @Test
         void shouldSendSubjectEmailInWelshWhenLanguagePreferenceIsWelsh() throws Exception {
-            final CaseData caseData = caseData();
+            final CriminalInjuriesCompensationData caseData = caseData();
             final DssCaseData dssCaseData = DssCaseData.builder()
                 .subjectFullName("Test Subject")
                 .subjectEmailAddress("test@subject.com")
@@ -236,7 +236,7 @@ public class CicSubmitCaseEventIT {
 
         @Test
         void shouldSendRepresentativeEmail() throws Exception {
-            final CaseData caseData = caseData();
+            final CriminalInjuriesCompensationData caseData = caseData();
             final DssCaseData dssCaseData = DssCaseData.builder()
                 .subjectFullName("Test Subject")
                 .representativeFullName("Test Representative")
@@ -301,7 +301,7 @@ public class CicSubmitCaseEventIT {
 
         @Test
         void shouldSendSubjectEmailInEnglishWhenLanguagePreferenceIsEnglish() throws Exception {
-            final CaseData caseData = caseData();
+            final CriminalInjuriesCompensationData caseData = caseData();
             final DssCaseData dssCaseData = DssCaseData.builder()
                 .subjectFullName("Test Subject")
                 .subjectEmailAddress("test@subject.com")
@@ -341,7 +341,7 @@ public class CicSubmitCaseEventIT {
 
         @Test
         void shouldSendRepresentativeEmail() throws Exception {
-            final CaseData caseData = caseData();
+            final CriminalInjuriesCompensationData caseData = caseData();
             final DssCaseData dssCaseData = DssCaseData.builder()
                 .subjectFullName("Test Subject")
                 .representativeFullName("Test Representative")

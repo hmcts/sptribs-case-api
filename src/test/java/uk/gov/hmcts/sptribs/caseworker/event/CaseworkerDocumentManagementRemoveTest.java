@@ -20,10 +20,10 @@ import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
@@ -59,7 +59,7 @@ public class CaseworkerDocumentManagementRemoveTest {
     @Test
     void shouldAddConfigurationToConfigBuilder() {
         //Given
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         //When
         caseworkerDocumentManagementRemove.configure(configBuilder);
@@ -73,18 +73,18 @@ public class CaseworkerDocumentManagementRemoveTest {
     @Test
     void shouldSuccessfullyRemoveDocument() {
         //Given
-        final CaseData caseData = caseData();
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = caseData();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.CaseManagement);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> start =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> start =
             caseworkerDocumentManagementRemove.aboutToStart(updatedCaseDetails);
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerDocumentManagementRemove.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse documentMgmtResponse = caseworkerDocumentManagementRemove.submitted(updatedCaseDetails, beforeDetails);
 
@@ -97,9 +97,9 @@ public class CaseworkerDocumentManagementRemoveTest {
     @Test
     void shouldRemoveDocumentSuccessfully() {
         //Given
-        final CaseData caseData = caseData();
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = caseData();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         CICDocument doc = CICDocument.builder()
             .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build()).build();
         caseData.setCaseIssueFinalDecision(CaseIssueFinalDecision.builder().document(doc).build());
@@ -131,7 +131,7 @@ public class CaseworkerDocumentManagementRemoveTest {
         DocumentManagement documentManagement = DocumentManagement.builder().caseworkerCICDocument(getDocument()).build();
         caseData.setAllDocManagement(documentManagement);
         updatedCaseDetails.setData(caseData);
-        final CaseData oldData = caseData();
+        final CriminalInjuriesCompensationData oldData = caseData();
 
         CICDocument docOld = CICDocument.builder()
             .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build()).build();
@@ -162,9 +162,9 @@ public class CaseworkerDocumentManagementRemoveTest {
         beforeDetails.setData(oldData);
         //When
 
-        AboutToStartOrSubmitResponse<CaseData, State> midResponse =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> midResponse =
             showCaseDocuments.midEvent(updatedCaseDetails, beforeDetails);
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerDocumentManagementRemove.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse documentMgmtResponse = caseworkerDocumentManagementRemove.submitted(updatedCaseDetails, beforeDetails);
 
@@ -178,9 +178,9 @@ public class CaseworkerDocumentManagementRemoveTest {
     @Test
     void shouldRemoveDocumentSuccessfullyWithAboutToStart() {
         //Given
-        final CaseData caseData = caseData();
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = caseData();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         CICDocument doc = CICDocument.builder()
             .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build()).build();
         caseData.setCaseIssueFinalDecision(CaseIssueFinalDecision.builder().document(doc).build());
@@ -213,7 +213,7 @@ public class CaseworkerDocumentManagementRemoveTest {
         DocumentManagement documentManagement = DocumentManagement.builder().caseworkerCICDocument(getDocument()).build();
         caseData.setAllDocManagement(documentManagement);
         updatedCaseDetails.setData(caseData);
-        final CaseData oldData = caseData();
+        final CriminalInjuriesCompensationData oldData = caseData();
 
         CICDocument docOld = CICDocument.builder()
             .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build()).build();
@@ -234,11 +234,11 @@ public class CaseworkerDocumentManagementRemoveTest {
         beforeDetails.setData(oldData);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> start =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> start =
             caseworkerDocumentManagementRemove.aboutToStart(updatedCaseDetails);
-        AboutToStartOrSubmitResponse<CaseData, State> midResponse =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> midResponse =
             showCaseDocuments.midEvent(updatedCaseDetails, beforeDetails);
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             caseworkerDocumentManagementRemove.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse documentMgmtResponse = caseworkerDocumentManagementRemove.submitted(updatedCaseDetails, beforeDetails);
 

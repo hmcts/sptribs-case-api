@@ -14,10 +14,10 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundlingService;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
@@ -69,7 +69,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 @Setter
 @RequiredArgsConstructor
-public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerCreateBundle implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     private final BundlingService bundlingService;
 
@@ -80,8 +80,8 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
     private final BundleCreatedNotification bundleCreatedNotification;
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
+    public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+        Event.EventBuilder<CriminalInjuriesCompensationData, UserRole, State> eventBuilder =
             configBuilder
                 .event(CREATE_BUNDLE)
                 .forStates(CaseManagement, AwaitingHearing, ReadyToList, CaseClosed)
@@ -96,17 +96,18 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
                 .grantHistoryOnly(ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE)
                 .publishToCamunda();
 
-        new PageBuilder(eventBuilder)
+        new PageBuilder<>(eventBuilder)
             .page("createBundle")
             .pageLabel("Create a bundle")
             .done();
     }
 
     @SneakyThrows
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
-                                                                       CaseDetails<CaseData, State> beforeDetails) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(
+        CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                                       CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
 
-        final CaseData caseData = details.getData();
+        final CriminalInjuriesCompensationData caseData = details.getData();
         final List<CaseworkerCICDocument> allCaseDocuments = extractDocumentsFromListValues(getAllCaseDocuments(caseData));
 
         if (caseData.isBundleOrderEnabled()) {
@@ -133,15 +134,15 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         caseData.setCaseDocuments(null);
         caseData.setFurtherCaseDocuments(null);
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .build();
     }
 
-    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                               CaseDetails<CaseData, State> beforeDetails) {
+    public SubmittedCallbackResponse submitted(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                               CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
 
-        final CaseData data = details.getData();
+        final CriminalInjuriesCompensationData data = details.getData();
         final CicCase cicCase = data.getCicCase();
         final String caseNumber = data.getHyphenatedCaseRef();
         final List<String> errors = new ArrayList<>();
@@ -184,7 +185,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         }
     }
 
-    private void setCaseBundleRequestDocuments(CaseData caseData, List<CaseworkerCICDocument> allDocuments) {
+    private void setCaseBundleRequestDocuments(CriminalInjuriesCompensationData caseData, List<CaseworkerCICDocument> allDocuments) {
         List<CaseworkerCICDocument> initialDocuments = extractDocumentsFromListValues(caseData.getInitialCicaDocuments());
 
         if (!CollectionUtils.isEmpty(initialDocuments)) {
@@ -216,14 +217,14 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         return docs.stream().filter(CaseworkerCICDocument::isValidBundleDocument).map(AbstractCaseworkerCICDocument::new).toList();
     }
 
-    private List<ListValue<Bundle>> getExistingBundles(CaseDetails<CaseData, State> beforeDetails) {
+    private List<ListValue<Bundle>> getExistingBundles(CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
         if (beforeDetails == null || beforeDetails.getData() == null) {
             return emptyList();
         }
         return Optional.ofNullable(beforeDetails.getData().getCaseBundles()).orElse(emptyList());
     }
 
-    private List<ListValue<Bundle>> getConfiguredCaseBundles(CaseData caseData,
+    private List<ListValue<Bundle>> getConfiguredCaseBundles(CriminalInjuriesCompensationData caseData,
                                                              BundleCallback bundleCallback,
                                                              List<ListValue<Bundle>> existingBundles) {
         List<ListValue<Bundle>> caseBundles = bundlingService.buildBundleListValues(bundlingService.createBundle(bundleCallback,

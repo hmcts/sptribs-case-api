@@ -12,6 +12,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.StayReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
@@ -46,7 +47,7 @@ class CaseReinstatedNotificationTest {
 
         //Given
         final LocalDate expDate = LocalDate.now();
-        final CaseData data = getMockCaseData(expDate);
+        final CriminalInjuriesCompensationData data = getMockCaseData(expDate);
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setEmail("testsubject@outlook.com");
         data.getCicCase().setReinstateReason(ReinstateReason.REQUEST_FOLLOWING_A_STRIKE_OUT_DECISION);
@@ -69,7 +70,7 @@ class CaseReinstatedNotificationTest {
     void shouldNotifySubjectOfCaseReinstatedWithPost() {
         //Given
         LocalDate expDate = LocalDate.now();
-        final CaseData data = getMockCaseData(expDate);
+        final CriminalInjuriesCompensationData data = getMockCaseData(expDate);
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
         data.getCicCase().setAddress(AddressGlobalUK.builder().build());
         data.getCicCase().setReinstateReason(ReinstateReason.REQUEST_TO_SET_ASIDE_A_TRIBUNAL_DECISION_FOLLOWING_AN_ORAL_HEARING);
@@ -92,7 +93,7 @@ class CaseReinstatedNotificationTest {
     void shouldNotifyRespondentOfCaseReinstatedWithEmail() {
         //Given
         LocalDate expDate = LocalDate.now();
-        final CaseData data = getMockCaseData(expDate);
+        final CriminalInjuriesCompensationData data = getMockCaseData(expDate);
         data.getCicCase().setRespondentName("respondentName");
         data.getCicCase().setRespondentEmail("testRespondent@outlook.com");
         data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
@@ -115,7 +116,7 @@ class CaseReinstatedNotificationTest {
     void shouldNotifyRepresentativeOfCaseReinstatedWithEmail() {
         //Given
         LocalDate expDate = LocalDate.now();
-        final CaseData data = getMockCaseData(expDate);
+        final CriminalInjuriesCompensationData data = getMockCaseData(expDate);
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
         data.getCicCase().setRepresentativeEmailAddress("testrepr@outlook.com");
@@ -139,7 +140,7 @@ class CaseReinstatedNotificationTest {
     void shouldNotifyRepresentativeOfCaseReinstatedWithPost() {
         //Given
         LocalDate expDate = LocalDate.now();
-        final CaseData data = getMockCaseData(expDate);
+        final CriminalInjuriesCompensationData data = getMockCaseData(expDate);
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.POST);
         data.getCicCase().setRepresentativeAddress(AddressGlobalUK.builder().build());
@@ -163,7 +164,7 @@ class CaseReinstatedNotificationTest {
     void shouldNotifyApplicantOfCaseReinstatedWithEmail() {
         //Given
         LocalDate expDate = LocalDate.now();
-        final CaseData data = getMockCaseData(expDate);
+        final CriminalInjuriesCompensationData data = getMockCaseData(expDate);
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setApplicantEmailAddress("testApplicant@outlook.com");
         data.getCicCase().setReinstateReason(ReinstateReason.REQUEST_FOLLOWING_A_WITHDRAWAL_DECISION);
@@ -186,7 +187,7 @@ class CaseReinstatedNotificationTest {
     void shouldNotifyApplicantOfCaseReinstatedWithPost() {
         //Given
         LocalDate expDate = LocalDate.now();
-        final CaseData data = getMockCaseData(expDate);
+        final CriminalInjuriesCompensationData data = getMockCaseData(expDate);
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
         data.getCicCase().setApplicantAddress(AddressGlobalUK.builder().build());
         data.getCicCase().setReinstateReason(ReinstateReason.REQUEST_FOLLOWING_A_STRIKE_OUT_DECISION);
@@ -205,7 +206,7 @@ class CaseReinstatedNotificationTest {
             TemplateName.REINSTATED_POST);
     }
 
-    private CaseData getMockCaseData(LocalDate stayCaseExpDate) {
+    private CriminalInjuriesCompensationData getMockCaseData(LocalDate stayCaseExpDate) {
         CicCase cicCase = CicCase.builder()
             .fullName("fullName").caseNumber(TEST_CASE_ID.toString())
             .build();
@@ -215,7 +216,7 @@ class CaseReinstatedNotificationTest {
             .additionalDetail("addlDetail")
             .build();
 
-        return CaseData.builder()
+        return CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .caseStay(caseStay)
             .build();

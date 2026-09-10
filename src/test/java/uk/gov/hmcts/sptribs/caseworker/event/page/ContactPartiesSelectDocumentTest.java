@@ -17,8 +17,8 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
@@ -67,7 +67,7 @@ class ContactPartiesSelectDocumentTest {
 
         @Test
         void midEventIsSuccessful() {
-            final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+            final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
             ContactPartiesDocuments contactPartiesDocuments = new ContactPartiesDocuments();
             List<DynamicListElement> selection = IntStream.range(0, 10)
                 .mapToObj(i -> DynamicListElement.builder()
@@ -79,18 +79,21 @@ class ContactPartiesSelectDocumentTest {
                 .value(selection)
                 .listItems(selection)
                 .build());
-            final CaseData caseData = CaseData.builder()
+            final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
                 .contactPartiesDocuments(contactPartiesDocuments)
                 .build();
             caseDetails.setData(caseData);
 
-            final AboutToStartOrSubmitResponse<CaseData, State> response = contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
+            final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = contactPartiesSelectDocument.midEvent(
+                caseDetails,
+                caseDetails
+            );
             assertTrue(response.getErrors().isEmpty());
         }
 
         @Test
         void midEventReturnsErrorWhenMaxDocumentsExceeded() {
-            final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+            final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
             ContactPartiesDocuments contactPartiesDocuments = new ContactPartiesDocuments();
             List<DynamicListElement> selection = IntStream.range(0, 11)
                 .mapToObj(i -> DynamicListElement.builder()
@@ -102,12 +105,15 @@ class ContactPartiesSelectDocumentTest {
                 .value(selection)
                 .listItems(selection)
                 .build());
-            final CaseData caseData = CaseData.builder()
+            final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
                 .contactPartiesDocuments(contactPartiesDocuments)
                 .build();
             caseDetails.setData(caseData);
 
-            final AboutToStartOrSubmitResponse<CaseData, State> response = contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
+            final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = contactPartiesSelectDocument.midEvent(
+                caseDetails,
+                caseDetails
+            );
             assertThat(response.getErrors()).hasSize(1);
             assertThat(response.getErrors()).contains("Select up to 10 documents");
         }
@@ -116,7 +122,7 @@ class ContactPartiesSelectDocumentTest {
 
         @Test
         void midEventReturnsErrorWhenDocumentSizeExceedsLimit() {
-            final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+            final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
             UUID documentId = UUID.randomUUID();
             String label = "[Large Document](http://example/documents/" + documentId + ")";
 
@@ -136,19 +142,22 @@ class ContactPartiesSelectDocumentTest {
             when(caseDocumentClientApi.getDocument(SYSTEM_AUTH, SERVICE_AUTH, documentId))
                 .thenReturn(ResponseEntity.ok(oversizedDocument));
 
-            final CaseData caseData = CaseData.builder()
+            final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
                 .contactPartiesDocuments(contactPartiesDocuments)
                 .build();
             caseDetails.setData(caseData);
 
-            final AboutToStartOrSubmitResponse<CaseData, State> response = contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
+            final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = contactPartiesSelectDocument.midEvent(
+                caseDetails,
+                caseDetails
+            );
             String displayName = label.substring(label.indexOf('[') + 1, label.indexOf(']'));
             assertThat(response.getErrors()).containsExactly("Unable to proceed because " + displayName + " is larger than 2MB");
         }
 
         @Test
         void midEventDoesNotReturnErrorWhenDocumentSizeWithinLimit() {
-            final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+            final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
             UUID documentId = UUID.randomUUID();
             String label = "[Small Document](http://example/documents/" + documentId + ")";
 
@@ -168,18 +177,21 @@ class ContactPartiesSelectDocumentTest {
             when(caseDocumentClientApi.getDocument(SYSTEM_AUTH, SERVICE_AUTH, documentId))
                 .thenReturn(ResponseEntity.ok(withinLimitDocument));
 
-            final CaseData caseData = CaseData.builder()
+            final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
                 .contactPartiesDocuments(contactPartiesDocuments)
                 .build();
             caseDetails.setData(caseData);
 
-            final AboutToStartOrSubmitResponse<CaseData, State> response = contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
+            final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = contactPartiesSelectDocument.midEvent(
+                caseDetails,
+                caseDetails
+            );
             assertThat(response.getErrors()).isEmpty();
         }
 
         @Test
         void midEventUsesDocumentIdFromLabelWithBinarySuffix() {
-            final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+            final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
             UUID documentId = UUID.randomUUID();
             String label = "[Binary Document](http://example/documents/" + documentId + "/binary)";
 
@@ -199,7 +211,7 @@ class ContactPartiesSelectDocumentTest {
             when(caseDocumentClientApi.getDocument(SYSTEM_AUTH, SERVICE_AUTH, documentId))
                 .thenReturn(ResponseEntity.ok(withinLimitDocument));
 
-            final CaseData caseData = CaseData.builder()
+            final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
                 .contactPartiesDocuments(contactPartiesDocuments)
                 .build();
             caseDetails.setData(caseData);
@@ -213,7 +225,7 @@ class ContactPartiesSelectDocumentTest {
 
         @Test
         void midEventUsesDocumentIdFromLabelWithoutBinarySuffix() {
-            final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+            final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
             UUID documentId = UUID.randomUUID();
             String label = "[Plain Document](http://example/documents/" + documentId + ")";
 
@@ -233,7 +245,7 @@ class ContactPartiesSelectDocumentTest {
             when(caseDocumentClientApi.getDocument(SYSTEM_AUTH, SERVICE_AUTH, documentId))
                 .thenReturn(ResponseEntity.ok(withinLimitDocument));
 
-            final CaseData caseData = CaseData.builder()
+            final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
                 .contactPartiesDocuments(contactPartiesDocuments)
                 .build();
             caseDetails.setData(caseData);
@@ -247,7 +259,7 @@ class ContactPartiesSelectDocumentTest {
 
         @Test
         void midEventTreatsMissingDocumentBodyAsOversized() {
-            final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+            final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
             UUID documentId = UUID.randomUUID();
             String label = "[Unknown Document](http://example/documents/" + documentId + ")";
 
@@ -265,19 +277,22 @@ class ContactPartiesSelectDocumentTest {
             when(caseDocumentClientApi.getDocument(SYSTEM_AUTH, SERVICE_AUTH, documentId))
                 .thenReturn(ResponseEntity.status(HttpStatus.OK).build());
 
-            final CaseData caseData = CaseData.builder()
+            final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
                 .contactPartiesDocuments(contactPartiesDocuments)
                 .build();
             caseDetails.setData(caseData);
 
-            final AboutToStartOrSubmitResponse<CaseData, State> response = contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
+            final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = contactPartiesSelectDocument.midEvent(
+                caseDetails,
+                caseDetails
+            );
             String displayName = label.substring(label.indexOf('[') + 1, label.indexOf(']'));
             assertThat(response.getErrors()).containsExactly("Unable to proceed because " + displayName + " is larger than 2MB");
         }
 
         @Test
         void midEventThrowsExceptionWhenDocumentRetrievalFails() {
-            final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+            final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
             UUID documentId = UUID.randomUUID();
 
             ContactPartiesDocuments contactPartiesDocuments = new ContactPartiesDocuments();
@@ -294,7 +309,7 @@ class ContactPartiesSelectDocumentTest {
             when(caseDocumentClientApi.getDocument(SYSTEM_AUTH, SERVICE_AUTH, documentId))
                 .thenReturn(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
 
-            final CaseData caseData = CaseData.builder()
+            final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
                 .contactPartiesDocuments(contactPartiesDocuments)
                 .build();
             caseDetails.setData(caseData);
@@ -309,15 +324,18 @@ class ContactPartiesSelectDocumentTest {
 
     @Test
     void midEventReturnsWithNoDocumentsSelected() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         ContactPartiesDocuments contactPartiesDocuments = new ContactPartiesDocuments();
         contactPartiesDocuments.setDocumentList(DynamicMultiSelectList.builder().build());
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .contactPartiesDocuments(contactPartiesDocuments)
             .build();
         caseDetails.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = contactPartiesSelectDocument.midEvent(
+            caseDetails,
+            caseDetails
+        );
         assertThat(response.getErrors()).isEmpty();
     }
 

@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
@@ -38,7 +39,7 @@ class CaseLinkedNotificationTest {
     @Test
     void shouldNotifySubjectOfCaseLinkedWithEmail() {
         //Given
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setEmail("testSubject@outlook.com");
 
@@ -59,7 +60,7 @@ class CaseLinkedNotificationTest {
     @Test
     void shouldNotifySubjectOfCaseLinkedWithPost() {
         //Given
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
         data.getCicCase().setAddress(AddressGlobalUK.builder().build());
 
@@ -80,7 +81,7 @@ class CaseLinkedNotificationTest {
     @Test
     void shouldNotifyApplicantOfCaseLinkedWithEmail() {
         //Given
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setApplicantFullName("appFullName");
         data.getCicCase().setApplicantContactDetailsPreference(ContactPreferenceType.EMAIL);
         data.getCicCase().setApplicantEmailAddress("testApplicant@outlook.com");
@@ -102,7 +103,7 @@ class CaseLinkedNotificationTest {
     @Test
     void shouldNotifyApplicantOfCaseLinkedWithPost() {
         //Given
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setApplicantFullName("appFullName");
         data.getCicCase().setApplicantContactDetailsPreference(ContactPreferenceType.POST);
         data.getCicCase().setApplicantAddress(AddressGlobalUK.builder().build());
@@ -124,7 +125,7 @@ class CaseLinkedNotificationTest {
     @Test
     void shouldNotifyRepresentativeOfCaseLinkedWithEmail() {
         //Given
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
         data.getCicCase().setRepresentativeEmailAddress("testrepr@outlook.com");
@@ -147,7 +148,7 @@ class CaseLinkedNotificationTest {
     @Test
     void shouldNotifyRepresentativeOfCaseLinkedWithPost() {
         //Given
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.POST);
         data.getCicCase().setRepresentativeAddress(AddressGlobalUK.builder().build());
@@ -167,12 +168,12 @@ class CaseLinkedNotificationTest {
     }
 
 
-    private CaseData getMockCaseData() {
+    private CriminalInjuriesCompensationData getMockCaseData() {
         final CicCase cicCase = CicCase.builder()
             .fullName("fullName").caseNumber(TEST_CASE_ID.toString())
             .build();
 
-        return CaseData.builder()
+        return CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .build();
 

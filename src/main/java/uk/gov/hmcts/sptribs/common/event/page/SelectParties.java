@@ -20,7 +20,7 @@ import java.util.List;
 public class SelectParties implements CcdPageConfiguration {
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
         pageBuilder
             .page("objectSubjects", this::midEvent)
             .pageLabel("Who are the parties in this case?")
@@ -30,9 +30,9 @@ public class SelectParties implements CcdPageConfiguration {
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                  CaseDetails<CaseData, State> detailsBefore) {
-        final CaseData data = details.getData();
+    public <T extends CaseData> AboutToStartOrSubmitResponse<T, State> midEvent(CaseDetails<T, State> details,
+                                                                  CaseDetails<T, State> detailsBefore) {
+        final T data = details.getData();
         final List<String> errors = new ArrayList<>();
 
         if (null != data.getCicCase() && !data.getCicCase().getPartiesCIC().contains(PartiesCIC.SUBJECT)) {
@@ -44,7 +44,7 @@ public class SelectParties implements CcdPageConfiguration {
             && !data.getCicCase().getPartiesCIC().contains(PartiesCIC.APPLICANT)) {
             errors.add("Applicant is mandatory for Fatal and Minor cases.");
         }
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<T, State>builder()
             .data(data)
             .errors(errors)
             .build();

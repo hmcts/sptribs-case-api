@@ -10,9 +10,9 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
@@ -33,7 +33,7 @@ class SystemCleanDeletedDocumentsCaseTest {
 
     @Test
     void whenConfigure_thenShouldAddConfigurationToConfigBuilder() {
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         systemCleanDeletedDocumentsCase.configure(configBuilder);
 
@@ -61,19 +61,19 @@ class SystemCleanDeletedDocumentsCaseTest {
         List<ListValue<CaseworkerCICDocument>> expectedAllDocs = new ArrayList<>();
         expectedAllDocs.add(documentListValue1);
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .furtherUploadedDocuments(furtherDocs)
             .build();
 
         caseData.getAllDocManagement().setCaseworkerCICDocument(expectedAllDocs);
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
 
         //when
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             systemCleanDeletedDocumentsCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //then
@@ -93,18 +93,18 @@ class SystemCleanDeletedDocumentsCaseTest {
         List<ListValue<CaseworkerCICDocument>> expectedAllDocs = new ArrayList<>();
         expectedAllDocs.add(documentListValue1);
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .build();
 
         caseData.getAllDocManagement().setCaseworkerCICDocument(expectedAllDocs);
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
 
         //when
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             systemCleanDeletedDocumentsCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
 
@@ -124,19 +124,19 @@ class SystemCleanDeletedDocumentsCaseTest {
         List<ListValue<CaseworkerCICDocument>> expectedAllDocs = new ArrayList<>();
         expectedAllDocs.add(documentListValue1);
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .furtherUploadedDocuments(Collections.emptyList())
             .build();
 
         caseData.getAllDocManagement().setCaseworkerCICDocument(expectedAllDocs);
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
 
         //when
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             systemCleanDeletedDocumentsCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
 
@@ -159,19 +159,19 @@ class SystemCleanDeletedDocumentsCaseTest {
         List<ListValue<CaseworkerCICDocument>> furtherDocs = new ArrayList<>();
         furtherDocs.add(documentListValue1);
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .furtherUploadedDocuments(furtherDocs)
             .build();
 
         caseData.getAllDocManagement().setCaseworkerCICDocument(expectedAllDocs);
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
 
         //when
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             systemCleanDeletedDocumentsCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
 

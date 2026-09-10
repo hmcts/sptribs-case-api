@@ -16,6 +16,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseStayedNotification;
 
@@ -35,14 +36,14 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 
 @Component
 @Slf4j
-public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerStayTheCase implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     @Autowired
     private CaseStayedNotification caseStayedNotification;
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        new PageBuilder(configBuilder
+    public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+        new PageBuilder<>(configBuilder
             .event(CASEWORKER_STAY_THE_CASE)
             .forStates(CaseManagement, ReadyToList, CaseStayed)
             .name("Stays: Create/edit stay")
@@ -71,9 +72,10 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
             .optional(CaseStay::getAdditionalDetail, "");
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStart(CaseDetails<CriminalInjuriesCompensationData,
+        State> details) {
 
-        final CaseData caseData = details.getData();
+        final CriminalInjuriesCompensationData caseData = details.getData();
         final CaseStay caseStay = caseData.getCaseStay();
 
         if (details.getState() != CaseStayed) {
@@ -83,27 +85,29 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
             caseStay.setFlagType(null);
         }
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
-                                                                       final CaseDetails<CaseData, State> beforeDetails) {
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+        State> aboutToSubmit(final CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                                       final CaseDetails<CriminalInjuriesCompensationData,
+                                                                           State> beforeDetails) {
 
-        final CaseData caseData = details.getData();
+        final CriminalInjuriesCompensationData caseData = details.getData();
         caseData.getCaseStay().setIsCaseStayed(YesOrNo.YES);
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .state(CaseStayed)
             .build();
     }
 
-    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                               CaseDetails<CaseData, State> beforeDetails) {
+    public SubmittedCallbackResponse submitted(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                               CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
 
-        final CaseData data = details.getData();
+        final CriminalInjuriesCompensationData data = details.getData();
         final String claimNumber = data.getHyphenatedCaseRef();
 
         try {

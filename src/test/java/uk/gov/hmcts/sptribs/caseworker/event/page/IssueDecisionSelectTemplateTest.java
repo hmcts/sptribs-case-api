@@ -11,9 +11,9 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.caseworker.util.EventUtil;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,22 +33,23 @@ class IssueDecisionSelectTemplateTest {
 
     @Test
     void midEventCorrectlySetsDecisionTemplate() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder()
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .caseIssueDecision(caseIssueDecision)
             .build();
 
         when(caseIssueDecision.getIssueDecisionTemplate()).thenReturn(decisionTemplate);
         caseDetails.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = issueDecisionSelectTemplate.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+            State> response = issueDecisionSelectTemplate.midEvent(caseDetails, caseDetails);
         assertThat(response.getData().getDecisionMainContent()).isEqualTo(DocmosisTemplateConstants.ELIGIBILITY_MAIN_CONTENT);
     }
 
     @Test
     void validateGetMainContentIsCalledOnce() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder()
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .caseIssueDecision(caseIssueDecision)
             .build();
 

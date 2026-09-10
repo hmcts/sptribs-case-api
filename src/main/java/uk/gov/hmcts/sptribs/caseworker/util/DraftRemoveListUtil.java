@@ -24,7 +24,7 @@ public final class DraftRemoveListUtil {
 
     }
 
-    public static CaseData setDraftListForRemoval(CaseData caseData, CaseData oldData) {
+    public static <T extends CaseData> T setDraftListForRemoval(T caseData, CaseData oldData) {
 
         List<ListValue<DraftOrderCIC>> draftOrderList = oldData.getCicCase().getDraftOrderCICList();
 

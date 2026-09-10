@@ -12,7 +12,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
@@ -70,7 +70,7 @@ class CaseworkerAddNoteIT {
 
     @Test
     void shouldSuccessfullyAddCaseNoteToCaseDataWhenThereAreNoExistingCaseNotes() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setNote("This is a test note");
 
         final CICUser user = new CICUser(
@@ -102,7 +102,7 @@ class CaseworkerAddNoteIT {
 
     @Test
     void shouldThrowUnauthorizedExceptionWhenAboutToSubmitIsInvokedAndIdamThrowsUnauthorized() throws Exception {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setNote("This is a test note");
 
         when(idamService.retrieveUser(eq(TEST_AUTHORIZATION_TOKEN)))

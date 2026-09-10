@@ -14,6 +14,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.CaseNote;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
@@ -38,7 +39,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 
 @Component
 @Slf4j
-public class CaseworkerAddNote implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerAddNote implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     @Autowired
     private HttpServletRequest request;
@@ -50,8 +51,8 @@ public class CaseworkerAddNote implements CCDConfig<CaseData, State, UserRole> {
     private Clock clock;
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
+    public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+        Event.EventBuilder<CriminalInjuriesCompensationData, UserRole, State> eventBuilder =
             configBuilder
                 .event(CASEWORKER_ADD_NOTE)
                 .forAllStates()
@@ -62,20 +63,20 @@ public class CaseworkerAddNote implements CCDConfig<CaseData, State, UserRole> {
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, SUPER_USER, ST_CIC_WA_CONFIG_USER).publishToCamunda();
 
-        new PageBuilder(eventBuilder)
+        new PageBuilder<>(eventBuilder)
             .page("addCaseNotes")
             .pageLabel("Add case notes")
             .optional(CaseData::getNote);
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
-        final CaseDetails<CaseData, State> details,
-        final CaseDetails<CaseData, State> beforeDetails
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(
+        final CaseDetails<CriminalInjuriesCompensationData, State> details,
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails
     ) {
 
         final CICUser caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
 
-        final CaseData caseData = details.getData();
+        final CriminalInjuriesCompensationData caseData = details.getData();
 
         String note = caseData.getNote();
 
@@ -111,7 +112,7 @@ public class CaseworkerAddNote implements CCDConfig<CaseData, State, UserRole> {
 
         caseData.setNote(null); //Clear note text area as notes value is stored in notes collection
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .build();
     }

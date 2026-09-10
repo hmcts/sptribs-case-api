@@ -19,8 +19,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
@@ -399,7 +399,7 @@ class DocumentControllerIT {
     }
 
     private CicaCaseEntity buildAuthorisedCaseEntity() {
-        CaseData caseData = new CaseData();
+        CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
         CicCase cicCase = new CicCase();
         cicCase.setEmail(TEST_SUBJECT_EMAIL);
         caseData.setCicCase(cicCase);

@@ -19,6 +19,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.ReinstateReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
@@ -73,7 +74,7 @@ public class NewOrderIssuedNotificationTest {
         @Test
         void shouldNotifySubjectOfNewOrderIssuedWithEmail() {
             //Given
-            final CaseData data = getMockCaseData();
+            final CriminalInjuriesCompensationData data = getMockCaseData();
             data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
             data.getCicCase().setEmail("testSubject@outlook.com");
 
@@ -105,7 +106,7 @@ public class NewOrderIssuedNotificationTest {
         @Test
         void shouldNotifySubjectOfNewOrderIssuedWithEmailWithUploadedTemplateDocument() {
             //Given
-            final CaseData data = getMockCaseData();
+            final CriminalInjuriesCompensationData data = getMockCaseData();
             data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
             data.getCicCase().setEmail("testSubject@outlook.com");
 
@@ -138,7 +139,7 @@ public class NewOrderIssuedNotificationTest {
         @Test
         void shouldNotifySubjectOfNewOrderIssuedWithPost() {
             //Given
-            final CaseData data = getMockCaseData();
+            final CriminalInjuriesCompensationData data = getMockCaseData();
             data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
             data.getCicCase().setAddress(AddressGlobalUK.builder().build());
             data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
@@ -160,7 +161,7 @@ public class NewOrderIssuedNotificationTest {
         @Test
         void shouldNotifyRespondentOfNewOrderIssuedWithEmail() {
             //Given
-            final CaseData data = getMockCaseData();
+            final CriminalInjuriesCompensationData data = getMockCaseData();
             data.getCicCase().setRespondentName("respondentName");
             data.getCicCase().setRespondentEmail("testRespondent@outlook.com");
 
@@ -193,7 +194,7 @@ public class NewOrderIssuedNotificationTest {
         @Test
         void shouldNotifyRepresentativeOfNewOrderIssuedWithEmail() {
             //Given
-            final CaseData data = getMockCaseData();
+            final CriminalInjuriesCompensationData data = getMockCaseData();
             data.getCicCase().setRepresentativeFullName("repFullName");
             data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
             data.getCicCase().setRepresentativeEmailAddress("testrepr@outlook.com");
@@ -232,7 +233,7 @@ public class NewOrderIssuedNotificationTest {
         @Test
         void shouldNotifyRepresentativeOfNewOrderIssuedWithPost() {
             //Given
-            final CaseData data = getMockCaseData();
+            final CriminalInjuriesCompensationData data = getMockCaseData();
             data.getCicCase().setRepresentativeFullName("repFullName");
             data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.POST);
             data.getCicCase().setRepresentativeAddress(AddressGlobalUK.builder().build());
@@ -254,7 +255,7 @@ public class NewOrderIssuedNotificationTest {
         @Test
         void shouldNotifyApplicantOfNewOrderIssuedWithEmail() {
             //Given
-            final CaseData data = getMockCaseData();
+            final CriminalInjuriesCompensationData data = getMockCaseData();
             data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
             data.getCicCase().setApplicantEmailAddress("testapplicant@outlook.com");
             data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
@@ -286,7 +287,7 @@ public class NewOrderIssuedNotificationTest {
         @Test
         void shouldNotifyApplicantOfNewOrderIssuedWithEmailWithNoUploadedDocument() {
             //Given
-            final CaseData data = getMockCaseData();
+            final CriminalInjuriesCompensationData data = getMockCaseData();
             data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
             data.getCicCase().setApplicantEmailAddress("testapplicant@outlook.com");
             data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
@@ -316,7 +317,7 @@ public class NewOrderIssuedNotificationTest {
         @Test
         void shouldNotifyApplicantOfNewOrderIssuedWithPost() {
             //Given
-            final CaseData data = getMockCaseData();
+            final CriminalInjuriesCompensationData data = getMockCaseData();
             data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
             data.getCicCase().setAddress(AddressGlobalUK.builder().build());
             data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
@@ -348,7 +349,7 @@ public class NewOrderIssuedNotificationTest {
         @Test
         void shouldNotifySubjectOfNewOrderIssuedWithEmail() {
             //Given
-            final CaseData data = getMockCaseData();
+            final CriminalInjuriesCompensationData data = getMockCaseData();
             data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
             data.getCicCase().setEmail("testSubject@outlook.com");
 
@@ -378,13 +379,13 @@ public class NewOrderIssuedNotificationTest {
         }
     }
 
-    private CaseData getMockCaseData() {
+    private CriminalInjuriesCompensationData getMockCaseData() {
         CicCase cicCase = CicCase.builder()
             .fullName("fullName")
             .caseNumber(TEST_CASE_ID.toString())
             .build();
 
-        return CaseData.builder()
+        return CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .build();
     }

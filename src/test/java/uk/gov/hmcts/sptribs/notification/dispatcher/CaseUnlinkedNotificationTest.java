@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
@@ -38,7 +39,7 @@ class CaseUnlinkedNotificationTest {
     @Test
     void shouldNotifySubjectOfCaseUnlikedWithEmail() {
         //Given
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setEmail("testsubject@outlook.com");
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
@@ -59,7 +60,7 @@ class CaseUnlinkedNotificationTest {
     @Test
     void shouldNotifySubjectOfCaseUnlikedWithPost() {
         //Given
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
         data.getCicCase().setAddress(AddressGlobalUK.builder().build());
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
@@ -81,7 +82,7 @@ class CaseUnlinkedNotificationTest {
     @Test
     void shouldNotifyApplicantOfCaseUnlikedWithEmail() {
         //Given
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setApplicantFullName("appFullName");
         data.getCicCase().setApplicantContactDetailsPreference(ContactPreferenceType.EMAIL);
         data.getCicCase().setApplicantEmailAddress("testApplicant@outlook.com");
@@ -103,7 +104,7 @@ class CaseUnlinkedNotificationTest {
     @Test
     void shouldNotifyApplicantOfCaseUnlikedWithPost() {
         //Given
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setApplicantFullName("appFullName");
         data.getCicCase().setApplicantContactDetailsPreference(ContactPreferenceType.POST);
         data.getCicCase().setApplicantAddress(AddressGlobalUK.builder().build());
@@ -125,7 +126,7 @@ class CaseUnlinkedNotificationTest {
     @Test
     void shouldNotifyRepresentativeOfCaseUnlikedWithEmail() {
         //Given
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
         data.getCicCase().setRepresentativeEmailAddress("testrepr@outlook.com");
@@ -147,7 +148,7 @@ class CaseUnlinkedNotificationTest {
     @Test
     void shouldNotifyRepresentativeOfCaseUnlikedWithPost() {
         //Given
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.POST);
         data.getCicCase().setRepresentativeAddress(AddressGlobalUK.builder().build());
@@ -166,11 +167,11 @@ class CaseUnlinkedNotificationTest {
             TemplateName.CASE_UNLINKED_POST);
     }
 
-    private CaseData getMockCaseData() {
+    private CriminalInjuriesCompensationData getMockCaseData() {
         final CicCase cicCase = CicCase.builder()
             .fullName("fullName").caseNumber(TEST_CASE_ID.toString())
             .build();
-        return CaseData.builder().cicCase(cicCase).build();
+        return CriminalInjuriesCompensationData.builder().cicCase(cicCase).build();
     }
 
 }

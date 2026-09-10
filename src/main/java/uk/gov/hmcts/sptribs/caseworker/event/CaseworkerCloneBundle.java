@@ -5,9 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CLONE_BUNDLE;
@@ -25,11 +25,11 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 @Setter
-public class CaseworkerCloneBundle implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerCloneBundle implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        new PageBuilder(configBuilder
+    public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+        new PageBuilder<>(configBuilder
             .event(CLONE_BUNDLE)
             .forStates(CaseManagement, AwaitingHearing)
             .name("Bundle: Clone a bundle")

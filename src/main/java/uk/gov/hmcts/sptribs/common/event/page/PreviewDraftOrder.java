@@ -29,8 +29,8 @@ public class PreviewDraftOrder implements CcdPageConfiguration {
     }
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
-        FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fieldCollectionBuilder =
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
+        FieldCollection.FieldCollectionBuilder<T, State, Event.EventBuilder<T, UserRole, State>> fieldCollectionBuilder =
             pageBuilder
                 .page(pageId)
                 .pageLabel("Preview order")

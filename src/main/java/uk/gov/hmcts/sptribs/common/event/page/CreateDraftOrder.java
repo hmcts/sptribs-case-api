@@ -18,7 +18,7 @@ public class CreateDraftOrder implements CcdPageConfiguration {
     private static final String NEVER_SHOW = "orderContentOrderTemplate=\"NEVER_SHOW\"";
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
         pageBuilder.page("createDraftOrder", this::midEvent)
             .pageLabel("Create order")
             .label("LabelCreateDraftOrder", "")
@@ -32,10 +32,10 @@ public class CreateDraftOrder implements CcdPageConfiguration {
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                  CaseDetails<CaseData, State> detailsBefore) {
+    public <T extends CaseData> AboutToStartOrSubmitResponse<T, State> midEvent(CaseDetails<T, State> details,
+                                                                  CaseDetails<T, State> detailsBefore) {
 
-        final CaseData caseData = details.getData();
+        final T caseData = details.getData();
         final OrderTemplate order = caseData.getDraftOrderContentCIC().getOrderTemplate();
 
         caseData.getDraftOrderContentCIC().setMainContent(EventUtil.getOrderMainContent(order));
@@ -44,7 +44,7 @@ public class CreateDraftOrder implements CcdPageConfiguration {
             caseData.getCicCase().setReferralTypeForWA("");
         }
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<T, State>builder()
             .data(caseData)
             .build();
     }

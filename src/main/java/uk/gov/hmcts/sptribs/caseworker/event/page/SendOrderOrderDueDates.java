@@ -23,7 +23,7 @@ public class SendOrderOrderDueDates implements CcdPageConfiguration {
     private final Clock clock;
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
 
         pageBuilder.page("caseworkerSendOrderOrderDueDates", this::midEvent)
             .pageLabel("Add a due date")
@@ -38,8 +38,8 @@ public class SendOrderOrderDueDates implements CcdPageConfiguration {
 
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                  CaseDetails<CaseData, State> detailsBefore) {
+    public <T extends CaseData> AboutToStartOrSubmitResponse<T, State> midEvent(CaseDetails<T, State> details,
+                                                                  CaseDetails<T, State> detailsBefore) {
 
         List<ListValue<DateModel>> dueDates = details.getData().getOrderDueDates();
         for (ListValue<DateModel> listValue : dueDates) {
@@ -52,7 +52,7 @@ public class SendOrderOrderDueDates implements CcdPageConfiguration {
 
         }
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<T, State>builder()
             .data(details.getData())
             .build();
     }

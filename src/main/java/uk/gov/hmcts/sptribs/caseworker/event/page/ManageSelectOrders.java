@@ -20,7 +20,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getId;
 public class ManageSelectOrders implements CcdPageConfiguration {
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
         pageBuilder.page("caseworkerAmendDueDateSelectOrder", this::midEvent)
             .pageLabel("Select order")
             .label("LabelCaseworkerAmendDueDateSelectOrder", "")
@@ -29,10 +29,10 @@ public class ManageSelectOrders implements CcdPageConfiguration {
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                  CaseDetails<CaseData, State> detailsBefore) {
+    public <T extends CaseData> AboutToStartOrSubmitResponse<T, State> midEvent(CaseDetails<T, State> details,
+                                                                  CaseDetails<T, State> detailsBefore) {
 
-        final CaseData data = details.getData();
+        final T data = details.getData();
         final List<String> errors = new ArrayList<>();
         final String selectedOrder = data.getCicCase().getOrderDynamicList().getValue().getLabel();
         final String id = getId(selectedOrder);
@@ -50,7 +50,7 @@ public class ManageSelectOrders implements CcdPageConfiguration {
             errors.add("Please select an order to manage");
         }
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<T, State>builder()
             .data(data)
             .errors(errors)
             .build();

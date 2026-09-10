@@ -13,10 +13,10 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ShowDraftOrders;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ShowRemovedDraftOrders;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
@@ -43,15 +43,15 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class CaseworkerDeleteDraftOrder implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerDeleteDraftOrder implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     private static final CcdPageConfiguration showDraftOrders = new ShowDraftOrders();
     private static final ShowRemovedDraftOrders showRemovedDraftOrders = new ShowRemovedDraftOrders();
     private final DocumentsService documentsService;
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
+    public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+        Event.EventBuilder<CriminalInjuriesCompensationData, UserRole, State> eventBuilder =
             configBuilder
                 .event(CASEWORKER_DELETE_DRAFT_ORDER)
                 .forStates(CaseManagement, ReadyToList, AwaitingHearing, CaseStayed, CaseClosed)
@@ -62,17 +62,17 @@ public class CaseworkerDeleteDraftOrder implements CCDConfig<CaseData, State, Us
                 .grantHistoryOnly(ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER,
                     ST_CIC_JUDGE, ST_CIC_SENIOR_JUDGE);
 
-        PageBuilder pageBuilder = new PageBuilder(eventBuilder);
+        PageBuilder<CriminalInjuriesCompensationData> pageBuilder = new PageBuilder<>(eventBuilder);
         showDraftOrders.addTo(pageBuilder);
         showRemovedDraftOrders.addTo(pageBuilder);
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
-        final CaseDetails<CaseData, State> details,
-        final CaseDetails<CaseData, State> beforeDetails
+    public AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToSubmit(
+        final CaseDetails<CriminalInjuriesCompensationData, State> details,
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails
     ) {
 
-        CaseData caseData = details.getData();
+        CriminalInjuriesCompensationData caseData = details.getData();
         CicCase cicCase = repopulateDynamicDraftList(caseData.getCicCase());
 
         removeDraftsFromDocumentTable(caseData);
@@ -83,13 +83,13 @@ public class CaseworkerDeleteDraftOrder implements CCDConfig<CaseData, State, Us
         caseData.getCicCase().setRemovedDraftList(listValues);
 
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CriminalInjuriesCompensationData, State>builder()
             .data(caseData)
             .state(details.getState())
             .build();
     }
 
-    private void removeDraftsFromDocumentTable(CaseData caseData) {
+    private void removeDraftsFromDocumentTable(CriminalInjuriesCompensationData caseData) {
         List<ListValue<DraftOrderCIC>> removedDraftList = caseData.getCicCase().getRemovedDraftList();
 
         removedDraftList.forEach(v -> {
@@ -99,8 +99,8 @@ public class CaseworkerDeleteDraftOrder implements CCDConfig<CaseData, State, Us
 
     }
 
-    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                                  CaseDetails<CaseData, State> beforeDetails) {
+    public SubmittedCallbackResponse submitted(CaseDetails<CriminalInjuriesCompensationData, State> details,
+                                                  CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails) {
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader("# Draft order deleted.")

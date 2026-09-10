@@ -14,6 +14,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.StayReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
@@ -53,7 +54,7 @@ public class CancelHearingNotificationTest {
     void shouldNotifySubjectOfCaseCancelHearingWithEmail() {
         //Given
         final LocalDate expDate = LocalDate.now();
-        final CaseData data = getMockCaseData(expDate);
+        final CriminalInjuriesCompensationData data = getMockCaseData(expDate);
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setEmail("testSubject@outlook.com");
         data.getCicCase().setHearingList(getDynamicList());
@@ -76,7 +77,7 @@ public class CancelHearingNotificationTest {
     void shouldNotifySubjectOfCaseCancelHearingWithPost() {
         //Given
         final LocalDate expDate = LocalDate.now();
-        final CaseData data = getMockCaseData(expDate);
+        final CriminalInjuriesCompensationData data = getMockCaseData(expDate);
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
         data.getCicCase().setAddress(AddressGlobalUK.builder().build());
         data.getCicCase().setHearingList(getDynamicList());
@@ -99,7 +100,7 @@ public class CancelHearingNotificationTest {
     void shouldNotifyRespondentOfCaseCancelHearingWithEmail() {
         //Given
         final LocalDate expDate = LocalDate.now();
-        final CaseData data = getMockCaseData(expDate);
+        final CriminalInjuriesCompensationData data = getMockCaseData(expDate);
         data.getCicCase().setRespondentName("respondentName");
         data.getCicCase().setRespondentEmail("testRespondent@outlook.com");
         data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
@@ -122,7 +123,7 @@ public class CancelHearingNotificationTest {
     void shouldNotifyRepresentativeOfCaseCancelHearingWithEmail() {
         //Given
         final LocalDate expDate = LocalDate.now();
-        final CaseData data = getMockCaseData(expDate);
+        final CriminalInjuriesCompensationData data = getMockCaseData(expDate);
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
         data.getCicCase().setRepresentativeEmailAddress("testrepr@outlook.com");
@@ -146,7 +147,7 @@ public class CancelHearingNotificationTest {
     void shouldNotifyRepresentativeOfCaseCancelHearingWithPost() {
         //Given
         final LocalDate expDate = LocalDate.now();
-        final CaseData data = getMockCaseData(expDate);
+        final CriminalInjuriesCompensationData data = getMockCaseData(expDate);
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.POST);
         data.getCicCase().setRepresentativeAddress(AddressGlobalUK.builder().build());
@@ -171,7 +172,7 @@ public class CancelHearingNotificationTest {
     void shouldNotifyApplicantOfCaseCancelHearingWithEmail() {
         //Given
         final LocalDate expDate = LocalDate.now();
-        final CaseData data = getMockCaseData(expDate);
+        final CriminalInjuriesCompensationData data = getMockCaseData(expDate);
         data.getCicCase().setApplicantFullName("applicantFullName");
         data.getCicCase().setApplicantContactDetailsPreference(ContactPreferenceType.EMAIL);
         data.getCicCase().setApplicantEmailAddress("testapplicant@outlook.com");
@@ -195,7 +196,7 @@ public class CancelHearingNotificationTest {
     void shouldNotifyApplicantOfCaseCancelHearingWithPost() {
         //Given
         final LocalDate expDate = LocalDate.now();
-        final CaseData data = getMockCaseData(expDate);
+        final CriminalInjuriesCompensationData data = getMockCaseData(expDate);
         data.getCicCase().setApplicantFullName("applicantFullName");
         data.getCicCase().setApplicantContactDetailsPreference(ContactPreferenceType.POST);
         data.getCicCase().setApplicantAddress(AddressGlobalUK.builder().build());
@@ -216,7 +217,7 @@ public class CancelHearingNotificationTest {
     }
 
 
-    private CaseData getMockCaseData(LocalDate stayCaseExpDate) {
+    private CriminalInjuriesCompensationData getMockCaseData(LocalDate stayCaseExpDate) {
         final CicCase cicCase = CicCase.builder()
             .fullName("fullName").caseNumber(TEST_CASE_ID.toString())
             .build();
@@ -226,7 +227,7 @@ public class CancelHearingNotificationTest {
             .additionalDetail("addlDetail")
             .build();
 
-        return CaseData.builder()
+        return CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .caseStay(caseStay)
             .build();

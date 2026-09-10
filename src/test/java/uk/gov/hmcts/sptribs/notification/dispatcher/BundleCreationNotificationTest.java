@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
@@ -54,7 +55,7 @@ public class BundleCreationNotificationTest {
         @Test
         void shouldNotifyApplicantThatBundleIsCreated() {
             //Given
-            final CaseData data = getMockCaseData();
+            final CriminalInjuriesCompensationData data = getMockCaseData();
             data.getCicCase().setApplicantEmailAddress("testapp@outlook.com");
             data.getCicCase().setApplicantFullName("Applicant LastName");
 
@@ -77,7 +78,7 @@ public class BundleCreationNotificationTest {
         @Test
         void shouldNotifyRepresentativeThatBundleIsCreated() {
             //Given
-            final CaseData data = getMockCaseData();
+            final CriminalInjuriesCompensationData data = getMockCaseData();
             data.getCicCase().setRepresentativeEmailAddress("testrepr@outlook.com");
             data.getCicCase().setRepresentativeFullName("Rep LastName");
 
@@ -100,7 +101,7 @@ public class BundleCreationNotificationTest {
         @Test
         void shouldNotifyRespondentThatBundleIsCreated() {
             //Given
-            final CaseData data = getMockCaseData();
+            final CriminalInjuriesCompensationData data = getMockCaseData();
             data.getCicCase().setRespondentEmail("testresp@outlook.com");
 
             //When
@@ -131,7 +132,7 @@ public class BundleCreationNotificationTest {
         @Test
         void shouldNotifyApplicantThatBundleIsCreated() {
             //Given
-            final CaseData data = getMockCaseData();
+            final CriminalInjuriesCompensationData data = getMockCaseData();
             data.getCicCase().setApplicantEmailAddress("testapp@outlook.com");
             data.getCicCase().setApplicantFullName("Applicant LastName");
 
@@ -155,11 +156,11 @@ public class BundleCreationNotificationTest {
 
     }
 
-    private CaseData getMockCaseData() {
+    private CriminalInjuriesCompensationData getMockCaseData() {
         CicCase cicCase = CicCase.builder()
             .fullName("fullName").caseNumber(TEST_CASE_ID.toString())
             .build();
 
-        return CaseData.builder().cicCase(cicCase).build();
+        return CriminalInjuriesCompensationData.builder().cicCase(cicCase).build();
     }
 }

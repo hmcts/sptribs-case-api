@@ -11,7 +11,7 @@ import java.util.Map;
 public class CloseCaseConcessionDetails implements CcdPageConfiguration {
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
         Map<String, String> map = new HashMap<>();
         map.put("closeCaseWithdrawalDetails", "closeCloseCaseReason = \"caseWithdrawn\"");
         map.put("closeCaseRejectionDetails", "closeCloseCaseReason = \"caseRejected\"");

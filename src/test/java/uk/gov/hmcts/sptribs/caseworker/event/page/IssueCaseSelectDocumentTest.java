@@ -10,8 +10,8 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 
 import java.util.Collections;
 import java.util.List;
@@ -38,14 +38,15 @@ class IssueCaseSelectDocumentTest {
         when(dynamicMultiSelectList.getValue()).thenReturn(documentList);
         when(documentList.size()).thenReturn(3);
 
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         final CaseIssue caseIssue = CaseIssue.builder().documentList(dynamicMultiSelectList).build();
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .caseIssue(caseIssue)
             .build();
         caseDetails.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = issueCaseSelectDocument.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+            State> response = issueCaseSelectDocument.midEvent(caseDetails, caseDetails);
 
         assertTrue(response.getErrors().isEmpty());
         assertThat(response.getData().getCaseIssue().getDocumentList()).isEqualTo((dynamicMultiSelectList));
@@ -56,14 +57,15 @@ class IssueCaseSelectDocumentTest {
         when(dynamicMultiSelectList.getValue()).thenReturn(documentList);
         when(documentList.size()).thenReturn(6);
 
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         final CaseIssue caseIssue = CaseIssue.builder().documentList(dynamicMultiSelectList).build();
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .caseIssue(caseIssue)
             .build();
         caseDetails.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = issueCaseSelectDocument.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+            State> response = issueCaseSelectDocument.midEvent(caseDetails, caseDetails);
 
         assertFalse(response.getErrors().isEmpty());
         assertThat(response.getErrors()).contains("Select up to 5 documents");
@@ -71,14 +73,15 @@ class IssueCaseSelectDocumentTest {
 
     @Test
     void midEventReturnsErrorForNullDocumentList() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         final CaseIssue caseIssue = CaseIssue.builder().build();
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .caseIssue(caseIssue)
             .build();
         caseDetails.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = issueCaseSelectDocument.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+            State> response = issueCaseSelectDocument.midEvent(caseDetails, caseDetails);
 
         assertThat(response.getErrors()).hasSize(1);
         assertThat(response.getErrors()).contains("Select at least one document");
@@ -88,14 +91,15 @@ class IssueCaseSelectDocumentTest {
     void midEventReturnsErrorWhenNoDocumentsSelected() {
         when(dynamicMultiSelectList.getValue()).thenReturn(Collections.emptyList());
 
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         final CaseIssue caseIssue = CaseIssue.builder().documentList(dynamicMultiSelectList).build();
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .caseIssue(caseIssue)
             .build();
         caseDetails.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = issueCaseSelectDocument.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+            State> response = issueCaseSelectDocument.midEvent(caseDetails, caseDetails);
 
         assertFalse(response.getErrors().isEmpty());
         assertThat(response.getErrors()).contains("Select at least one document");

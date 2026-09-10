@@ -8,10 +8,10 @@ import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,7 +36,7 @@ class SystemMigrateCaseFlagsTest {
 
     @Test
     void shouldAddConfigurationToConfigBuilderWithToggleOn() {
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         systemMigrateCaseFlags.configure(configBuilder);
 
@@ -48,23 +48,23 @@ class SystemMigrateCaseFlagsTest {
     @Test
     void shouldSuccessfullyUpdateCaseFlags() {
         //Given
-        final CaseData beforeCaseData = caseData();
-        final CaseData updatedCaseData = caseData();
+        final CriminalInjuriesCompensationData beforeCaseData = caseData();
+        final CriminalInjuriesCompensationData updatedCaseData = caseData();
         final CicCase cicCase = CicCase.builder()
             .fullName(TEST_FIRST_NAME)
             .applicantFullName(TEST_FIRST_NAME)
             .representativeFullName(TEST_SOLICITOR_NAME)
             .build();
         updatedCaseData.setCicCase(cicCase);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(beforeCaseData);
         updatedCaseDetails.setData(updatedCaseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             systemMigrateCaseFlags.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //Then
@@ -81,23 +81,23 @@ class SystemMigrateCaseFlagsTest {
     @Test
     void shouldSuccessfullyUpdateCaseFlagsWithNullValues() {
         //Given
-        final CaseData beforeCaseData = caseData();
-        final CaseData updatedCaseData = caseData();
+        final CriminalInjuriesCompensationData beforeCaseData = caseData();
+        final CriminalInjuriesCompensationData updatedCaseData = caseData();
         final CicCase cicCase = CicCase.builder()
             .fullName(null)
             .applicantFullName(null)
             .representativeFullName(null)
             .build();
         updatedCaseData.setCicCase(cicCase);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(beforeCaseData);
         updatedCaseDetails.setData(updatedCaseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             systemMigrateCaseFlags.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //Then

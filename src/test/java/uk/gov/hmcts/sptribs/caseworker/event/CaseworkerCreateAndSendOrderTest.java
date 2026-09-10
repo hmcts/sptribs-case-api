@@ -27,6 +27,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
@@ -100,7 +101,7 @@ class CaseworkerCreateAndSendOrderTest {
     @Test
     void shouldAddConfigurationToConfigBuilder() {
 
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
         caseworkerCreateAndSendOrder.configure(configBuilder);
 
         assertThat(getEventsFrom(configBuilder).values())
@@ -113,8 +114,8 @@ class CaseworkerCreateAndSendOrderTest {
 
     @Test
     void shouldSetAnonymityAlreadyAppliedInAboutToStartCallback_AnonymityAlreadyAppliedIsNull() {
-        final CaseData caseData = CaseData.builder().build();
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder()
             .anonymiseYesOrNo(YesOrNo.YES)
             .anonymityAlreadyApplied(null)
@@ -130,8 +131,8 @@ class CaseworkerCreateAndSendOrderTest {
 
     @Test
     void shouldSetAnonymityAlreadyAppliedInAboutToStartCallback_AnonymityAlreadyAppliedIsYes() {
-        final CaseData caseData = CaseData.builder().build();
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder()
             .anonymiseYesOrNo(YesOrNo.YES)
             .anonymityAlreadyApplied(YesOrNo.YES)
@@ -147,8 +148,8 @@ class CaseworkerCreateAndSendOrderTest {
 
     @Test
     void shouldSetAnonymityAlreadyAppliedInAboutToStartCallback_AnonymityAlreadyAppliedIsNo() {
-        final CaseData caseData = CaseData.builder().build();
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder()
             .anonymiseYesOrNo(YesOrNo.YES)
             .anonymityAlreadyApplied(YesOrNo.NO)
@@ -164,8 +165,8 @@ class CaseworkerCreateAndSendOrderTest {
 
     @Test
     void shouldSetAnonymityAlreadyAppliedInAboutToStartCallback_NoAnonymitySet() {
-        final CaseData caseData = CaseData.builder().build();
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder()
             .anonymiseYesOrNo(null)
             .anonymityAlreadyApplied(YesOrNo.NO)
@@ -194,7 +195,7 @@ class CaseworkerCreateAndSendOrderTest {
                 .url("url/documents/uuid")
                 .build();
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
                 .draftOrderContentCIC(draftOrderContentCIC)
                 .orderDueDates(List.of(ListValue.<DateModel>builder().value(DATE_MODEL).build()))
                 .cicCase(getCicCase(CREATE_AND_SEND_NEW_ORDER, YesOrNo.YES, "AAC", document))
@@ -202,7 +203,7 @@ class CaseworkerCreateAndSendOrderTest {
 
         caseData.setDraftOrderContentCIC(draftOrderContentCIC);
 
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         details.setId(TEST_CASE_ID);
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         details.setData(caseData);
@@ -240,7 +241,7 @@ class CaseworkerCreateAndSendOrderTest {
 
     @Test
     void shouldSuccessfullyCreateAndSendNewNonAnonymisedOrder() {
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         details.setId(TEST_CASE_ID);
 
         Document document = Document.builder()
@@ -256,7 +257,7 @@ class CaseworkerCreateAndSendOrderTest {
                 .orderSignature("Supreme Judge Fudge")
                 .build();
 
-        final CaseData caseData = CaseData.builder().build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         caseData.setCicCase(getCicCase(CREATE_AND_SEND_NEW_ORDER, YesOrNo.NO, null, document));
         caseData.setOrderDueDates(List.of(ListValue.<DateModel>builder().value(DATE_MODEL).build()));
         caseData.setDraftOrderContentCIC(draftOrderContentCIC);
@@ -310,7 +311,7 @@ class CaseworkerCreateAndSendOrderTest {
                 .url("url/documents/uuid")
                 .build();
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
                 .draftOrderContentCIC(draftOrderContentCIC)
                 .cicCase(getCicCase(CREATE_AND_SEND_NEW_ORDER, YesOrNo.YES, "AAC", document))
                 .orderDueDates(List.of(ListValue.<DateModel>builder().value(DATE_MODEL).build()))
@@ -318,7 +319,7 @@ class CaseworkerCreateAndSendOrderTest {
 
         caseData.setDraftOrderContentCIC(draftOrderContentCIC);
 
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         details.setId(TEST_CASE_ID);
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         details.setData(caseData);
@@ -383,7 +384,7 @@ class CaseworkerCreateAndSendOrderTest {
                 .build();
 
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
                 .caseFlags(flags)
                 .draftOrderContentCIC(draftOrderContentCIC)
                 .cicCase(getCicCase(CREATE_AND_SEND_NEW_ORDER, YesOrNo.YES, "AAC", document))
@@ -392,7 +393,7 @@ class CaseworkerCreateAndSendOrderTest {
 
         caseData.setDraftOrderContentCIC(draftOrderContentCIC);
 
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         details.setId(TEST_CASE_ID);
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         details.setData(caseData);
@@ -462,7 +463,7 @@ class CaseworkerCreateAndSendOrderTest {
 
     @Test
     void shouldSuccessfullySendUploadedOrder() {
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         details.setId(TEST_CASE_ID);
 
         Document document = Document.builder()
@@ -476,7 +477,7 @@ class CaseworkerCreateAndSendOrderTest {
             .documentEmailContent("Some test content")
             .build();
 
-        final CaseData caseData = CaseData.builder().build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         CicCase cicCase1 = getCicCase(UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER, YesOrNo.NO, null, null);
         List<ListValue<CICDocument>> orderFile = List.of(ListValue.<CICDocument>builder().value(cicDocument).build());
         cicCase1.setOrderFile(orderFile);
@@ -517,7 +518,7 @@ class CaseworkerCreateAndSendOrderTest {
 
     @Test
     void shouldShowErrorMessageWhenNotificationFailsForSubject() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final String hyphenatedCaseRef = caseData.formatCaseRef(TEST_CASE_ID);
         caseData.setHyphenatedCaseRef(hyphenatedCaseRef);
         caseData.getCicCase().setNotifyPartySubject(Set.of(SUBJECT));
@@ -525,7 +526,7 @@ class CaseworkerCreateAndSendOrderTest {
         caseData.getCicCase().setNotifyPartyRepresentative(Set.of(REPRESENTATIVE));
         caseData.getCicCase().setNotifyPartyRespondent(Set.of(RESPONDENT));
 
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
 
         doThrow(NotificationException.class)
@@ -547,7 +548,7 @@ class CaseworkerCreateAndSendOrderTest {
 
     @Test
     void shouldShowErrorMessageWhenNotificationFailsForRepresentative() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final String hyphenatedCaseRef = caseData.formatCaseRef(TEST_CASE_ID);
         caseData.setHyphenatedCaseRef(hyphenatedCaseRef);
         caseData.getCicCase().setNotifyPartySubject(Set.of(SUBJECT));
@@ -555,7 +556,7 @@ class CaseworkerCreateAndSendOrderTest {
         caseData.getCicCase().setNotifyPartyRepresentative(Set.of(REPRESENTATIVE));
         caseData.getCicCase().setNotifyPartyRespondent(Set.of(RESPONDENT));
 
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
 
         doThrow(NotificationException.class)
@@ -578,7 +579,7 @@ class CaseworkerCreateAndSendOrderTest {
 
     @Test
     void shouldShowErrorMessageWhenNotificationFailsForRespondent() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final String hyphenatedCaseRef = caseData.formatCaseRef(TEST_CASE_ID);
         caseData.setHyphenatedCaseRef(hyphenatedCaseRef);
         caseData.getCicCase().setNotifyPartySubject(Set.of(SUBJECT));
@@ -586,7 +587,7 @@ class CaseworkerCreateAndSendOrderTest {
         caseData.getCicCase().setNotifyPartyRepresentative(Set.of(REPRESENTATIVE));
         caseData.getCicCase().setNotifyPartyRespondent(Set.of(RESPONDENT));
 
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
 
         doThrow(NotificationException.class)
@@ -608,7 +609,7 @@ class CaseworkerCreateAndSendOrderTest {
 
     @Test
     void shouldShowErrorMessageWhenNotificationFailsForApplicant() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         final String hyphenatedCaseRef = caseData.formatCaseRef(TEST_CASE_ID);
         caseData.setHyphenatedCaseRef(hyphenatedCaseRef);
         caseData.getCicCase().setNotifyPartySubject(Set.of(SUBJECT));
@@ -616,7 +617,7 @@ class CaseworkerCreateAndSendOrderTest {
         caseData.getCicCase().setNotifyPartyRepresentative(Set.of(REPRESENTATIVE));
         caseData.getCicCase().setNotifyPartyRespondent(Set.of(RESPONDENT));
 
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
 
         doThrow(NotificationException.class)
@@ -637,19 +638,19 @@ class CaseworkerCreateAndSendOrderTest {
 
     @Test
     void shouldSendAnonymityNotificationWhenAnonymityIsNewlyApplied() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setHyphenatedCaseRef("1234-5678-9012-3456");
         caseData.getCicCase().setAnonymiseYesOrNo(YesOrNo.YES);
         caseData.getCicCase().setAnonymisedAppellantName("AAC");
 
-        final CaseData beforeCaseData = caseData();
+        final CriminalInjuriesCompensationData beforeCaseData = caseData();
         beforeCaseData.getCicCase().setAnonymiseYesOrNo(YesOrNo.NO);
         beforeCaseData.getCicCase().setAnonymityAlreadyApplied(YesOrNo.NO);
         beforeCaseData.getCicCase().setAnonymisedAppellantName(null);
 
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(beforeCaseData);
 
         SubmittedCallbackResponse submittedResponse = caseworkerCreateAndSendOrder.submitted(caseDetails, beforeDetails);
@@ -661,19 +662,19 @@ class CaseworkerCreateAndSendOrderTest {
 
     @Test
     void shouldNotSendAnonymityNotificationWhenAnonymityAlreadyAppliedBefore() {
-        final CaseData caseData = caseData();
+        final CriminalInjuriesCompensationData caseData = caseData();
         caseData.setHyphenatedCaseRef("1234-5678-9012-3456");
         caseData.getCicCase().setAnonymiseYesOrNo(YesOrNo.YES);
         caseData.getCicCase().setAnonymisedAppellantName("AAC");
 
-        final CaseData beforeCaseData = caseData();
+        final CriminalInjuriesCompensationData beforeCaseData = caseData();
         beforeCaseData.getCicCase().setAnonymiseYesOrNo(YesOrNo.YES);
         beforeCaseData.getCicCase().setAnonymityAlreadyApplied(YesOrNo.YES);
         beforeCaseData.getCicCase().setAnonymisedAppellantName("AAC");
 
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(beforeCaseData);
 
         SubmittedCallbackResponse submittedResponse = caseworkerCreateAndSendOrder.submitted(caseDetails, beforeDetails);
@@ -698,7 +699,7 @@ class CaseworkerCreateAndSendOrderTest {
             .url("url/documents/uuid")
             .build();
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .draftOrderContentCIC(draftOrderContentCIC)
             .orderDueDates(List.of(ListValue.<DateModel>builder().value(DATE_MODEL).build()))
             .cicCase(getCicCase(CREATE_AND_SEND_NEW_ORDER, YesOrNo.YES, "AAC", document))
@@ -706,7 +707,7 @@ class CaseworkerCreateAndSendOrderTest {
 
         caseData.setDraftOrderContentCIC(draftOrderContentCIC);
 
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         details.setId(TEST_CASE_ID);
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         details.setData(caseData);
@@ -725,16 +726,16 @@ class CaseworkerCreateAndSendOrderTest {
         );
     }
 
-    private CaseDetails<CaseData, State> caseDetailsBefore() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder().build();
+    private CaseDetails<CriminalInjuriesCompensationData, State> caseDetailsBefore() {
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         caseDetails.setData(caseData);
         return caseDetails;
     }
 
     @Test
     void shouldStoreErrorsWhenBuildAndSaveNewDocumentEntityThrowsRuntimeExceptionForUploadedOrder() {
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         details.setId(TEST_CASE_ID);
 
         Document document = Document.builder()
@@ -748,7 +749,7 @@ class CaseworkerCreateAndSendOrderTest {
             .documentEmailContent("Some test content")
             .build();
 
-        final CaseData caseData = CaseData.builder().build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         CicCase cicCase = getCicCase(UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER, YesOrNo.NO, null, null);
         List<ListValue<CICDocument>> orderFile = List.of(ListValue.<CICDocument>builder().value(cicDocument).build());
         cicCase.setOrderFile(orderFile);

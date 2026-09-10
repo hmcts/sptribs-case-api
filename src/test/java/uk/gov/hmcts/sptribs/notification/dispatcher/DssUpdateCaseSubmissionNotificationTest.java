@@ -5,8 +5,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
@@ -37,7 +37,7 @@ class DssUpdateCaseSubmissionNotificationTest {
     @Test
     void shouldSendEmailToApplicant() {
         final CicCase cicCase = CicCase.builder().email(TEST_APPLICANT_EMAIL).build();
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .build();
         final String caseReference = String.valueOf(TEST_CASE_ID);
@@ -64,7 +64,7 @@ class DssUpdateCaseSubmissionNotificationTest {
     @Test
     void shouldSendEmailToTribunal() {
         final CicCase cicCase = CicCase.builder().build();
-        final CaseData caseData = CaseData.builder().cicCase(cicCase).build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().cicCase(cicCase).build();
         final String caseReference = String.valueOf(TEST_CASE_ID);
         final Map<String, Object> templateVars = new HashMap<>();
         final NotificationRequest notificationRequest = NotificationRequest.builder()

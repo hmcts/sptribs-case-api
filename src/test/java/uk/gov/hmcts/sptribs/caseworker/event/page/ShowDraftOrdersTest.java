@@ -8,9 +8,9 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 
 import java.util.Collections;
 import java.util.List;
@@ -31,25 +31,25 @@ public class ShowDraftOrdersTest {
         oldListValue.setId("1");
         oldListValue.setValue(removedDraft);
 
-        CaseData oldData = CaseData.builder()
+        CriminalInjuriesCompensationData oldData = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .draftOrderCICList(List.of(oldListValue))
                 .build())
             .build();
 
-        CaseData newData = CaseData.builder()
+        CriminalInjuriesCompensationData newData = CriminalInjuriesCompensationData.builder()
             .cicCase(CicCase.builder()
                 .draftOrderCICList(Collections.emptyList())
                 .build())
             .build();
 
-        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         details.setData(newData);
 
-        CaseDetails<CaseData, State> detailsBefore = new CaseDetails<>();
+        CaseDetails<CriminalInjuriesCompensationData, State> detailsBefore = new CaseDetails<>();
         detailsBefore.setData(oldData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             showDraftOrders.midEvent(details, detailsBefore);
 
         assertThat(response.getErrors()).isEmpty();
@@ -58,16 +58,16 @@ public class ShowDraftOrdersTest {
 
     @Test
     void midEventReturnsErrorForNullDraftOrderList() {
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
         CicCase cicCase = CicCase.builder().build();
         cicCase.setDraftOrderCICList(Collections.emptyList());
 
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase).build();
 
         caseDetails.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = showDraftOrders.midEvent(caseDetails, caseDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = showDraftOrders.midEvent(caseDetails, caseDetails);
 
         assertThat(response.getErrors()).hasSize(1);
         assertThat(response.getErrors()).contains("Please remove at least one draft to continue");

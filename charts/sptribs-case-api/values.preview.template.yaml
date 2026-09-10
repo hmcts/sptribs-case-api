@@ -71,7 +71,12 @@ ccd:
   consulIP: ${CONSUL_LB_IP}
 
   global:
-    idamApiUrl: https://idam-web-public.aat.platform.hmcts.net
+    # idam-api, not idam-web-public. The two are different services and this one is the API:
+    # ccd-data-store resolves the acting user with GET /api/v1/users/{id}, which idam-web-public
+    # does not route — it answers 404, the create fails with a 500, and the citizen is told only
+    # that their appeal was not sent. idam-web-public is the *sign-in* host, and stays below.
+    # Every other CCD service in the workspace sets this to idam-api.
+    idamApiUrl: https://idam-api.aat.platform.hmcts.net
     idamWebUrl: https://idam-web-public.aat.platform.hmcts.net
     dmStoreUrl: http://dm-store-aat.service.core-compute-aat.internal
     ccdAdminWebIngress: admin-web-${SERVICE_FQDN}
@@ -109,7 +114,13 @@ ccd:
         ELASTIC_SEARCH_HOSTS: ${SERVICE_NAME}-es-master:9200
         ELASTIC_SEARCH_DATA_NODES_HOSTS: http://${SERVICE_NAME}-es-master:9200
         CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
+        # One entry per case type, or CCD treats the case type as centralised: cases are
+        # written to CCD's own datastore rather than to this service, so they are never
+        # enqueued in ccd.es_queue here and the decentralised ES indexer never sees them.
+        # XUI's case list is an Elasticsearch search, so it comes back empty for a case
+        # that was created perfectly well.
         CCD_DECENTRALISED_CASE-TYPE-SERVICE-URLS_CriminalInjuriesCompensation: https://${SERVICE_FQDN}
+        CCD_DECENTRALISED_CASE-TYPE-SERVICE-URLS_StSend35: https://${SERVICE_FQDN}
         IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET: ${IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET}
         IDAM_DATA_STORE_SYSTEM_USER_USERNAME: ${IDAM_DATA_STORE_SYSTEM_USER_USERNAME}
         IDAM_DATA_STORE_SYSTEM_USER_PASSWORD: ${IDAM_DATA_STORE_SYSTEM_USER_PASSWORD}
@@ -195,10 +206,16 @@ ccd:
       enabled: true
       jurisdictions:
         - ST_CIC
+      # One row per (user, jurisdiction, case type) — the third pipe field is the case
+      # type, so a new case type needs its own rows or XUI has no default workbasket for
+      # these users on it.
       users:
         - st_caseworker@mailinator.com|ST_CIC|CIC|Submitted
         - st_solicitor@mailinator.com|ST_CIC|CIC|Submitted
         - st_super@mailinator.com|ST_CIC|CIC|Submitted
+        - st_caseworker@mailinator.com|ST_CIC|StSend35|Submitted
+        - st_solicitor@mailinator.com|ST_CIC|StSend35|Submitted
+        - st_super@mailinator.com|ST_CIC|StSend35|Submitted
       userProfileDatabaseHost: '{{ tpl .Values.global.postgresHostname $}}'
       userProfileDatabasePort: 5432
       userProfileDatabaseUser: ${CCD_USER_PROFILE_DB_USERNAME_PREVIEW}
@@ -466,7 +483,7 @@ xui-webapp:
       SERVICES_DOCUMENTS_API_V2: http://${SERVICE_NAME}-ccd-case-document-am-api
       SERVICES_CCD_CASE_ASSIGNMENT_API: http://{{ .Release.Name }}-aac-manage-case-assignment
       JURISDICTIONS: ST_CIC,ST_CS,ST_MH,ST_PHL,ST_SEN,ST_DD
-      CASE_TYPES: CIC,CS,MH,PHL,SEN,DD
+      CASE_TYPES: CIC,CS,MH,PHL,SEN,DD,StSend35
       FEATURE_REDIS_ENABLED: false
       FEATURE_APP_INSIGHTS_ENABLED: true
       HEALTH_ROLE_ASSIGNMENT_API: http://sptribs-case-api-pr-${CHANGE_ID}-am-role-assignment-service
@@ -487,7 +504,7 @@ xui-mo-webapp:
       SERVICES_CCD_DATA_STORE_API: http://{{ .Release.Name }}-ccd-data-store-api
       SERVICES_MCA_PROXY_API: http://aac-${SERVICE_FQDN}
       JURISDICTIONS: ST_CIC,ST_CS,ST_MH,ST_PHL,ST_SEN,ST_DD
-      CASE_TYPES: CIC,CS,MH,PHL,SEN,DD
+      CASE_TYPES: CIC,CS,MH,PHL,SEN,DD,StSend35
       SERVICES_ROLE_ASSIGNMENT_API: http://sptribs-case-api-pr-${CHANGE_ID}-am-role-assignment-service
 
 sptribs-frontend:

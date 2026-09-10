@@ -13,10 +13,10 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
@@ -56,7 +56,7 @@ public class CaseIssuedNotificationTest {
     @Test
     void shouldNotifySubjectOfCaseIssuedCitizenWithEmail() {
         //Given
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setEmail("TestSubject@outlook.com");
 
@@ -76,7 +76,7 @@ public class CaseIssuedNotificationTest {
     @Test
     void shouldNotifySubjectOfCaseIssuedCitizenWithPost() {
         //Given
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
         data.getCicCase().setAddress(new AddressGlobalUK("11", "JOHN", "STREET", "WINCHESTER", "COUNTY", "TW4 5BH", "UK"));
 
@@ -95,7 +95,7 @@ public class CaseIssuedNotificationTest {
     @Test
     void shouldNotifyApplicantOfCaseIssuedCitizenWithEmail() {
         //Given
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setApplicantFullName("appFullName");
         data.getCicCase().setApplicantContactDetailsPreference(ContactPreferenceType.EMAIL);
         data.getCicCase().setApplicantEmailAddress("TestApplicant@outlook.com");
@@ -116,7 +116,7 @@ public class CaseIssuedNotificationTest {
     @Test
     void shouldNotifyApplicantOfCaseIssuedCitizenWithPost() {
         //Given
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setApplicantFullName("appFullName");
         data.getCicCase().setApplicantContactDetailsPreference(ContactPreferenceType.POST);
         data.getCicCase().setApplicantAddress(new AddressGlobalUK("11", "JOHN", "STREET", "WINCHESTER", "COUNTY", "TW4 5BH", "UK"));
@@ -136,7 +136,7 @@ public class CaseIssuedNotificationTest {
     @Test
     void shouldNotifyRepresentativeOfCaseIssuedCitizenWithEmail() {
         //Given
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeEmailAddress("TestRepresentative@outlook.com");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
@@ -157,7 +157,7 @@ public class CaseIssuedNotificationTest {
     @Test
     void shouldNotifyRepresentativeOfCaseIssuedCitizenWithPost() {
         //Given
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.POST);
         data.getCicCase().setRepresentativeAddress(new AddressGlobalUK("11", "JOHN", "STREET", "WINCHESTER", "COUNTY", "TW4 5BH", "UK"));
@@ -177,7 +177,7 @@ public class CaseIssuedNotificationTest {
     @Test
     void shouldNotifyRespondentOfCaseIssuedCitizenWithEmailWithoutAttachmentsDateInTime() {
         //Given
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("respFullName");
         data.getCicCase().setRespondentEmail("testRespondentEmail@outlook.com");
 
@@ -205,7 +205,7 @@ public class CaseIssuedNotificationTest {
     @Test
     void shouldNotifyRespondentOfCaseIssuedCitizenWithEmailWithoutAttachmentsDateOutOfTime() {
         //Given
-        final CaseData data = getMockCaseData();
+        final CriminalInjuriesCompensationData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("respFullName");
         data.getCicCase().setRespondentEmail("testRespondentEmail@outlook.com");
 
@@ -249,10 +249,11 @@ public class CaseIssuedNotificationTest {
         final List<ListValue<CaseworkerCICDocument>> applicantDocuments =
             List.of(ListValue.<CaseworkerCICDocument>builder().value(cicDocument).build());
 
-        final CaseDetails<CaseData, State> caseDetails = CaseDetails.<CaseData, State>builder()
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = CaseDetails.<CriminalInjuriesCompensationData,
+            State>builder()
             .data(getMockCaseData())
             .build();
-        final CaseData data = caseDetails.getData();
+        final CriminalInjuriesCompensationData data = caseDetails.getData();
         final CicCase cicCase = data.getCicCase();
         cicCase.setApplicantDocumentsUploaded(applicantDocuments);
 
@@ -312,10 +313,11 @@ public class CaseIssuedNotificationTest {
         final List<ListValue<CaseworkerCICDocument>> applicantDocuments =
             List.of(ListValue.<CaseworkerCICDocument>builder().value(cicDocument).build());
 
-        final CaseDetails<CaseData, State> caseDetails = CaseDetails.<CaseData, State>builder()
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = CaseDetails.<CriminalInjuriesCompensationData,
+            State>builder()
                 .data(getMockCaseData())
                 .build();
-        final CaseData data = caseDetails.getData();
+        final CriminalInjuriesCompensationData data = caseDetails.getData();
         final CicCase cicCase = data.getCicCase();
         cicCase.setApplicantDocumentsUploaded(applicantDocuments);
 
@@ -357,13 +359,13 @@ public class CaseIssuedNotificationTest {
 
     }
 
-    private CaseData getMockCaseData() {
+    private CriminalInjuriesCompensationData getMockCaseData() {
         final CicCase cicCase = CicCase.builder()
             .fullName("fullName")
             .caseNumber(TEST_CASE_ID.toString())
             .build();
 
-        return CaseData.builder()
+        return CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .build();
     }

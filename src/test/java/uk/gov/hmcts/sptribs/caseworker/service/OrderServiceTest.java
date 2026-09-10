@@ -16,10 +16,10 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.content.PreviewDraftOrderTemplateContent;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
@@ -55,8 +55,8 @@ class OrderServiceTest {
 
     @Test
     void shouldPopulateOrderDynamicList() {
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder().build();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         final ListValue<Order> order = new ListValue<>();
         final DraftOrderContentCIC contentCIC = DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC7_ME_DMI_REPORTS).build();
         final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder().draftOrderContentCIC(contentCIC).build();
@@ -76,8 +76,8 @@ class OrderServiceTest {
 
     @Test
     void getOrderDynamicListReturnNullForEmptyOrderList() {
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder().build();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         final CicCase cicCase = CicCase.builder().orderList(Collections.emptyList()).build();
         caseData.setCicCase(cicCase);
         details.setData(caseData);
@@ -89,8 +89,8 @@ class OrderServiceTest {
 
     @Test
     void getOrderDynamicListReturnNullWhenOrderListIsNull() {
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder().build();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         final CicCase cicCase = CicCase.builder().build();
         caseData.setCicCase(cicCase);
         details.setData(caseData);
@@ -102,8 +102,8 @@ class OrderServiceTest {
 
     @Test
     void shouldPopulateOrderDynamicListWithUploadFile() {
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder().build();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         final ListValue<Order> order = new ListValue<>();
 
         final UUID uuid = UUID.randomUUID();
@@ -131,9 +131,9 @@ class OrderServiceTest {
 
     @Test
     void shouldGenerateOrderFile() {
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         details.setId(12345L);
-        final CaseData caseData = CaseData.builder().build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         final CicCase cicCase = CicCase.builder()
             .fullName("Jane Smith")
             .anonymiseYesOrNo(YesOrNo.NO)
@@ -152,7 +152,7 @@ class OrderServiceTest {
         when(caseDataDocumentService.renderDocument(anyMap(), anyLong(), anyString(), any(), stringArgumentCaptor.capture(), any()))
             .thenReturn(expectedDocument);
 
-        final CaseData result = orderService.generateOrderFile(caseData, details.getId(), "24-01-2024");
+        final CriminalInjuriesCompensationData result = orderService.generateOrderFile(caseData, details.getId(), "24-01-2024");
 
         String capturedString = stringArgumentCaptor.getValue();
         assertThat(capturedString).isEqualTo(expectedFileName);
@@ -165,9 +165,9 @@ class OrderServiceTest {
 
     @Test
     void shouldGenerateAnonymisedOrderFile() {
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> details = new CaseDetails<>();
         details.setId(12345L);
-        final CaseData caseData = CaseData.builder().build();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder().build();
         final CicCase cicCase = CicCase.builder()
             .fullName("Jane Smith")
             .anonymiseYesOrNo(YesOrNo.YES)
@@ -187,7 +187,7 @@ class OrderServiceTest {
         when(caseDataDocumentService.renderDocument(anyMap(), anyLong(), anyString(), any(), stringArgumentCaptor.capture(), any()))
             .thenReturn(expectedDocument);
 
-        final CaseData result = orderService.generateOrderFile(caseData, details.getId(), "24-01-2024");
+        final CriminalInjuriesCompensationData result = orderService.generateOrderFile(caseData, details.getId(), "24-01-2024");
 
         String capturedString = stringArgumentCaptor.getValue();
         assertThat(capturedString).isEqualTo(expectedFileName);

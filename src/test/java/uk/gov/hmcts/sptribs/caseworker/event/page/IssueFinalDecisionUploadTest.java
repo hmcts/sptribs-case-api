@@ -8,8 +8,8 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.document.DocumentConstants;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 
@@ -29,14 +29,17 @@ class IssueFinalDecisionUploadTest {
             .documentEmailContent("content")
             .build();
         final CaseIssueFinalDecision caseIssueFinalDecision = CaseIssueFinalDecision.builder().document(document).build();
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder()
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .caseIssueFinalDecision(caseIssueFinalDecision)
             .build();
         caseDetails.setData(caseData);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response = issueFinalDecisionUpload.midEvent(caseDetails, caseDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = issueFinalDecisionUpload.midEvent(
+            caseDetails,
+            caseDetails
+        );
 
         //Then
         assertThat(response.getErrors()).contains(DocumentConstants.DOCUMENT_VALIDATION_MESSAGE);

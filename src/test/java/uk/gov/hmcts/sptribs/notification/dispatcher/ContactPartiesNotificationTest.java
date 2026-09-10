@@ -16,10 +16,10 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
@@ -77,7 +77,7 @@ class ContactPartiesNotificationTest {
         @Test
         void shouldNotifySubjectOfContactPartiesWithEmailWithAttachments() {
             //Given
-            final CaseData data = withSelectedContactPartiesDocument(getMockCaseData());
+            final CriminalInjuriesCompensationData data = withSelectedContactPartiesDocument(getMockCaseData());
             data.getCicCase().setNotifyPartyMessage("message");
             data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
             data.getCicCase().setEmail("testSubject@outlook.com");
@@ -119,7 +119,7 @@ class ContactPartiesNotificationTest {
         void shouldNotifySubjectOfContactPartiesWithPost() {
             //Given
             final Map<String, String> uploadedDocuments = getDocumentUploadMap();
-            final CaseData data = getMockCaseData();
+            final CriminalInjuriesCompensationData data = getMockCaseData();
             data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
             data.getCicCase().setNotifyPartyMessage("message");
             data.getCicCase().setAddress(
@@ -151,7 +151,7 @@ class ContactPartiesNotificationTest {
         void shouldNotifyApplicantOfContactPartiesWithEmailWithAttachments() {
             //Given
             final Map<String, String> uploadedDocuments = getDocumentUploadMap();
-            final CaseData data = withSelectedContactPartiesDocument(getMockCaseData());
+            final CriminalInjuriesCompensationData data = withSelectedContactPartiesDocument(getMockCaseData());
             data.getCicCase().setApplicantFullName("appFullName");
             data.getCicCase().setNotifyPartyMessage("message");
             data.getCicCase().setApplicantEmailAddress("testApplicant@outlook.com");
@@ -194,7 +194,7 @@ class ContactPartiesNotificationTest {
         void shouldNotifyApplicantOfContactPartiesWithPost() {
             //Given
             final Map<String, String> uploadedDocuments = getDocumentUploadMap();
-            final CaseData data = getMockCaseData();
+            final CriminalInjuriesCompensationData data = getMockCaseData();
             data.getCicCase().setApplicantFullName("appFullName");
             data.getCicCase().setNotifyPartyMessage("message");
             data.getCicCase().setApplicantContactDetailsPreference(ContactPreferenceType.POST);
@@ -227,7 +227,7 @@ class ContactPartiesNotificationTest {
         void shouldNotifyRepresentativeOfContactPartiesWithEmailWithAttachments() {
             //Given
             final Map<String, String> uploadedDocuments = getDocumentUploadMap();
-            final CaseData data = withSelectedContactPartiesDocument(getMockCaseData());
+            final CriminalInjuriesCompensationData data = withSelectedContactPartiesDocument(getMockCaseData());
             data.getCicCase().setRepresentativeFullName("repFullName");
             data.getCicCase().setNotifyPartyMessage("message");
             data.getCicCase().setRepresentativeEmailAddress("testrepr@outlook.com");
@@ -270,7 +270,7 @@ class ContactPartiesNotificationTest {
         void shouldNotifyRepresentativeOfContactPartiesWithPost() {
             //Given
             final Map<String, String> uploadedDocuments = getDocumentUploadMap();
-            final CaseData data = getMockCaseData();
+            final CriminalInjuriesCompensationData data = getMockCaseData();
             data.getCicCase().setRepresentativeFullName("repFullName");
             data.getCicCase().setNotifyPartyMessage("message");
             data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.POST);
@@ -305,7 +305,7 @@ class ContactPartiesNotificationTest {
         void shouldNotifyRespondentOfContactPartiesWithEmail() {
             //Given
             final Map<String, String> uploadedDocuments = getDocumentUploadMap();
-            final CaseData data = getMockCaseData();
+            final CriminalInjuriesCompensationData data = getMockCaseData();
             data.getCicCase().setRepresentativeFullName("respFullName");
             data.getCicCase().setNotifyPartyMessage("message");
             final Map<String, Object> comonVarsMap = Map.of(
@@ -338,7 +338,7 @@ class ContactPartiesNotificationTest {
         void shouldNotifyRespondentOfContactPartiesWithEmailWithAttachments() {
             //Given
             final Map<String, String> uploadedDocuments = getDocumentUploadMap();
-            final CaseData data = withSelectedContactPartiesDocument(getMockCaseData());
+            final CriminalInjuriesCompensationData data = withSelectedContactPartiesDocument(getMockCaseData());
             data.getCicCase().setRepresentativeFullName("respFullName");
             data.getCicCase().setNotifyPartyMessage("message");
             final Map<String, Object> comonVarsMap = Map.of(
@@ -378,7 +378,7 @@ class ContactPartiesNotificationTest {
         void shouldNotifyTribunalOfContactPartiesWithEmail() {
             //Given
             final Map<String, String> uploadedDocuments = getDocumentUploadMap();
-            final CaseData data = getMockCaseData();
+            final CriminalInjuriesCompensationData data = getMockCaseData();
             data.getCicCase().setRepresentativeFullName("respFullName");
             data.getCicCase().setNotifyPartyMessage("message");
             NotificationResponse notificationResponse = new NotificationResponse();
@@ -409,7 +409,7 @@ class ContactPartiesNotificationTest {
         void shouldNotifyTribunalOfContactPartiesWithEmailWithAttachments() {
             //Given
             final Map<String, String> uploadedDocuments = getDocumentUploadMap();
-            final CaseData data = withSelectedContactPartiesDocument(getMockCaseData());
+            final CriminalInjuriesCompensationData data = withSelectedContactPartiesDocument(getMockCaseData());
             data.getCicCase().setNotifyPartyMessage("message");
             final Map<String, Object> comonVarsMap = Map.of(
                 CommonConstants.CONTACT_PARTY_INFO, data.getCicCase().getNotifyPartyMessage(),
@@ -457,7 +457,7 @@ class ContactPartiesNotificationTest {
         @Test
         void shouldNotifySubjectOfContactPartiesWithEmailWithAttachments() {
             //Given
-            final CaseData data = withSelectedContactPartiesDocument(getMockCaseData());
+            final CriminalInjuriesCompensationData data = withSelectedContactPartiesDocument(getMockCaseData());
             data.getCicCase().setNotifyPartyMessage("message");
             data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
             data.getCicCase().setEmail("testSubject@outlook.com");
@@ -497,15 +497,15 @@ class ContactPartiesNotificationTest {
 
     }
 
-    private CaseData getMockCaseData() {
+    private CriminalInjuriesCompensationData getMockCaseData() {
         final CicCase cicCase = CicCase.builder().fullName("fullName").caseNumber(TEST_CASE_ID.toString()).build();
 
-        return CaseData.builder()
+        return CriminalInjuriesCompensationData.builder()
             .cicCase(cicCase)
             .build();
     }
 
-    private CaseData withSelectedContactPartiesDocument(CaseData caseData) {
+    private CriminalInjuriesCompensationData withSelectedContactPartiesDocument(CriminalInjuriesCompensationData caseData) {
         caseData.setContactPartiesDocuments(ContactPartiesDocuments.builder().build());
 
         List<ListValue<CaseworkerCICDocument>> cicDocumentList = TestDataHelper.getCaseworkerCICDocumentList("test.pdf");

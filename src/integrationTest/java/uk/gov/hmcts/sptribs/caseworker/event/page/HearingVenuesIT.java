@@ -14,7 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
@@ -78,7 +78,7 @@ public class HearingVenuesIT {
         List<ListValue<Listing>> list = new ArrayList<>();
         list.add(listingListValue);
 
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .listing(listing)
             .hearingList(list)
             .build();
@@ -114,7 +114,7 @@ public class HearingVenuesIT {
         List<ListValue<Listing>> list = new ArrayList<>();
         list.add(listingListValue);
 
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .listing(listing)
             .hearingList(list)
             .build();
@@ -152,7 +152,7 @@ public class HearingVenuesIT {
         List<ListValue<Listing>> list = new ArrayList<>();
         list.add(listingListValue);
 
-        CaseData caseData = CaseData.builder()
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .listing(listing)
             .hearingList(list)
             .build();

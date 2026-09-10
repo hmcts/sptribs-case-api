@@ -11,8 +11,8 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
@@ -34,7 +34,7 @@ public class HearingRecordingUploadPageTest {
 
     @InjectMocks
     private HearingRecordingUploadPage hearingRecordingUploadPage;
-    private CaseDetails<CaseData, State> caseDetails;
+    private CaseDetails<CriminalInjuriesCompensationData, State> caseDetails;
     private Listing listing;
     private List<ListValue<CaseworkerCICDocumentUpload>> documentList;
 
@@ -50,12 +50,13 @@ public class HearingRecordingUploadPageTest {
         final HearingSummary hearingSummary = HearingSummary.builder().recFileUpload(documentList).build();
         listing.setSummary(hearingSummary);
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .listing(listing)
             .build();
         caseDetails.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = hearingRecordingUploadPage.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+            State> response = hearingRecordingUploadPage.midEvent(caseDetails, caseDetails);
         assertThat(response.getErrors()).isEmpty();
     }
 
@@ -64,12 +65,13 @@ public class HearingRecordingUploadPageTest {
         final HearingSummary hearingSummary = HearingSummary.builder().build();
         listing.setSummary(hearingSummary);
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .listing(listing)
             .build();
         caseDetails.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = hearingRecordingUploadPage.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+            State> response = hearingRecordingUploadPage.midEvent(caseDetails, caseDetails);
         assertThat(response.getErrors()).isEmpty();
     }
 
@@ -80,12 +82,13 @@ public class HearingRecordingUploadPageTest {
         final HearingSummary hearingSummary = HearingSummary.builder().recFileUpload(documentList).build();
         listing.setSummary(hearingSummary);
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .listing(listing)
             .build();
         caseDetails.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = hearingRecordingUploadPage.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+            State> response = hearingRecordingUploadPage.midEvent(caseDetails, caseDetails);
 
         assertThat(response.getErrors()).hasSize(1);
         assertThat(response.getErrors().get(0)).contains(ERROR_ATTACH_MP3);
@@ -105,12 +108,13 @@ public class HearingRecordingUploadPageTest {
         final HearingSummary hearingSummary = HearingSummary.builder().recFileUpload(documentList).build();
         listing.setSummary(hearingSummary);
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .listing(listing)
             .build();
         caseDetails.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = hearingRecordingUploadPage.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+            State> response = hearingRecordingUploadPage.midEvent(caseDetails, caseDetails);
 
         assertThat(response.getErrors()).hasSize(1);
         assertThat(response.getErrors().get(0)).contains(ERROR_DESCRIPTION_IS_MANDATORY);
@@ -129,12 +133,12 @@ public class HearingRecordingUploadPageTest {
         final HearingSummary hearingSummary = HearingSummary.builder().recFileUpload(documentList).build();
         listing.setSummary(hearingSummary);
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .listing(listing)
             .build();
         caseDetails.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response =
             hearingRecordingUploadPage.midEvent(caseDetails, caseDetails);
 
         assertThat(response.getErrors()).hasSize(1);
@@ -155,12 +159,13 @@ public class HearingRecordingUploadPageTest {
         final HearingSummary hearingSummary = HearingSummary.builder().recFileUpload(documentList).build();
         listing.setSummary(hearingSummary);
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .listing(listing)
             .build();
         caseDetails.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = hearingRecordingUploadPage.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+            State> response = hearingRecordingUploadPage.midEvent(caseDetails, caseDetails);
 
         assertThat(response.getErrors()).hasSize(1);
         assertThat(response.getErrors().get(0)).contains(ERROR_CATEGORY_IS_MANDATORY);
@@ -172,12 +177,13 @@ public class HearingRecordingUploadPageTest {
         final HearingSummary hearingSummary = HearingSummary.builder().recFileUpload(documentList).build();
         listing.setSummary(hearingSummary);
 
-        final CaseData caseData = CaseData.builder()
+        final CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .listing(listing)
             .build();
         caseDetails.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = hearingRecordingUploadPage.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData,
+            State> response = hearingRecordingUploadPage.midEvent(caseDetails, caseDetails);
         final long numberOfMissingDocuments =
             response.getErrors().stream().filter(error -> error.contains(ERROR_ATTACH_THE_DOCUMENT)).count();
 

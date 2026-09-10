@@ -20,8 +20,8 @@ public class Callback {
     @JsonProperty("event_id")
     private final String event;
 
-    private final CaseDetails<CaseData, State> caseDetails;
-    private final CaseDetails<CaseData, State> caseDetailsBefore;
+    private final CaseDetails<? extends CaseData, State> caseDetails;
+    private final CaseDetails<? extends CaseData, State> caseDetailsBefore;
 
     @Setter
     private String pageId;
@@ -30,8 +30,8 @@ public class Callback {
     private final boolean ignoreWarnings;
 
     @JsonCreator
-    public Callback(CaseDetails<CaseData, State> caseDetails,
-                    CaseDetails<CaseData, State> caseDetailsBefore,
+    public Callback(CaseDetails<? extends CaseData, State> caseDetails,
+                    CaseDetails<? extends CaseData, State> caseDetailsBefore,
                     String event,
                     boolean ignoreWarnings) {
         requireNonNull(caseDetails);

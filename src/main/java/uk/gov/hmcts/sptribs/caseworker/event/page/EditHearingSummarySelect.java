@@ -24,7 +24,7 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.convertToCaseworkerCICD
 public class EditHearingSummarySelect implements CcdPageConfiguration {
 
     @Override
-    public void addTo(PageBuilder pageBuilder) {
+    public <T extends CaseData> void addTo(PageBuilder<T> pageBuilder) {
         pageBuilder
             .page("editHearingSummarySelect", this::midEvent)
             .pageLabel("Select hearing summary")
@@ -33,10 +33,10 @@ public class EditHearingSummarySelect implements CcdPageConfiguration {
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                  CaseDetails<CaseData, State> detailsBefore) {
+    public <T extends CaseData> AboutToStartOrSubmitResponse<T, State> midEvent(CaseDetails<T, State> details,
+                                                                  CaseDetails<T, State> detailsBefore) {
 
-        final CaseData caseData = details.getData();
+        final T caseData = details.getData();
         String hearingName = caseData.getCicCase().getHearingSummaryList().getValue().getLabel();
 
         for (ListValue<Listing> listingListValue : caseData.getHearingList()) {
@@ -48,7 +48,7 @@ public class EditHearingSummarySelect implements CcdPageConfiguration {
             }
         }
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<T, State>builder()
             .data(caseData)
             .build();
     }

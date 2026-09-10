@@ -10,8 +10,8 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DueDateOptions;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -48,15 +48,16 @@ class SendOrderOrderDueDatesTest {
     @Test
     void givenDateModel_whenMidEvent_thenCalculateDateFrom21DaysInput() {
         //given
-        final CaseDetails<CaseData, State> caseDetails = buildCaseDetails(List.of(21L));
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = buildCaseDetails(List.of(21L));
 
         when(dueDateOptions.getAmount()).thenReturn(21L);
 
         //when
-        AboutToStartOrSubmitResponse<CaseData, State> response = sendOrderOrderDueDates.midEvent(caseDetails, caseDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = sendOrderOrderDueDates.midEvent(caseDetails,
+            caseDetails);
 
         //then
-        CaseData actualCaseData = response.getData();
+        CriminalInjuriesCompensationData actualCaseData = response.getData();
         assertEquals(1, actualCaseData.getOrderDueDates().size(), "assert list of dates is of length 1");
         assertEquals(LocalDate.now(fixedClock).plusDays(21L),
             actualCaseData.getOrderDueDates().getFirst().getValue().getDueDate(), "assert the dates are the same");
@@ -67,17 +68,18 @@ class SendOrderOrderDueDatesTest {
     @Test
     void givenDateModel_whenMidEvent_thenCalculateDates() {
         //given
-        final CaseDetails<CaseData, State> caseDetails = buildCaseDetails(Arrays.asList(21L, 120L, null));
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = buildCaseDetails(Arrays.asList(21L, 120L, null));
 
         when(dueDateOptions.getAmount())
             .thenReturn(21L, 120L, null);
 
         //when
-        AboutToStartOrSubmitResponse<CaseData, State> response = sendOrderOrderDueDates.midEvent(caseDetails, caseDetails);
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response = sendOrderOrderDueDates.midEvent(caseDetails,
+            caseDetails);
 
         //then
         LocalDate today = LocalDate.now(fixedClock);
-        CaseData actualCaseData = response.getData();
+        CriminalInjuriesCompensationData actualCaseData = response.getData();
         List<ListValue<DateModel>> dates = actualCaseData.getOrderDueDates();
         assertEquals(3, actualCaseData.getOrderDueDates().size(), "assert list of dates is of length 3");
         assertEquals(today.plusDays(21), dates.get(0).getValue().getDueDate(), "dates are the same");
@@ -88,7 +90,7 @@ class SendOrderOrderDueDatesTest {
 
     }
 
-    private CaseDetails<CaseData, State> buildCaseDetails(List<Long> daysSelected) {
+    private CaseDetails<CriminalInjuriesCompensationData, State> buildCaseDetails(List<Long> daysSelected) {
 
         List<ListValue<DateModel>> dateModels = new ArrayList<>();
 
@@ -115,8 +117,8 @@ class SendOrderOrderDueDatesTest {
         }
 
 
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        CaseData caseData = CaseData.builder()
+        CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
+        CriminalInjuriesCompensationData caseData = CriminalInjuriesCompensationData.builder()
             .orderDueDates(dateModels)
             .build();
         caseDetails.setData(caseData);

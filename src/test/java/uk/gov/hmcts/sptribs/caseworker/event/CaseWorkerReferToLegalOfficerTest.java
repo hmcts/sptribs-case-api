@@ -14,10 +14,10 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.ReferToJudge;
 import uk.gov.hmcts.sptribs.caseworker.model.ReferToLegalOfficer;
 import uk.gov.hmcts.sptribs.caseworker.model.ReferralReason;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 
 import java.time.LocalDate;
 
@@ -39,7 +39,7 @@ class CaseWorkerReferToLegalOfficerTest {
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
 
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         caseWorkerReferToLegalOfficer.configure(configBuilder);
 
@@ -65,10 +65,10 @@ class CaseWorkerReferToLegalOfficerTest {
     @Test
     void shouldAlwaysInitiateReferToLegalOfficerWithEmptyObject() {
         //Given
-        final CaseDetails<CaseData, State> existingCaseDetails = getCaseDetails();
+        final CaseDetails<CriminalInjuriesCompensationData, State> existingCaseDetails = getCaseDetails();
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> aboutToStartResponse =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> aboutToStartResponse =
             caseWorkerReferToLegalOfficer.aboutToStart(existingCaseDetails);
 
         //Then
@@ -82,11 +82,11 @@ class CaseWorkerReferToLegalOfficerTest {
     @Test
     void shouldReferToLegalOfficer() {
         //Given
-        final CaseDetails<CaseData, State> updatedCaseDetails = getCaseDetails();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = getCaseDetails();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response1 =
+        AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response1 =
             caseWorkerReferToLegalOfficer.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse response2 =
             caseWorkerReferToLegalOfficer.submitted(updatedCaseDetails, beforeDetails);
@@ -101,13 +101,13 @@ class CaseWorkerReferToLegalOfficerTest {
     @ParameterizedTest
     @EnumSource(ReferralReason.class)
     void shouldSetReferralTypeForWA(ReferralReason referralReason) {
-        final CaseDetails<CaseData, State> updatedCaseDetails = getCaseDetails();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = getCaseDetails();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         final ReferToLegalOfficer referToLegalOfficer = ReferToLegalOfficer.builder()
                 .referralReason(referralReason).build();
         updatedCaseDetails.getData().setReferToLegalOfficer(referToLegalOfficer);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response1 =
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response1 =
                 caseWorkerReferToLegalOfficer.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         assertThat(response1).isNotNull();
@@ -117,22 +117,22 @@ class CaseWorkerReferToLegalOfficerTest {
     @ParameterizedTest
     @EnumSource(ReferralReason.class)
     void shouldNotSetReferralTypeForWAWhenWAIsNotEnabled(ReferralReason referralReason) {
-        final CaseDetails<CaseData, State> updatedCaseDetails = getCaseDetails();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseDetails<CriminalInjuriesCompensationData, State> updatedCaseDetails = getCaseDetails();
+        final CaseDetails<CriminalInjuriesCompensationData, State> beforeDetails = new CaseDetails<>();
         final ReferToJudge referToJudge = ReferToJudge.builder()
                 .referralReason(referralReason).build();
         updatedCaseDetails.getData().setReferToJudge(referToJudge);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response1 =
+        final AboutToStartOrSubmitResponse<CriminalInjuriesCompensationData, State> response1 =
                 caseWorkerReferToLegalOfficer.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         assertThat(response1).isNotNull();
         assertThat(response1.getData().getCicCase().getReferralTypeForWA()).isNull();
     }
 
-    private CaseDetails<CaseData, State> getCaseDetails() {
-        CaseData caseData = caseData();
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+    private CaseDetails<CriminalInjuriesCompensationData, State> getCaseDetails() {
+        CriminalInjuriesCompensationData caseData = caseData();
+        final CaseDetails<CriminalInjuriesCompensationData, State> caseDetails = new CaseDetails<>();
 
         caseDetails.setData(caseData);
         caseDetails.setId(TEST_CASE_ID);
