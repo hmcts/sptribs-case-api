@@ -7,6 +7,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.IntegrationTestBase;
+import uk.gov.hmcts.sptribs.document.exception.DocumentSelectionException;
 import uk.gov.hmcts.sptribs.document.model.BundleDocumentsView;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentView;
@@ -21,6 +22,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class CaseDocumentReadServiceIT extends IntegrationTestBase {
 
@@ -82,23 +84,15 @@ class CaseDocumentReadServiceIT extends IntegrationTestBase {
     }
 
     @Test
-    void shouldResolveSelectionsOnlyWithinRequestedCase() {
+    void shouldResolveSelectionsWithinRequestedCase() {
         UUID databaseDocumentId = addDatabaseDocument(
             CASE_REFERENCE,
             "db-only.pdf",
             CaseDocumentType.DOCUMENT_MANAGEMENT
         );
-        UUID otherCaseDocumentId = addDatabaseDocument(
-            OTHER_CASE_REFERENCE,
-            "other-case.pdf",
-            CaseDocumentType.DOCUMENT_MANAGEMENT
-        );
 
         DynamicMultiSelectList selection = DynamicMultiSelectList.builder()
-            .value(List.of(
-                option(databaseDocumentId),
-                option(otherCaseDocumentId)
-            ))
+            .value(List.of(option(databaseDocumentId)))
             .build();
 
         SelectedCaseDocuments selectedDocuments = caseDocumentReadService.getSelectedContactPartyDocuments(
@@ -109,8 +103,27 @@ class CaseDocumentReadServiceIT extends IntegrationTestBase {
 
         assertThat(selectedDocuments.getDocuments())
             .extracting(document -> document.getDocumentLink().getFilename())
-            .containsExactly("db-only.pdf")
-            .doesNotContain("other-case.pdf");
+            .containsExactly("db-only.pdf");
+    }
+
+    @Test
+    void shouldRejectSelectionFromAnotherCase() {
+        UUID otherCaseDocumentId = addDatabaseDocument(
+            OTHER_CASE_REFERENCE,
+            "other-case.pdf",
+            CaseDocumentType.DOCUMENT_MANAGEMENT
+        );
+        DynamicMultiSelectList selection = DynamicMultiSelectList.builder()
+            .value(List.of(option(otherCaseDocumentId)))
+            .build();
+
+        assertThatThrownBy(() -> caseDocumentReadService.getSelectedContactPartyDocuments(
+            CASE_REFERENCE,
+            selection,
+            10
+        )).isInstanceOf(DocumentSelectionException.class)
+            .hasMessageContaining(otherCaseDocumentId.toString())
+            .hasMessageContaining(String.valueOf(CASE_REFERENCE));
     }
 
     private DynamicListElement option(UUID documentId) {

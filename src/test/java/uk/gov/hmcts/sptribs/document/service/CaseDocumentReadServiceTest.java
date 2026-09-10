@@ -11,6 +11,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.controllers.mapper.CaseworkerCICDocumentMapper;
+import uk.gov.hmcts.sptribs.document.exception.DocumentSelectionException;
 import uk.gov.hmcts.sptribs.document.model.BundleDocumentsView;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentView;
@@ -25,6 +26,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
@@ -140,19 +142,16 @@ class CaseDocumentReadServiceTest {
     void shouldQueryOnlySelectedDocumentsWithinTheCaseAndPreserveSelectionOrder() {
         UUID firstId = UUID.randomUUID();
         UUID secondId = UUID.randomUUID();
-        UUID otherCaseId = UUID.randomUUID();
         DocumentEntity first = document(1L, firstId, "first.pdf", 2L, DocumentType.LINKED_DOCS);
         DocumentEntity second = document(2L, secondId, "second.pdf", 2L, DocumentType.TRIBUNAL_DIRECTION);
 
         when(documentsRepository.findByCaseReferenceAndDocumentIdUuid(CASE_REFERENCE, secondId.toString()))
             .thenReturn(Optional.of(second));
-        when(documentsRepository.findByCaseReferenceAndDocumentIdUuid(CASE_REFERENCE, otherCaseId.toString()))
-            .thenReturn(Optional.empty());
         when(documentsRepository.findByCaseReferenceAndDocumentIdUuid(CASE_REFERENCE, firstId.toString()))
             .thenReturn(Optional.of(first));
 
         DynamicMultiSelectList selection = DynamicMultiSelectList.builder()
-            .value(List.of(option(secondId), option(otherCaseId), option(firstId)))
+            .value(List.of(option(secondId), option(firstId)))
             .build();
 
         SelectedCaseDocuments result = service.getSelectedContactPartyDocuments(CASE_REFERENCE, selection, 10);
@@ -160,6 +159,33 @@ class CaseDocumentReadServiceTest {
         assertThat(result.getDocumentEntityIds()).containsExactly(2L, 1L);
         assertThat(result.getDocuments()).extracting(document -> document.getDocumentLink().getFilename())
             .containsExactly("second.pdf", "first.pdf");
+    }
+
+    @Test
+    void shouldRejectSelectionWhenDocumentIsNotAvailableForTheCase() {
+        UUID missingId = UUID.randomUUID();
+        DynamicMultiSelectList selection = DynamicMultiSelectList.builder()
+            .value(List.of(option(missingId)))
+            .build();
+
+        when(documentsRepository.findByCaseReferenceAndDocumentIdUuid(CASE_REFERENCE, missingId.toString()))
+            .thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> service.getSelectedContactPartyDocuments(CASE_REFERENCE, selection, 10))
+            .isInstanceOf(DocumentSelectionException.class)
+            .hasMessageContaining(missingId.toString())
+            .hasMessageContaining(String.valueOf(CASE_REFERENCE));
+    }
+
+    @Test
+    void shouldRejectSelectionsOverTheAttachmentLimitWithoutQueryingTheDatabase() {
+        DynamicMultiSelectList selection = DynamicMultiSelectList.builder()
+            .value(List.of(option(UUID.randomUUID()), option(UUID.randomUUID())))
+            .build();
+
+        assertThatThrownBy(() -> service.getSelectedContactPartyDocuments(CASE_REFERENCE, selection, 1))
+            .isInstanceOf(DocumentSelectionException.class)
+            .hasMessageContaining("permitted limit is 1");
     }
 
     @Test

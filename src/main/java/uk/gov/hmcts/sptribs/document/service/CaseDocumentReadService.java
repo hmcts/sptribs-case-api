@@ -2,15 +2,18 @@ package uk.gov.hmcts.sptribs.document.service;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesAllowedFileTypes;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
+import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentLookupException;
 import uk.gov.hmcts.sptribs.controllers.mapper.CaseworkerCICDocumentMapper;
 import uk.gov.hmcts.sptribs.document.DocumentFileTypes;
 import uk.gov.hmcts.sptribs.document.DocumentUtil;
+import uk.gov.hmcts.sptribs.document.exception.DocumentSelectionException;
 import uk.gov.hmcts.sptribs.document.model.BundleDocumentsView;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentView;
@@ -130,24 +133,46 @@ public class CaseDocumentReadService {
         int limit
     ) {
         Set<UUID> selectedIds = selectedIds(selection);
-        if (selectedIds.isEmpty() || limit <= 0) {
+        if (selectedIds.isEmpty()) {
             return emptySelection();
+        }
+        if (limit <= 0 || selectedIds.size() > limit) {
+            throw new DocumentSelectionException(
+                "Selected " + selectedIds.size() + " documents when the permitted limit is " + limit
+            );
         }
 
         Set<Long> selectableTypeIds = getCaseDocumentTypesById(SELECTABLE_TYPES).keySet();
         List<DocumentEntity> selectedEntities = selectedIds.stream()
-            .limit(limit)
-            .map(UUID::toString)
-            .map(documentId -> documentsRepository.findByCaseReferenceAndDocumentIdUuid(caseReference, documentId))
-            .flatMap(Optional::stream)
+            .map(documentId -> getSelectedDocument(caseReference, documentId))
             .filter(entity -> selectableTypeIds.contains(entity.getCaseDocumentTypeId()))
             .filter(this::isValidContactPartyDocument)
             .toList();
+
+        if (selectedEntities.size() != selectedIds.size()) {
+            throw new DocumentSelectionException(
+                "One or more selected documents are not available for case " + caseReference
+            );
+        }
 
         return SelectedCaseDocuments.builder()
             .documentEntityIds(selectedEntities.stream().map(DocumentEntity::getId).toList())
             .documents(selectedEntities.stream().map(documentMapper::mapDocument).toList())
             .build();
+    }
+
+    private DocumentEntity getSelectedDocument(long caseReference, UUID documentId) {
+        try {
+            return documentsRepository.findByCaseReferenceAndDocumentIdUuid(caseReference, documentId.toString())
+                .orElseThrow(() -> new DocumentSelectionException(
+                    "Selected document " + documentId + " is not available for case " + caseReference
+                ));
+        } catch (DataAccessException e) {
+            throw new DocumentLookupException(
+                "Error loading selected document " + documentId + " for case " + caseReference,
+                e
+            );
+        }
     }
 
     private List<TypedDocument> getDocuments(long caseReference, Set<CaseDocumentType> documentTypes) {

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.document.persistence;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -17,6 +18,7 @@ import uk.gov.hmcts.sptribs.ciccase.util.CasePartyUtil;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentDeleteException;
 import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentLookupException;
+import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentSaveException;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.ContactPartyDocumentDetails;
@@ -37,6 +39,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -60,6 +63,12 @@ public class DocumentsServiceTest {
     private static final DocumentType ORDER_AND_DECISION_DOCUMENT = DocumentType.TRIBUNAL_DIRECTION;
 
     private static final List<Long> ORDER_AND_DECISION_TYPE_IDS = List.of(3L, 5L, 6L);
+
+    @BeforeEach
+    void configureSuccessfulInsert() {
+        lenient().when(documentsRepository.insertIgnoreDuplicate(any(), any(), any(), any(), any(), any(), any()))
+            .thenReturn(1);
+    }
 
     @Test
      void shouldBuildAndSaveNewCaseworkerDocumentEntity() {
@@ -118,6 +127,8 @@ public class DocumentsServiceTest {
         Document evidenceDocument = buildDocument(HOSPITAL_RECORDS.getCategory());
         when(caseDocumentTypesCache.getId(CaseDocumentType.DOCUMENT_MANAGEMENT)).thenReturn(2L);
         when(documentsRepository.insertIgnoreDuplicate(any(), any(), any(), any(), any(), any(), any())).thenReturn(0);
+        when(documentsRepository.existsByCaseReferenceNumberAndDocumentBinaryUrl(
+            TEST_CASE_ID, evidenceDocument.getBinaryUrl())).thenReturn(true);
 
         documentsService.buildAndSaveNewDocumentEntity(evidenceDocument, TEST_CASE_ID, HOSPITAL_RECORDS,
             CaseDocumentType.DOCUMENT_MANAGEMENT);
@@ -125,6 +136,26 @@ public class DocumentsServiceTest {
         verify(documentsRepository).insertIgnoreDuplicate(
             eq(TEST_CASE_ID), eq(evidenceDocument.getUrl()), eq(evidenceDocument.getFilename()),
             eq(evidenceDocument.getBinaryUrl()), eq(HOSPITAL_RECORDS.name()), eq(2L), any(OffsetDateTime.class));
+        verify(documentsRepository).existsByCaseReferenceNumberAndDocumentBinaryUrl(
+            TEST_CASE_ID, evidenceDocument.getBinaryUrl());
+    }
+
+    @Test
+    void shouldFailWhenInsertIsIgnoredButDocumentDoesNotBelongToCase() {
+        Document evidenceDocument = buildDocument(HOSPITAL_RECORDS.getCategory());
+        when(caseDocumentTypesCache.getId(CaseDocumentType.DOCUMENT_MANAGEMENT)).thenReturn(2L);
+        when(documentsRepository.insertIgnoreDuplicate(any(), any(), any(), any(), any(), any(), any())).thenReturn(0);
+        when(documentsRepository.existsByCaseReferenceNumberAndDocumentBinaryUrl(
+            TEST_CASE_ID, evidenceDocument.getBinaryUrl())).thenReturn(false);
+
+        assertThatThrownBy(() -> documentsService.buildAndSaveNewDocumentEntity(
+            evidenceDocument,
+            TEST_CASE_ID,
+            HOSPITAL_RECORDS,
+            CaseDocumentType.DOCUMENT_MANAGEMENT
+        )).isInstanceOf(DocumentSaveException.class)
+            .hasMessageContaining("was not inserted")
+            .hasMessageContaining(String.valueOf(TEST_CASE_ID));
     }
 
     @ParameterizedTest

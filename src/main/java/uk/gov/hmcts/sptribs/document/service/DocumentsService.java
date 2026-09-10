@@ -57,12 +57,28 @@ public class DocumentsService {
             );
 
             if (rowsInserted == 0) {
-                log.info("Document already exists in document table: {}", document.getBinaryUrl());
+                verifyDocumentAlreadyExistsForCase(caseReferenceNumber, document);
+            } else if (rowsInserted != 1) {
+                throw new DocumentSaveException("Unexpected number of document rows inserted: " + rowsInserted);
             }
 
         } catch (DataAccessException e) {
             throw new DocumentSaveException("Error saving document entity to database", e);
         }
+    }
+
+    private void verifyDocumentAlreadyExistsForCase(Long caseReferenceNumber, Document document) {
+        if (!documentsRepository.existsByCaseReferenceNumberAndDocumentBinaryUrl(
+            caseReferenceNumber,
+            document.getBinaryUrl()
+        )) {
+            throw new DocumentSaveException(
+                "Document was not inserted into the document table for case " + caseReferenceNumber
+            );
+        }
+
+        log.info("Document already exists in document table for case {}: {}",
+            caseReferenceNumber, document.getBinaryUrl());
     }
 
     public List<String> saveDocuments(Long caseReferenceNumber,

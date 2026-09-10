@@ -25,8 +25,11 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
-import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.common.service.ContactPartiesService;
+import uk.gov.hmcts.sptribs.document.exception.DocumentSelectionException;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.SelectedCaseDocuments;
+import uk.gov.hmcts.sptribs.document.service.CaseDocumentReadService;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
@@ -94,7 +97,7 @@ public class CaseworkerContactPartiesIT extends IntegrationTestBase {
     private CaseDocumentClientApi caseDocumentClientApi;
 
     @MockitoBean
-    private DocumentsRepository documentsRepository;
+    private CaseDocumentReadService caseDocumentReadService;
 
     @MockitoBean
     private IdamService idamService;
@@ -156,6 +159,13 @@ public class CaseworkerContactPartiesIT extends IntegrationTestBase {
 
         when(caseDocumentClientApi.getDocument(any(), any(), any()))
             .thenReturn(org.springframework.http.ResponseEntity.ok(testDocument));
+        when(caseDocumentReadService.getContactPartyOptions(any(Long.class), any()))
+            .thenReturn(DynamicMultiSelectList.builder().listItems(List.of()).value(List.of()).build());
+        when(caseDocumentReadService.getSelectedContactPartyDocuments(any(Long.class), any(), any(Integer.class)))
+            .thenReturn(SelectedCaseDocuments.builder()
+                .documentEntityIds(List.of())
+                .documents(List.of())
+                .build());
     }
 
     @Test
@@ -170,6 +180,16 @@ public class CaseworkerContactPartiesIT extends IntegrationTestBase {
                 .applicantContactParties(Set.of(APPLICANT_CIC))
                 .build()
             ).build();
+
+        DynamicListElement availableDocument = DynamicListElement.builder()
+            .code(UUID.randomUUID())
+            .label("available-document.pdf")
+            .build();
+        when(caseDocumentReadService.getContactPartyOptions(any(Long.class), any()))
+            .thenReturn(DynamicMultiSelectList.builder()
+                .listItems(List.of(availableDocument))
+                .value(List.of())
+                .build());
 
         String response = mockMvc.perform(post(ABOUT_TO_START_URL)
             .contentType(APPLICATION_JSON)
@@ -199,7 +219,7 @@ public class CaseworkerContactPartiesIT extends IntegrationTestBase {
         final DynamicListElement listItem = DynamicListElement
             .builder()
             .label("[pdf.pdf A - Application Form](http://manage-case.demo.platform.hmcts.net/documents/" + testDocumentID + "/binary)")
-            .code(UUID.randomUUID())
+            .code(testDocumentID)
             .build();
         elements.add(listItem);
         contactPartiesDocuments.setDocumentList(DynamicMultiSelectList
@@ -229,6 +249,20 @@ public class CaseworkerContactPartiesIT extends IntegrationTestBase {
                 .build()
         );
         caseData.setContactPartiesDocuments(contactPartiesDocuments);
+
+        CaseworkerCICDocument selectedDocument = CaseworkerCICDocument.builder()
+            .documentLink(uk.gov.hmcts.ccd.sdk.type.Document.builder()
+                .url("http://document-management/documents/" + testDocumentID)
+                .binaryUrl("http://document-management/documents/" + testDocumentID + "/binary")
+                .filename("pdf.pdf")
+                .build())
+            .build();
+        when(caseDocumentReadService.getSelectedContactPartyDocuments(any(Long.class), eq(
+            contactPartiesDocuments.getDocumentList()), any(Integer.class)))
+            .thenReturn(SelectedCaseDocuments.builder()
+                .documentEntityIds(List.of(42L))
+                .documents(List.of(selectedDocument))
+                .build());
 
         NotificationResponse notificationResponse1 = NotificationResponse.builder().id(NOTIFICATION_RESPONSE_ID_1).build();
         NotificationResponse notificationResponse2 = NotificationResponse.builder().id(NOTIFICATION_RESPONSE_ID_2).build();
@@ -274,7 +308,8 @@ public class CaseworkerContactPartiesIT extends IntegrationTestBase {
         verify(notificationServiceCIC, times(1))
             .sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.APPLICANT));
         verifyNoMoreInteractions(notificationServiceCIC);
-        verify(contactPartiesService).linkCorrespondenceIdsToDocuments(any(), any(),
+        verify(contactPartiesService).linkCorrespondenceIdsToDocuments(
+            eq(List.of(42L)),
             argThat(list -> {
                 assertThat(list).containsExactlyInAnyOrder(
                     NOTIFICATION_RESPONSE_ID_1,
@@ -285,6 +320,71 @@ public class CaseworkerContactPartiesIT extends IntegrationTestBase {
                 return true;
             })
         );
+    }
+
+    @Test
+    void shouldNotDispatchNotificationsIfSelectedDocumentsCannotBeResolved() throws Exception {
+        final CaseData caseData = caseData();
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        caseData.setCicCase(CicCase.builder().notifyPartySubject(Set.of(SUBJECT)).build());
+
+        DynamicMultiSelectList selection = DynamicMultiSelectList.builder()
+            .value(List.of(DynamicListElement.builder().code(UUID.randomUUID()).label("missing.pdf").build()))
+            .build();
+        caseData.setContactPartiesDocuments(ContactPartiesDocuments.builder().documentList(selection).build());
+        when(caseDocumentReadService.getSelectedContactPartyDocuments(any(Long.class), eq(selection), any(Integer.class)))
+            .thenThrow(new DocumentSelectionException("Selected document is not available for this case"));
+
+        String response = mockMvc.perform(post(SUBMITTED_URL)
+                .contentType(APPLICATION_JSON)
+                .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .content(objectMapper.writeValueAsString(callbackRequest(caseData, CASEWORKER_CONTACT_PARTIES)))
+                .accept(APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        assertThatJson(response)
+            .inPath(CONFIRMATION_HEADER)
+            .isString()
+            .contains("# Documents could not be attached")
+            .contains("Please resend the message and select the documents again");
+        verifyNoInteractions(notificationServiceCIC, contactPartiesService);
+    }
+
+    @Test
+    void shouldDispatchMessageWithoutDocuments() throws Exception {
+        final CaseData caseData = caseData();
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        caseData.setContactPartiesDocuments(ContactPartiesDocuments.builder().documentList(null).build());
+        caseData.setCicCase(CicCase.builder()
+            .notifyPartyRespondent(Set.of(RESPONDENT))
+            .respondentName("Respondent Name")
+            .respondentEmail("respondent@test.com")
+            .build());
+        when(notificationServiceCIC.sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.RESPONDENT)))
+            .thenReturn(NotificationResponse.builder().id(NOTIFICATION_RESPONSE_ID_1).build());
+
+        String response = mockMvc.perform(post(SUBMITTED_URL)
+                .contentType(APPLICATION_JSON)
+                .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .content(objectMapper.writeValueAsString(callbackRequest(caseData, CASEWORKER_CONTACT_PARTIES)))
+                .accept(APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        assertThatJson(response)
+            .inPath(CONFIRMATION_HEADER)
+            .isString()
+            .contains("# Message sent")
+            .contains("Respondent");
+        verify(notificationServiceCIC).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.RESPONDENT));
+        verifyNoInteractions(contactPartiesService);
     }
 
     @Test

@@ -116,6 +116,34 @@ class ContactPartiesNotificationTest {
         }
 
         @Test
+        void shouldNotifySubjectOfContactPartiesWithEmailWithoutAttachments() {
+            final CaseData data = getMockCaseData();
+            data.getCicCase().setNotifyPartyMessage("message");
+            data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
+            data.getCicCase().setEmail("testSubject@outlook.com");
+            NotificationResponse notificationResponse = NotificationResponse.builder()
+                .id(NOTIFICATION_RESPONSE_ID)
+                .build();
+            when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+                .thenReturn(NotificationRequest.builder().build());
+            when(notificationService.sendEmail(
+                any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT)
+            )).thenReturn(notificationResponse);
+
+            String correspondenceId = contactPartiesNotification.sendToSubject(
+                data,
+                TEST_CASE_ID.toString(),
+                Map.of(),
+                List.of()
+            );
+
+            assertThat(correspondenceId).isEqualTo(NOTIFICATION_RESPONSE_ID);
+            verify(notificationService).sendEmail(
+                any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT)
+            );
+        }
+
+        @Test
         void shouldNotifySubjectOfContactPartiesWithPost() {
             //Given
             final Map<String, String> uploadedDocuments = getDocumentUploadMap();

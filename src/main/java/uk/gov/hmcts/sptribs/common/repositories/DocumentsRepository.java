@@ -98,6 +98,11 @@ public interface DocumentsRepository extends JpaRepository<DocumentEntity, Long>
         Long caseDocumentTypeId
     );
 
+    boolean existsByCaseReferenceNumberAndDocumentBinaryUrl(
+        Long caseReferenceNumber,
+        String documentBinaryUrl
+    );
+
     @Query("""
         select d
         from DocumentEntity d

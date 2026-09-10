@@ -61,7 +61,7 @@ public class ContactPartiesNotification implements PartiesNotification {
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             // Send Email
             addDashboardLink(templateVarsSubject);
-            notificationResponse = sendEmailNotificationWithAttachment(
+            notificationResponse = sendEmailNotificationWithOptionalAttachments(
                 cicCase.getEmail(),
                 templateVarsSubject,
                 getTemplateName(),
@@ -96,7 +96,7 @@ public class ContactPartiesNotification implements PartiesNotification {
         if (caseData.getCicCase().getApplicantContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             // Send Email
             addDashboardLink(templateVarsApplicant);
-            notificationResponse = sendEmailNotificationWithAttachment(
+            notificationResponse = sendEmailNotificationWithOptionalAttachments(
                 cicCase.getApplicantEmailAddress(),
                 templateVarsApplicant,
                 getTemplateName(),
@@ -132,7 +132,7 @@ public class ContactPartiesNotification implements PartiesNotification {
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             // Send Email
             addDashboardLink(templateVarsRepresentative);
-            notificationResponse = sendEmailNotificationWithAttachment(
+            notificationResponse = sendEmailNotificationWithOptionalAttachments(
                 cicCase.getRepresentativeEmailAddress(),
                 templateVarsRepresentative,
                 getTemplateName(),
@@ -165,21 +165,15 @@ public class ContactPartiesNotification implements PartiesNotification {
         templateVarsRespondent.put(CommonConstants.CIC_CASE_SUBJECT_NAME, cicCase.getFullName());
         templateVarsRespondent.put(CommonConstants.CONTACT_PARTY_INFO, cicCase.getNotifyPartyMessage());
 
-        // Send Email
-        final NotificationResponse notificationResponse;
-        if (ObjectUtils.isNotEmpty(selectedDocuments)) {
-
-            notificationResponse = sendEmailNotificationWithAttachment(cicCase.getRespondentEmail(),
-                templateVarsRespondent,
-                CONTACT_PARTIES_EMAIL,
-                caseNumber,
-                Party.RESPONDENT,
-                uploadedDocuments,
-                selectedDocuments);
-        } else {
-            notificationResponse = sendEmailNotification(templateVarsRespondent,
-                cicCase.getRespondentEmail(), CONTACT_PARTIES_EMAIL, caseNumber, Party.RESPONDENT);
-        }
+        final NotificationResponse notificationResponse = sendEmailNotificationWithOptionalAttachments(
+            cicCase.getRespondentEmail(),
+            templateVarsRespondent,
+            CONTACT_PARTIES_EMAIL,
+            caseNumber,
+            Party.RESPONDENT,
+            uploadedDocuments,
+            selectedDocuments
+        );
 
         cicCase.setResNotificationResponse(notificationResponse);
         return notificationResponse.getId();
@@ -236,6 +230,36 @@ public class ContactPartiesNotification implements PartiesNotification {
             emailTemplateName);
 
         return notificationService.sendEmail(request, selectedDocuments, caseReferenceNumber, receivingParty);
+    }
+
+    private NotificationResponse sendEmailNotificationWithOptionalAttachments(
+        String toEmail,
+        Map<String, Object> templateVars,
+        TemplateName emailTemplateName,
+        String caseReferenceNumber,
+        Party receivingParty,
+        Map<String, String> uploadedDocuments,
+        List<CaseworkerCICDocument> selectedDocuments
+    ) {
+        if (ObjectUtils.isEmpty(selectedDocuments)) {
+            return sendEmailNotification(
+                templateVars,
+                toEmail,
+                emailTemplateName,
+                caseReferenceNumber,
+                receivingParty
+            );
+        }
+
+        return sendEmailNotificationWithAttachment(
+            toEmail,
+            templateVars,
+            emailTemplateName,
+            caseReferenceNumber,
+            receivingParty,
+            uploadedDocuments,
+            selectedDocuments
+        );
     }
 
     private Map<String, String> legacyUploadedDocuments(CaseData caseData) {

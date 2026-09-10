@@ -13,6 +13,7 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.EventMetadata;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ContactPartiesSelectDocument;
@@ -25,7 +26,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.PartiesToContact;
+import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentLookupException;
 import uk.gov.hmcts.sptribs.common.service.ContactPartiesService;
+import uk.gov.hmcts.sptribs.document.exception.DocumentSelectionException;
 import uk.gov.hmcts.sptribs.document.model.SelectedCaseDocuments;
 import uk.gov.hmcts.sptribs.document.service.CaseDocumentReadService;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
@@ -38,6 +41,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.lang.String.format;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECTED_DOCUMENTS_UNAVAILABLE;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CONTACT_PARTIES;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
@@ -135,16 +139,25 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         final CaseData caseData = details.getData();
 
+        try {
+            resolveSelectedDocuments(details);
+        } catch (DocumentSelectionException | DocumentLookupException e) {
+            log.error("Unable to resolve documents selected for contact parties", e);
+            return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+                .data(caseData)
+                .errors(List.of(SELECTED_DOCUMENTS_UNAVAILABLE))
+                .build();
+        }
+
+        List<DynamicListElement> selectedOptions = getSelectedOptions(caseData);
         StringBuilder sentDocListBuilder = new StringBuilder();
 
         sentDocListBuilder.append("| ");
 
-        caseData.getContactPartiesDocuments().getDocumentList().getValue()
-            .forEach(doc -> {
-                sentDocListBuilder.append(extractDocNameAndCategory(doc.getLabel())).append(" | ");
-            });
+        selectedOptions.forEach(doc ->
+            sentDocListBuilder.append(extractDocNameAndCategory(doc.getLabel())).append(" | "));
 
-        int numberOfSentDocs = caseData.getContactPartiesDocuments().getDocumentList().getValue().size();
+        int numberOfSentDocs = selectedOptions.size();
 
         String sentDocList = sentDocListBuilder.toString();
 
@@ -167,6 +180,14 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Message sent %n## %s", MessageUtil.generateSimpleMessage(cicCase)))
                 .build();
+        } catch (DocumentSelectionException | DocumentLookupException documentException) {
+            log.error("Contact Parties documents could not be resolved", documentException);
+
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format(
+                    "# Documents could not be attached %n## Please resend the message and select the documents again"
+                ))
+                .build();
         } catch (Exception notificationException) {
             log.error("Contact Parties notification failed with exception : {}", notificationException.getMessage());
 
@@ -178,11 +199,7 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
 
     private void sendContactPartiesNotification(CaseDetails<CaseData, State> details, CicCase cicCase, String caseNumber) {
 
-        SelectedCaseDocuments selectedDocuments = caseDocumentReadService.getSelectedContactPartyDocuments(
-            details.getId(),
-            details.getData().getContactPartiesDocuments().getDocumentList(),
-            DOC_ATTACH_LIMIT
-        );
+        SelectedCaseDocuments selectedDocuments = resolveSelectedDocuments(details);
         final Map<String, String> uploadedDocuments = notificationHelper
             .buildDocumentList(selectedDocuments.getDocuments(), DOC_ATTACH_LIMIT);
 
@@ -205,12 +222,34 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
                 uploadedDocuments, selectedDocuments.getDocuments()));
         }
 
-        if (!correspondenceIds.isEmpty()) {
+        if (!correspondenceIds.isEmpty() && !selectedDocuments.getDocumentEntityIds().isEmpty()) {
             contactPartiesService.linkCorrespondenceIdsToDocuments(
                 selectedDocuments.getDocumentEntityIds(),
                 correspondenceIds
             );
         }
+    }
+
+    private SelectedCaseDocuments resolveSelectedDocuments(CaseDetails<CaseData, State> details) {
+        DynamicMultiSelectList selection = details.getData().getContactPartiesDocuments() == null
+            ? null
+            : details.getData().getContactPartiesDocuments().getDocumentList();
+
+        return caseDocumentReadService.getSelectedContactPartyDocuments(
+            details.getId(),
+            selection,
+            DOC_ATTACH_LIMIT
+        );
+    }
+
+    private List<DynamicListElement> getSelectedOptions(CaseData caseData) {
+        if (caseData.getContactPartiesDocuments() == null
+            || caseData.getContactPartiesDocuments().getDocumentList() == null
+            || caseData.getContactPartiesDocuments().getDocumentList().getValue() == null) {
+            return List.of();
+        }
+
+        return caseData.getContactPartiesDocuments().getDocumentList().getValue();
     }
 
     private String extractDocNameAndCategory(String label) {

@@ -29,6 +29,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.common.event.page.PartiesToContact;
 import uk.gov.hmcts.sptribs.common.service.ContactPartiesService;
+import uk.gov.hmcts.sptribs.document.exception.DocumentSelectionException;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.model.SelectedCaseDocuments;
@@ -58,6 +59,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECTED_DOCUMENTS_UNAVAILABLE;
 import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAST_ONE_CONTACT_PARTY;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
@@ -536,6 +538,84 @@ class CaseworkerContactPartiesTest {
 
         assertThat(contactPartiesResponse.getEventMetadata().getSummary()).isEqualTo("1 Selected documents sent");
         assertThat(contactPartiesResponse.getEventMetadata().getDescription()).contains("Document 1 - Test.pdf");
+    }
+
+    @Test
+    void shouldAllowSubmissionWithNoDocumentsSelected() {
+        CaseData caseData = caseData();
+        caseData.setContactPartiesDocuments(ContactPartiesDocuments.builder().documentList(null).build());
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
+        details.setData(caseData);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseWorkerContactParties.aboutToSubmit(details, new CaseDetails<>());
+
+        assertThat(response.getErrors()).isNullOrEmpty();
+        assertThat(response.getEventMetadata().getSummary()).isEqualTo("0 Selected documents sent");
+    }
+
+    @Test
+    void shouldSendMessageWithoutDocumentsAndSkipDocumentLinking() {
+        CaseData caseData = caseData();
+        caseData.setHyphenatedCaseRef(String.valueOf(TEST_CASE_ID));
+        caseData.setContactPartiesDocuments(ContactPartiesDocuments.builder().documentList(null).build());
+        caseData.setCicCase(CicCase.builder()
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .build());
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
+        details.setData(caseData);
+        when(contactPartiesNotification.sendToRespondent(
+            caseData, String.valueOf(TEST_CASE_ID), Map.of(), List.of()
+        )).thenReturn("correspondence-id");
+
+        SubmittedCallbackResponse response = caseWorkerContactParties.submitted(details, new CaseDetails<>());
+
+        assertThat(response.getConfirmationHeader()).contains("Message sent").contains("Respondent");
+        verifyNoInteractions(contactPartiesService);
+    }
+
+    @Test
+    void shouldStopSubmissionWhenASelectedDocumentCannotBeResolved() {
+        CaseData caseData = caseData();
+        DynamicMultiSelectList selection = buildDynamicMultiSelectDocumentList();
+        caseData.setContactPartiesDocuments(ContactPartiesDocuments.builder().documentList(selection).build());
+
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
+        details.setData(caseData);
+        when(caseDocumentReadService.getSelectedContactPartyDocuments(TEST_CASE_ID, selection, 10))
+            .thenThrow(new DocumentSelectionException("Selected document is missing"));
+
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseWorkerContactParties.aboutToSubmit(details, new CaseDetails<>());
+
+        assertThat(response.getErrors()).containsExactly(SELECTED_DOCUMENTS_UNAVAILABLE);
+        assertThat(response.getEventMetadata()).isNull();
+    }
+
+    @Test
+    void shouldNotNotifyPartiesWhenASelectedDocumentCannotBeResolvedAfterSubmission() {
+        CaseData caseData = caseData();
+        DynamicMultiSelectList selection = buildDynamicMultiSelectDocumentList();
+        caseData.setContactPartiesDocuments(ContactPartiesDocuments.builder().documentList(selection).build());
+        caseData.setCicCase(CicCase.builder()
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .build());
+
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
+        details.setData(caseData);
+        when(caseDocumentReadService.getSelectedContactPartyDocuments(TEST_CASE_ID, selection, 10))
+            .thenThrow(new DocumentSelectionException("Selected document is missing"));
+
+        SubmittedCallbackResponse response = caseWorkerContactParties.submitted(details, new CaseDetails<>());
+
+        assertThat(response.getConfirmationHeader())
+            .contains("Documents could not be attached")
+            .contains("Please resend the message and select the documents again");
+        verifyNoInteractions(contactPartiesNotification, contactPartiesService);
     }
 
     private SelectedCaseDocuments selectedDocuments(List<Long> entityIds, List<CaseworkerCICDocument> documents) {
