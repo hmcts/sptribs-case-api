@@ -364,7 +364,7 @@ public class CaseworkerContactPartiesIT extends IntegrationTestBase {
             .respondentName("Respondent Name")
             .respondentEmail("respondent@test.com")
             .build());
-        when(notificationServiceCIC.sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.RESPONDENT)))
+        when(notificationServiceCIC.sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.RESPONDENT)))
             .thenReturn(NotificationResponse.builder().id(NOTIFICATION_RESPONSE_ID_1).build());
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
@@ -383,7 +383,45 @@ public class CaseworkerContactPartiesIT extends IntegrationTestBase {
             .isString()
             .contains("# Message sent")
             .contains("Respondent");
-        verify(notificationServiceCIC).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.RESPONDENT));
+        verify(notificationServiceCIC).sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.RESPONDENT));
+        verifyNoInteractions(contactPartiesService);
+    }
+
+    @Test
+    void shouldDispatchMessageWhenDocumentsExistNoneSelected() throws Exception {
+        final CaseData caseData = caseData();
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        DynamicMultiSelectList documentList = DynamicMultiSelectList.builder()
+            .listItems(List.of(DynamicListElement.builder().code(UUID.randomUUID()).label("doc.pdf").build()))
+            .value(new ArrayList<>())
+            .build();
+        caseData.setContactPartiesDocuments(ContactPartiesDocuments.builder().documentList(documentList).build());
+        caseData.setCicCase(CicCase.builder()
+            .notifyPartySubject(Set.of(SUBJECT))
+            .fullName("Subject Name")
+            .email("subject@test.com")
+            .contactPreferenceType(EMAIL)
+            .build());
+        when(notificationServiceCIC.sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.SUBJECT)))
+            .thenReturn(NotificationResponse.builder().id(NOTIFICATION_RESPONSE_ID_1).build());
+
+        String response = mockMvc.perform(post(SUBMITTED_URL)
+                .contentType(APPLICATION_JSON)
+                .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .content(objectMapper.writeValueAsString(callbackRequest(caseData, CASEWORKER_CONTACT_PARTIES)))
+                .accept(APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        assertThatJson(response)
+            .inPath(CONFIRMATION_HEADER)
+            .isString()
+            .contains("# Message sent")
+            .contains("Subject");
+        verify(notificationServiceCIC).sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.SUBJECT));
         verifyNoInteractions(contactPartiesService);
     }
 

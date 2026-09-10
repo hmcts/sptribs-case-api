@@ -245,6 +245,9 @@ public class CaseworkerIssueFinalDecisionIT extends IntegrationTestBase {
             .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
             .build();
 
+        when(documentsRepository.insertIgnoreDuplicate(any(), any(), any(), any(), any(), any(), any()))
+            .thenReturn(1);
+
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post(ABOUT_TO_SUBMIT_URL)
                 .contentType(APPLICATION_JSON)
                 .header(TestConstants.SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
