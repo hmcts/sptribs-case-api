@@ -334,7 +334,7 @@ class CaseworkerCreateBundleTest {
 
         cicCase.setApplicantDocumentsUploaded(allApplicantDocs);
 
-        Document document = Document.builder().url("testUrl").filename("test").build();
+        Document document = Document.builder().url("testUrl").filename("test.pdf").build();
         DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder().templateGeneratedDocument(document).build();
         Order order = Order.builder().draftOrder(draftOrderCIC).orderSentDate(LocalDate.of(2026, 5, 1)).build();
         cicCase.setOrderList(List.of(ListValue.<Order>builder().value(order).build()));

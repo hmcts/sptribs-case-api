@@ -22,12 +22,16 @@ import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
@@ -44,6 +48,9 @@ class CaseworkerEditDraftOrderTest {
 
     @Mock
     private OrderService orderService;
+
+    @Mock
+    private DocumentsService documentsService;
 
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
@@ -106,6 +113,12 @@ class CaseworkerEditDraftOrderTest {
             .getCicCase().getDraftOrderCICList().getFirst().getValue();
         assertThat(updatedDraftOrder.getDraftOrderContentCIC().getOrderTemplate()).isEqualTo(OrderTemplate.CIC6_GENERAL_DIRECTIONS);
         assertThat(updatedDraftOrder.getTemplateGeneratedDocument()).isNotNull();
+        verify(documentsService).buildAndSaveNewDocumentEntity(
+            updatedDraftOrder.getTemplateGeneratedDocument(),
+            TEST_CASE_ID,
+            DocumentType.TRIBUNAL_DIRECTION,
+            CaseDocumentType.DRAFT_ORDER
+        );
 
         SubmittedCallbackResponse draftCreatedResponse = caseworkerEditDraftOrder.submitted(updatedCaseDetails, beforeDetails);
         //  Then
@@ -113,4 +126,3 @@ class CaseworkerEditDraftOrderTest {
     }
 
 }
-
