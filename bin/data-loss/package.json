@@ -12,7 +12,7 @@
   "dependencies": {
     "pg": "^8.16.0",
     "pgpass": "^1.0.5",
-    "jsondiffpatch": "^0.7.3"
+    "jsondiffpatch": "^0.7.6"
   },
   "devDependencies": {}
 }
