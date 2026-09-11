@@ -10,6 +10,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.repositories.CorrespondenceRepository;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.service.CaseDocumentReadService;
 import uk.gov.hmcts.sptribs.notification.model.Correspondence;
 import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
 
@@ -24,9 +25,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class CicCaseView implements CaseView<CriminalInjuriesCompensationData, State> {
 
     private final CorrespondenceRepository correspondenceRepository;
+    private final CaseDocumentReadService caseDocumentReadService;
 
-    public CicCaseView(CorrespondenceRepository correspondenceRepository) {
+    public CicCaseView(CorrespondenceRepository correspondenceRepository,
+                       CaseDocumentReadService caseDocumentReadService) {
         this.correspondenceRepository = correspondenceRepository;
+        this.caseDocumentReadService = caseDocumentReadService;
     }
 
     @Override
@@ -36,6 +40,7 @@ public class CicCaseView implements CaseView<CriminalInjuriesCompensationData, S
         // Load up any additional data or perform transformations as needed.
         List<ListValue<Correspondence>> correspondences = buildCorrespondence(request.caseRef());
         blobCase.setCorrespondence(correspondences);
+        blobCase.setCaseDocumentView(caseDocumentReadService.getCaseViewDocuments(request.caseRef()));
         return blobCase;
     }
 

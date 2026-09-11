@@ -11,12 +11,12 @@ import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
+import uk.gov.hmcts.sptribs.document.DocumentFileTypes;
 
 import java.time.LocalDate;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.isValidDocument;
 
 @Data
 @NoArgsConstructor
@@ -65,11 +65,11 @@ public class CaseworkerCICDocument {
 
     @JsonIgnore
     public boolean isDocumentValid() {
-        return isValidDocument(this.documentLink.getFilename(), "pdf,csv,txt,rtf,xlsx,docx,doc,xls,mp3,m4a,mp4");
+        return DocumentFileTypes.isValid(this.documentLink.getFilename(), DocumentFileTypes.CASEWORKER_DOCUMENT_EXTENSIONS);
     }
 
     @JsonIgnore
     public boolean isValidBundleDocument() {
-        return isValidDocument(this.documentLink.getFilename(),"pdf,txt,xlsx,docx,doc,xls,jpg,jpeg,tiff,bmp,gif,svg,png");
+        return DocumentFileTypes.isValid(this.documentLink.getFilename(), DocumentFileTypes.BUNDLE_DOCUMENT_EXTENSIONS);
     }
 }

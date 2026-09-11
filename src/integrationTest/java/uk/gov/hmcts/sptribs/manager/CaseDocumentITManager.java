@@ -18,6 +18,24 @@ public class CaseDocumentITManager implements IntegrationTestDataManager {
     private NamedParameterJdbcTemplate jdbcTemplate;
 
     public Long addCaseDocument(Long reference, String binaryUrl, long caseDocumentTypeId, OffsetDateTime timestamp) {
+        return addCaseDocument(
+            reference,
+            "test/document/123",
+            binaryUrl,
+            "test-document.pdf",
+            "Test Document Type",
+            caseDocumentTypeId,
+            timestamp
+        );
+    }
+
+    public Long addCaseDocument(Long reference,
+                                String documentUrl,
+                                String binaryUrl,
+                                String filename,
+                                String documentTypeName,
+                                long caseDocumentTypeId,
+                                OffsetDateTime timestamp) {
         return jdbcTemplate.queryForObject("""
         INSERT INTO case_documents (
             case_reference_number,
@@ -31,17 +49,20 @@ public class CaseDocumentITManager implements IntegrationTestDataManager {
         VALUES (
             :reference,
             :timestamp,
-            'test/document/123',
+            :documentUrl,
             :binaryUrl,
-            'test-document.pdf',
-            'Test Document Type',
+            :filename,
+            :documentTypeName,
             :caseDocumentTypeId
         )
         RETURNING id
         """,
             Map.of(
                 "reference", reference,
+                "documentUrl", documentUrl,
                 "binaryUrl", binaryUrl,
+                "filename", filename,
+                "documentTypeName", documentTypeName,
                 "caseDocumentTypeId", caseDocumentTypeId,
                 "timestamp", timestamp
             ),

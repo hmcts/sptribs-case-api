@@ -10,14 +10,20 @@ import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentInfo;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
-import static java.util.Locale.ROOT;
-import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOCUMENT_VALIDATION_MESSAGE;
 
 public final class DocumentUtil {
@@ -32,6 +38,21 @@ public final class DocumentUtil {
             documentInfo.getBinaryUrl(),
             documentInfo.getCategoryId()
         );
+    }
+
+    public static Optional<UUID> extractDocumentId(String documentUrl) {
+        if (StringUtils.isBlank(documentUrl)) {
+            return Optional.empty();
+        }
+
+        String urlWithoutBinarySuffix = documentUrl.replaceFirst("/binary/?$", "");
+        String documentId = StringUtils.substringAfterLast(urlWithoutBinarySuffix, "/");
+
+        try {
+            return Optional.of(UUID.fromString(documentId));
+        } catch (IllegalArgumentException exception) {
+            return Optional.empty();
+        }
     }
 
     public static List<ListValue<CaseworkerCICDocument>> updateUploadedDocumentCategory(
@@ -105,8 +126,10 @@ public final class DocumentUtil {
 
     public static void uploadRecFile(CaseData data) {
         List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = data.getListing().getSummary().getRecFileUpload();
-        List<ListValue<CaseworkerCICDocument>> documents = updateUploadedDocumentCategory(uploadedDocuments, false);
-        data.getListing().getSummary().setRecFile(documents);
+        if (CollectionUtils.isNotEmpty(uploadedDocuments)) {
+            List<ListValue<CaseworkerCICDocument>> documents = updateUploadedDocumentCategory(uploadedDocuments, false);
+            data.getListing().getSummary().setRecFile(documents);
+        }
         data.getListing().getSummary().setRecFileUpload(new ArrayList<>());
     }
 
@@ -196,9 +219,64 @@ public final class DocumentUtil {
         return documentList;
     }
 
+    public static List<ListValue<CaseworkerCICDocument>> getAddedDocuments(
+        List<ListValue<CaseworkerCICDocument>> updatedDocuments,
+        List<ListValue<CaseworkerCICDocument>> existingDocuments
+    ) {
+        return getDocumentsNotIn(updatedDocuments, existingDocuments);
+    }
+
+    public static List<ListValue<CaseworkerCICDocument>> getRemovedDocuments(
+        List<ListValue<CaseworkerCICDocument>> existingDocuments,
+        List<ListValue<CaseworkerCICDocument>> updatedDocuments
+    ) {
+        return getDocumentsNotIn(existingDocuments, updatedDocuments);
+    }
+
+    public static List<ListValue<CaseworkerCICDocument>> getDocumentsWithUpdatedCategory(
+        List<ListValue<CaseworkerCICDocument>> updatedDocuments,
+        List<ListValue<CaseworkerCICDocument>> existingDocuments
+    ) {
+        if (CollectionUtils.isEmpty(updatedDocuments) || CollectionUtils.isEmpty(existingDocuments)) {
+            return List.of();
+        }
+
+        Map<String, DocumentType> existingCategories = existingDocuments.stream()
+            .collect(Collectors.toMap(
+                document -> document.getValue().getDocumentLink().getBinaryUrl(),
+                document -> document.getValue().getDocumentCategory()
+            ));
+
+        return updatedDocuments.stream()
+            .filter(document -> {
+                String binaryUrl = document.getValue().getDocumentLink().getBinaryUrl();
+                return existingCategories.containsKey(binaryUrl)
+                    && !Objects.equals(document.getValue().getDocumentCategory(), existingCategories.get(binaryUrl));
+            })
+            .toList();
+    }
+
+    private static List<ListValue<CaseworkerCICDocument>> getDocumentsNotIn(
+        List<ListValue<CaseworkerCICDocument>> documents,
+        List<ListValue<CaseworkerCICDocument>> documentsToExclude
+    ) {
+        if (CollectionUtils.isEmpty(documents)) {
+            return List.of();
+        }
+
+        Set<String> excludedBinaryUrls = CollectionUtils.isEmpty(documentsToExclude)
+            ? new HashSet<>()
+            : documentsToExclude.stream()
+                .map(document -> document.getValue().getDocumentLink().getBinaryUrl())
+                .collect(Collectors.toSet());
+
+        return documents.stream()
+            .filter(document -> !excludedBinaryUrls.contains(document.getValue().getDocumentLink().getBinaryUrl()))
+            .toList();
+    }
+
     public static boolean isValidDocument(String fileName, String validExtensions) {
-        String fileExtension = substringAfterLast(fileName, ".");
-        return fileExtension != null && validExtensions.contains(fileExtension.toLowerCase(ROOT));
+        return DocumentFileTypes.isValid(fileName, validExtensions);
     }
 
     public static String getDocumentUuidFromCaseworkerCICDocument(CaseworkerCICDocument caseworkerCICDocument) {

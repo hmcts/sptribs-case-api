@@ -211,6 +211,9 @@ public class CaseworkerIssueDecisionIT extends IntegrationTestBase {
             .caseIssueDecision(caseIssueDecision)
             .build();
 
+        when(documentsRepository.insertIgnoreDuplicate(any(), any(), any(), any(), any(), any(), any()))
+            .thenReturn(1);
+
         MvcResult result = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
                 .contentType(APPLICATION_JSON)
                 .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)

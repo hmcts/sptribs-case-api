@@ -440,11 +440,12 @@ public class ContactPartiesNotificationIT {
                 .build();
 
             when(notificationServiceCIC.sendEmail(notificationRequestCaptor.capture(),
-                eq(TEST_CASE_ID.toString()), eq(Party.RESPONDENT))).thenReturn(NOTIFICATION_RESPONSE);
+                anyList(), eq(TEST_CASE_ID.toString()), eq(Party.RESPONDENT))).thenReturn(NOTIFICATION_RESPONSE);
 
             contactPartiesNotification.sendToRespondent(data, TEST_CASE_ID.toString(), Map.of());
 
             verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(),
+                anyList(),
                 eq(TEST_CASE_ID.toString()),
                 eq(Party.RESPONDENT));
 
@@ -525,11 +526,12 @@ public class ContactPartiesNotificationIT {
                 .build();
 
             when(notificationServiceCIC.sendEmail(notificationRequestCaptor.capture(),
-                eq(TEST_CASE_ID.toString()), eq(Party.TRIBUNAL))).thenReturn(NOTIFICATION_RESPONSE);
+                anyList(), eq(TEST_CASE_ID.toString()), eq(Party.TRIBUNAL))).thenReturn(NOTIFICATION_RESPONSE);
 
             contactPartiesNotification.sendToTribunal(data, TEST_CASE_ID.toString(), Map.of());
 
-            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(Party.TRIBUNAL));
+            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(),
+                anyList(), eq(TEST_CASE_ID.toString()), eq(Party.TRIBUNAL));
 
             NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 

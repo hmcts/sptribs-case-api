@@ -13,11 +13,16 @@ public class CaseDataITManager implements IntegrationTestDataManager {
     private NamedParameterJdbcTemplate jdbcTemplate;
 
     public void addCaseData(Long reference, String state, String json) {
+        addCaseData(1L, reference, state, json);
+    }
+
+    public void addCaseData(Long id, Long reference, String state, String json) {
         jdbcTemplate.update("""
                 INSERT INTO ccd.case_data (id, reference, jurisdiction, case_type_id, state, data, security_classification)
-                VALUES (1, :reference, 'ST_CIC', 'CriminalInjuriesCompensation', :state, CAST(:data AS jsonb),
+                VALUES (:id, :reference, 'ST_CIC', 'CriminalInjuriesCompensation', :state, CAST(:data AS jsonb),
                 CAST('PUBLIC' AS ccd.securityclassification))
                 """, Map.of(
+            "id", id,
             "reference", reference,
             "state", state,
             "data", json

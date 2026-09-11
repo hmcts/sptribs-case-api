@@ -9,6 +9,7 @@ import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
@@ -38,13 +39,20 @@ public class CaseworkerContactPartiesFT extends FunctionalTestSuite {
     public void shouldPrepareContactPartiesDocumentListInAboutToStartCallback() throws Exception {
 
         final Map<String, Object> caseData = caseData(ABOUT_TO_START_REQUEST);
+        final Long caseReference = createPersistedCaseReference(caseData);
+        final String documentId = UUID.randomUUID().toString();
+        caseDocumentsFTDataManager.saveTestDocumentEntity(caseReference, documentId);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_CONTACT_PARTIES, ABOUT_TO_START_URL, false);
+        final Response response = triggerCallback(caseData, CASEWORKER_CONTACT_PARTIES, ABOUT_TO_START_URL, caseReference);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .when(IGNORING_EXTRA_FIELDS)
             .isEqualTo(json(expectedResponse(ABOUT_TO_START_RESPONSE)));
+        assertThat(response.jsonPath().getString("data.contactPartiesDocumentsDocumentList.list_items[0].code"))
+            .isEqualTo(documentId);
+        assertThat(response.jsonPath().getString("data.contactPartiesDocumentsDocumentList.list_items[0].label"))
+            .contains("[mockFile.pdf C - Hospital records]");
     }
 
     @Test

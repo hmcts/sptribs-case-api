@@ -22,8 +22,10 @@ import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.content.PreviewDraftOrderTemplateContent;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 
 import java.util.ArrayList;
@@ -33,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -73,6 +76,9 @@ public class SystemCreateTestCaseTest {
 
     @Mock
     private PreviewDraftOrderTemplateContent previewDraftOrderTemplateContent;
+
+    @Mock
+    private DocumentsService documentTableService;
 
 
     @Test
@@ -139,6 +145,36 @@ public class SystemCreateTestCaseTest {
         assertThat(response.getData().getHyphenatedCaseRef()).isEqualTo(TEST_CASE_ID_HYPHENATED);
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(1);
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().getFirst().getValue()).isEqualTo(expectedCICDocument);
+        verify(documentTableService).buildAndSaveNewDocumentEntity(
+            any(uk.gov.hmcts.ccd.sdk.type.Document.class),
+            eq(TEST_CASE_ID),
+            eq(DocumentType.APPLICATION_FORM),
+            eq(CaseDocumentType.APPLICATION)
+        );
+        verify(documentTableService, times(1)).buildAndSaveNewDocumentEntity(
+            any(uk.gov.hmcts.ccd.sdk.type.Document.class),
+            eq(TEST_CASE_ID),
+            eq(DocumentType.TRIBUNAL_DIRECTION),
+            eq(CaseDocumentType.ORDER)
+        );
+        verify(documentTableService, times(1)).buildAndSaveNewDocumentEntity(
+            any(uk.gov.hmcts.ccd.sdk.type.Document.class),
+            eq(TEST_CASE_ID),
+            eq(DocumentType.TRIBUNAL_DIRECTION),
+            eq(CaseDocumentType.DECISION)
+        );
+        verify(documentTableService, times(1)).buildAndSaveNewDocumentEntity(
+            any(uk.gov.hmcts.ccd.sdk.type.Document.class),
+            eq(TEST_CASE_ID),
+            eq(DocumentType.TRIBUNAL_DIRECTION),
+            eq(CaseDocumentType.FINAL_DECISION)
+        );
+        verify(documentTableService, times(1)).buildAndSaveNewDocumentEntity(
+            any(uk.gov.hmcts.ccd.sdk.type.Document.class),
+            eq(TEST_CASE_ID),
+            eq(DocumentType.LINKED_DOCS),
+            eq(CaseDocumentType.DOCUMENT_MANAGEMENT)
+        );
     }
 
     @Test

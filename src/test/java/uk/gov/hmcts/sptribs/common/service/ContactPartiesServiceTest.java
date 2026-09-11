@@ -132,4 +132,18 @@ class ContactPartiesServiceTest {
         verifyNoInteractions(correspondenceDocumentService);
     }
 
+    @Test
+    void shouldLinkAlreadyResolvedDocumentIdsWithoutReadingCaseData() {
+        List<Long> documentIds = List.of(11L, 12L);
+        List<String> correspondenceIds = List.of("correspondence-1", "correspondence-2");
+
+        contactPartiesService.linkCorrespondenceIdsToDocuments(documentIds, correspondenceIds);
+
+        verify(correspondenceDocumentService)
+            .saveCorrespondenceDocumentLink("correspondence-1", documentIds);
+        verify(correspondenceDocumentService)
+            .saveCorrespondenceDocumentLink("correspondence-2", documentIds);
+        verifyNoInteractions(documentsService);
+    }
+
 }

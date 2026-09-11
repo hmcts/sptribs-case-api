@@ -59,6 +59,7 @@ import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleIdAndTimestamp;
 import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
 import uk.gov.hmcts.sptribs.document.model.AbstractCaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentView;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.notification.model.Correspondence;
 
@@ -364,6 +365,15 @@ public class CaseData {
     )
     @External
     private List<ListValue<Correspondence>> correspondence;
+
+    @CCD(
+        label = "Case documents",
+        typeOverride = Collection,
+        typeParameterOverride = "CaseDocumentView",
+        access = {NonRespondentAccess.class}
+    )
+    @External
+    private List<ListValue<CaseDocumentView>> caseDocumentView;
 
     @CCD(
         label = "Case number",

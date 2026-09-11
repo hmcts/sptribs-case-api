@@ -26,6 +26,7 @@ class CaseworkerCICDocumentMapperTest {
         DocumentEntity entity = DocumentEntity.builder()
             .documentFilename("test-document.pdf")
             .documentUrl("http://test-url")
+            .documentBinaryUrl("http://test-url/binary")
             .documentTypeName(DocumentType.TRIBUNAL_DIRECTION.name())
             .savedAt(savedAt)
             .build();
@@ -38,7 +39,9 @@ class CaseworkerCICDocumentMapperTest {
 
         Document document = result.getDocumentLink();
         assertThat(document.getUrl()).isEqualTo("http://test-url");
+        assertThat(document.getBinaryUrl()).isEqualTo("http://test-url/binary");
         assertThat(document.getFilename()).isEqualTo("test-document.pdf");
+        assertThat(document.getCategoryId()).isEqualTo(DocumentType.TRIBUNAL_DIRECTION.getCategory());
 
         assertThat(result.getDocumentCategory())
             .isEqualTo(DocumentType.TRIBUNAL_DIRECTION);
@@ -48,7 +51,7 @@ class CaseworkerCICDocumentMapperTest {
     }
 
     @Test
-    void shouldUseUpdatedAtWhenPresent() {
+    void shouldKeepSavedDateWhenDocumentMetadataHasBeenUpdated() {
         // Given
         OffsetDateTime savedAt =
             OffsetDateTime.parse("2026-06-05T10:15:30Z");
@@ -68,7 +71,7 @@ class CaseworkerCICDocumentMapperTest {
 
         // Then
         assertThat(result.getDate())
-            .isEqualTo(updatedAt.toLocalDate());
+            .isEqualTo(savedAt.toLocalDate());
     }
 
     @Test
@@ -95,6 +98,22 @@ class CaseworkerCICDocumentMapperTest {
         assertThat(result.getDocumentCategory()).isNull();
         assertThat(result.getDate())
             .isEqualTo(savedAt.toLocalDate());
+    }
+
+    @Test
+    void shouldTreatUnknownDocumentTypeNameAsUncategorised() {
+        DocumentEntity entity = DocumentEntity.builder()
+            .documentFilename("test-document.pdf")
+            .documentUrl("http://test-url")
+            .documentBinaryUrl("http://test-url/binary")
+            .documentTypeName("FUTURE_DOCUMENT_TYPE")
+            .savedAt(OffsetDateTime.parse("2026-06-05T10:15:30Z"))
+            .build();
+
+        CaseworkerCICDocument result = mapper.mapDocument(entity);
+
+        assertThat(result.getDocumentCategory()).isNull();
+        assertThat(result.getDocumentLink().getCategoryId()).isNull();
     }
 
     @Test

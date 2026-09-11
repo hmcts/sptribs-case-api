@@ -19,6 +19,7 @@ import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -69,6 +70,22 @@ class DocumentUtilTest {
                 PDF_FILENAME,
                 DOC_BINARY_URL,
                 CATEGORY_ID_VAL);
+    }
+
+    @Test
+    void shouldExtractCdamDocumentIdFromDocumentAndBinaryUrls() {
+        UUID documentId = UUID.randomUUID();
+
+        assertThat(DocumentUtil.extractDocumentId("http://dm/documents/" + documentId))
+            .contains(documentId);
+        assertThat(DocumentUtil.extractDocumentId("http://dm/documents/" + documentId + "/binary"))
+            .contains(documentId);
+    }
+
+    @Test
+    void shouldNotExtractInvalidCdamDocumentId() {
+        assertThat(DocumentUtil.extractDocumentId("http://dm/documents/not-a-uuid")).isEmpty();
+        assertThat(DocumentUtil.extractDocumentId(null)).isEmpty();
     }
 
     @Test

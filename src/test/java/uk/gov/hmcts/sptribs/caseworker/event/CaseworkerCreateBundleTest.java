@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import org.jspecify.annotations.NonNull;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -30,8 +31,10 @@ import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleCallback;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleIdAndTimestamp;
 import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
+import uk.gov.hmcts.sptribs.document.model.BundleDocumentsView;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.service.CaseDocumentReadService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.BundleCreatedNotification;
 
 import java.time.Clock;
@@ -47,11 +50,16 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.extractDocumentsFromListValues;
+import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.getAllCaseDocuments;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
@@ -81,6 +89,43 @@ class CaseworkerCreateBundleTest {
 
     @Mock
     private Clock clock;
+
+    @Mock
+    private CaseDocumentReadService caseDocumentReadService;
+
+    @BeforeEach
+    void setUpDocumentProjection() {
+        lenient().when(caseDocumentReadService.getBundleDocuments(anyLong(), anySet()))
+            .thenReturn(BundleDocumentsView.builder()
+                .allDocuments(List.of())
+                .initialDocuments(List.of())
+                .furtherDocuments(List.of())
+                .build());
+    }
+
+    private void stubBundleDocuments(CaseData data) {
+        List<CaseworkerCICDocument> allDocuments = extractDocumentsFromListValues(getAllCaseDocuments(data)).stream()
+            .filter(CaseworkerCICDocument::isValidBundleDocument)
+            .toList();
+        List<CaseworkerCICDocument> initialDocuments = extractDocumentsFromListValues(data.getInitialCicaDocuments())
+            .stream()
+            .filter(CaseworkerCICDocument::isValidBundleDocument)
+            .toList();
+        List<CaseworkerCICDocument> furtherDocuments = allDocuments.stream()
+            .filter(document -> !initialDocuments.contains(document))
+            .sorted(java.util.Comparator.comparing(
+                CaseworkerCICDocument::getDate,
+                java.util.Comparator.nullsLast(java.util.Comparator.naturalOrder())
+            ))
+            .toList();
+
+        when(caseDocumentReadService.getBundleDocuments(eq(TEST_CASE_ID), anySet()))
+            .thenReturn(BundleDocumentsView.builder()
+                .allDocuments(allDocuments)
+                .initialDocuments(initialDocuments)
+                .furtherDocuments(furtherDocuments)
+                .build());
+    }
 
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
@@ -115,6 +160,7 @@ class CaseworkerCreateBundleTest {
         final CicCase cicCase = CicCase.builder().build();
         cicCase.setApplicantDocumentsUploaded(cicDocuments);
         caseData.setCicCase(cicCase);
+        stubBundleDocuments(caseData);
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
@@ -270,6 +316,7 @@ class CaseworkerCreateBundleTest {
 
         caseData.setAllDocManagement(documentManagement);
         caseData.setCicCase(cicCase);
+        stubBundleDocuments(caseData);
 
         CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         caseDetails.setId(TEST_CASE_ID);
@@ -319,6 +366,9 @@ class CaseworkerCreateBundleTest {
         LocalDate applicantDocsDate = LocalDate.of(2026, 1, 10);
         List<ListValue<CaseworkerCICDocument>> allApplicantDocs = setApplicantDocsForDate(applicantDocsDate);
         List<ListValue<CaseworkerCICDocument>> initialDocuments = new ArrayList<>(allApplicantDocs);
+        initialDocuments.forEach(document -> document.getValue().getDocumentLink().setBinaryUrl(
+            "documents/" + document.getValue().getDocumentLink().getFilename() + "/binary"
+        ));
         caseData.setInitialCicaDocuments(initialDocuments);
 
         LocalDate additionalApplicantDocsDate = LocalDate.of(2026, 2, 12);
@@ -334,7 +384,7 @@ class CaseworkerCreateBundleTest {
 
         cicCase.setApplicantDocumentsUploaded(allApplicantDocs);
 
-        Document document = Document.builder().url("testUrl").filename("test").build();
+        Document document = Document.builder().url("testUrl").filename("test.pdf").build();
         DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder().templateGeneratedDocument(document).build();
         Order order = Order.builder().draftOrder(draftOrderCIC).orderSentDate(LocalDate.of(2026, 5, 1)).build();
         cicCase.setOrderList(List.of(ListValue.<Order>builder().value(order).build()));
@@ -350,6 +400,7 @@ class CaseworkerCreateBundleTest {
         caseworkerDocs.add(extraCaseworkerDoc);
         caseData.setAllDocManagement(documentManagement);
         caseData.setCicCase(cicCase);
+        stubBundleDocuments(caseData);
 
         CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         caseDetails.setId(TEST_CASE_ID);
@@ -412,6 +463,7 @@ class CaseworkerCreateBundleTest {
         final CicCase cicCase = CicCase.builder().build();
         cicCase.setApplicantDocumentsUploaded(cicDocuments);
         caseData.setCicCase(cicCase);
+        stubBundleDocuments(caseData);
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
@@ -460,6 +512,7 @@ class CaseworkerCreateBundleTest {
         final CicCase cicCase = CicCase.builder().build();
         cicCase.setApplicantDocumentsUploaded(documents);
         caseData.setCicCase(cicCase);
+        stubBundleDocuments(caseData);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
@@ -531,6 +584,7 @@ class CaseworkerCreateBundleTest {
         final CicCase cicCase = CicCase.builder().build();
         cicCase.setApplicantDocumentsUploaded(cicDocuments);
         caseData.setCicCase(cicCase);
+        stubBundleDocuments(caseData);
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);

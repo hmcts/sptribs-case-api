@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,8 +29,11 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.common.event.page.PartiesToContact;
 import uk.gov.hmcts.sptribs.common.service.ContactPartiesService;
+import uk.gov.hmcts.sptribs.document.exception.DocumentSelectionException;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.model.SelectedCaseDocuments;
+import uk.gov.hmcts.sptribs.document.service.CaseDocumentReadService;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
@@ -42,12 +46,20 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECTED_DOCUMENTS_UNAVAILABLE;
 import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAST_ONE_CONTACT_PARTY;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
@@ -83,6 +95,19 @@ class CaseworkerContactPartiesTest {
 
     @Mock
     private NotificationHelper notificationHelper;
+
+    @Mock
+    private CaseDocumentReadService caseDocumentReadService;
+
+    @BeforeEach
+    void setUpDocumentProjection() {
+        lenient().when(caseDocumentReadService.getContactPartyOptions(anyLong(), anyString()))
+            .thenReturn(DynamicMultiSelectList.builder().listItems(List.of()).value(List.of()).build());
+        lenient().when(caseDocumentReadService.getSelectedContactPartyDocuments(anyLong(), any(), anyInt()))
+            .thenReturn(selectedDocuments(List.of(), List.of()));
+        lenient().when(notificationHelper.buildDocumentList(anyList(), anyInt()))
+            .thenReturn(Map.of());
+    }
 
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
@@ -142,17 +167,28 @@ class CaseworkerContactPartiesTest {
             .build();
         final CaseData caseData = CaseData.builder().build();
         caseData.setCicCase(cicCase);
+        caseDetails.setId(TEST_CASE_ID);
         caseDetails.setData(caseData);
 
         ReflectionTestUtils.setField(caseWorkerContactParties, "baseUrl", "http://mocked-url.com/");
+
+        String expectedSelectedDoc = "[" + orderFilename + " " + orderDoc.getDocumentCategory().getLabel() + "]"
+            + "(http://mocked-url.com/documents/" + orderDocUrlUUID + "/binary)";
+        DynamicMultiSelectList expectedList = DynamicMultiSelectList.builder()
+            .listItems(List.of(
+                DynamicListElement.builder().code(UUID.randomUUID()).label("first").build(),
+                DynamicListElement.builder().code(UUID.fromString(orderDocUrlUUID)).label(expectedSelectedDoc).build()
+            ))
+            .value(List.of())
+            .build();
+        when(caseDocumentReadService.getContactPartyOptions(TEST_CASE_ID, "http://mocked-url.com/"))
+            .thenReturn(expectedList);
 
         AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerContactParties.aboutToStart(caseDetails);
 
         assertThat(response.getData().getContactPartiesDocuments().getDocumentList()).isNotNull();
         assertThat(response.getData().getContactPartiesDocuments().getDocumentList().getListItems()).hasSize(2);
 
-        String expectedSelectedDoc = "[" + orderFilename + " " + orderDoc.getDocumentCategory().getLabel() + "]"
-            + "(http://mocked-url.com/documents/" + orderDocUrlUUID + "/binary)";
         DynamicListElement responseOrderDoc = new DynamicListElement();
 
         for (DynamicListElement responseDoc : response.getData().getContactPartiesDocuments().getDocumentList().getListItems()) {
@@ -250,11 +286,18 @@ class CaseworkerContactPartiesTest {
         final int docAttachLimit = 10;
         Map<String, String> emailDocs = getDocumentUploadMap();
 
-        when(notificationHelper.buildDocumentList(documentList, docAttachLimit)).thenReturn(emailDocs);
-        when(contactPartiesNotification.sendToSubject(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID1");
-        when(contactPartiesNotification.sendToRepresentative(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID2");
-        when(contactPartiesNotification.sendToApplicant(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID3");
-        when(contactPartiesNotification.sendToRespondent(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID4");
+        SelectedCaseDocuments selectedDocuments = selectedDocuments(List.of(1L), List.of());
+        when(caseDocumentReadService.getSelectedContactPartyDocuments(TEST_CASE_ID, documentList, docAttachLimit))
+            .thenReturn(selectedDocuments);
+        when(notificationHelper.buildDocumentList(selectedDocuments.getDocuments(), docAttachLimit)).thenReturn(emailDocs);
+        when(contactPartiesNotification.sendToSubject(caseData, String.valueOf(TEST_CASE_ID), emailDocs, List.of()))
+            .thenReturn("UUID1");
+        when(contactPartiesNotification.sendToRepresentative(caseData, String.valueOf(TEST_CASE_ID), emailDocs, List.of()))
+            .thenReturn("UUID2");
+        when(contactPartiesNotification.sendToApplicant(caseData, String.valueOf(TEST_CASE_ID), emailDocs, List.of()))
+            .thenReturn("UUID3");
+        when(contactPartiesNotification.sendToRespondent(caseData, String.valueOf(TEST_CASE_ID), emailDocs, List.of()))
+            .thenReturn("UUID4");
 
         SubmittedCallbackResponse contactPartiesResponse =
             caseWorkerContactParties.submitted(updatedCaseDetails, beforeDetails);
@@ -270,8 +313,8 @@ class CaseworkerContactPartiesTest {
         assertThat(contactPartiesResponse.getConfirmationHeader()).contains("Respondent");
         assertThat(contactPartiesResponse.getConfirmationHeader()).contains(",");
 
-        verify(contactPartiesService, times(1)).linkCorrespondenceIdsToDocuments(caseData, emailDocs,
-            List.of("UUID1", "UUID2", "UUID3", "UUID4"));
+        verify(contactPartiesService, times(1)).linkCorrespondenceIdsToDocuments(
+            List.of(1L), List.of("UUID1", "UUID2", "UUID3", "UUID4"));
     }
 
     @Test
@@ -307,10 +350,16 @@ class CaseworkerContactPartiesTest {
         final int docAttachLimit = 10;
         Map<String, String> emailDocs = getDocumentUploadMap();
 
-        when(notificationHelper.buildDocumentList(documentList, docAttachLimit)).thenReturn(emailDocs);
-        when(contactPartiesNotification.sendToRepresentative(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID2");
-        when(contactPartiesNotification.sendToApplicant(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID3");
-        when(contactPartiesNotification.sendToRespondent(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID4");
+        SelectedCaseDocuments selectedDocuments = selectedDocuments(List.of(1L), List.of());
+        when(caseDocumentReadService.getSelectedContactPartyDocuments(TEST_CASE_ID, documentList, docAttachLimit))
+            .thenReturn(selectedDocuments);
+        when(notificationHelper.buildDocumentList(selectedDocuments.getDocuments(), docAttachLimit)).thenReturn(emailDocs);
+        when(contactPartiesNotification.sendToRepresentative(caseData, String.valueOf(TEST_CASE_ID), emailDocs, List.of()))
+            .thenReturn("UUID2");
+        when(contactPartiesNotification.sendToApplicant(caseData, String.valueOf(TEST_CASE_ID), emailDocs, List.of()))
+            .thenReturn("UUID3");
+        when(contactPartiesNotification.sendToRespondent(caseData, String.valueOf(TEST_CASE_ID), emailDocs, List.of()))
+            .thenReturn("UUID4");
 
         SubmittedCallbackResponse contactPartiesResponse =
             caseWorkerContactParties.submitted(updatedCaseDetails, beforeDetails);
@@ -325,8 +374,9 @@ class CaseworkerContactPartiesTest {
         assertThat(contactPartiesResponse.getConfirmationHeader()).contains("Respondent");
         assertThat(contactPartiesResponse.getConfirmationHeader()).contains(",");
 
-        verify(contactPartiesNotification, never()).sendToSubject(any(), any(), any());
-        verify(contactPartiesService, times(1)).linkCorrespondenceIdsToDocuments(caseData, emailDocs, List.of("UUID2", "UUID3", "UUID4"));
+        verify(contactPartiesNotification, never()).sendToSubject(any(), any(), any(), any());
+        verify(contactPartiesService, times(1)).linkCorrespondenceIdsToDocuments(
+            List.of(1L), List.of("UUID2", "UUID3", "UUID4"));
     }
 
     @Test
@@ -353,11 +403,6 @@ class CaseworkerContactPartiesTest {
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-
-        final int docAttachLimit = 10;
-        Map<String, String> emailDocs = getDocumentUploadMap();
-
-        when(notificationHelper.buildDocumentList(documentList, docAttachLimit)).thenReturn(emailDocs);
 
         //when
         SubmittedCallbackResponse contactPartiesResponse = caseWorkerContactParties.submitted(updatedCaseDetails, beforeDetails);
@@ -388,7 +433,8 @@ class CaseworkerContactPartiesTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         doThrow(NotificationException.class)
-            .when(contactPartiesNotification).sendToRepresentative(caseData, caseData.getHyphenatedCaseRef());
+            .when(contactPartiesNotification).sendToRepresentative(
+                eq(caseData), eq(caseData.getHyphenatedCaseRef()), anyMap(), anyList());
 
         SubmittedCallbackResponse response =
             caseWorkerContactParties.submitted(updatedCaseDetails, beforeDetails);
@@ -444,8 +490,16 @@ class CaseworkerContactPartiesTest {
             .cicCase(cicCase)
             .build();
         updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
 
         ReflectionTestUtils.setField(caseWorkerContactParties, "baseUrl", "http://mocked-url.com/");
+
+        DynamicMultiSelectList expectedList = DynamicMultiSelectList.builder()
+            .listItems(List.of(DynamicListElement.builder().code(UUID.randomUUID()).label("name.pdf").build()))
+            .value(List.of())
+            .build();
+        when(caseDocumentReadService.getContactPartyOptions(TEST_CASE_ID, "http://mocked-url.com/"))
+            .thenReturn(expectedList);
 
         AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerContactParties.aboutToStart(updatedCaseDetails);
 
@@ -486,5 +540,89 @@ class CaseworkerContactPartiesTest {
         assertThat(contactPartiesResponse.getEventMetadata().getDescription()).contains("Document 1 - Test.pdf");
     }
 
-}
+    @Test
+    void shouldAllowSubmissionWithNoDocumentsSelected() {
+        CaseData caseData = caseData();
+        caseData.setContactPartiesDocuments(ContactPartiesDocuments.builder().documentList(null).build());
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
+        details.setData(caseData);
 
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseWorkerContactParties.aboutToSubmit(details, new CaseDetails<>());
+
+        assertThat(response.getErrors()).isNullOrEmpty();
+        assertThat(response.getEventMetadata().getSummary()).isEqualTo("0 Selected documents sent");
+    }
+
+    @Test
+    void shouldSendMessageWithoutDocumentsAndSkipDocumentLinking() {
+        CaseData caseData = caseData();
+        caseData.setHyphenatedCaseRef(String.valueOf(TEST_CASE_ID));
+        caseData.setContactPartiesDocuments(ContactPartiesDocuments.builder().documentList(null).build());
+        caseData.setCicCase(CicCase.builder()
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .build());
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
+        details.setData(caseData);
+        when(contactPartiesNotification.sendToRespondent(
+            caseData, String.valueOf(TEST_CASE_ID), Map.of(), List.of()
+        )).thenReturn("correspondence-id");
+
+        SubmittedCallbackResponse response = caseWorkerContactParties.submitted(details, new CaseDetails<>());
+
+        assertThat(response.getConfirmationHeader()).contains("Message sent").contains("Respondent");
+        verifyNoInteractions(contactPartiesService);
+    }
+
+    @Test
+    void shouldStopSubmissionWhenASelectedDocumentCannotBeResolved() {
+        CaseData caseData = caseData();
+        DynamicMultiSelectList selection = buildDynamicMultiSelectDocumentList();
+        caseData.setContactPartiesDocuments(ContactPartiesDocuments.builder().documentList(selection).build());
+
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
+        details.setData(caseData);
+        when(caseDocumentReadService.getSelectedContactPartyDocuments(TEST_CASE_ID, selection, 10))
+            .thenThrow(new DocumentSelectionException("Selected document is missing"));
+
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseWorkerContactParties.aboutToSubmit(details, new CaseDetails<>());
+
+        assertThat(response.getErrors()).containsExactly(SELECTED_DOCUMENTS_UNAVAILABLE);
+        assertThat(response.getEventMetadata()).isNull();
+    }
+
+    @Test
+    void shouldNotNotifyPartiesWhenASelectedDocumentCannotBeResolvedAfterSubmission() {
+        CaseData caseData = caseData();
+        DynamicMultiSelectList selection = buildDynamicMultiSelectDocumentList();
+        caseData.setContactPartiesDocuments(ContactPartiesDocuments.builder().documentList(selection).build());
+        caseData.setCicCase(CicCase.builder()
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .build());
+
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
+        details.setData(caseData);
+        when(caseDocumentReadService.getSelectedContactPartyDocuments(TEST_CASE_ID, selection, 10))
+            .thenThrow(new DocumentSelectionException("Selected document is missing"));
+
+        SubmittedCallbackResponse response = caseWorkerContactParties.submitted(details, new CaseDetails<>());
+
+        assertThat(response.getConfirmationHeader())
+            .contains("Documents could not be attached")
+            .contains("Please resend the message and select the documents again");
+        verifyNoInteractions(contactPartiesNotification, contactPartiesService);
+    }
+
+    private SelectedCaseDocuments selectedDocuments(List<Long> entityIds, List<CaseworkerCICDocument> documents) {
+        return SelectedCaseDocuments.builder()
+            .documentEntityIds(entityIds)
+            .documents(documents)
+            .build();
+    }
+
+}
