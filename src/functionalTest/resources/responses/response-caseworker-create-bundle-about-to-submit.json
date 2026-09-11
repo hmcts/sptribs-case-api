@@ -9,70 +9,77 @@
           "description": "",
           "folders": [
             {
-              "id": "46",
+              "id": "56",
+              "value": {
+                "name": "Audio/video evidence documents",
+                "sortIndex": 10
+              }
+            },
+            {
+              "id": "57",
               "value": {
                 "name": "Further Documents",
                 "sortIndex": 9
               }
             },
             {
-              "id": "47",
+              "id": "58",
               "value": {
                 "name": "General evidence",
                 "sortIndex": 8
               }
             },
             {
-              "id": "48",
+              "id": "59",
               "value": {
                 "name": "Direction - decision notices",
                 "sortIndex": 7
               }
             },
             {
-              "id": "49",
+              "id": "60",
               "value": {
                 "name": "Witness Statements",
                 "sortIndex": 6
               }
             },
             {
-              "id": "50",
+              "id": "61",
               "value": {
                 "name": "Linked documents",
                 "sortIndex": 5
               }
             },
             {
-              "id": "51",
+              "id": "62",
               "value": {
                 "name": "Other evidence",
                 "sortIndex": 4
               }
             },
             {
-              "id": "52",
+              "id": "63",
               "value": {
                 "name": "Financial records",
                 "sortIndex": 3
               }
             },
             {
-              "id": "53",
+              "id": "64",
               "value": {
                 "name": "Medical records",
                 "sortIndex": 2
               }
             },
             {
-              "id": "54",
+              "id": "65",
               "value": {
                 "name": "Police evidence",
                 "sortIndex": 1
               }
             },
             {
-              "id": "55",
+              "id": "66",
               "value": {
                 "name": "Application Documents",
                 "sortIndex": 0
