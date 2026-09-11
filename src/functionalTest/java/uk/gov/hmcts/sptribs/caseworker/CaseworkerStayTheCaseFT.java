@@ -92,7 +92,7 @@ public class CaseworkerStayTheCaseFT extends FunctionalTestSuite {
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Stay Added to Case \n## A notification has been sent to: Subject, Representative, Applicant");
+            .contains("# Stay Added to Case \n## A notification has been sent to: Applicant, Representative, Subject");
 
         long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
 
@@ -125,6 +125,7 @@ public class CaseworkerStayTheCaseFT extends FunctionalTestSuite {
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Case stay notification failed \n## Please resend the notification");
+            .contains("# Case stay notification failed "
+                + "\n## A notification could not be sent to: Applicant, Representative \n## Please resend the notification");
     }
 }

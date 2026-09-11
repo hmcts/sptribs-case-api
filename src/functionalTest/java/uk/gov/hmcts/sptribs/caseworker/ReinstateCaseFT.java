@@ -116,12 +116,10 @@ public class ReinstateCaseFT extends FunctionalTestSuite {
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
-            .isEqualTo(
-                "# Case reinstated \\n"
-                    + "##  The case record will now be reopened. \\n"
-                    + "## A notification has been sent to: Subject "
-
-            );
+            .isString()
+            .contains("# Case reinstated.")
+            .contains("## The case record will now be reopened.")
+            .contains("## A notification has been sent to: Subject");
 
         long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
 
@@ -153,6 +151,7 @@ public class ReinstateCaseFT extends FunctionalTestSuite {
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
-            .isEqualTo("# Case Reinstate notification failed \\n## Please resend the notification");
+            .isEqualTo("# Case Reinstate notification failed \\n## A notification could not be sent to: Subject "
+                + "\\n## Please resend the notification.");
     }
 }

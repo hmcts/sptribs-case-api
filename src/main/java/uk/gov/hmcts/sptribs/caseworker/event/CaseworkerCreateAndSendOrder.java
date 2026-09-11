@@ -3,8 +3,6 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.client.RestClientException;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
@@ -31,6 +29,7 @@ import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -42,21 +41,27 @@ import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.notification.NotificationConstantProfiles;
 import uk.gov.hmcts.sptribs.notification.dispatcher.AnonymityAppliedNotification;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
-import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import static java.lang.String.format;
+import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.CREATE_AND_SEND_NEW_ORDER;
 import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER;
 import static uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil.applyAnonymityCaseFlag;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_AND_SEND_ORDER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
 import static uk.gov.hmcts.sptribs.caseworker.util.SendOrderUtil.updateCicCaseOrderList;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -92,6 +97,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
     private final DraftOrderFooter draftOrderFooter;
     private final NewOrderIssuedNotification newOrderIssuedNotification;
     private final AnonymityAppliedNotification anonymityAppliedNotification;
+    private final NotificationDispatcher notificationDispatcher;
     private final SendOrderOrderDueDates orderDueDates;
     private final DocumentsService documentsService;
 
@@ -275,41 +281,50 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
-        try {
-            sendOrderNotification(details.getData().getHyphenatedCaseRef(), details.getData());
-            anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(
-                details.getData(),
-                beforeDetails == null ? null : beforeDetails.getData()
-            );
-        } catch (NotificationException | RestClientException notificationException) {
-            log.warn("Failed to send order notifications for case {}", details.getId(), notificationException);
-            return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Send order notification failed %n## Please resend the order"))
-                .build();
-        }
 
-        return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Order sent %n## %s",
-                MessageUtil.generateSimpleMessage(details.getData().getCicCase())))
+        final CaseData caseData = details.getData();
+        final String caseReference = caseData.getHyphenatedCaseRef();
+
+        NotificationContextRequest request = NotificationContextRequest.builder()
+            .caseData(caseData)
+            .caseReference(caseReference)
+            .notification(newOrderIssuedNotification)
             .build();
-    }
 
-    private void sendOrderNotification(String caseNumber, CaseData caseData) {
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartySubject())) {
-            newOrderIssuedNotification.sendToSubject(caseData, caseNumber);
+        NotificationContext notificationContext = NotificationConstantProfiles.CREATE_AND_SEND_ORDER
+            .buildContext(request);
+
+        notificationDispatcher.sendToCorrespondenceParties(notificationContext);
+
+        NotificationContextRequest anonymityRequest = NotificationContextRequest.builder()
+            .caseData(caseData)
+            .caseReference(caseReference)
+            .notification(anonymityAppliedNotification)
+            .previousCaseData(beforeDetails.getData())
+            .build();
+
+        NotificationContext notificationContextAnonymity = NotificationConstantProfiles.ANONYMITY_APPLIED
+            .buildContext(anonymityRequest);
+
+        notificationDispatcher.sendToCorrespondenceParties(notificationContextAnonymity);
+
+        List<String> combinedErrors = new ArrayList<>(notificationContext.getErrors());
+        combinedErrors.addAll(notificationContextAnonymity.getErrors());
+
+        Set<NotificationParties> combinedCorrespondence = notificationContext.getCorrespondenceParties();
+        combinedCorrespondence.addAll(notificationContextAnonymity.getCorrespondenceParties());
+
+        if (isEmpty(combinedErrors)) {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Order sent %n## %s",
+                    MessageUtil.generateSimpleMessageFromCorrespondenceParties(combinedCorrespondence)))
+                .build();
+        } else {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(
+                    format("Failed to send order notifications for case %n## %s %n## Please resend the notification.",
+                        generateSimpleErrorMessage(combinedErrors)))
+            .build();
         }
-
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRepresentative())) {
-            newOrderIssuedNotification.sendToRepresentative(caseData, caseNumber);
-        }
-
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRespondent())) {
-            newOrderIssuedNotification.sendToRespondent(caseData, caseNumber);
-        }
-
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyApplicant())) {
-            newOrderIssuedNotification.sendToApplicant(caseData, caseNumber);
-        }
-
     }
 }

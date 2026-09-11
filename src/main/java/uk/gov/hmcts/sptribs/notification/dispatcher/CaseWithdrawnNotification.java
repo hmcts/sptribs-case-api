@@ -8,20 +8,24 @@ import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.util.Map;
+import java.util.Set;
 
 import static uk.gov.hmcts.sptribs.caseworker.model.CloseReason.DeathOfAppellant;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CLOSURE_INFORMATION;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CLOSURE_REASON;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DEATH_OF_APPELLANT_EMAIL_CONTENT;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.NONE_PROVIDED;
+import static uk.gov.hmcts.sptribs.notification.NotificationHelper.getNotificationParties;
 
 @Component
 @Slf4j
@@ -127,5 +131,12 @@ public class CaseWithdrawnNotification implements PartiesNotification {
             templateVars.put(CLOSURE_REASON, closeCase.getCloseCaseReason());
         }
         templateVars.put(CLOSURE_INFORMATION, additionalDetail);
+    }
+
+    @Override
+    public Set<NotificationParties> buildCorrespondenceParties(NotificationContextRequest request) {
+        CicCase cicCase = request.getCaseData().getCicCase();
+
+        return getNotificationParties(cicCase);
     }
 }

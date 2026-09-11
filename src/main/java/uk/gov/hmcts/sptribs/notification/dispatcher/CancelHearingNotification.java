@@ -6,14 +6,19 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.util.Map;
+import java.util.Set;
+
+import static uk.gov.hmcts.sptribs.notification.NotificationHelper.getHearingNotificationParties;
 
 @Component
 @Slf4j
@@ -113,5 +118,12 @@ public class CancelHearingNotification implements PartiesNotification {
             templateVarsLetter,
             TemplateName.HEARING_CANCELLED_POST);
         return notificationService.sendLetter(letterRequest, caseReferenceNumber);
+    }
+
+    @Override
+    public Set<NotificationParties> buildCorrespondenceParties(NotificationContextRequest request) {
+        CicCase cicCase = request.getCaseData().getCicCase();
+
+        return getHearingNotificationParties(cicCase);
     }
 }

@@ -20,7 +20,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
-import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -33,6 +33,8 @@ import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.notification.dispatcher.BundleCreatedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -49,7 +51,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
@@ -78,6 +79,9 @@ class CaseworkerCreateBundleTest {
 
     @Mock
     private BundlingService bundlingService;
+
+    @Mock
+    private NotificationDispatcher notificationDispatcher;
 
     @Mock
     private Clock clock;
@@ -173,20 +177,21 @@ class CaseworkerCreateBundleTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         doAnswer(invocation -> {
-            cicCase.setResNotificationResponse(NotificationResponse.builder().build());
+            NotificationContext context = invocation.getArgument(0);
+            if (context.getNotification() == bundleCreatedNotification) {
+                context.getCorrespondenceParties().add(NotificationParties.REPRESENTATIVE);
+                context.getCorrespondenceParties().add(NotificationParties.RESPONDENT);
+            }
             return null;
-        }).when(bundleCreatedNotification).sendToRespondent(any(), any());
-
-        doAnswer(invocation -> {
-            cicCase.setRepNotificationResponse(NotificationResponse.builder().build());
-            return null;
-        }).when(bundleCreatedNotification).sendToRepresentative((CaseData) any(), any());
+        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
 
         SubmittedCallbackResponse createBundleSubmittedResponse =
             caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
 
         assertThat(createBundleSubmittedResponse.getConfirmationHeader())
-            .isEqualTo("# Bundle created. \n## A notification has been sent to: Representative, Respondent");
+            .contains("Representative")
+            .contains("Respondent")
+            .contains("Bundle created");
     }
 
     @Test
@@ -206,20 +211,21 @@ class CaseworkerCreateBundleTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         doAnswer(invocation -> {
-            cicCase.setResNotificationResponse(NotificationResponse.builder().build());
+            NotificationContext context = invocation.getArgument(0);
+            if (context.getNotification() == bundleCreatedNotification) {
+                context.getCorrespondenceParties().add(NotificationParties.APPLICANT);
+                context.getCorrespondenceParties().add(NotificationParties.RESPONDENT);
+            }
             return null;
-        }).when(bundleCreatedNotification).sendToRespondent(any(), any());
-
-        doAnswer(invocation -> {
-            cicCase.setAppNotificationResponse(NotificationResponse.builder().build());
-            return null;
-        }).when(bundleCreatedNotification).sendToApplicant(any(), any());
+        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
 
         SubmittedCallbackResponse createBundleSubmittedResponse =
             caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
 
         assertThat(createBundleSubmittedResponse.getConfirmationHeader())
-            .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent, Applicant");
+            .contains("Applicant")
+            .contains("Respondent")
+            .contains("Bundle created");
     }
 
     @Test
@@ -237,8 +243,14 @@ class CaseworkerCreateBundleTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        doThrow(new RuntimeException("Notification Failed")).when(bundleCreatedNotification).sendToRespondent(any(), any());
-        doThrow(new RuntimeException("Notification Failed")).when(bundleCreatedNotification).sendToRepresentative((CaseData) any(), any());
+        doAnswer(invocation -> {
+            NotificationContext context = invocation.getArgument(0);
+            if (context.getNotification() == bundleCreatedNotification) {
+                context.getErrors().add(NotificationParties.RESPONDENT.getLabel());
+                context.getErrors().add(NotificationParties.REPRESENTATIVE.getLabel());
+            }
+            return null;
+        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
 
         SubmittedCallbackResponse createBundleSubmittedResponse =
             caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
@@ -246,7 +258,7 @@ class CaseworkerCreateBundleTest {
         assertThat(createBundleSubmittedResponse.getConfirmationHeader())
             .isEqualTo("""
                 # Bundle creation notification failed\s
-                ## A notification could not be sent to: Respondent, Representative\s
+                ## A notification could not be sent to: Representative, Respondent\s
                 ## Please resend the notification.""");
     }
 

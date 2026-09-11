@@ -97,7 +97,8 @@ public class CaseworkerRecordListingFT extends FunctionalTestSuite {
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Create listing notification failed \n## Please resend the notification");
+            .contains("# Create listing notification failed \n## No notification recipients found "
+                + "\n## Please resend the notification.");
     }
 
     @Test

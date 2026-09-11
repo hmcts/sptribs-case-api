@@ -32,7 +32,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -222,7 +221,8 @@ public class CreateCaseIT {
         assertThatJson(response)
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Create case notification failed \n## Please resend the notification");
-        verifyNoInteractions(notificationServiceCIC);
+            .contains("# Create case notification failed")
+            .contains("## A notification could not be sent to: Subject")
+            .contains("## Please resend the notification.");
     }
 }

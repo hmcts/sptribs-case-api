@@ -25,11 +25,19 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseReinstatedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 
 import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.APPLICANT;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.REPRESENTATIVE;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.RESPONDENT;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.SUBJECT;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.APPLICANT_FIRST_NAME;
@@ -57,6 +65,9 @@ class ReinstateCaseTest {
 
     @Mock
     private CaseReinstatedNotification caseReinstatedNotification;
+
+    @Mock
+    private NotificationDispatcher notificationDispatcher;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -105,6 +116,17 @@ class ReinstateCaseTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
+        doAnswer(invocation -> {
+            NotificationContext context = invocation.getArgument(0);
+            if (context.getNotification() == caseReinstatedNotification) {
+                context.getCorrespondenceParties().add(RESPONDENT);
+                context.getCorrespondenceParties().add(SUBJECT);
+                context.getCorrespondenceParties().add(APPLICANT);
+                context.getCorrespondenceParties().add(REPRESENTATIVE);
+            }
+            return null;
+        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
+
         AboutToStartOrSubmitResponse<CaseData, State> response =
             reinstateCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse responseReinstate =
@@ -119,7 +141,7 @@ class ReinstateCaseTest {
             .isEqualTo("content");
         assertThat(response.getData().getCicCase().getReinstateDocuments().get(0).getValue().getDocumentLink()).isNotNull();
         assertThat(response.getData().getCicCase().getReinstateDocuments().get(0).getValue().getDate()).isNull();
-        assertThat(responseReinstate.getConfirmationHeader()).contains("# Case reinstated \n##  The case record will now be reopened");
+        assertThat(responseReinstate.getConfirmationHeader()).contains("# Case reinstated. \n## The case record will now be reopened.");
         assertThat(responseReinstate.getConfirmationHeader()).contains("Subject");
         assertThat(responseReinstate.getConfirmationHeader()).contains("Respondent");
         assertThat(responseReinstate.getConfirmationHeader()).contains("Representative");
@@ -165,13 +187,23 @@ class ReinstateCaseTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
+        doAnswer(invocation -> {
+            NotificationContext context = invocation.getArgument(0);
+            if (context.getNotification() == caseReinstatedNotification) {
+                context.getCorrespondenceParties().add(RESPONDENT);
+                context.getCorrespondenceParties().add(SUBJECT);
+                context.getCorrespondenceParties().add(REPRESENTATIVE);
+            }
+            return null;
+        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
+
         AboutToStartOrSubmitResponse<CaseData, State> response =
             reinstateCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse responseReinstate =
             reinstateCase.submitted(updatedCaseDetails, beforeDetails);
 
         assertThat(responseReinstate).isNotNull();
-        assertThat(responseReinstate.getConfirmationHeader()).contains("# Case reinstated \n##  The case record will now be reopened");
+        assertThat(responseReinstate.getConfirmationHeader()).contains("# Case reinstated. \n## The case record will now be reopened.");
         assertThat(responseReinstate.getConfirmationHeader()).contains("Subject");
         assertThat(responseReinstate.getConfirmationHeader()).contains("Respondent");
         assertThat(responseReinstate.getConfirmationHeader()).contains("Representative");

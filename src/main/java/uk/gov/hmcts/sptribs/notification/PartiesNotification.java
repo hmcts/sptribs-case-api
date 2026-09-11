@@ -2,8 +2,11 @@ package uk.gov.hmcts.sptribs.notification;
 
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 
 import java.util.Map;
+import java.util.Set;
 
 public interface PartiesNotification {
     default void sendToSubject(final CaseData caseData, final String caseNumber) {
@@ -80,4 +83,5 @@ public interface PartiesNotification {
         return null;
     }
 
+    Set<NotificationParties> buildCorrespondenceParties(NotificationContextRequest request);
 }

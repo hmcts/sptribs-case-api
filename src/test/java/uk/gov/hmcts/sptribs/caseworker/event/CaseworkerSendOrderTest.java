@@ -41,6 +41,7 @@ import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -98,6 +99,9 @@ class CaseworkerSendOrderTest {
 
     @Mock
     private DocumentsService documentsService;
+
+    @Mock
+    private NotificationDispatcher notificationDispatcher;
 
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {

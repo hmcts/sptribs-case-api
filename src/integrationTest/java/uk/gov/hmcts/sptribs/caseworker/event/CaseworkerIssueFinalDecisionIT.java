@@ -330,7 +330,7 @@ public class CaseworkerIssueFinalDecisionIT extends IntegrationTestBase {
             .inPath(CONFIRMATION_HEADER)
             .isString()
             .contains("# Final decision notice issued \n"
-                + "## A notification has been sent to: Subject, Respondent, Representative, Applicant");
+                + "## A notification has been sent to: Applicant, Representative, Respondent, Subject");
 
         verify(notificationServiceCIC, times(4)).sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
         verifyNoMoreInteractions(notificationServiceCIC);
@@ -377,7 +377,9 @@ public class CaseworkerIssueFinalDecisionIT extends IntegrationTestBase {
         assertThatJson(response)
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Issue final decision notification failed \n## Please resend the notification");
+            .contains("# Issue final decision notification failed")
+            .contains("## A notification could not be sent to: Applicant, Representative, Respondent, Subject")
+            .contains("## Please resend the notification.");
 
         verifyNoMoreInteractions(notificationServiceCIC);
     }

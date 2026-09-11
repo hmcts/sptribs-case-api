@@ -75,7 +75,7 @@ public class CicSubmitCaseEventFT extends FunctionalTestSuite {
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
-            .isEqualTo("# Application Received \\n## A notification has been sent to: Subject, Representative");
+            .isEqualTo("# Application Received. \\n## A notification has been sent to: Representative, Subject");
 
         long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
 
@@ -95,6 +95,7 @@ public class CicSubmitCaseEventFT extends FunctionalTestSuite {
         assertThat(firstCorrespondenceEntity.getDocumentUrl()).isNotNull();
         assertThat(firstCorrespondenceEntity.getDocumentFilename()).isNotNull();
         assertThat(firstCorrespondenceEntity.getDocumentBinaryUrl()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getId()).isNotNull();
     }
 
     @Test
@@ -106,7 +107,7 @@ public class CicSubmitCaseEventFT extends FunctionalTestSuite {
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
-            .isEqualTo("# Application Received \\n## A notification has been sent to: Subject, Representative");
+            .isEqualTo("# Application Received. \\n## A notification has been sent to: Representative, Subject");
 
         long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
 
@@ -149,6 +150,9 @@ public class CicSubmitCaseEventFT extends FunctionalTestSuite {
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
-            .isEqualTo("# Application Received notification failed %n## Please resend the notification");
+            .isString()
+            .contains("# Application Received notification failed")
+            .contains("## A notification could not be sent to: Subject")
+            .contains("## Please resend the notification.");
     }
 }

@@ -3,7 +3,6 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClientException;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
@@ -20,16 +19,22 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.service.AnonymisationService;
+import uk.gov.hmcts.sptribs.notification.NotificationConstantProfiles;
 import uk.gov.hmcts.sptribs.notification.dispatcher.AnonymityAppliedNotification;
-import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
+import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil.applyAnonymityCaseFlag;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_UPDATE_ANONYMITY;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessageFromCorrespondenceParties;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
@@ -47,6 +52,7 @@ public class CaseworkerUpdateAnonymity implements CCDConfig<CaseData, State, Use
     private final ApplyAnonymity applyAnonymity;
     private final AnonymityAppliedNotification anonymityAppliedNotification;
     private final AnonymisationService anonymisationService;
+    private final NotificationDispatcher notificationDispatcher;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -94,18 +100,34 @@ public class CaseworkerUpdateAnonymity implements CCDConfig<CaseData, State, Use
 
     public SubmittedCallbackResponse submitted(final CaseDetails<CaseData, State> details,
                                                final CaseDetails<CaseData, State> beforeDetails) {
-        try {
-            anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(
-                details.getData(),
-                beforeDetails == null ? null : beforeDetails.getData()
-            );
-        } catch (NotificationException | RestClientException notificationException) {
-            log.warn("Failed to send anonymity notifications for case {}", details.getId(), notificationException);
+
+        final CaseData caseData = details.getData();
+        final String caseReference = caseData.getHyphenatedCaseRef();
+
+        NotificationContextRequest notificationContextRequest = NotificationContextRequest.builder()
+            .caseData(caseData)
+            .caseReference(caseReference)
+            .notification(anonymityAppliedNotification)
+            .build();
+
+        NotificationContext notificationContext = NotificationConstantProfiles.UPDATE_ANONYMITY
+            .buildContext(notificationContextRequest);
+
+        notificationDispatcher.sendToCorrespondenceParties(notificationContext);
+
+        if (isEmpty(notificationContext.getErrors())) {
             return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Send anonymity notification failed %n## Please update the case again"))
+                .confirmationHeader(format("# Anonymity update notification sent. %n## %s",
+                    generateSimpleMessageFromCorrespondenceParties(notificationContext.getCorrespondenceParties())))
+                .build();
+        } else {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(
+                    format("# Send anonymity notification failed %n## %s %n## Please resend the notification.",
+                        generateSimpleErrorMessage(notificationContext.getErrors()))
+                )
                 .build();
         }
-        return SubmittedCallbackResponse.builder().build();
     }
 
     private void updateAnonymityCaseFlag(CaseData data, ListValue<FlagDetail> existingAnonymityFlag) {

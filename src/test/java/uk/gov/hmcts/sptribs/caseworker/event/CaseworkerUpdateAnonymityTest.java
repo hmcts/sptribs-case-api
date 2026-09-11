@@ -1,10 +1,9 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -22,14 +21,19 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.repositories.AnonymisationRepository;
 import uk.gov.hmcts.sptribs.common.service.AnonymisationService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.AnonymityAppliedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_UPDATE_ANONYMITY;
@@ -39,6 +43,7 @@ import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 @ExtendWith(MockitoExtension.class)
 class CaseworkerUpdateAnonymityTest {
 
+    @InjectMocks
     private CaseworkerUpdateAnonymity caseworkerUpdateAnonymity;
 
     @Mock
@@ -50,13 +55,15 @@ class CaseworkerUpdateAnonymityTest {
     @Mock
     private AnonymisationRepository anonymisationRepository;
 
-    private AnonymisationService anonymisationService;
+    @Mock
+    private NotificationDispatcher notificationDispatcher;
 
-    @BeforeEach
-    void setUp() {
-        anonymisationService = Mockito.spy(new AnonymisationService(anonymisationRepository));
-        caseworkerUpdateAnonymity = new CaseworkerUpdateAnonymity(applyAnonymity, anonymityAppliedNotification, anonymisationService);
-    }
+    @Mock
+    private NotificationContext notificationContext;
+
+    @Mock
+    private AnonymisationService anonymisationService;
+    
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -83,7 +90,12 @@ class CaseworkerUpdateAnonymityTest {
         caseData.setCicCase(cicCase);
         caseDetails.setData(caseData);
 
-        doReturn(1L).when(anonymisationRepository).getNextSequenceValue();
+        doAnswer(invocation -> {
+            caseData.getCicCase().setAnonymityAlreadyApplied(YesOrNo.YES);
+            caseData.getCicCase().setAnonymisedAppellantName("AA");
+            caseData.getCicCase().setAnonymisationDate(LocalDate.now());
+            return null;
+        }).when(anonymisationService).applyAnonymitySelection(any(), any(), anyBoolean());
 
         var response = caseworkerUpdateAnonymity.aboutToSubmit(caseDetails,
             CaseDetails.<CaseData, State>builder().build());
@@ -122,8 +134,6 @@ class CaseworkerUpdateAnonymityTest {
         caseData.setCaseFlags(Flags.builder().details(new ArrayList<>(List.of(existingFlag))).build());
         caseDetails.setData(caseData);
 
-        doReturn(1L).when(anonymisationRepository).getNextSequenceValue();
-
         var response = caseworkerUpdateAnonymity.aboutToSubmit(caseDetails,
             CaseDetails.<CaseData, State>builder().data(caseData).build());
 
@@ -158,8 +168,8 @@ class CaseworkerUpdateAnonymityTest {
 
         caseworkerUpdateAnonymity.submitted(details, beforeDetails);
 
-        verify(anonymityAppliedNotification, times(1))
-            .sendAnonymityNotificationIfNewlyApplied(caseDataAfter, caseDataBefore);
+        verify(notificationDispatcher, times(1))
+            .sendToCorrespondenceParties(any(NotificationContext.class));
     }
 
     @Test
@@ -187,8 +197,8 @@ class CaseworkerUpdateAnonymityTest {
 
         caseworkerUpdateAnonymity.submitted(details, beforeDetails);
 
-        verify(anonymityAppliedNotification, times(1))
-            .sendAnonymityNotificationIfNewlyApplied(caseDataAfter, caseDataBefore);
+        verify(notificationDispatcher, times(0))
+            .sendToCorrespondenceParties(notificationContext);
     }
 
     @Test
@@ -211,6 +221,11 @@ class CaseworkerUpdateAnonymityTest {
             .build();
         caseData.setCaseFlags(Flags.builder().details(new ArrayList<>(List.of(existingFlag))).build());
         caseDetails.setData(caseData);
+
+        doAnswer(invocation -> {
+            caseData.getCicCase().setAnonymityAlreadyApplied(YesOrNo.NO);
+            return null;
+        }).when(anonymisationService).applyAnonymitySelection(any(), any(), anyBoolean());
 
         var response = caseworkerUpdateAnonymity.aboutToSubmit(caseDetails,
             CaseDetails.<CaseData, State>builder().data(caseData).build());

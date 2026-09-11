@@ -20,6 +20,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -32,7 +33,8 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
-import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,9 +44,8 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -83,6 +84,9 @@ class CaseworkerContactPartiesTest {
 
     @Mock
     private NotificationHelper notificationHelper;
+
+    @Mock
+    private NotificationDispatcher notificationDispatcher;
 
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
@@ -218,7 +222,7 @@ class CaseworkerContactPartiesTest {
     }
 
     @Test
-    void shouldDisplayTheCorrectMessageWithCommaSeparationAndLinkDocumentsToCorrespondence() {
+    void shouldDisplayTheCorrectMessageWithCommaSeparation() {
         //given
         DynamicMultiSelectList documentList = buildDynamicMultiSelectDocumentList();
         ContactPartiesDocuments contactPartiesDocuments = ContactPartiesDocuments.builder()
@@ -247,16 +251,17 @@ class CaseworkerContactPartiesTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        final int docAttachLimit = 10;
-        Map<String, String> emailDocs = getDocumentUploadMap();
+        doAnswer(invocation -> {
+            NotificationContext context = invocation.getArgument(0);
+            if (context.getNotification() == contactPartiesNotification) {
+                context.getCorrespondenceParties().add(NotificationParties.SUBJECT);
+                context.getCorrespondenceParties().add(NotificationParties.REPRESENTATIVE);
+                context.getCorrespondenceParties().add(NotificationParties.RESPONDENT);
+            }
+            return null;
+        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
 
-        when(notificationHelper.buildDocumentList(documentList, docAttachLimit)).thenReturn(emailDocs);
-        when(contactPartiesNotification.sendToSubject(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID1");
-        when(contactPartiesNotification.sendToRepresentative(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID2");
-        when(contactPartiesNotification.sendToApplicant(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID3");
-        when(contactPartiesNotification.sendToRespondent(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID4");
-
-        SubmittedCallbackResponse contactPartiesResponse =
+        SubmittedCallbackResponse response =
             caseWorkerContactParties.submitted(updatedCaseDetails, beforeDetails);
 
         assertThat(caseData.getCicCase().getNotifyPartySubject()).hasSize(1);
@@ -264,18 +269,15 @@ class CaseworkerContactPartiesTest {
         assertThat(caseData.getCicCase().getNotifyPartyRespondent()).hasSize(1);
         assertThat(caseData.getCicCase().getNotifyPartyApplicant()).hasSize(1);
 
-        assertThat(contactPartiesResponse).isNotNull();
-        assertThat(contactPartiesResponse.getConfirmationHeader()).contains("Subject");
-        assertThat(contactPartiesResponse.getConfirmationHeader()).contains("Representative");
-        assertThat(contactPartiesResponse.getConfirmationHeader()).contains("Respondent");
-        assertThat(contactPartiesResponse.getConfirmationHeader()).contains(",");
-
-        verify(contactPartiesService, times(1)).linkCorrespondenceIdsToDocuments(caseData, emailDocs,
-            List.of("UUID1", "UUID2", "UUID3", "UUID4"));
+        assertThat(response).isNotNull();
+        assertThat(response.getConfirmationHeader()).contains("Subject");
+        assertThat(response.getConfirmationHeader()).contains("Representative");
+        assertThat(response.getConfirmationHeader()).contains("Respondent");
+        assertThat(response.getConfirmationHeader()).contains(",");
     }
 
     @Test
-    void shouldDisplayTheCorrectMessageWithCommaSeparationIfSubjectIsNullAndLinkDocumentsToCorrespondence() {
+    void shouldDisplayTheCorrectMessageWithCommaSeparationIfSubjectIsNull() {
         //given
         DynamicMultiSelectList documentList = buildDynamicMultiSelectDocumentList();
         ContactPartiesDocuments contactPartiesDocuments = ContactPartiesDocuments.builder()
@@ -308,9 +310,16 @@ class CaseworkerContactPartiesTest {
         Map<String, String> emailDocs = getDocumentUploadMap();
 
         when(notificationHelper.buildDocumentList(documentList, docAttachLimit)).thenReturn(emailDocs);
-        when(contactPartiesNotification.sendToRepresentative(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID2");
-        when(contactPartiesNotification.sendToApplicant(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID3");
-        when(contactPartiesNotification.sendToRespondent(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID4");
+
+        doAnswer(invocation -> {
+            NotificationContext context = invocation.getArgument(0);
+            if (context.getNotification() == contactPartiesNotification) {
+                context.getCorrespondenceParties().add(NotificationParties.REPRESENTATIVE);
+                context.getCorrespondenceParties().add(NotificationParties.APPLICANT);
+                context.getCorrespondenceParties().add(NotificationParties.RESPONDENT);
+            }
+            return null;
+        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
 
         SubmittedCallbackResponse contactPartiesResponse =
             caseWorkerContactParties.submitted(updatedCaseDetails, beforeDetails);
@@ -326,7 +335,6 @@ class CaseworkerContactPartiesTest {
         assertThat(contactPartiesResponse.getConfirmationHeader()).contains(",");
 
         verify(contactPartiesNotification, never()).sendToSubject(any(), any(), any());
-        verify(contactPartiesService, times(1)).linkCorrespondenceIdsToDocuments(caseData, emailDocs, List.of("UUID2", "UUID3", "UUID4"));
     }
 
     @Test
@@ -387,8 +395,13 @@ class CaseworkerContactPartiesTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        doThrow(NotificationException.class)
-            .when(contactPartiesNotification).sendToRepresentative(caseData, caseData.getHyphenatedCaseRef());
+        doAnswer(invocation -> {
+            NotificationContext context = invocation.getArgument(0);
+            if (context.getNotification() == contactPartiesNotification) {
+                context.getErrors().add("Respondent");
+            }
+            return null;
+        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
 
         SubmittedCallbackResponse response =
             caseWorkerContactParties.submitted(updatedCaseDetails, beforeDetails);

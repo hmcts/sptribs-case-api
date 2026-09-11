@@ -2,8 +2,6 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -30,7 +28,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ListingCreatedNotification;
-import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -38,13 +37,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -72,6 +67,9 @@ class CaseworkerRecordListingTest {
 
     @Mock
     private ListingCreatedNotification listingCreatedNotification;
+
+    @Mock
+    private NotificationDispatcher notificationDispatcher;
 
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
@@ -125,10 +123,6 @@ class CaseworkerRecordListingTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        doNothing().when(listingCreatedNotification).sendToSubject(caseData, caseData.getHyphenatedCaseRef());
-        doNothing().when(listingCreatedNotification).sendToRepresentative(caseData, caseData.getHyphenatedCaseRef());
-        doNothing().when(listingCreatedNotification).sendToRespondent(caseData, caseData.getHyphenatedCaseRef());
-        doNothing().when(listingCreatedNotification).sendToApplicant(caseData, caseData.getHyphenatedCaseRef());
         when(recordListHelper.checkAndUpdateVenueInformation(any())).thenReturn(listing);
 
         //When
@@ -215,100 +209,99 @@ class CaseworkerRecordListingTest {
         verifyNoInteractions(recordListHelper);
     }
 
-    @ParameterizedTest
-    @EnumSource(NotificationParties.class)
-    void submittedShouldThrowExceptionWhenSendIsUnsuccessful(NotificationParties notificationParty) {
-        final CicCase cicCaseSubject = CicCase.builder()
-            .hearingNotificationParties(Set.of(notificationParty))
-            .build();
-        final CaseData caseData = CaseData.builder()
-            .cicCase(cicCaseSubject)
-            .hyphenatedCaseRef("1234-5678-3456")
+    @Test
+    void submittedShouldThrowExceptionWhenSendIsUnsuccessful() {
+        final Set<NotificationParties> parties = new HashSet<>();
+        parties.add(NotificationParties.SUBJECT);
+        parties.add(NotificationParties.RESPONDENT);
+        parties.add(NotificationParties.REPRESENTATIVE);
+        parties.add(NotificationParties.APPLICANT);
+        final CicCase cicCase = CicCase.builder()
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
+            .hearingNotificationParties(parties)
             .build();
 
-        final Exception sendToException = new NotificationException(new Exception("Failed to send"));
+        final CaseData caseData = CaseData.builder()
+            .cicCase(cicCase)
+            .hyphenatedCaseRef("1234-5678-3456")
+            .build();
 
         final CaseDetails<CaseData, State> beforeCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
-        switch (notificationParty) {
-            case SUBJECT ->
-                doThrow(sendToException).when(listingCreatedNotification).sendToSubject(any(CaseData.class), anyString());
-            case REPRESENTATIVE ->
-                doThrow(sendToException).when(listingCreatedNotification).sendToRepresentative(any(CaseData.class), anyString());
-            case RESPONDENT ->
-                doThrow(sendToException).when(listingCreatedNotification).sendToRespondent(any(CaseData.class), anyString());
-            case APPLICANT ->
-                doThrow(sendToException).when(listingCreatedNotification).sendToApplicant(any(CaseData.class), anyString());
-            default -> doNothing();
-        }
+
+        doAnswer(invocation -> {
+            NotificationContext context = invocation.getArgument(0);
+            if (context.getNotification() == listingCreatedNotification) {
+                context.getErrors().add("Representative");
+                context.getErrors().add("Applicant");
+                context.getErrors().add("Subject");
+                context.getErrors().add("Respondent");
+            }
+            return null;
+        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
 
         final SubmittedCallbackResponse response = caseworkerRecordListing.submitted(updatedCaseDetails, beforeCaseDetails);
 
+
         assertThat(response).isNotNull();
         assertThat(response.getConfirmationHeader())
-            .isEqualTo(format("# Create listing notification failed %n## Please resend the notification"));
+            .contains("# Create listing notification failed")
+            .contains("## A notification could not be sent to:")
+            .contains("Subject")
+            .contains("Applicant")
+            .contains("Respondent")
+            .contains("Representative");
+
     }
 
-    @ParameterizedTest
-    @EnumSource(NotificationParties.class)
-    void verifySendToIsCalledForEachParty(NotificationParties notificationParty) {
-        final CicCase cicCaseSubject = CicCase.builder()
-            .hearingNotificationParties(Set.of(notificationParty))
+    @Test
+    void verifyNotificationIsSentToAllParties() {
+        final Set<NotificationParties> parties = new HashSet<>();
+        parties.add(NotificationParties.SUBJECT);
+        parties.add(NotificationParties.RESPONDENT);
+        parties.add(NotificationParties.REPRESENTATIVE);
+        parties.add(NotificationParties.APPLICANT);
+        final CicCase cicCase = CicCase.builder()
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
+            .hearingNotificationParties(parties)
             .build();
+
         final CaseData caseData = CaseData.builder()
-            .cicCase(cicCaseSubject)
+            .cicCase(cicCase)
             .hyphenatedCaseRef("1234-5678-3456")
             .build();
 
         final CaseDetails<CaseData, State> beforeCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
-        switch (notificationParty) {
-            case SUBJECT ->
-                doNothing().when(listingCreatedNotification).sendToSubject(any(CaseData.class), anyString());
-            case REPRESENTATIVE ->
-                doNothing().when(listingCreatedNotification).sendToRepresentative(any(CaseData.class), anyString());
-            case RESPONDENT ->
-                doNothing().when(listingCreatedNotification).sendToRespondent(any(CaseData.class), anyString());
-            case APPLICANT ->
-                doNothing().when(listingCreatedNotification).sendToApplicant(any(CaseData.class), anyString());
-            default -> doNothing();
-        }
+
+        doAnswer(invocation -> {
+            NotificationContext context = invocation.getArgument(0);
+            if (context.getNotification() == listingCreatedNotification) {
+                context.getCorrespondenceParties().add(NotificationParties.REPRESENTATIVE);
+                context.getCorrespondenceParties().add(NotificationParties.SUBJECT);
+                context.getCorrespondenceParties().add(NotificationParties.APPLICANT);
+                context.getCorrespondenceParties().add(NotificationParties.RESPONDENT);
+            }
+            return null;
+        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
 
         final SubmittedCallbackResponse response = caseworkerRecordListing.submitted(updatedCaseDetails, beforeCaseDetails);
 
         assertThat(response).isNotNull();
         assertThat(response.getConfirmationHeader())
-            .contains("# Listing record created \n## A notification has been sent to: ");
-
-        switch (notificationParty) {
-            case SUBJECT -> {
-                verify(listingCreatedNotification, times(1)).sendToSubject(any(CaseData.class), anyString());
-                verify(listingCreatedNotification, times(0)).sendToRepresentative(any(CaseData.class), anyString());
-                verify(listingCreatedNotification, times(0)).sendToRespondent(any(CaseData.class), anyString());
-                verify(listingCreatedNotification, times(0)).sendToApplicant(any(CaseData.class), anyString());
-            }
-            case REPRESENTATIVE -> {
-                verify(listingCreatedNotification, times(0)).sendToSubject(any(CaseData.class), anyString());
-                verify(listingCreatedNotification, times(1)).sendToRepresentative(any(CaseData.class), anyString());
-                verify(listingCreatedNotification, times(0)).sendToRespondent(any(CaseData.class), anyString());
-                verify(listingCreatedNotification, times(0)).sendToApplicant(any(CaseData.class), anyString());
-            }
-            case RESPONDENT -> {
-                verify(listingCreatedNotification, times(0)).sendToSubject(any(CaseData.class), anyString());
-                verify(listingCreatedNotification, times(0)).sendToRepresentative(any(CaseData.class), anyString());
-                verify(listingCreatedNotification, times(1)).sendToRespondent(any(CaseData.class), anyString());
-                verify(listingCreatedNotification, times(0)).sendToApplicant(any(CaseData.class), anyString());
-            }
-            case APPLICANT -> {
-                verify(listingCreatedNotification, times(0)).sendToSubject(any(CaseData.class), anyString());
-                verify(listingCreatedNotification, times(0)).sendToRepresentative(any(CaseData.class), anyString());
-                verify(listingCreatedNotification, times(0)).sendToRespondent(any(CaseData.class), anyString());
-                verify(listingCreatedNotification, times(1)).sendToApplicant(any(CaseData.class), anyString());
-            }
-            default -> { }
-        }
+            .contains("# Listing record created \n## A notification has been sent to: ")
+            .contains("Subject")
+            .contains("Applicant")
+            .contains("Respondent")
+            .contains("Representative");
     }
 
     private DynamicList getMockedRegionData() {

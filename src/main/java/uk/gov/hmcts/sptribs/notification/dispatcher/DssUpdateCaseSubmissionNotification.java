@@ -5,13 +5,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.APPLICANT;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.TRIBUNAL;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_EMAIL_VALUE;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.UPDATE_RECEIVED;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.UPDATE_RECEIVED_CIC;
@@ -51,5 +57,15 @@ public class DssUpdateCaseSubmissionNotification implements PartiesNotification 
                 UPDATE_RECEIVED_CIC);
 
         notificationService.sendEmail(request, caseNumber, null);
+    }
+
+    @Override
+    public Set<NotificationParties> buildCorrespondenceParties(NotificationContextRequest request) {
+        Set<NotificationParties> correspondenceParties = new HashSet<>();
+
+        correspondenceParties.add(APPLICANT);
+        correspondenceParties.add(TRIBUNAL);
+
+        return correspondenceParties;
     }
 }
