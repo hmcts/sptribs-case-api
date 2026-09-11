@@ -199,6 +199,7 @@ public class BundlingService {
     private Bundle buildBundle(LinkedHashMap<String, Object> objectLinkedHashMap, Long caseNumber) {
 
         Document stitchedDocument = getStitchedDocument(objectLinkedHashMap, caseNumber);
+        String stitchingFailureMessage = MapUtils.getString(objectLinkedHashMap, STITCHING_FAILURE_MESSAGE, "");
 
         return Bundle.builder()
             .stitchStatus(NEW)
@@ -211,7 +212,7 @@ public class BundlingService {
                 MapUtils.getObject(objectLinkedHashMap, PAGINATION_STYLE, BundlePaginationStyle.off).toString()))
             .pageNumberFormat(PageNumberFormat.valueOf(
                 MapUtils.getObject(objectLinkedHashMap, PAGE_NUMBER_FORMAT, PageNumberFormat.numberOfPages).toString()))
-            .stitchingFailureMessage(MapUtils.getString(objectLinkedHashMap, STITCHING_FAILURE_MESSAGE, ""))
+            .stitchingFailureMessage(stitchingFailureMessage)
             .stitchStatus(MapUtils.getString(objectLinkedHashMap, STITCHING_STATUS, ""))
             .build();
     }

@@ -214,7 +214,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
 
     private List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> convertToBundleDocumentType(List<CaseworkerCICDocument> docs) {
 
-        return docs.stream().filter(CaseworkerCICDocument::isValidBundleDocument).map(AbstractCaseworkerCICDocument::new).toList();
+        return docs.stream().filter(CaseworkerCICDocument::isDocumentValid).map(AbstractCaseworkerCICDocument::new).toList();
     }
 
     private List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> convertToBundleDocumentTypeFurtherDocs(
