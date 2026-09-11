@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.notification.dispatcher;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +31,6 @@ import static uk.gov.hmcts.sptribs.notification.TemplateName.NEW_ORDER_ISSUED_EM
 import static uk.gov.hmcts.sptribs.notification.TemplateName.NEW_ORDER_ISSUED_EMAIL_NEW_CD;
 
 @Component
-@Slf4j
 public class NewOrderIssuedNotification implements PartiesNotification {
 
     private final NotificationServiceCIC notificationService;
@@ -53,6 +51,12 @@ public class NewOrderIssuedNotification implements PartiesNotification {
 
     @Override
     public void sendToSubject(final CaseData caseData, final String caseNumber) {
+        sendToSubject(caseData, caseNumber, getUploadedDocumentIds(caseData));
+    }
+
+    @Override
+    public String sendToSubject(final CaseData caseData, final String caseNumber,
+                                final Map<String, String> uploadedDocuments) {
         final CicCase cicCase = caseData.getCicCase();
         final Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, caseData);
 
@@ -66,10 +70,17 @@ public class NewOrderIssuedNotification implements PartiesNotification {
             notificationResponse = sendLetterNotification(templateVars, caseNumber);
         }
         cicCase.setSubjectNotifyList(notificationResponse);
+        return notificationResponse == null ? null : notificationResponse.getId();
     }
 
     @Override
     public void sendToRepresentative(final CaseData caseData, final String caseNumber) {
+        sendToRepresentative(caseData, caseNumber, getUploadedDocumentIds(caseData));
+    }
+
+    @Override
+    public String sendToRepresentative(final CaseData caseData, final String caseNumber,
+                                       final Map<String, String> uploadedDocuments) {
         final CicCase cicCase = caseData.getCicCase();
         final Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, caseData);
 
@@ -84,20 +95,34 @@ public class NewOrderIssuedNotification implements PartiesNotification {
         }
 
         cicCase.setRepNotificationResponse(notificationResponse);
+        return notificationResponse == null ? null : notificationResponse.getId();
     }
 
     @Override
     public void sendToRespondent(final CaseData caseData, final String caseNumber) {
+        sendToRespondent(caseData, caseNumber, getUploadedDocumentIds(caseData));
+    }
+
+    @Override
+    public String sendToRespondent(final CaseData caseData, final String caseNumber,
+                                   final Map<String, String> uploadedDocuments) {
         final CicCase cicCase = caseData.getCicCase();
 
         final Map<String, Object> respondentTemplateVars = notificationHelper.getRespondentCommonVars(caseNumber, caseData);
         final NotificationResponse notificationResponse = sendEmailNotificationWithAttachment(cicCase.getRespondentEmail(),
             caseData, respondentTemplateVars, NEW_ORDER_ISSUED_EMAIL, caseNumber);
         cicCase.setResNotificationResponse(notificationResponse);
+        return notificationResponse == null ? null : notificationResponse.getId();
     }
 
     @Override
     public void sendToApplicant(final CaseData caseData, final String caseNumber) {
+        sendToApplicant(caseData, caseNumber, getUploadedDocumentIds(caseData));
+    }
+
+    @Override
+    public String sendToApplicant(final CaseData caseData, final String caseNumber,
+                                  final Map<String, String> uploadedDocuments) {
         final CicCase cicCase = caseData.getCicCase();
         final Map<String, Object> templateVars = notificationHelper.getApplicantCommonVars(caseNumber, caseData);
 
@@ -113,6 +138,7 @@ public class NewOrderIssuedNotification implements PartiesNotification {
         }
 
         cicCase.setAppNotificationResponse(notificationResponse);
+        return notificationResponse == null ? null : notificationResponse.getId();
     }
 
     private NotificationResponse sendEmailNotificationWithAttachment(final String destinationAddress,

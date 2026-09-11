@@ -20,12 +20,15 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.service.ContactPartiesService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseIssuedNotification;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import static java.lang.String.format;
@@ -57,6 +60,7 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
     private final CaseIssuedNotification caseIssuedNotification;
 
     private final BankHolidayService bankHolidayService;
+    private final ContactPartiesService contactPartiesService;
 
     @Value("${bank-holidays.api.url}")
     private final String bankHolidayUrl;
@@ -70,11 +74,13 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
     public CaseworkerIssueCase(
             CaseIssuedNotification caseIssuedNotification,
             BankHolidayService bankHolidayService,
+            ContactPartiesService contactPartiesService,
             @Value("${bank-holidays.api.url}") String bankHolidayUrl,
             @Value("${case-api.url}") String baseUrl
     ) {
         this.bankHolidayService = bankHolidayService;
         this.caseIssuedNotification = caseIssuedNotification;
+        this.contactPartiesService = contactPartiesService;
         this.bankHolidayUrl = bankHolidayUrl;
         this.baseUrl = baseUrl;
     }
@@ -138,6 +144,11 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
         final CicCase cicCase = data.getCicCase();
         final String caseNumber = data.getHyphenatedCaseRef();
         final List<String> errors = new ArrayList<>();
+        final Map<String, String> uploadedDocuments = Optional
+            .ofNullable(caseIssuedNotification.getUploadedDocuments(data))
+            .orElseGet(Map::of);
+
+        final List<String> correspondenceIds = new ArrayList<>();
 
         if (!isEmpty(cicCase.getNotifyPartySubject())) {
             try {
@@ -162,10 +173,15 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
         }
         if (!isEmpty(cicCase.getNotifyPartyRespondent())) {
             try {
-                caseIssuedNotification.sendToRespondent(details.getData(), caseNumber);
+                addCorrespondenceId(correspondenceIds,
+                    caseIssuedNotification.sendToRespondent(details.getData(), caseNumber, uploadedDocuments));
             } catch (Exception notificationException) {
                 errors.add(RESPONDENT.getLabel());
             }
+        }
+
+        if (isEmpty(errors) && !correspondenceIds.isEmpty() && !uploadedDocuments.isEmpty()) {
+            contactPartiesService.linkCorrespondenceIdsToDocuments(data, uploadedDocuments, correspondenceIds);
         }
 
         if (isEmpty(errors)) {
@@ -183,6 +199,12 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
         }
     }
 
+    private void addCorrespondenceId(List<String> correspondenceIds, String correspondenceId) {
+        if (correspondenceId != null) {
+            correspondenceIds.add(correspondenceId);
+        }
+    }
+
     public LocalDate getNextWorkingDay(LocalDate date, Set<LocalDate> bankHolidays) {
         LocalDate updatedDate = date.plusDays(1);
         return isWorkingDay(updatedDate,bankHolidays) ? updatedDate : getNextWorkingDay(updatedDate, bankHolidays);
@@ -191,6 +213,7 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
     public boolean isWorkingDay(LocalDate date, Set<LocalDate> bankHolidays) {
         return !isWeekend(date) && !bankHolidays.contains(date);
     }
+
 
     private boolean isWeekend(LocalDate date) {
         return date.getDayOfWeek() == DayOfWeek.SATURDAY

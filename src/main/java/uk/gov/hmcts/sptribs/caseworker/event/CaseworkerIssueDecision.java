@@ -24,6 +24,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentSaveException;
+import uk.gov.hmcts.sptribs.common.service.ContactPartiesService;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
@@ -34,6 +35,8 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_DECISION;
@@ -66,6 +69,7 @@ public class CaseworkerIssueDecision implements CCDConfig<CaseData, State, UserR
     private final DecisionIssuedNotification decisionIssuedNotification;
     private final Clock clock;
     private final DocumentsService documentsService;
+    private final ContactPartiesService contactPartiesService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -147,20 +151,39 @@ public class CaseworkerIssueDecision implements CCDConfig<CaseData, State, UserR
     }
 
     private void sendIssueDecisionNotification(String caseNumber, CaseData data) {
+        final Map<String, String> uploadedDocuments = Optional
+            .ofNullable(decisionIssuedNotification.getUploadedDocuments(data))
+            .orElseGet(Map::of);
+        final List<String> correspondenceIds = new ArrayList<>();
 
         if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartySubject())) {
-            decisionIssuedNotification.sendToSubject(data, caseNumber);
+            addCorrespondenceId(correspondenceIds,
+                decisionIssuedNotification.sendToSubject(data, caseNumber, uploadedDocuments));
         }
         if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRespondent())) {
-            decisionIssuedNotification.sendToRespondent(data, caseNumber);
+            addCorrespondenceId(correspondenceIds,
+                decisionIssuedNotification.sendToRespondent(data, caseNumber, uploadedDocuments));
         }
         if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRepresentative())) {
-            decisionIssuedNotification.sendToRepresentative(data, caseNumber);
+            addCorrespondenceId(correspondenceIds,
+                decisionIssuedNotification.sendToRepresentative(data, caseNumber, uploadedDocuments));
         }
         if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyApplicant())) {
-            decisionIssuedNotification.sendToApplicant(data, caseNumber);
+            addCorrespondenceId(correspondenceIds,
+                decisionIssuedNotification.sendToApplicant(data, caseNumber, uploadedDocuments));
+        }
+
+        if (!correspondenceIds.isEmpty() && !uploadedDocuments.isEmpty()) {
+            contactPartiesService.linkCorrespondenceIdsToDocuments(data, uploadedDocuments, correspondenceIds);
         }
     }
+
+    private void addCorrespondenceId(List<String> correspondenceIds, String correspondenceId) {
+        if (correspondenceId != null) {
+            correspondenceIds.add(correspondenceId);
+        }
+    }
+
 
     private void saveDecisionDocumentToDB(Document decisionDocument, Long caseId, List<String> errors) {
         try {
