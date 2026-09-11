@@ -94,7 +94,8 @@ public class Bundle {
 
     @CCD(
         label = "Error from stitching service",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        retainHiddenValue = true
     )
     private String stitchingFailureMessage;
 
