@@ -289,58 +289,18 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
     private void buildHearing(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("hearings", "Hearings")
             .forRoles(CASEWORKER)
-            .label("Listing details", COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY, "#### Listing details")
-            .field("hearingCreatedDate", COND_HEARING_LIST_NOT_ANY_AND_CANCELLATION_REASON_NOT_EMPTY)
-            .field("hearingStatus", COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY)
-            .field("hearingType", COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY)
-            .field("hearingFormat", COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY)
-            .field("hearingVenueNameAndAddress", COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY)
-            .field("roomAtVenue", COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY)
-            .field("date", COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY)
-            .field("session", COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY)
-            .field("hearingTime", COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY)
-            .field("videoCallLink", COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY)
-            .field("importantInfoDetails", COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY)
-            .field("cicCaseHearingNotificationParties", COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY)
-
-            .label("Hearing summary", PANEL_COMPOSITION_DEFINED, "#### Hearing summary")
-            .field("judge", COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY)
-            .field("isFullPanel", COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY)
-            .field("memberList", COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY)
-            .field("roles", COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY)
-            .field("others", COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY)
-            .field("outcome", COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY)
-            .field("recFile", COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY)
-            .field("recDesc", COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY)
-            .field("panel1", PANEL_COMPOSITION_DEFINED)
-            .field("panel2", PANEL_COMPOSITION_DEFINED)
-            .field("panel3", PANEL_COMPOSITION_DEFINED)
-            .field("panelMemberInformation", PANEL_COMPOSITION_DEFINED)
-
-            .label("Postponement summary", COND_HEARING_LIST_NOT_ANY_AND_CASE_POSTPONE_REASON_NOT_EMPTY, "#### Postponement summary")
-            .field("postponeDate", COND_HEARING_LIST_NOT_ANY_AND_CASE_POSTPONE_REASON_NOT_EMPTY)
-            .field("cicCasePostponeReason", COND_HEARING_LIST_NOT_ANY_AND_CASE_POSTPONE_REASON_NOT_EMPTY)
-            .field("cicCasePostponeAdditionalInformation", COND_HEARING_LIST_NOT_ANY_AND_CASE_POSTPONE_REASON_NOT_EMPTY)
-
-            .label("Cancellation summary", COND_HEARING_LIST_NOT_ANY_AND_CANCELLATION_REASON_NOT_EMPTY, "#### Cancellation summary")
-            .field("cancelledDate", COND_HEARING_LIST_NOT_ANY_AND_CANCELLATION_REASON_NOT_EMPTY)
-            .field("cicCaseHearingCancellationReason", COND_HEARING_LIST_NOT_ANY_AND_CANCELLATION_REASON_NOT_EMPTY)
-            .field("cicCaseCancelHearingAdditionalDetail", COND_HEARING_LIST_NOT_ANY_AND_CANCELLATION_REASON_NOT_EMPTY)
-
-            .label("Listing details", null, "#### Listing details")
-
             .field(CaseData::getHearingList)
 
             .label("Hearing options",
-                "hearingVenues!=\"\" OR roomAtVenue!=\"\" OR addlInstr!=\"\" OR hearingFormat!=\"\" OR shortNotice!=\"\"",
+                "hearingVenues!=\"\" OR roomAtVenue!=\"\" OR addlInstr!=\"\" OR hearingFormat!=\"\" OR shortNotice!=\"\" "
+                + "OR hearingType!=\"\"",
                 "#### Hearing options")
             .field("hearingVenues")
             .field("roomAtVenue")
+            .field("hearingType")
             .field("addlInstr")
             .field("hearingFormat")
-            .field("shortNotice")
-
-            .field(CaseData::getHearingList);
+            .field("shortNotice");
     }
 
     private void buildCaseReferralTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
