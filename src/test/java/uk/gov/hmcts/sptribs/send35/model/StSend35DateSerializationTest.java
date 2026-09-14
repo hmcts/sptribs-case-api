@@ -73,7 +73,10 @@ class StSend35DateSerializationTest {
             .isEmpty();
     }
 
-    /** Every {@code LocalDate} reachable from the case data, including inside the unwrapped complexes. */
+    /**
+     * Every {@code LocalDate} reachable from the case data, including inside the unwrapped
+     * complexes.
+     */
     private static List<Field> localDateFields() {
         final List<Field> dates = new ArrayList<>();
         for (Field field : StSend35CaseData.class.getDeclaredFields()) {
