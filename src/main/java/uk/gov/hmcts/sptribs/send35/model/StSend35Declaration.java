@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.send35.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -64,5 +65,6 @@ public class StSend35Declaration {
         label = "Date signed",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateSigned;
 }

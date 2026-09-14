@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.send35.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -43,6 +44,7 @@ public class StSend35ChildOrYoungPerson {
         label = "Date of birth",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
 
     @JsonProperty("Gender")
