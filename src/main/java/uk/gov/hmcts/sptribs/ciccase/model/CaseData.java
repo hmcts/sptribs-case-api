@@ -63,14 +63,11 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.notification.model.Correspondence;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
-import static java.time.format.DateTimeFormatter.ofPattern;
-import static java.util.Locale.UK;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
@@ -523,7 +520,8 @@ public class CaseData {
     private YesOrNo hasDssNotificationSent;
 
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private String firstHearingDate;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate firstHearingDate;
 
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private String hearingVenueName;
@@ -573,15 +571,14 @@ public class CaseData {
     @External
     private Long reindexCasesMatchingCount;
 
-    public String getFirstHearingDate() {
-
+    public LocalDate getFirstHearingDate() {
         Listing nextListing = getNextListedHearing();
-        DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
-        if (!ObjectUtils.isEmpty(nextListing) && !ObjectUtils.isEmpty(nextListing.getDate())) {
-            return dateFormatter.format(nextListing.getDate());
-        }
-        return "";
 
+        if (!ObjectUtils.isEmpty(nextListing) && !ObjectUtils.isEmpty(nextListing.getDate())) {
+            return nextListing.getDate();
+        }
+
+        return null;
     }
 
     @JsonIgnore
