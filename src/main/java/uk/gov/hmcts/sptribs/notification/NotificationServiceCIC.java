@@ -331,23 +331,6 @@ public class NotificationServiceCIC {
         }
     }
 
-    private static void addDocumentDescription(Map<String, Object> templateVars,
-                                               List<CaseworkerCICDocument> selectedDocuments,
-                                               String item,
-                                               String docName) {
-        CaseworkerCICDocument document = selectedDocuments.stream()
-            .filter(doc -> doc.getDocumentLink().getBinaryUrl().contains(item))
-            .findFirst()
-            .orElseThrow(() -> new NotificationException(
-                new Exception(String.format("Unable to find document details for document id: %s", item))));
-
-        String documentNotification = String.format(
-            "%nFilename: %s%nDescription: %s%n",
-            document.getDocumentLink().getFilename(), document.getDocumentEmailContent());
-
-        templateVars.put(docName, documentNotification);
-    }
-
     private static void addDocumentDetails(Map<String, Object> templateVars,
                                            List<CaseworkerCICDocument> selectedDocuments,
                                            String documentPlaceholder,
