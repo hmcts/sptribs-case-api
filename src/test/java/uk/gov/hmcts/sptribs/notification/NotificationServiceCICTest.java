@@ -1,7 +1,11 @@
 package uk.gov.hmcts.sptribs.notification;
 
+import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.io.IOUtils;
+import org.json.JSONObject;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -11,20 +15,23 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestClientException;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
+import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfigCIC;
 import uk.gov.hmcts.sptribs.common.repositories.CorrespondenceRepository;
+import uk.gov.hmcts.sptribs.document.DocumentUtil;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
-import uk.gov.hmcts.sptribs.document.model.DocumentType;
-import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import uk.gov.hmcts.sptribs.notification.model.Party;
+import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 import uk.gov.service.notify.NotificationClient;
@@ -33,9 +40,7 @@ import uk.gov.service.notify.SendEmailResponse;
 import uk.gov.service.notify.SendLetterResponse;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,19 +51,18 @@ import static java.util.Collections.singletonList;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.APPLICATION_RECEIVED;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.CASE_ISSUED_CITIZEN_EMAIL;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.CASE_ISSUED_CITIZEN_POST;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.CASE_ISSUED_RESPONDENT_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
@@ -67,8 +71,17 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SERVICE_AUTH_TOKE
 
 @ExtendWith(MockitoExtension.class)
 public class NotificationServiceCICTest {
-    public static final int TWO_MEGABYTES = 2 * 1024 * 1024;
+    private static final int TWO_MEGABYTES = 2 * 1024 * 1024;
     private static final String EMAIL_ADDRESS = "simulate-delivered@notifications.service.gov.uk";
+    private static final String TEMPLATE_ID = UUID.randomUUID().toString();
+
+    private static final byte[] SMALL_FILE = new byte[1];
+    private static final byte[] LARGE_FILE = new byte[(int) TWO_MEGABYTES + 1];
+
+    private static final Map<String, Object> BASE_TEMPLATE_VARS = new HashMap<>(Map.of(
+        CommonConstants.CIC_CASE_SUBJECT_NAME, "fullName",
+        CommonConstants.CIC_CASE_NUMBER, "1234567891011121",
+        CommonConstants.TRIBUNAL_NAME, CommonConstants.CIC));
 
     @Mock
     private HttpServletRequest httpServletRequest;
@@ -106,884 +119,517 @@ public class NotificationServiceCICTest {
     @Captor
     private ArgumentCaptor<Map<String, Object>> templateVarsArgCaptor;
 
+    @Captor
+    private ArgumentCaptor<CorrespondenceEntity> correspondenceCaptor;
 
-    @Test
-    void shouldInvokeNotificationClientToSendEmail() throws NotificationClientException {
-        //Given
-        final String templateId = UUID.randomUUID().toString();
-        final Map<String, String> templateNameMap = Map.of(APPLICATION_RECEIVED.name(), templateId);
-        final Map<String, Object> templateVars = new HashMap<>();
-        templateVars.put(APPLICATION_RECEIVED.name(), templateId);
+    private static final Map<String, String> TEMPLATE_NAME_MAP = Map.of(APPLICATION_RECEIVED.name(),
+        UUID.randomUUID().toString(),
+        CASE_ISSUED_RESPONDENT_EMAIL.name(),
+        UUID.randomUUID().toString(),
+        CASE_ISSUED_CITIZEN_POST.name(),
+        UUID.randomUUID().toString());
 
-        final Map<String, String> uploadedDocuments = new HashMap<>();
-        uploadedDocuments.put("FinalDecisionNotice", templateId);
-        uploadedDocuments.put("FinalDecisionNotice1", "");
-        uploadedDocuments.put("DocumentAvailable1", "no");
+    private static final Map<String, String> DOCUMENT_TEMPLATE_VARS = Map.of("DocumentAvailable1", "yes",
+        "DocumentAvailable2", "no",
+        "CaseDocument1", UUID.randomUUID().toString(),
+        "CaseDocument2", "");
 
-        final NotificationRequest request = NotificationRequest.builder()
-            .destinationAddress(EMAIL_ADDRESS)
-            .template(TemplateName.APPLICATION_RECEIVED)
-            .templateVars(templateVars)
-            .hasFileAttachments(true)
-            .uploadedDocuments(uploadedDocuments)
-            .build();
-
-        final CICUser user = TestDataHelper.getUser();
-
-        when(idamService.retrieveUser(any())).thenReturn(user);
-        when(sendEmailResponse.getReference()).thenReturn(Optional.of(randomUUID().toString()));
-        when(sendEmailResponse.getNotificationId()).thenReturn(UUID.randomUUID());
-        when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
-        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
-
-        final byte[] sample = new byte[1];
-        when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), any(UUID.class))).thenReturn(ResponseEntity.ok(sample));
-
-        when(notificationClient.sendEmail(
-            eq(templateId),
-            eq(EMAIL_ADDRESS),
-            any(),
-            any()
-        )).thenReturn(sendEmailResponse);
-
-        when(pdfServiceClient.generateFromHtml(any(), any())).thenReturn(sample);
-
-        UploadResponse expectedResponse = uploadResponseWithSampleDocument();
-        when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
-
-        //When
-        notificationService.sendEmail(request, TEST_CASE_ID.toString(), Party.APPLICANT);
-
-        //Then
-        verify(notificationClient).sendEmail(
-            eq(templateId),
-            eq(EMAIL_ADDRESS),
-            any(),
-            any());
-
-        verify(sendEmailResponse, times(3)).getNotificationId();
-        verify(sendEmailResponse, times(2)).getReference();
-        verify(correspondenceRepository, times(1)).save(any());
+    private List<CaseworkerCICDocument> singleDocumentAttached() {
+        List<ListValue<CaseworkerCICDocument>> documentList = TestDataHelper.getCaseworkerCICDocumentList("test.docx");
+        return documentList.stream().map(ListValue::getValue).toList();
     }
 
-    @Test
-    void shouldInvokeNotificationClientToSendEmailWithNoDocumentFound() throws NotificationClientException {
-        //Given
-        final String templateId = UUID.randomUUID().toString();
-        final Map<String, String> templateNameMap = Map.of(APPLICATION_RECEIVED.name(), templateId);
-        final Map<String, Object> templateVars = new HashMap<>();
-        templateVars.put(APPLICATION_RECEIVED.name(), templateId);
+    @Nested
+    class WhenCitizenDashboardDisabled {
+        @BeforeEach
+        void setUpFlag() {
+            ReflectionTestUtils.setField(notificationService, "citizenDashboardEnabled", false);
+        }
 
-        final Map<String, String> uploadedDocuments = new HashMap<>();
-        uploadedDocuments.put("FinalDecisionNotice", templateId);
-        final NotificationRequest request = NotificationRequest.builder()
-            .destinationAddress(EMAIL_ADDRESS)
-            .template(TemplateName.APPLICATION_RECEIVED)
-            .templateVars(templateVars)
-            .hasFileAttachments(true)
-            .uploadedDocuments(uploadedDocuments)
-            .build();
+        @Nested
+        class SendEmailJourney {
+            @Test
+            void sendEmailSuccessfullyWithNoAttachments() throws NotificationClientException {
+                stubPdfGenerationAndUpload();
+                stubTemplate(APPLICATION_RECEIVED);
+                stubSuccessfulEmailSend();
 
-        final CICUser user = TestDataHelper.getUser();
+                NotificationRequest request = emailRequestBuilder().build();
+                notificationService.sendEmail(request, TEST_CASE_ID.toString(), Party.APPLICANT);
 
-        when(idamService.retrieveUser(any())).thenReturn(user);
-        when(sendEmailResponse.getReference()).thenReturn(Optional.of(randomUUID().toString()));
-        when(sendEmailResponse.getNotificationId()).thenReturn(UUID.randomUUID());
-        when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
-        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
-        when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), any(UUID.class))).thenReturn(ResponseEntity.ok(null));
+                verify(notificationClient).sendEmail(eq(TEMPLATE_ID), eq(EMAIL_ADDRESS), any(), anyString());
+                verify(correspondenceRepository).save(any());
+            }
 
-        when(notificationClient.sendEmail(
-            eq(templateId),
-            eq(EMAIL_ADDRESS),
-            any(),
-            any()
-        )).thenReturn(sendEmailResponse);
+            @Test
+            void attachesDocumentInlineWhenUnderTwoMegabytes() throws NotificationClientException {
+                stubAuth();
+                stubPdfGenerationAndUpload();
+                stubTemplate(CASE_ISSUED_RESPONDENT_EMAIL);
+                stubSuccessfulEmailSend();
 
-        final byte[] sample = new byte[1];
+                List<CaseworkerCICDocument> attachedDocument = singleDocumentAttached();
+                String documentUuid = DocumentUtil.getDocumentUuidFromCaseworkerCICDocument(attachedDocument.getFirst());
+                stubDocumentBinary(documentUuid, SMALL_FILE);
 
-        when(pdfServiceClient.generateFromHtml(any(), any())).thenReturn(sample);
+                Map<String, String> templateDocumentVars = new HashMap<>();
+                templateDocumentVars.put("DocumentAvailable1", "yes");
+                templateDocumentVars.put("CaseDocument1", documentUuid);
 
-        UploadResponse expectedResponse = uploadResponseWithSampleDocument();
-        when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
+                NotificationRequest request = emailRequestBuilder()
+                    .template(CASE_ISSUED_RESPONDENT_EMAIL)
+                    .hasFileAttachments(true)
+                    .templateDocumentVars(templateDocumentVars)
+                    .build();
 
-        //When
-        notificationService.sendEmail(request, TEST_CASE_ID.toString(), null);
+                notificationService.sendEmail(request, attachedDocument, TEST_CASE_ID.toString(), Party.RESPONDENT);
 
-        //Then
-        verify(notificationClient).sendEmail(
-            eq(templateId),
-            eq(EMAIL_ADDRESS),
-            any(),
-            any());
+                verify(notificationClient).sendEmail(eq(TEMPLATE_ID), eq(EMAIL_ADDRESS), templateVarsArgCaptor.capture(), anyString());
+                assertThat(templateVarsArgCaptor.getValue()).containsEntry("DocumentAvailable1", "yes");
+                assertThat(templateVarsArgCaptor.getValue()).extracting("CaseDocument1").isInstanceOf(JSONObject.class);
+            }
 
-        verify(sendEmailResponse, times(3)).getNotificationId();
-        verify(sendEmailResponse, times(2)).getReference();
+            @Test
+            void addsDocumentDetailsWhenOverTwoMegabytes() throws NotificationClientException {
+                stubAuth();
+                stubPdfGenerationAndUpload();
+                stubTemplate(CASE_ISSUED_RESPONDENT_EMAIL);
+                stubSuccessfulEmailSend();
 
+                List<CaseworkerCICDocument> attachedDocs = singleDocumentAttached();
+                String documentUuid = DocumentUtil.getDocumentUuidFromCaseworkerCICDocument(attachedDocs.getFirst());
+                stubDocumentBinary(documentUuid, LARGE_FILE);
+
+                Map<String, String> templateDocumentVars = new HashMap<>();
+                templateDocumentVars.put("DocumentAvailable1", "yes");
+                templateDocumentVars.put("CaseDocument1", documentUuid);
+
+                NotificationRequest request = emailRequestBuilder()
+                    .template(CASE_ISSUED_RESPONDENT_EMAIL)
+                    .hasFileAttachments(true)
+                    .templateDocumentVars(templateDocumentVars)
+                    .build();
+
+                notificationService.sendEmail(request, attachedDocs, TEST_CASE_ID.toString(), Party.RESPONDENT);
+
+                verify(notificationClient).sendEmail(eq(TEMPLATE_ID), eq(EMAIL_ADDRESS), templateVarsArgCaptor.capture(), anyString());
+                String detail = templateVarsArgCaptor.getValue().get("CaseDocument1").toString();
+                assertThat(detail).contains("Filename:")
+                    .contains("Description:")
+                    .contains("Upload Date:");
+            }
+
+            @Test
+            void throwsWhenDocumentNotFoundInSelectedDocumentsOverTwoMegabytes() throws NotificationClientException {
+                stubAuth();
+                String missingDocumentUuid = UUID.randomUUID().toString();
+                stubDocumentBinary(missingDocumentUuid, LARGE_FILE);
+
+                Map<String, String> templateDocumentVars = new HashMap<>();
+                templateDocumentVars.put("DocumentAvailable1", "yes");
+                templateDocumentVars.put("CaseDocument1", missingDocumentUuid);
+
+                NotificationRequest request = emailRequestBuilder()
+                    .template(CASE_ISSUED_RESPONDENT_EMAIL)
+                    .hasFileAttachments(true)
+                    .templateDocumentVars(templateDocumentVars)
+                    .build();
+                List<CaseworkerCICDocument> attachedDocs = singleDocumentAttached();
+
+                assertThatThrownBy(() -> notificationService.sendEmail(request, attachedDocs, TEST_CASE_ID.toString(), null))
+                    .isInstanceOf(NotificationException.class)
+                    .hasMessageContaining("Unable to find document details for document id: " + missingDocumentUuid);
+            }
+
+            @Test
+            void putsEmptyStringWhenDocumentIdIsBlank() throws NotificationClientException {
+                stubPdfGenerationAndUpload();
+                stubTemplate(APPLICATION_RECEIVED);
+                stubSuccessfulEmailSend();
+
+                Map<String, String> templateDocumentVars = new HashMap<>();
+                templateDocumentVars.put("CaseDocument1", "");
+                templateDocumentVars.put("DocumentAvailable1", "no");
+
+                NotificationRequest request = emailRequestBuilder()
+                    .templateDocumentVars(templateDocumentVars)
+                    .hasFileAttachments(true)
+                    .build();
+
+                notificationService.sendEmail(request, TEST_CASE_ID.toString(), Party.APPLICANT);
+
+                verify(notificationClient).sendEmail(eq(TEMPLATE_ID), eq(EMAIL_ADDRESS), templateVarsArgCaptor.capture(), anyString());
+                assertThat(templateVarsArgCaptor.getValue()).containsEntry("CaseDocument1", "");
+                verify(caseDocumentClientAPI, never()).getDocumentBinary(any(), any(), any());
+            }
+
+            @Test
+            void putsEmptyStringWhenBinaryIsNull() throws NotificationClientException {
+                stubAuth();
+                stubPdfGenerationAndUpload();
+                stubTemplate(APPLICATION_RECEIVED);
+                stubSuccessfulEmailSend();
+
+                String documentUuid = UUID.randomUUID().toString();
+                when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), eq(UUID.fromString(documentUuid))))
+                    .thenReturn(ResponseEntity.ok(null));
+
+                Map<String, String> templateDocumentVars = new HashMap<>();
+                templateDocumentVars.put("DocumentAvailable1", "yes");
+                templateDocumentVars.put("CaseDocument1", documentUuid);
+
+                NotificationRequest request = emailRequestBuilder()
+                    .hasFileAttachments(true)
+                    .templateDocumentVars(templateDocumentVars)
+                    .build();
+                notificationService.sendEmail(request, TEST_CASE_ID.toString(), Party.APPLICANT);
+
+                verify(notificationClient).sendEmail(eq(TEMPLATE_ID), eq(EMAIL_ADDRESS), templateVarsArgCaptor.capture(), anyString());
+                assertThat(templateVarsArgCaptor.getValue()).containsEntry("CaseDocument1", "");
+            }
+
+            @Test
+            void throwsWhenDocumentBinaryFetchFails() {
+                stubAuth();
+                String documentUuid = UUID.randomUUID().toString();
+                when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), eq(UUID.fromString(documentUuid))))
+                    .thenReturn(ResponseEntity.notFound().build());
+
+                Map<String, String> templateDocumentVars = new HashMap<>();
+                templateDocumentVars.put("DocumentAvailable1", "yes");
+                templateDocumentVars.put("CaseDocument1", documentUuid);
+
+                NotificationRequest request = emailRequestBuilder()
+                    .hasFileAttachments(true)
+                    .templateDocumentVars(templateDocumentVars)
+                    .build();
+
+                assertThatThrownBy(() -> notificationService.sendEmail(request, TEST_CASE_ID.toString(), null))
+                    .isInstanceOf(NotificationException.class)
+                    .hasMessageContaining("Failed to get document binary for id " + documentUuid);
+            }
+
+            @Test
+            void wrapsNotificationClientExceptionOnSendFailure()  throws NotificationClientException {
+                stubTemplate(APPLICATION_RECEIVED);
+                doThrow(new NotificationClientException("some message"))
+                    .when(notificationClient).sendEmail(eq(TEMPLATE_ID), eq(EMAIL_ADDRESS), any(), anyString());
+
+                NotificationRequest request = emailRequestBuilder().build();
+
+                assertThatThrownBy(() -> notificationService.sendEmail(request, TEST_CASE_ID.toString(), null))
+                    .isInstanceOf(NotificationException.class)
+                    .hasMessageContaining("some message");
+            }
+
+            @Test
+            void wrapsRestClientExceptionWhenCorrespondenceUploadFails() throws NotificationClientException {
+                stubTemplate(APPLICATION_RECEIVED);
+                when(notificationClient.sendEmail(eq(TEMPLATE_ID), eq(EMAIL_ADDRESS), any(),anyString())).thenReturn(sendEmailResponse);
+                doThrow(new RestClientException("upload failed"))
+                    .when(caseDocumentClientAPI).uploadDocuments(any(), any(), any());
+
+                NotificationRequest request = emailRequestBuilder().build();
+
+                assertThatThrownBy(() -> notificationService.sendEmail(request, TEST_CASE_ID.toString(), null))
+                    .isInstanceOf(RestClientException.class)
+                    .hasMessageContaining("upload failed");
+            }
+
+            @Test
+            void wrapsFeignExceptionOnSendFailure() throws NotificationClientException {
+                stubTemplate(APPLICATION_RECEIVED);
+                doThrow(mock(FeignException.class))
+                    .when(notificationClient).sendEmail(eq(TEMPLATE_ID), eq(EMAIL_ADDRESS), any(), anyString());
+
+                NotificationRequest request = emailRequestBuilder().build();
+
+                assertThatThrownBy(() -> notificationService.sendEmail(request, TEST_CASE_ID.toString(), null))
+                    .isInstanceOf(NotificationException.class);
+            }
+
+            @Test
+            void savesCorrespondenceWithCorrectPartyAndDefaultSender() throws NotificationClientException {
+                stubPdfGenerationAndUpload();
+                stubTemplate(APPLICATION_RECEIVED);
+                stubSuccessfulEmailSend();
+
+                NotificationRequest request = emailRequestBuilder().build();
+                notificationService.sendEmail(request, TEST_CASE_ID.toString(), Party.APPLICANT);
+
+                verify(correspondenceRepository).save(correspondenceCaptor.capture());
+                CorrespondenceEntity savedCorrespondence = correspondenceCaptor.getValue();
+                assertThat(savedCorrespondence.getReceivingParty()).isEqualTo(Party.APPLICANT);
+                assertThat(savedCorrespondence.getSentFrom()).isEqualTo("Criminal Injuries Compensation Tribunal");
+                assertThat(savedCorrespondence.getSentTo()).isEqualTo(EMAIL_ADDRESS);
+                assertThat(savedCorrespondence.getCorrespondenceType()).isEqualTo("Email");
+            }
+
+            @Test
+            void savesCorrespondenceWithResponseSentFromEmail() throws NotificationClientException {
+                stubPdfGenerationAndUpload();
+                stubTemplate(APPLICATION_RECEIVED);
+                stubSuccessfulEmailSend();
+                when(sendEmailResponse.getFromEmail()).thenReturn(Optional.of("responseEmail@example.com"));
+
+                NotificationRequest request = emailRequestBuilder().build();
+                notificationService.sendEmail(request, TEST_CASE_ID.toString(), Party.APPLICANT);
+
+                verify(correspondenceRepository).save(correspondenceCaptor.capture());
+                assertThat(correspondenceCaptor.getValue().getSentFrom()).isEqualTo("responseEmail@example.com");
+            }
+
+            @Test
+            void wrapsIOExceptionWhenReadingResources() throws NotificationClientException {
+                try (MockedStatic<IOUtils> mockedIoUtils = mockStatic(IOUtils.class)) {
+                    stubTemplate(APPLICATION_RECEIVED);
+                    when(notificationClient.sendEmail(eq(TEMPLATE_ID), eq(EMAIL_ADDRESS), any(),anyString())).thenReturn(sendEmailResponse);
+                    mockedIoUtils.when(() -> IOUtils.toByteArray((InputStream) any()))
+                        .thenThrow(new IOException("failed to read resource"));
+
+                    NotificationRequest request = emailRequestBuilder().build();
+
+                    assertThatThrownBy(() -> notificationService.sendEmail(request, TEST_CASE_ID.toString(), Party.APPLICANT))
+                        .isInstanceOf(NotificationException.class)
+                        .hasMessageContaining("failed to read resource");
+                }
+            }
+        }
+
+        @Nested
+        class SendLetterJourney {
+            @Test
+            void sendsLetterSuccessfully() throws NotificationClientException {
+                stubPdfGenerationAndUpload();
+                stubTemplate(CASE_ISSUED_CITIZEN_POST);
+                stubSuccessfulLetterSend();
+
+                NotificationRequest request = letterRequestBuilder().build();
+                notificationService.sendLetter(request, TEST_CASE_ID.toString());
+
+                verify(notificationClient).sendLetter(eq(TEMPLATE_ID), any(), anyString());
+                verify(correspondenceRepository).save(any());
+            }
+
+            @Test
+            void shouldFallbackToDestinationAddressWhenNoAddressLinesPresent() throws NotificationClientException {
+                stubPdfGenerationAndUpload();
+                stubTemplate(CASE_ISSUED_CITIZEN_POST);
+                stubSuccessfulLetterSend();
+
+                NotificationRequest request = NotificationRequest.builder()
+                    .destinationAddress("21 Jump Street")
+                    .template(CASE_ISSUED_CITIZEN_POST)
+                    .templateVars(new HashMap<>())
+                    .build();
+
+                notificationService.sendLetter(request, TEST_CASE_ID.toString());
+                verify(correspondenceRepository).save(correspondenceCaptor.capture());
+                assertThat(correspondenceCaptor.getValue().getSentTo()).isEqualTo("21 Jump Street");
+            }
+
+            @Test
+            void shouldSaveAddressWithSeparatedCommas() throws NotificationClientException {
+                stubPdfGenerationAndUpload();
+                stubTemplate(CASE_ISSUED_CITIZEN_POST);
+                stubSuccessfulLetterSend();
+
+                Map<String, Object> templateVars = new HashMap<>();
+                templateVars.put("address_line_1", "10 Downing Street");
+                templateVars.put("address_line_2", "");
+                templateVars.put("address_line_4", "London");
+                templateVars.put("address_line_7", "SW1A 2AA");
+
+                NotificationRequest request = NotificationRequest.builder()
+                    .template(CASE_ISSUED_CITIZEN_POST)
+                    .templateVars(templateVars)
+                    .build();
+
+                notificationService.sendLetter(request, TEST_CASE_ID.toString());
+                verify(correspondenceRepository).save(correspondenceCaptor.capture());
+                assertThat(correspondenceCaptor.getValue().getSentTo()).isEqualTo("10 Downing Street, London, SW1A 2AA");
+            }
+
+            @Test
+            void throwsWhenNoAddressAvailable() throws NotificationClientException {
+                stubTemplate(CASE_ISSUED_CITIZEN_POST);
+
+                NotificationRequest request = letterRequestBuilder()
+                    .template(CASE_ISSUED_CITIZEN_POST)
+                    .templateVars(new HashMap<>())
+                    .build();
+
+                assertThatThrownBy(() -> notificationService.sendLetter(request, TEST_CASE_ID.toString()))
+                    .isInstanceOf(NotificationException.class)
+                    .hasMessageContaining("Recipient address");
+            }
+
+            @Test
+            void wrapsNotificationClientExceptionOnSendFailure() throws NotificationClientException {
+                stubTemplate(CASE_ISSUED_CITIZEN_POST);
+                doThrow(new NotificationClientException("some message"))
+                    .when(notificationClient).sendLetter(eq(TEMPLATE_ID), any(), anyString());
+
+                NotificationRequest request = letterRequestBuilder().build();
+
+                assertThatThrownBy(() -> notificationService.sendLetter(request, TEST_CASE_ID.toString()))
+                    .isInstanceOf(NotificationException.class)
+                    .hasMessageContaining("some message");
+            }
+
+            @Test
+            void wrapsIOExceptionOnLetterCorrespondence() throws NotificationClientException {
+                try (MockedStatic<IOUtils> mockedIOUtils = mockStatic(IOUtils.class)) {
+                    stubTemplate(CASE_ISSUED_CITIZEN_POST);
+                    when(sendLetterResponse.getBody()).thenReturn("test body");
+                    when(notificationClient.sendLetter(eq(TEMPLATE_ID), any(), anyString())).thenReturn(sendLetterResponse);
+
+                    mockedIOUtils.when(() -> IOUtils.toByteArray((InputStream) any()))
+                        .thenThrow(new IOException("failed to read resource"));
+
+                    NotificationRequest request = letterRequestBuilder().build();
+
+                    assertThatThrownBy(() -> notificationService.sendLetter(request, TEST_CASE_ID.toString()))
+                        .isInstanceOf(NotificationException.class)
+                        .hasMessageContaining("failed to read resource");
+                }
+            }
+
+            @Test
+            void wrapsFeignExceptionWhenCorrespondenceUploadFails() throws NotificationClientException {
+                stubTemplate(CASE_ISSUED_CITIZEN_POST);
+                when(sendLetterResponse.getBody()).thenReturn("test body");
+                when(notificationClient.sendLetter(eq(TEMPLATE_ID), any(), anyString())).thenReturn(sendLetterResponse);
+
+                doThrow(mock(FeignException.class))
+                    .when(caseDocumentClientAPI).uploadDocuments(any(), any(), any());
+
+                NotificationRequest request = letterRequestBuilder().build();
+
+                assertThatThrownBy(() -> notificationService.sendLetter(request, TEST_CASE_ID.toString()))
+                    .isInstanceOf(NotificationException.class);
+            }
+        }
     }
 
-    @Test
-    void shouldInvokeNotificationClientToSendEmailWithSenderEmailAndWithNoDocumentFound() throws NotificationClientException {
-        //Given
-        final String templateId = UUID.randomUUID().toString();
-        final Map<String, String> templateNameMap = Map.of(APPLICATION_RECEIVED.name(), templateId);
-        final Map<String, Object> templateVars = new HashMap<>();
-        templateVars.put(APPLICATION_RECEIVED.name(), templateId);
+    @Nested
+    class WhenCitizenDashboardEnabled {
+        @BeforeEach
+        void setDashboardFlag() {
+            ReflectionTestUtils.setField(notificationService, "citizenDashboardEnabled", true);
+        }
 
-        final Map<String, String> uploadedDocuments = new HashMap<>();
-        uploadedDocuments.put("FinalDecisionNotice", templateId);
-        final NotificationRequest request = NotificationRequest.builder()
-            .destinationAddress(EMAIL_ADDRESS)
-            .template(TemplateName.APPLICATION_RECEIVED)
-            .templateVars(templateVars)
-            .hasFileAttachments(true)
-            .uploadedDocuments(uploadedDocuments)
-            .build();
+        @Nested
+        class SendEmailJourney {
+            @Test
+            void addSimpleDocumentDetailsAlways() throws NotificationClientException {
+                stubAuth();
+                stubPdfGenerationAndUpload();
+                stubTemplate(CASE_ISSUED_CITIZEN_EMAIL);
+                stubSuccessfulEmailSend();
 
-        final CICUser user = TestDataHelper.getUser();
+                List<CaseworkerCICDocument> attachedDocument = singleDocumentAttached();
+                String documentUuid = DocumentUtil.getDocumentUuidFromCaseworkerCICDocument(attachedDocument.getFirst());
+                stubDocumentBinary(documentUuid, SMALL_FILE);
 
-        when(idamService.retrieveUser(any())).thenReturn(user);
-        when(sendEmailResponse.getReference()).thenReturn(Optional.of(randomUUID().toString()));
-        when(sendEmailResponse.getNotificationId()).thenReturn(UUID.randomUUID());
-        when(sendEmailResponse.getFromEmail()).thenReturn("testSender@test.com".describeConstable());
-        when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
-        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
-        when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), any(UUID.class))).thenReturn(ResponseEntity.ok(null));
+                Map<String, String> templateDocumentVars = new HashMap<>();
+                templateDocumentVars.put("DocumentAvailable1", "yes");
+                templateDocumentVars.put("CaseDocument1", documentUuid);
 
-        when(notificationClient.sendEmail(
-            eq(templateId),
-            eq(EMAIL_ADDRESS),
-            any(),
-            any()
-        )).thenReturn(sendEmailResponse);
+                NotificationRequest request = emailRequestBuilder()
+                    .template(CASE_ISSUED_CITIZEN_EMAIL)
+                    .hasFileAttachments(true)
+                    .templateDocumentVars(templateDocumentVars)
+                    .build();
 
-        final byte[] sample = new byte[1];
+                notificationService.sendEmail(request, attachedDocument, TEST_CASE_ID.toString(), Party.SUBJECT);
 
-        when(pdfServiceClient.generateFromHtml(any(), any())).thenReturn(sample);
+                verify(notificationClient).sendEmail(eq(TEMPLATE_ID), eq(EMAIL_ADDRESS), templateVarsArgCaptor.capture(), anyString());
+                Object details = templateVarsArgCaptor.getValue().get("CaseDocument1");
+                assertThat(details).isNotInstanceOf(JSONObject.class)
+                    .isInstanceOf(String.class);
+                assertThat(details.toString()).contains("Filename:").doesNotContain("Upload Date:");
+            }
 
-        final Document.DocumentLink documentLink = new Document.DocumentLink();
-        documentLink.href = "dmstore-url/doc-id";
-        final Document.DocumentLink binaryDocumentLink = new Document.DocumentLink();
-        binaryDocumentLink.href = "dmstore-url/doc-id/binary";
-        final Document.Links links = new Document.Links();
-        links.self = documentLink;
-        links.binary = binaryDocumentLink;
+            @Test
+            void addDescriptionWhenDocumentHasEmailContent() throws NotificationClientException {
+                stubAuth();
+                stubPdfGenerationAndUpload();
+                stubTemplate(CASE_ISSUED_CITIZEN_EMAIL);
+                stubSuccessfulEmailSend();
 
-        final Document correspondencePDF = new Document();
-        correspondencePDF.setLinks(links);
+                List<CaseworkerCICDocument> attachedDocument = singleDocumentAttached();
+                String documentUuid = DocumentUtil.getDocumentUuidFromCaseworkerCICDocument(attachedDocument.getFirst());
+                stubDocumentBinary(documentUuid, SMALL_FILE);
 
-        final LocalDateTime testSentOn = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-y-HH-mm");
-        String filename = APPLICATION_RECEIVED.name() + "_" + TEST_CASE_ID + "_" + testSentOn.format(formatter) + ".pdf";
-        correspondencePDF.setOriginalDocumentName(filename);
+                Map<String, String> templateDocumentVars = new HashMap<>();
+                templateDocumentVars.put("DocumentAvailable1", "yes");
+                templateDocumentVars.put("CaseDocument1", documentUuid);
 
-        UploadResponse expectedResponse = new UploadResponse();
-        expectedResponse.setDocuments(singletonList(correspondencePDF));
+                NotificationRequest request = emailRequestBuilder()
+                    .template(CASE_ISSUED_CITIZEN_EMAIL)
+                    .hasFileAttachments(true)
+                    .templateDocumentVars(templateDocumentVars)
+                    .build();
 
-        when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
+                notificationService.sendEmail(request, attachedDocument, TEST_CASE_ID.toString(), Party.SUBJECT);
 
-        //When
-        notificationService.sendEmail(request, TEST_CASE_ID.toString(), null);
-
-        //Then
-        verify(notificationClient).sendEmail(
-            eq(templateId),
-            eq(EMAIL_ADDRESS),
-            any(),
-            any());
-
-        verify(sendEmailResponse, times(2)).getFromEmail();
-        verify(sendEmailResponse, times(3)).getNotificationId();
-        verify(sendEmailResponse, times(2)).getReference();
-
+                verify(notificationClient).sendEmail(eq(TEMPLATE_ID), eq(EMAIL_ADDRESS), templateVarsArgCaptor.capture(), anyString());
+                assertThat(templateVarsArgCaptor.getValue().get("CaseDocument1").toString()).contains("Description:");
+            }
+        }
     }
 
-    @Test
-    void shouldInvokeNotificationClientToSendLetter() throws NotificationClientException {
-        //Given
-        final String templateId = UUID.randomUUID().toString();
-        final Map<String, String> templateVars = new HashMap<>(Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId));
-        templateVars.put("address_line_1", "Buckingham Palace");
-        templateVars.put("address_line_4", "London");
-        templateVars.put("address_line_5", "United Kingdom");
-        templateVars.put("address_line_7", "SW1A 1AA");
+    //setup stub methods
+    private void stubAuth() {
+        when(idamService.retrieveUser(anyString())).thenReturn(TestDataHelper.getUser());
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+    }
 
-        final NotificationRequest request = NotificationRequest.builder()
-            .template(CASE_ISSUED_CITIZEN_POST)
-            .templateVars(new HashMap<>(templateVars))
-            .build();
+    private void stubPdfGenerationAndUpload() {
+        when(pdfServiceClient.generateFromHtml(any(), any())).thenReturn(SMALL_FILE);
+        when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(uploadResponseWithSampleDocument());
+    }
 
-        when(sendLetterResponse.getReference()).thenReturn(Optional.of(randomUUID().toString()));
+    private void stubTemplate(TemplateName templateName) {
+        when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(Map.of(templateName.name(), TEMPLATE_ID));
+    }
+
+    private void stubSuccessfulEmailSend() throws NotificationClientException {
+        when(sendEmailResponse.getReference()).thenReturn(Optional.of(randomUUID().toString()));
+        when(sendEmailResponse.getNotificationId()).thenReturn(UUID.randomUUID());
+        when(notificationClient.sendEmail(eq(TEMPLATE_ID), eq(EMAIL_ADDRESS), any(),anyString())).thenReturn(sendEmailResponse);
+    }
+
+    private void stubSuccessfulLetterSend() throws NotificationClientException {
+        when(sendLetterResponse.getReference()).thenReturn(Optional.of(UUID.randomUUID().toString()));
         when(sendLetterResponse.getNotificationId()).thenReturn(UUID.randomUUID());
-        when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId));
-
-        when(notificationClient.sendLetter(
-            eq(templateId),
-            any(),
-            any()
-        )).thenReturn(sendLetterResponse);
-
-        final byte[] sample = new byte[1];
-
-        when(pdfServiceClient.generateFromHtml(any(), any())).thenReturn(sample);
-
-        UploadResponse expectedResponse = uploadResponseWithSampleDocument();
-        when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
-
-        //When
-        notificationService.sendLetter(request, TEST_CASE_ID.toString());
-
-        //Then
-        verify(notificationClient).sendLetter(
-            eq(templateId),
-            any(),
-            any());
-
-        verify(sendLetterResponse, times(3)).getNotificationId();
-        verify(sendLetterResponse, times(2)).getReference();
+        when(notificationClient.sendLetter(eq(TEMPLATE_ID), any(), anyString())).thenReturn(sendLetterResponse);
     }
 
-    @Test
-    void shouldThrowNotificationExceptionWhenClientFailsToSendEmail()
-        throws NotificationClientException {
+    private void stubDocumentBinary(String documentUuid, byte[] content) {
+        when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), eq(UUID.fromString(documentUuid))))
+            .thenReturn(ResponseEntity.ok(content));
+    }
 
-        //Given
-        final String templateId = UUID.randomUUID().toString();
-        final Map<String, String> templateNameMap = Map.of(APPLICATION_RECEIVED.name(), templateId);
-        final Map<String, Object> templateVars = new HashMap<>();
-        templateVars.put(APPLICATION_RECEIVED.name(), templateId);
-
-        final NotificationRequest request = NotificationRequest.builder()
+    private NotificationRequest.NotificationRequestBuilder emailRequestBuilder() {
+        return NotificationRequest.builder()
             .destinationAddress(EMAIL_ADDRESS)
-            .template(TemplateName.APPLICATION_RECEIVED)
-            .templateVars(templateVars)
+            .template(APPLICATION_RECEIVED)
+            .templateVars(new HashMap<>(BASE_TEMPLATE_VARS))
             .hasFileAttachments(false)
-            .uploadedDocuments(new HashMap<>())
-            .build();
-
-        doThrow(new NotificationClientException("some message"))
-            .when(notificationClient).sendEmail(
-                eq(templateId),
-                eq(EMAIL_ADDRESS),
-                any(),
-                any());
-
-        when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
-
-        String testCaseRef = TEST_CASE_ID.toString();
-
-        //When&Then
-        assertThatThrownBy(() -> notificationService.sendEmail(request, testCaseRef, null))
-            .isInstanceOf(NotificationException.class)
-            .hasMessageContaining("some message");
-
-        verify(notificationClient).sendEmail(
-            eq(templateId),
-            eq(EMAIL_ADDRESS),
-            any(),
-            any());
+            .templateDocumentVars(new HashMap<>());
     }
 
-    @Test
-    void shouldThrowNotificationClientExceptionWhenIssueWithAttachDocFailsToSendEmail()
-        throws NotificationClientException {
-
-        //Given
-        final String templateId = UUID.randomUUID().toString();
-        final Map<String, String> templateNameMap = Map.of(APPLICATION_RECEIVED.name(), templateId);
-        final Map<String, Object> templateVars = new HashMap<>();
-        templateVars.put(APPLICATION_RECEIVED.name(), templateId);
-
-        final NotificationRequest request = NotificationRequest.builder()
-            .destinationAddress(EMAIL_ADDRESS)
-            .template(TemplateName.APPLICATION_RECEIVED)
-            .templateVars(templateVars)
-            .hasFileAttachments(false)
-            .uploadedDocuments(new HashMap<>())
-            .build();
-
-        doThrow(new NotificationException(new IOException()))
-            .when(notificationClient).sendEmail(
-                eq(templateId),
-                eq(EMAIL_ADDRESS),
-                any(),
-                any());
-
-        when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
-
-        String testCaseRef = TEST_CASE_ID.toString();
-
-        assertThatThrownBy(() -> notificationService.sendEmail(request, testCaseRef, null))
-            .isInstanceOf(NotificationException.class)
-            .satisfies(e -> assertAll(
-                () -> assertInstanceOf(IOException.class, e.getCause())
-            ));
-
-        verify(notificationClient).sendEmail(
-            eq(templateId),
-            eq(EMAIL_ADDRESS),
-            any(),
-            any());
-    }
-
-    @Test
-    void shouldThrowNotificationExceptionWhileFileUploadToSendEmail() throws NotificationClientException {
-
-        //Given
-        final String templateId = UUID.randomUUID().toString();
-        final Map<String, Object> templateVars = new HashMap<>();
-        templateVars.put(APPLICATION_RECEIVED.name(), templateId);
-
-        final Map<String, String> uploadedDocuments = new HashMap<>();
-        uploadedDocuments.put("FinalDecisionNotice", templateId);
-        uploadedDocuments.put("FinalDecisionNotice1", "");
-        uploadedDocuments.put("DocumentAvailable1", "no");
-
-        final NotificationRequest request = NotificationRequest.builder()
-            .destinationAddress(EMAIL_ADDRESS)
-            .template(TemplateName.APPLICATION_RECEIVED)
-            .templateVars(templateVars)
-            .hasFileAttachments(true)
-            .uploadedDocuments(uploadedDocuments)
-            .build();
-
-        final byte[] sample = new byte[1];
-        final CICUser user = TestDataHelper.getUser();
-
-        when(idamService.retrieveUser(any())).thenReturn(user);
-        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
-        when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), any())).thenReturn(ResponseEntity.ok(sample));
-
-        final byte[] newUploadDocument = caseDocumentClientAPI.getDocumentBinary(anyString(),anyString(),any()).getBody();
-        assertNotNull(newUploadDocument);
-        mockStatic(NotificationClient.class);
-        when(NotificationClient.prepareUpload(newUploadDocument)).thenThrow(NotificationClientException.class);
-
-        String testCaseRef = TEST_CASE_ID.toString();
-
-        assertThatThrownBy(() -> notificationService.sendEmail(request, testCaseRef, null))
-            .isInstanceOf(NotificationException.class)
-            .hasMessageContaining("uk.gov.service.notify.NotificationClientException");
-    }
-
-    @Test
-    void shouldThrowNotificationExceptionWhenClientFailsToSendLetter()
-        throws NotificationClientException {
-        //Given
-        final String templateId = UUID.randomUUID().toString();
-        final Map<String, String> templateVars = Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId);
-        final NotificationRequest request = NotificationRequest.builder()
+    private NotificationRequest.NotificationRequestBuilder letterRequestBuilder() {
+        Map<String, Object> letterVars = new HashMap<>();
+        letterVars.put("address_line_1", "Buckingham Palace");
+        letterVars.put("address_line_4", "London");
+        letterVars.put("address_line_7", "SW1A 1AA");
+        return NotificationRequest.builder()
             .template(CASE_ISSUED_CITIZEN_POST)
-            .templateVars(Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId))
-            .build();
-
-        doThrow(new NotificationClientException("some message"))
-            .when(notificationClient).sendLetter(
-                eq(templateId),
-                any(),
-                any());
-
-        when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateVars);
-
-        String testCaseRef = TEST_CASE_ID.toString();
-
-        assertThatThrownBy(() -> notificationService.sendLetter(request, testCaseRef))
-            .isInstanceOf(NotificationException.class)
-            .hasMessageContaining("some message");
-
-        verify(notificationClient).sendLetter(
-            eq(templateId),
-            any(),
-            any());
-    }
-
-    @Test
-    void shouldThrowRestClientExceptionWhenClientFailsToGetPDFOfCorrespondence()
-        throws RestClientException, NotificationClientException {
-        //Given
-        final String templateId = UUID.randomUUID().toString();
-        final Map<String, String> templateNameMap = Map.of(APPLICATION_RECEIVED.name(), templateId);
-        final Map<String, Object> templateVars = new HashMap<>();
-        templateVars.put(APPLICATION_RECEIVED.name(), templateId);
-
-        final Map<String, String> uploadedDocuments = new HashMap<>();
-        uploadedDocuments.put("FinalDecisionNotice", templateId);
-        uploadedDocuments.put("FinalDecisionNotice1", "");
-        uploadedDocuments.put("DocumentAvailable1", "no");
-
-        final NotificationRequest request = NotificationRequest.builder()
-            .destinationAddress(EMAIL_ADDRESS)
-            .template(TemplateName.APPLICATION_RECEIVED)
-            .templateVars(templateVars)
-            .hasFileAttachments(true)
-            .uploadedDocuments(uploadedDocuments)
-            .build();
-
-        final CICUser user = TestDataHelper.getUser();
-
-        //When&Then
-        when(idamService.retrieveUser(any())).thenReturn(user);
-        when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
-        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
-
-        final byte[] sample = new byte[1];
-        when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), any(UUID.class))).thenReturn(ResponseEntity.ok(sample));
-
-        when(notificationClient.sendEmail(
-            eq(templateId),
-            eq(EMAIL_ADDRESS),
-            any(),
-            any()
-        )).thenReturn(sendEmailResponse);
-
-        when(pdfServiceClient.generateFromHtml(any(), any())).thenReturn(sample);
-
-        doThrow(new RestClientException("some message"))
-            .when(caseDocumentClientAPI).uploadDocuments(
-                any(),
-                any(),
-                any());
-
-        String testCaseRef = TEST_CASE_ID.toString();
-
-        assertThatThrownBy(() -> notificationService.sendEmail(request, testCaseRef, null))
-            .isInstanceOf(RestClientException.class)
-            .hasMessageContaining("some message");
-
-        verify(notificationClient).sendEmail(
-            eq(templateId),
-            eq(EMAIL_ADDRESS),
-            any(),
-            any());
-    }
-
-    @Test
-    void shouldThrowIOExceptionWhenServiceFailsToGetPDFByteArrayOfEmailCorrespondence()
-        throws NotificationClientException {
-        try (MockedStatic<IOUtils> mockedIoUtils = mockStatic(IOUtils.class)) {
-            //Given
-            final String templateId = UUID.randomUUID().toString();
-            final Map<String, String> templateNameMap = Map.of(APPLICATION_RECEIVED.name(), templateId);
-            final Map<String, Object> templateVars = new HashMap<>();
-            templateVars.put(APPLICATION_RECEIVED.name(), templateId);
-
-            final NotificationRequest request = NotificationRequest.builder()
-                .destinationAddress(EMAIL_ADDRESS)
-                .template(TemplateName.APPLICATION_RECEIVED)
-                .templateVars(templateVars)
-                .hasFileAttachments(false)
-                .build();
-
-            //When&Then
-            when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
-
-            when(notificationClient.sendEmail(
-                eq(templateId),
-                eq(EMAIL_ADDRESS),
-                any(),
-                any()
-            )).thenReturn(sendEmailResponse);
-
-            mockedIoUtils.when(() -> IOUtils.toByteArray((java.io.InputStream) any()))
-                .thenThrow(new IOException("some message"));
-
-            String testCaseRef = TEST_CASE_ID.toString();
-            String testTemplateName = APPLICATION_RECEIVED.name();
-            String testDestinationAddress = request.getDestinationAddress();
-
-            assertThatThrownBy(() -> notificationService.saveEmailCorrespondence(testTemplateName,
-                sendEmailResponse, testDestinationAddress, testCaseRef, null))
-                .isInstanceOf(IOException.class)
-                .hasMessageContaining("some message");
-
-            assertThatThrownBy(() -> notificationService.sendEmail(request, testCaseRef, null))
-                .isInstanceOf(NotificationException.class)
-                .hasMessageContaining("some message");
-
-            verify(notificationClient).sendEmail(
-                eq(templateId),
-                eq(EMAIL_ADDRESS),
-                any(),
-                any());
-        }
-    }
-
-    @Test
-    void shouldThrowIOExceptionExceptionWhenServiceFailsToGetPDFByteArrayOfLetterCorrespondence()
-        throws NotificationClientException {
-        try (MockedStatic<IOUtils> mockedIoUtils = mockStatic(IOUtils.class)) {
-            //Given
-            final String templateId = UUID.randomUUID().toString();
-            final Map<String, String> templateVars = new HashMap<>(Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId));
-            templateVars.put("address_line_1", "Buckingham Palace");
-            templateVars.put("address_line_2", "");
-            templateVars.put("address_line_3", "");
-            templateVars.put("address_line_4", "London");
-            templateVars.put("address_line_5", "United Kingdom");
-            templateVars.put("address_line_6", "");
-            templateVars.put("address_line_7", "SW1A 1AA");
-
-            final NotificationRequest request = NotificationRequest.builder()
-                .template(CASE_ISSUED_CITIZEN_POST)
-                .templateVars(new HashMap<>(templateVars))
-                .build();
-
-            //When&Then
-            when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId));
-
-            when(notificationClient.sendLetter(
-                eq(templateId),
-                any(),
-                any()
-            )).thenReturn(sendLetterResponse);
-
-            mockedIoUtils.when(() -> IOUtils.toByteArray((java.io.InputStream) any()))
-                .thenThrow(new IOException("some message"));
-
-            String testCaseRef = TEST_CASE_ID.toString();
-            String testTemplateName = CASE_ISSUED_CITIZEN_POST.name();
-            String testDestinationAddress = request.getDestinationAddress();
-
-            assertThatThrownBy(() -> notificationService.saveLetterCorrespondence(testTemplateName,
-                sendLetterResponse, testDestinationAddress, testCaseRef))
-                .isInstanceOf(IOException.class)
-                .hasMessageContaining("some message");
-
-            assertThatThrownBy(() -> notificationService.sendLetter(request, testCaseRef))
-                .isInstanceOf(NotificationException.class)
-                .hasMessageContaining("some message");
-
-            verify(notificationClient).sendLetter(
-                eq(templateId),
-                any(),
-                any());
-        }
-    }
-
-    @Test
-    void shouldThrowNullArgumentExceptionWhenServiceFailsToGetAddressOfLetterRecipient() throws NotificationClientException {
-        //Given
-        final String templateId = UUID.randomUUID().toString();
-        final Map<String, String> templateVars = Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId);
-
-        final NotificationRequest request = NotificationRequest.builder()
-            .template(CASE_ISSUED_CITIZEN_POST)
-            .templateVars(new HashMap<>(templateVars))
-            .build();
-
-        //When&Then
-        when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateVars);
-
-        when(notificationClient.sendLetter(
-            eq(templateId),
-            any(),
-            any()
-        )).thenReturn(sendLetterResponse);
-
-        String testCaseRef = TEST_CASE_ID.toString();
-
-        assertThatThrownBy(() -> notificationService.sendLetter(request, testCaseRef))
-            .isInstanceOf(NotificationException.class)
-            .hasMessageContaining("Recipient address must not be null");
-
-        verify(notificationClient).sendLetter(
-            eq(templateId),
-            any(),
-            any());
-    }
-
-    @Test
-    void shouldSuccessfullySendEmail_noAttachments() throws NotificationClientException {
-        final String templateId = UUID.randomUUID().toString();
-        final Map<String, String> templateNameMap = Map.of(CASE_ISSUED_RESPONDENT_EMAIL.name(), templateId);
-        final Map<String, Object> templateVars = new HashMap<>();
-        templateVars.put(CASE_ISSUED_RESPONDENT_EMAIL.name(), templateId);
-
-        final Map<String, String> uploadedDocuments = Map.of(
-            "CaseDocument1", "",
-            "DocumentAvailable1", "no");
-
-        final NotificationRequest request = NotificationRequest.builder()
-            .destinationAddress(EMAIL_ADDRESS)
-            .template(CASE_ISSUED_RESPONDENT_EMAIL)
-            .templateVars(templateVars)
-            .hasFileAttachments(true)
-            .uploadedDocuments(uploadedDocuments)
-            .build();
-
-        final CICUser user = TestDataHelper.getUser();
-        when(idamService.retrieveUser(any())).thenReturn(user);
-        when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
-        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
-
-        when(notificationClient.sendEmail(
-            eq(templateId),
-            eq(EMAIL_ADDRESS),
-            any(),
-            any()
-        )).thenReturn(sendEmailResponse);
-        when(sendEmailResponse.getReference()).thenReturn(Optional.of(randomUUID().toString()));
-        when(sendEmailResponse.getNotificationId()).thenReturn(UUID.randomUUID());
-
-        UploadResponse expectedResponse = uploadResponseWithSampleDocument();
-        when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
-
-        //When
-        notificationService.sendEmail(request, TEST_CASE_ID.toString(), null);
-
-        //Then
-        verify(notificationClient).sendEmail(
-            eq(templateId),
-            eq(EMAIL_ADDRESS),
-            any(),
-            any());
-
-        verify(sendEmailResponse, times(3)).getNotificationId();
-        verify(sendEmailResponse, times(2)).getReference();
-        verify(correspondenceRepository, times(1)).save(any());
-    }
-
-    @Test
-    void shouldSuccessfullySendEmail_attachmentLessThan2MB() throws NotificationClientException {
-        final String templateId = UUID.randomUUID().toString();
-        final Map<String, String> templateNameMap = Map.of(CASE_ISSUED_RESPONDENT_EMAIL.name(), templateId);
-        final Map<String, Object> templateVars = new HashMap<>();
-        templateVars.put(CASE_ISSUED_RESPONDENT_EMAIL.name(), templateId);
-
-        String docId = randomUUID().toString();
-        final Map<String, String> uploadedDocuments = Map.of(
-            "CaseDocument1", docId,
-            "DocumentAvailable1", "yes");
-
-        final uk.gov.hmcts.ccd.sdk.type.Document document = uk.gov.hmcts.ccd.sdk.type.Document.builder()
-            .filename("test file")
-            .url("test.url/" + docId)
-            .binaryUrl("test.url/" + docId + "/binary")
-            .build();
-        final CaseworkerCICDocument cicDocument = CaseworkerCICDocument.builder()
-            .date(LocalDate.of(2025, 12, 11))
-            .documentCategory(DocumentType.APPLICATION_FOR_AN_EXTENSION_OF_TIME)
-            .documentEmailContent("description")
-            .documentLink(document)
-            .build();
-
-        final NotificationRequest request = NotificationRequest.builder()
-            .destinationAddress(EMAIL_ADDRESS)
-            .template(CASE_ISSUED_RESPONDENT_EMAIL)
-            .templateVars(templateVars)
-            .hasFileAttachments(true)
-            .uploadedDocuments(uploadedDocuments)
-            .build();
-
-        final CICUser user = TestDataHelper.getUser();
-        when(idamService.retrieveUser(any())).thenReturn(user);
-        when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
-        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
-
-        when(notificationClient.sendEmail(
-            eq(templateId),
-            eq(EMAIL_ADDRESS),
-            any(),
-            any()
-        )).thenReturn(sendEmailResponse);
-        when(sendEmailResponse.getReference()).thenReturn(Optional.of(randomUUID().toString()));
-        when(sendEmailResponse.getNotificationId()).thenReturn(UUID.randomUUID());
-
-        final ResponseEntity<byte[]> sample = ResponseEntity.ok(new byte[1]);
-        when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), any(UUID.class))).thenReturn(sample);
-
-        UploadResponse expectedResponse = uploadResponseWithSampleDocument();
-
-        when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
-
-        //When
-        notificationService.sendEmail(request, List.of(cicDocument), TEST_CASE_ID.toString(), null);
-
-        String expectedDocumentDescription = String.format("%nFilename: %s%nDescription: %s%n",
-            cicDocument.getDocumentLink().getFilename(), cicDocument.getDocumentEmailContent());
-
-        //Then
-        verify(notificationClient).sendEmail(
-            eq(templateId),
-            eq(EMAIL_ADDRESS),
-            templateVarsArgCaptor.capture(),
-            any());
-
-        assertThat(templateVarsArgCaptor.getValue())
-            .containsEntry(CASE_ISSUED_RESPONDENT_EMAIL.name(), templateId)
-            .containsEntry("DocumentAvailable1", "yes");
-        assertThat(templateVarsArgCaptor.getValue())
-            .extracting("CaseDocument1")
-            .isInstanceOf(String.class)
-            .isEqualTo(expectedDocumentDescription);
-
-        verify(sendEmailResponse, times(3)).getNotificationId();
-        verify(sendEmailResponse, times(2)).getReference();
-        verify(correspondenceRepository, times(1)).save(any());
-    }
-
-    @Test
-    void shouldThrowExceptionWhenFailingToGetBinary() {
-        final String templateId = UUID.randomUUID().toString();
-        final Map<String, Object> templateVars = new HashMap<>();
-        templateVars.put(CASE_ISSUED_RESPONDENT_EMAIL.name(), templateId);
-
-        String docId = randomUUID().toString();
-        final Map<String, String> uploadedDocuments = Map.of(
-            "CaseDocument1", docId,
-            "DocumentAvailable1", "yes");
-
-        final uk.gov.hmcts.ccd.sdk.type.Document document = uk.gov.hmcts.ccd.sdk.type.Document.builder()
-            .filename("test file")
-            .url("test.url/" + docId)
-            .binaryUrl("test.url/" + docId + "/binary")
-            .build();
-        final CaseworkerCICDocument cicDocument = CaseworkerCICDocument.builder()
-            .date(LocalDate.of(2025, 12, 11))
-            .documentCategory(DocumentType.APPLICATION_FOR_AN_EXTENSION_OF_TIME)
-            .documentEmailContent("description")
-            .documentLink(document)
-            .build();
-
-        final NotificationRequest request = NotificationRequest.builder()
-            .destinationAddress(EMAIL_ADDRESS)
-            .template(CASE_ISSUED_RESPONDENT_EMAIL)
-            .templateVars(templateVars)
-            .hasFileAttachments(true)
-            .uploadedDocuments(uploadedDocuments)
-            .build();
-
-        final CICUser user = TestDataHelper.getUser();
-        when(idamService.retrieveUser(any())).thenReturn(user);
-        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
-
-        when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), any(UUID.class)))
-            .thenReturn(ResponseEntity.notFound().build());
-
-        assertThatThrownBy(() -> notificationService.sendEmail(request, List.of(cicDocument), TEST_CASE_ID.toString(), null))
-            .isInstanceOf(NotificationException.class)
-            .hasMessageContaining("Failed to get document binary for id " + docId);
-    }
-
-    @Test
-    void shouldSuccessfullySendEmail_attachmentMoreThan2MB() throws NotificationClientException {
-        final String templateId = UUID.randomUUID().toString();
-        final Map<String, String> templateNameMap = Map.of(CASE_ISSUED_RESPONDENT_EMAIL.name(), templateId);
-        final Map<String, Object> templateVars = new HashMap<>();
-        templateVars.put(CASE_ISSUED_RESPONDENT_EMAIL.name(), templateId);
-
-        String docId = randomUUID().toString();
-        final Map<String, String> uploadedDocuments = Map.of(
-            "CaseDocument1", docId,
-            "DocumentAvailable1", "yes");
-
-        final uk.gov.hmcts.ccd.sdk.type.Document document = uk.gov.hmcts.ccd.sdk.type.Document.builder()
-            .filename("test file")
-            .url("test.url/" + docId)
-            .binaryUrl("test.url/" + docId + "/binary")
-            .build();
-        final CaseworkerCICDocument cicDocument = CaseworkerCICDocument.builder()
-            .date(LocalDate.of(2025, 12, 11))
-            .documentCategory(DocumentType.APPLICATION_FOR_AN_EXTENSION_OF_TIME)
-            .documentEmailContent("description")
-            .documentLink(document)
-            .build();
-
-        final NotificationRequest request = NotificationRequest.builder()
-            .destinationAddress(EMAIL_ADDRESS)
-            .template(CASE_ISSUED_RESPONDENT_EMAIL)
-            .templateVars(templateVars)
-            .hasFileAttachments(true)
-            .uploadedDocuments(uploadedDocuments)
-            .build();
-
-        final CICUser user = TestDataHelper.getUser();
-        when(idamService.retrieveUser(any())).thenReturn(user);
-        when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
-        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
-
-        final ResponseEntity<byte[]> sample = ResponseEntity.ok(new byte[TWO_MEGABYTES + 1]);
-        when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), any(UUID.class))).thenReturn(sample);
-
-        when(notificationClient.sendEmail(
-            eq(templateId),
-            eq(EMAIL_ADDRESS),
-            any(),
-            any()
-        )).thenReturn(sendEmailResponse);
-        when(sendEmailResponse.getReference()).thenReturn(Optional.of(randomUUID().toString()));
-        when(sendEmailResponse.getNotificationId()).thenReturn(UUID.randomUUID());
-
-        UploadResponse expectedResponse = uploadResponseWithSampleDocument();
-        when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
-
-        //When
-        notificationService.sendEmail(request, List.of(cicDocument), TEST_CASE_ID.toString(), null);
-
-        //Then
-        verify(notificationClient).sendEmail(
-            eq(templateId),
-            eq(EMAIL_ADDRESS),
-            templateVarsArgCaptor.capture(),
-            any());
-
-        assertThat(templateVarsArgCaptor.getValue())
-            .containsEntry(CASE_ISSUED_RESPONDENT_EMAIL.name(), templateId)
-            .containsEntry("DocumentAvailable1", "yes");
-
-        String expectedDocumentDescription = String.format("%nFilename: %s%nDescription: %s%n",
-            cicDocument.getDocumentLink().getFilename(), cicDocument.getDocumentEmailContent());
-
-        assertThat(templateVarsArgCaptor.getValue())
-            .extracting("CaseDocument1")
-            .isInstanceOf(String.class)
-            .isEqualTo(expectedDocumentDescription);
-
-        verify(sendEmailResponse, times(3)).getNotificationId();
-        verify(sendEmailResponse, times(2)).getReference();
-        verify(correspondenceRepository, times(1)).save(any());
-    }
-
-    @Test
-    void shouldThrowExceptionWhenSelectedDocumentsDoesNotContainDocumentId_AttachmentOver2MB() {
-        final String templateId = UUID.randomUUID().toString();
-        final Map<String, Object> templateVars = new HashMap<>();
-        templateVars.put(CASE_ISSUED_RESPONDENT_EMAIL.name(), templateId);
-
-        String docId = randomUUID().toString();
-        final Map<String, String> uploadedDocuments = Map.of(
-            "CaseDocument1", docId,
-            "DocumentAvailable1", "yes");
-
-        final NotificationRequest request = NotificationRequest.builder()
-            .destinationAddress(EMAIL_ADDRESS)
-            .template(CASE_ISSUED_RESPONDENT_EMAIL)
-            .templateVars(templateVars)
-            .hasFileAttachments(true)
-            .uploadedDocuments(uploadedDocuments)
-            .build();
-
-        final CICUser user = TestDataHelper.getUser();
-        when(idamService.retrieveUser(any())).thenReturn(user);
-        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
-
-        final ResponseEntity<byte[]> sample = ResponseEntity.ok(new byte[TWO_MEGABYTES + 1]);
-        when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), any(UUID.class))).thenReturn(sample);
-
-        String expectedErrorMessage = String.format("Unable to find document details for document id: %s", docId);
-        assertThatThrownBy(() -> notificationService.sendEmail(request, List.of(), TEST_CASE_ID.toString(), null))
-            .isInstanceOf(NotificationException.class)
-            .hasMessageContaining(expectedErrorMessage);
+            .templateVars(letterVars);
     }
 
     private UploadResponse uploadResponseWithSampleDocument() {

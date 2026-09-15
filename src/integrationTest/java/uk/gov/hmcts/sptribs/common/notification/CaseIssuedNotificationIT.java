@@ -304,7 +304,7 @@ public class CaseIssuedNotificationIT {
             .isEqualTo(CASE_ISSUED_RESPONDENT_EMAIL);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(expectedTemplateVars);
-        assertThat(notificationRequest.getUploadedDocuments())
+        assertThat(notificationRequest.getTemplateDocumentVars())
             .isNull();
     }
 
@@ -347,7 +347,7 @@ public class CaseIssuedNotificationIT {
             .isEqualTo(CASE_ISSUED_RESPONDENT_EMAIL);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(expectedTemplateVars);
-        assertThat(notificationRequest.getUploadedDocuments())
+        assertThat(notificationRequest.getTemplateDocumentVars())
             .isNull();
     }
 
@@ -423,7 +423,7 @@ public class CaseIssuedNotificationIT {
             .isEqualTo(CASE_ISSUED_RESPONDENT_EMAIL);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(expectedTemplateVars);
-        assertThat(notificationRequest.getUploadedDocuments())
+        assertThat(notificationRequest.getTemplateDocumentVars())
             .isNotNull();
     }
 
@@ -500,7 +500,7 @@ public class CaseIssuedNotificationIT {
             .isEqualTo(CASE_ISSUED_RESPONDENT_EMAIL);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(expectedTemplateVars);
-        assertThat(notificationRequest.getUploadedDocuments())
+        assertThat(notificationRequest.getTemplateDocumentVars())
             .isNotNull();
     }
 }

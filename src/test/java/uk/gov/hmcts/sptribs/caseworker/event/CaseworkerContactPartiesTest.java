@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
@@ -117,9 +118,25 @@ class CaseworkerContactPartiesTest {
             .documentCategory(DocumentType.LINKED_DOCS)
             .documentLink(Document.builder().url("url").binaryUrl("url").filename("name.pdf").build())
             .build();
-        ListValue<CaseworkerCICDocument> list = new ListValue<>();
-        list.setValue(doc);
-        listValueList.add(list);
+        ListValue<CaseworkerCICDocument> docListValue = new ListValue<>();
+        docListValue.setValue(doc);
+        listValueList.add(docListValue);
+
+        String orderFilename = "Order--[Subject kaikaqsrf]--14-07-2026 15:39:57.pdf";
+        String orderDocUrlUUID = UUID.randomUUID().toString();
+
+        final CaseworkerCICDocument orderDoc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
+            .documentLink(Document.builder()
+                .url("http://mocked-url.com/documents/" + orderDocUrlUUID)
+                .binaryUrl("http://mocked-url.com/documents/" + orderDocUrlUUID + "/binary")
+                .filename(orderFilename)
+                .build())
+            .build();
+        ListValue<CaseworkerCICDocument> orderDocListValue = new ListValue<>();
+        orderDocListValue.setValue(orderDoc);
+        listValueList.add(orderDocListValue);
+
         final CicCase cicCase = CicCase.builder()
             .reinstateDocuments(listValueList)
             .build();
@@ -127,10 +144,24 @@ class CaseworkerContactPartiesTest {
         caseData.setCicCase(cicCase);
         caseDetails.setData(caseData);
 
+        ReflectionTestUtils.setField(caseWorkerContactParties, "baseUrl", "http://mocked-url.com/");
+
         AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerContactParties.aboutToStart(caseDetails);
 
         assertThat(response.getData().getContactPartiesDocuments().getDocumentList()).isNotNull();
-        assertThat(response.getData().getContactPartiesDocuments().getDocumentList().getListItems()).hasSize(1);
+        assertThat(response.getData().getContactPartiesDocuments().getDocumentList().getListItems()).hasSize(2);
+
+        String expectedSelectedDoc = "[" + orderFilename + " " + orderDoc.getDocumentCategory().getLabel() + "]"
+            + "(http://mocked-url.com/documents/" + orderDocUrlUUID + "/binary)";
+        DynamicListElement responseOrderDoc = new DynamicListElement();
+
+        for (DynamicListElement responseDoc : response.getData().getContactPartiesDocuments().getDocumentList().getListItems()) {
+            if (responseDoc.getLabel().contains(orderFilename)) {
+                responseOrderDoc =  responseDoc;
+            }
+        }
+
+        assertThat(responseOrderDoc.getLabel()).isEqualTo(expectedSelectedDoc);
     }
 
     @Test
@@ -232,9 +263,6 @@ class CaseworkerContactPartiesTest {
         assertThat(caseData.getCicCase().getNotifyPartyRepresentative()).hasSize(1);
         assertThat(caseData.getCicCase().getNotifyPartyRespondent()).hasSize(1);
         assertThat(caseData.getCicCase().getNotifyPartyApplicant()).hasSize(1);
-        assertThat(response).isNotNull();
-
-        SubmittedCallbackResponse contactPartiesResponse = caseWorkerContactParties.submitted(updatedCaseDetails, beforeDetails);
 
         assertThat(contactPartiesResponse).isNotNull();
         assertThat(contactPartiesResponse.getConfirmationHeader()).contains("Subject");
@@ -284,14 +312,11 @@ class CaseworkerContactPartiesTest {
         when(contactPartiesNotification.sendToApplicant(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID3");
         when(contactPartiesNotification.sendToRespondent(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID4");
 
-        SubmittedCallbackResponse response =
+        SubmittedCallbackResponse contactPartiesResponse =
             caseWorkerContactParties.submitted(updatedCaseDetails, beforeDetails);
         assertThat(caseData.getCicCase().getNotifyPartyRepresentative()).hasSize(1);
         assertThat(caseData.getCicCase().getNotifyPartyRespondent()).hasSize(1);
         assertThat(caseData.getCicCase().getNotifyPartyApplicant()).hasSize(1);
-        assertThat(response).isNotNull();
-
-        SubmittedCallbackResponse contactPartiesResponse = caseWorkerContactParties.submitted(updatedCaseDetails, beforeDetails);
 
         assertThat(contactPartiesResponse).isNotNull();
         assertThat(contactPartiesResponse.getConfirmationHeader()).doesNotContain("Subject");
@@ -419,6 +444,8 @@ class CaseworkerContactPartiesTest {
             .cicCase(cicCase)
             .build();
         updatedCaseDetails.setData(caseData);
+
+        ReflectionTestUtils.setField(caseWorkerContactParties, "baseUrl", "http://mocked-url.com/");
 
         AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerContactParties.aboutToStart(updatedCaseDetails);
 

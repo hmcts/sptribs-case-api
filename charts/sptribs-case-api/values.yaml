@@ -96,3 +96,6 @@ java:
     S2S_AUTHORISED_SERVICES: ccd_definition,ccd_data,xui_webapp,sptribs_case_api,ccd_gw,sptribs_frontend,sptribs_dss_update_case_web
 
     CCD_SERVICEBUS_DESTINATION: ccd-case-events-{{ .Values.global.environment }}
+
+    CITIZEN_DASHBOARD_ENABLED: false
+    SPTRIBS_FRONTEND_URL: "https://sptribs-frontend.{{ .Values.global.environment }}.platform.hmcts.net"

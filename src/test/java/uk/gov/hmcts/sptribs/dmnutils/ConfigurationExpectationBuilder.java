@@ -29,6 +29,7 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.LOCATION;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.LOCATION_NAME;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.MAJOR_PRIORITY;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.MINOR_PRIORITY;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.NEXT_HEARING_DATE;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PRIORITY_DATE_ORIGIN_REF;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REGION;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ROLE_CATEGORY;
@@ -39,7 +40,7 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.WORK_TYPE;
 public class ConfigurationExpectationBuilder {
 
     private static final List<String> EXPECTED_PROPERTIES = Arrays.asList(
-        CASE_NAME, CASE_MANAGEMENT_CATEGORY, REGION, LOCATION, LOCATION_NAME, MAJOR_PRIORITY, MINOR_PRIORITY,
+        CASE_NAME, CASE_MANAGEMENT_CATEGORY, REGION, LOCATION, LOCATION_NAME, NEXT_HEARING_DATE, MAJOR_PRIORITY, MINOR_PRIORITY,
         DUE_DATE_NON_WORKING_CALENDAR, DUE_DATE_WORKING_DAYS_OF_WEEK, WORK_TYPE, ROLE_CATEGORY, DUE_DATE_INTERVAL_DAYS,
         ADDITIONAL_PROPERTIES_ROLE_ASSIGNMENT_ID, DESCRIPTION, PRIORITY_DATE_ORIGIN_REF, DUE_DATE_ORIGIN, DUE_DATE_TIME
     );
@@ -53,6 +54,7 @@ public class ConfigurationExpectationBuilder {
         builder.expectedValue(REGION, DEFAULT_REGION, true);
         builder.expectedValue(LOCATION, DEFAULT_LOCATION, true);
         builder.expectedValue(LOCATION_NAME, DEFAULT_LOCATION_NAME, true);
+        builder.expectedValue(NEXT_HEARING_DATE, "", true);
         builder.expectedValue(DUE_DATE_NON_WORKING_CALENDAR, DEFAULT_DUE_DATE_NON_WORKING_CALENDAR, true);
         builder.expectedValue(DUE_DATE_WORKING_DAYS_OF_WEEK, DEFAULT_DUE_DATE_WORKING_DAYS_OF_WEEK, false);
         builder.expectedValue(WORK_TYPE, ROUTINE_WORK_TYPE, true);

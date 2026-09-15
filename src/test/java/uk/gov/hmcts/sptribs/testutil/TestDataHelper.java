@@ -517,16 +517,25 @@ public class TestDataHelper {
         return documentListValue;
     }
 
-    public static List<ListValue<CICDocument>> getCICDocumentList(String fileName) {
+    public static List<ListValue<CICDocument>> getCICDocumentList(String... fileNames) {
         List<ListValue<CICDocument>> documentList = new ArrayList<>();
-        final CICDocument document = CICDocument.builder()
-            .documentLink(Document.builder().filename(fileName).build())
-            .documentEmailContent("some email content")
-            .build();
-        ListValue<CICDocument> documentListValue = new ListValue<>();
-        documentListValue.setValue(document);
-        documentList.add(documentListValue);
+        for (String fileName : fileNames) {
+            Document document = getDocumentWithBinary(fileName);
+            CICDocument cicDocument = CICDocument.builder()
+                .documentLink(document)
+                .documentEmailContent("some email content")
+                .build();
+            ListValue<CICDocument> documentListValue = new ListValue<>();
+            documentListValue.setValue(cicDocument);
+            documentList.add(documentListValue);
+        }
         return documentList;
+    }
+
+    public static Document getDocumentWithBinary(String fileName) {
+        String url = String.format("test.url/documents/%s", UUID.randomUUID());
+        String binaryUrl = String.format("%s/binary", url);
+        return Document.builder().filename(fileName).url(url).binaryUrl(binaryUrl).build();
     }
 
     public static List<ListValue<CICDocument>> getCICDocumentListWithUrl(String fileName, String url) {
@@ -545,16 +554,19 @@ public class TestDataHelper {
         return documentList;
     }
 
-    public static List<ListValue<CaseworkerCICDocument>> getCaseworkerCICDocumentList(String fileName) {
-        final CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
-            .documentLink(Document.builder().filename(fileName).build())
-            .documentCategory(DocumentType.LINKED_DOCS)
-            .documentEmailContent("some email content")
-            .build();
+    public static List<ListValue<CaseworkerCICDocument>> getCaseworkerCICDocumentList(String... fileNames) {
         List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
-        ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue = new ListValue<>();
-        caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
-        documentList.add(caseworkerCICDocumentListValue);
+        for (String fileName : fileNames) {
+            Document document = getDocumentWithBinary(fileName);
+            CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
+                .documentLink(document)
+                .documentCategory(DocumentType.LINKED_DOCS)
+                .documentEmailContent("some email content")
+                .build();
+            ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue = new ListValue<>();
+            caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
+            documentList.add(caseworkerCICDocumentListValue);
+        }
         return documentList;
     }
 

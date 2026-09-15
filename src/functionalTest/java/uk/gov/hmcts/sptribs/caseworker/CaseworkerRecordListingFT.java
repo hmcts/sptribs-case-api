@@ -82,6 +82,10 @@ public class CaseworkerRecordListingFT extends FunctionalTestSuite {
             .when(IGNORING_EXTRA_FIELDS)
             .when(IGNORING_ARRAY_ORDER)
             .isEqualTo(json(expectedResponse(RESPONSE_ABOUT_TO_SUBMIT)));
+
+        assertThatJson(response.asString())
+            .inPath("$.data.hearingDate")
+            .isEqualTo("2000-01-01");
     }
 
     @Test

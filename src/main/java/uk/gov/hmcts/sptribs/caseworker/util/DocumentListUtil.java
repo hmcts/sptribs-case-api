@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.caseworker.util;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.Strings;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
@@ -162,7 +163,7 @@ public final class DocumentListUtil {
 
     public static DynamicMultiSelectList prepareDocumentList(final CaseData data, String baseUrl) {
         List<CaseworkerCICDocument> docList = prepareList(data);
-        String apiUrl = baseUrl + DOCUMENT_BINARY_PATH;
+        String apiUrl = baseUrl.replaceAll("/$", "") + "/" + DOCUMENT_BINARY_PATH;
         List<DynamicListElement> dynamicListElements = new ArrayList<>();
         for (CaseworkerCICDocument doc : docList) {
             String documentId = StringUtils.substringAfterLast(doc.getDocumentLink().getUrl(),
@@ -184,8 +185,7 @@ public final class DocumentListUtil {
     public static DynamicMultiSelectList prepareContactPartiesDocumentList(final CaseData data, String baseUrl) {
         List<CaseworkerCICDocument> docList = prepareList(data);
 
-
-        String apiUrl = baseUrl + "/documents/%s/binary";
+        String apiUrl = baseUrl.replaceAll("/$", "") + "/" + DOCUMENT_BINARY_PATH;
         List<DynamicListElement> dynamicListElements = new ArrayList<>();
         for (CaseworkerCICDocument doc : docList) {
             String fileName = doc.getDocumentLink().getFilename();
@@ -295,6 +295,18 @@ public final class DocumentListUtil {
             .stream().map(ListValue::getValue)
             .toList();
         return allDocuments.stream().filter(document -> document.getDocumentLink().getBinaryUrl().contains(id)).findFirst();
+    }
+
+    public static List<CaseworkerCICDocument> getSelectedDocumentsFromDynamicList(CaseData caseData, DynamicMultiSelectList list) {
+        if (ObjectUtils.isEmpty(list)) {
+            return new ArrayList<>();
+        }
+        return extractDocumentIds(list.getValue())
+            .stream()
+            .map(id -> DocumentListUtil.getCaseDocumentById(id, caseData))
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .toList();
     }
 
     public static List<String> extractDocumentIds(List<DynamicListElement> elements) {

@@ -3,13 +3,17 @@ package uk.gov.hmcts.sptribs.notification.dispatcher;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.caseworker.model.NoticeOption;
+import uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
+import uk.gov.hmcts.sptribs.document.DocumentUtil;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
@@ -17,11 +21,15 @@ import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.sptribs.common.CommonConstants.DASHBOARD_KEY;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DECISION_NOTICE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DOC_AVAILABLE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.EMPTY_PLACEHOLDER;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.DECISION_ISSUED_EMAIL;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.DECISION_ISSUED_EMAIL_NEW_CD;
 
 @Component
 @Slf4j
@@ -34,6 +42,12 @@ public class DecisionIssuedNotification implements PartiesNotification {
     private final NotificationServiceCIC notificationService;
 
     private final NotificationHelper notificationHelper;
+
+    @Value("${sptribs-frontend.dashboard-url}")
+    private String citizenDashboardUrl;
+
+    @Value("${feature.citizen-dashboard.enabled}")
+    private boolean citizenDashboardEnabled;
 
     @Autowired
     public DecisionIssuedNotification(NotificationServiceCIC notificationService, NotificationHelper notificationHelper) {
@@ -48,10 +62,10 @@ public class DecisionIssuedNotification implements PartiesNotification {
         final NotificationResponse notificationResponse;
         final CicCase cicCase = caseData.getCicCase();
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
-            final Map<String, String> uploadedDocumentIds = getUploadedDocuments(caseData);
+            addDashboardLink(templateVars);
 
             notificationResponse = sendEmailNotificationWithAttachment(cicCase.getEmail(),
-                uploadedDocumentIds, templateVars, caseNumber);
+                caseData, templateVars, getTemplateName(), caseNumber);
 
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVars);
@@ -68,9 +82,9 @@ public class DecisionIssuedNotification implements PartiesNotification {
         final Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, caseData);
 
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            final Map<String, String> uploadedDocumentIds = getUploadedDocuments(caseData);
+            addDashboardLink(templateVars);
             notificationResponse = sendEmailNotificationWithAttachment(cicCase.getRepresentativeEmailAddress(),
-                uploadedDocumentIds, templateVars, caseNumber);
+                caseData, templateVars, getTemplateName(), caseNumber);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVars);
             notificationResponse = sendLetterNotification(templateVars, caseNumber);
@@ -83,10 +97,9 @@ public class DecisionIssuedNotification implements PartiesNotification {
     public void sendToRespondent(final CaseData caseData, final String caseNumber) {
         final CicCase cicCase = caseData.getCicCase();
         final Map<String, Object> templateVars = notificationHelper.getRespondentCommonVars(caseNumber, caseData);
-        final Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
 
         final NotificationResponse notificationResponse = sendEmailNotificationWithAttachment(cicCase.getRespondentEmail(),
-            uploadedDocuments, templateVars, caseNumber);
+            caseData, templateVars, DECISION_ISSUED_EMAIL, caseNumber);
         cicCase.setAppNotificationResponse(notificationResponse);
     }
 
@@ -97,10 +110,10 @@ public class DecisionIssuedNotification implements PartiesNotification {
 
         final NotificationResponse notificationResponse;
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
-            final Map<String, String> uploadedDocumentIds = getUploadedDocuments(caseData);
+            addDashboardLink(templateVars);
 
             notificationResponse = sendEmailNotificationWithAttachment(cicCase.getApplicantEmailAddress(),
-                uploadedDocumentIds, templateVars, caseNumber);
+                caseData, templateVars, getTemplateName(), caseNumber);
 
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getApplicantAddress(), templateVars);
@@ -111,16 +124,19 @@ public class DecisionIssuedNotification implements PartiesNotification {
     }
 
     private NotificationResponse sendEmailNotificationWithAttachment(final String destinationAddress,
-                                                                     Map<String, String> uploadedDocumentIds,
+                                                                     CaseData caseData,
                                                                      final Map<String, Object> templateVars,
+                                                                     TemplateName templateName,
                                                                      String caseReferenceNumber) {
+
+        final Map<String, String> uploadedDocumentIds = getUploadedDocuments(caseData);
         final NotificationRequest emailRequest = notificationHelper.buildEmailNotificationRequest(
             destinationAddress,
             true,
             uploadedDocumentIds,
             templateVars,
-            TemplateName.DECISION_ISSUED_EMAIL);
-        return notificationService.sendEmail(emailRequest, caseReferenceNumber, null);
+            templateName);
+        return notificationService.sendEmail(emailRequest, getDecisionDocuments(caseData), caseReferenceNumber, null);
     }
 
     private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter, String caseReferenceNumber) {
@@ -158,5 +174,29 @@ public class DecisionIssuedNotification implements PartiesNotification {
         }
 
         return uploadedDocuments;
+    }
+
+    private List<CaseworkerCICDocument> getDecisionDocuments(CaseData caseData) {
+        CaseIssueDecision caseIssueDecision = caseData.getCaseIssueDecision();
+        List<CaseworkerCICDocument> decisionDocuments = DecisionDocumentListUtil.getDecisionDocs(caseData);
+        String uuid;
+        if (NoticeOption.UPLOAD_FROM_COMPUTER.equals(caseIssueDecision.getDecisionNotice())) {
+            uuid = DocumentUtil.getUuid(caseIssueDecision.getDecisionDocument().getDocumentLink());
+        } else if (NoticeOption.CREATE_FROM_TEMPLATE.equals(caseIssueDecision.getDecisionNotice())) {
+            uuid = DocumentUtil.getUuid(caseIssueDecision.getIssueDecisionDraft());
+        } else {
+            uuid = "";
+        }
+        return decisionDocuments.stream().filter(doc -> doc.getDocumentLink().getBinaryUrl().contains(uuid)).toList();
+    }
+
+    private TemplateName getTemplateName() {
+        return citizenDashboardEnabled ? DECISION_ISSUED_EMAIL_NEW_CD : DECISION_ISSUED_EMAIL;
+    }
+
+    private void addDashboardLink(Map<String, Object> templateVars) {
+        if (citizenDashboardEnabled) {
+            templateVars.put(DASHBOARD_KEY, citizenDashboardUrl);
+        }
     }
 }

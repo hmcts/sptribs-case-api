@@ -111,4 +111,33 @@ public class CaseworkerPostponeHearingFT extends FunctionalTestSuite {
         assertThat(firstCorrespondenceEntity.getDocumentFilename()).isNotNull();
         assertThat(firstCorrespondenceEntity.getDocumentBinaryUrl()).isNotNull();
     }
+
+    @Test
+    public void shouldReturnHearingDateNullAfterPostponeInAboutToSubmit() throws Exception {
+        final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
+        final String hearingCode = "c03c79c6-5d53-4176-88f9-edbe154074cb";
+        caseData.put("hearingDate", "2027-01-01");
+        caseData.put("hearingList", List.of(
+            Map.of(
+                "id", "1",
+                "value", Map.of(
+                    "hearingType", "CaseManagement",
+                    "date", "2027-01-01",
+                    "hearingTime", "09:00",
+                    "hearingStatus", "Listed"
+                )
+            )
+        ));
+        caseData.put("cicCaseHearingList", Map.of(
+            "value", Map.of("code", hearingCode, "label", "1 - Case management - 01 Jan 2027 09:00"),
+            "list_items", List.of(Map.of("code", hearingCode, "label", "1 - Case management - 01 Jan 2027 09:00"))
+        ));
+
+        final Response response = triggerCallback(caseData, CASEWORKER_POSTPONE_HEARING, ABOUT_TO_SUBMIT_URL, false);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .inPath("$.data.hearingDate")
+            .isAbsent();
+    }
 }

@@ -601,7 +601,6 @@ public abstract class FunctionalTestSuite {
         }
     }
 
-
     @AfterEach
     void tearDownDataManager() throws SQLException {
         for (long reference : functionalTestDataManager.getTestReferences()) {

@@ -374,6 +374,8 @@ def configureFtDatabase() {
   }
 
   echo "Using FT DB user env for ${env.ENVIRONMENT}"
+  echo "FT DB HOST: ${env.FT_POSTGRES_HOST}"
+  echo "FT DB PORT: ${env.FT_POSTGRES_PORT}"
 }
 
 def generateDefinitions() {

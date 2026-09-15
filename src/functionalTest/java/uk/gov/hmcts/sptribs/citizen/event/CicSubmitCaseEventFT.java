@@ -87,7 +87,7 @@ public class CicSubmitCaseEventFT extends FunctionalTestSuite {
         assertThat(firstCorrespondenceEntity.getId()).isNotNull();
         assertThat(firstCorrespondenceEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
             .toString().replace("-", "")));
-        assertThat(firstCorrespondenceEntity.getEventType()).isEqualTo("APPLICATION_RECEIVED");
+        assertThat(firstCorrespondenceEntity.getEventType()).startsWith("APPLICATION_RECEIVED");
         assertThat(firstCorrespondenceEntity.getSentOn()).isNotNull();
         assertThat(firstCorrespondenceEntity.getSentFrom()).isNotNull();
         assertThat(firstCorrespondenceEntity.getSentTo()).isNotNull();

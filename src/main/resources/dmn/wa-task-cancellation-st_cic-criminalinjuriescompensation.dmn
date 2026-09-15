@@ -115,6 +115,29 @@
           <text>"HearingBundle"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_reconfigure">
+        <inputEntry id="UnaryTests_reconfigure_1">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_reconfigure_2">
+          <text>"caseworker-record-listing","caseworker-edit-record-listing","caseworker-postpone-hearing","caseworker-cancel-hearing","create-hearing-summary"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_reconfigure_3">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_reconfigure_4">
+          <text>"Reconfigure"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_reconfigure_5">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_reconfigure_6">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_reconfigure_7">
+          <text></text>
+        </outputEntry>
+      </rule>
     </decisionTable>
   </decision>
   <dmndi:DMNDI>

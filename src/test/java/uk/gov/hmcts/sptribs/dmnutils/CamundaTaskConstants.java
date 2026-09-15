@@ -22,6 +22,7 @@ public class CamundaTaskConstants {
     public static final String DUE_DATE_TIME = "dueDateTime";
     public static final String PRIORITY_DATE_ORIGIN_REF = "priorityDateOriginRef";
     public static final String ADDITIONAL_PROPERTIES_ROLE_ASSIGNMENT_ID = "additionalProperties_roleAssignmentId";
+    public static final String NEXT_HEARING_DATE = "nextHearingDate";
 
     public static final String DECISION_WORK_TYPE = "decision_making_work";
     public static final String ROUTINE_WORK_TYPE = "routine_work";
@@ -38,6 +39,8 @@ public class CamundaTaskConstants {
     public static final String DEFAULT_MINOR_PRIORITY = "500";
     public static final String DEFAULT_MAJOR_PRIORITY = "5000";
     public static final String URGENT_MAJOR_PRIORITY = "2000";
+    public static final String HEARING_MAJOR_PRIORITY = "3000";
+    public static final String URGENT_WITH_HEARING_MAJOR_PRIORITY = "1000";
     public static final String DEFAULT_CASE_MANAGEMENT_CATEGORY = "Criminal Injuries Compensation";
     public static final String DEFAULT_REGION = "1";
     public static final String DEFAULT_LOCATION = "336559";
