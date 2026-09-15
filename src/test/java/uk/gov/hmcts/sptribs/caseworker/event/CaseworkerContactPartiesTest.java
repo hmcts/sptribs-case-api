@@ -256,7 +256,7 @@ class CaseworkerContactPartiesTest {
         when(contactPartiesNotification.sendToApplicant(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID3");
         when(contactPartiesNotification.sendToRespondent(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID4");
 
-        SubmittedCallbackResponse response =
+        SubmittedCallbackResponse contactPartiesResponse =
             caseWorkerContactParties.submitted(updatedCaseDetails, beforeDetails);
 
         assertThat(caseData.getCicCase().getNotifyPartySubject()).hasSize(1);

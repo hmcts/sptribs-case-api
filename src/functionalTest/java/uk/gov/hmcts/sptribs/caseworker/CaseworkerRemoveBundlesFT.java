@@ -50,7 +50,6 @@ public class CaseworkerRemoveBundlesFT extends FunctionalTestSuite {
     public void shouldReturnCorrectBundleWhenAboutToSubmitCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_ABOUT_TO_SUBMIT);
 
-        final Response response = triggerCallback(caseData, REMOVE_BUNDLES, ABOUT_TO_SUBMIT_URL, false);
         Long appealId = saveTestBundleDocuments(caseData);
 
         List<DocumentEntity> documentEntitiesBeforeBundleRemoval = caseDocumentsFTDataManager.getDocumentEntities(appealId);
