@@ -62,6 +62,4 @@ public class CaseworkerBundleStitchCompleteFT extends FunctionalTestSuite {
         assertThat(documentEntity.getDocumentTypeName()).isNull();
         assertThat(documentEntity.getCaseDocumentTypeId()).isEqualTo(BUNDLE_CASE_DOCUMENT_TYPE);
     }
-
-
 }
