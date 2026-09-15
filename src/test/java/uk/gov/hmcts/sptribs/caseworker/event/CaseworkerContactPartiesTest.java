@@ -270,7 +270,7 @@ class CaseworkerContactPartiesTest {
         assertThat(contactPartiesResponse.getConfirmationHeader()).contains("Respondent");
         assertThat(contactPartiesResponse.getConfirmationHeader()).contains(",");
 
-        verify(contactPartiesService, times(2)).linkCorrespondenceIdsToDocuments(caseData, emailDocs,
+        verify(contactPartiesService, times(1)).linkCorrespondenceIdsToDocuments(caseData, emailDocs,
             List.of("UUID1", "UUID2", "UUID3", "UUID4"));
     }
 
@@ -326,7 +326,7 @@ class CaseworkerContactPartiesTest {
         assertThat(contactPartiesResponse.getConfirmationHeader()).contains(",");
 
         verify(contactPartiesNotification, never()).sendToSubject(any(), any(), any());
-        verify(contactPartiesService, times(2)).linkCorrespondenceIdsToDocuments(caseData, emailDocs, List.of("UUID2", "UUID3", "UUID4"));
+        verify(contactPartiesService, times(1)).linkCorrespondenceIdsToDocuments(caseData, emailDocs, List.of("UUID2", "UUID3", "UUID4"));
     }
 
     @Test
