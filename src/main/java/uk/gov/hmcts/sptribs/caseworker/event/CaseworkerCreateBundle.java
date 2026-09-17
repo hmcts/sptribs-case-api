@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -12,6 +13,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -79,6 +81,10 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
     @Autowired
     private final BundleCreatedNotification bundleCreatedNotification;
 
+
+    @Value("${feature.citizen-dashboard.enabled}")
+    private boolean citizenDashboardEnabled;
+
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
@@ -89,12 +95,15 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
                 .description("Bundle: Create a bundle")
                 .showSummary()
                 .aboutToSubmitCallback(this::aboutToSubmit)
-                .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_WA_CONFIG_USER)
                 .grantHistoryOnly(ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE)
                 .publishToCamunda();
+
+        if (citizenDashboardEnabled) {
+            eventBuilder.submittedCallback(this::submitted);
+        }
 
         new PageBuilder(eventBuilder)
             .page("createBundle")
@@ -140,6 +149,12 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
+
+        if (details.getState() == CaseClosed) {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader("# Bundle created.")
+                .build();
+        }
 
         final CaseData data = details.getData();
         final CicCase cicCase = data.getCicCase();
@@ -189,7 +204,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
 
         if (!CollectionUtils.isEmpty(initialDocuments)) {
             caseData.setCaseDocuments(convertToBundleDocumentType(initialDocuments));
-            caseData.setFurtherCaseDocuments(convertToBundleDocumentType(getFurtherDocuments(allDocuments, initialDocuments)));
+            caseData.setFurtherCaseDocuments(convertToBundleDocumentTypeFurtherDocs(getFurtherDocuments(allDocuments, initialDocuments)));
         } else {
             caseData.setCaseDocuments(convertToBundleDocumentType(allDocuments));
         }
@@ -214,6 +229,33 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
     private List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> convertToBundleDocumentType(List<CaseworkerCICDocument> docs) {
 
         return docs.stream().filter(CaseworkerCICDocument::isValidBundleDocument).map(AbstractCaseworkerCICDocument::new).toList();
+    }
+
+    private List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> convertToBundleDocumentTypeFurtherDocs(
+        List<CaseworkerCICDocument> docs) {
+        return docs.stream()
+            .filter(CaseworkerCICDocument::isValidBundleDocument)
+            .map(this::updateFurtherDocumentFileNames)
+            .map(AbstractCaseworkerCICDocument::new)
+            .toList();
+    }
+
+    private CaseworkerCICDocument updateFurtherDocumentFileNames(CaseworkerCICDocument doc) {
+        String filename = doc.getDocumentLink().getFilename();
+        String category = doc.getDocumentCategory() != null ? doc.getDocumentCategory().getType() : null;
+        String updatedFilename = filename != null && category != null ? category + " - " + filename : filename;
+
+        return CaseworkerCICDocument.builder()
+            .documentCategory(doc.getDocumentCategory())
+            .documentEmailContent(doc.getDocumentEmailContent())
+            .documentLink(Document.builder()
+                .url(doc.getDocumentLink().getUrl())
+                .binaryUrl(doc.getDocumentLink().getBinaryUrl())
+                .categoryId(doc.getDocumentCategory().getCategory())
+                .filename(updatedFilename)
+                .build())
+            .date(doc.getDate())
+            .build();
     }
 
     private List<ListValue<Bundle>> getExistingBundles(CaseDetails<CaseData, State> beforeDetails) {
