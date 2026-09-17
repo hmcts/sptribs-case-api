@@ -38,7 +38,6 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -228,7 +227,7 @@ public class CaseworkerSendOrderIT {
         assertThatJson(response)
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Order sent \n## A notification has been sent to: Subject, Respondent, Representative, Applicant");
+            .contains("# Order sent \n## A notification has been sent to: Applicant, Representative, Respondent, Subject");
 
         verify(notificationServiceCIC, times(4)).sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
         verifyNoMoreInteractions(notificationServiceCIC);
@@ -264,8 +263,8 @@ public class CaseworkerSendOrderIT {
         assertThatJson(response)
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Send order notification failed \n## Please resend the order");
-
-        verifyNoInteractions(notificationServiceCIC);
+            .contains("# Send order notification failed")
+            .contains("## A notification could not be sent to: Applicant, Representative, Subject")
+            .contains("## Please resend the notification.");
     }
 }

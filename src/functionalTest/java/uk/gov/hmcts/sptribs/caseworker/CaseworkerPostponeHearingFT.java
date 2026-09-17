@@ -74,7 +74,8 @@ public class CaseworkerPostponeHearingFT extends FunctionalTestSuite {
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Postpone hearing notification failed \n## Please resend the notification");
+            .contains("# Postpone hearing notification failed \n## A notification could not be sent to: Subject "
+                + "\n## Please resend the notification.");
     }
 
     @Test

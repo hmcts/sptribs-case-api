@@ -15,6 +15,7 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
@@ -25,7 +26,8 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ApplicationReceivedNotification;
-import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -33,10 +35,10 @@ import java.util.List;
 import java.util.Set;
 
 import static java.lang.String.format;
-import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -72,6 +74,9 @@ class CreateCaseTest {
 
     @InjectMocks
     private CreateCase createCase;
+
+    @Mock
+    private NotificationDispatcher notificationDispatcher;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -312,13 +317,21 @@ class CreateCaseTest {
         caseDetails.setState(Submitted);
         caseDetails.setId(TEST_CASE_ID);
 
-        doThrow(NotificationException.class)
-            .when(applicationReceivedNotification).sendToSubject(caseData, hyphenatedCaseRef);
+        doAnswer(invocation -> {
+            NotificationContext context = invocation.getArgument(0);
+            if (context.getNotification() == applicationReceivedNotification) {
+                context.getErrors().add("Respondent");
+            }
+            return null;
+        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
 
         SubmittedCallbackResponse result = createCase.submitted(caseDetails, caseDetails);
 
         assertThat(result.getConfirmationHeader())
-            .isEqualTo("# Create case notification failed \n## Please resend the notification");
+            .contains("# Create case notification failed")
+            .contains("## A notification could not be sent to:")
+            .contains("Respondent")
+            .contains("## Please resend the notification");
     }
 
     @Test
@@ -349,33 +362,23 @@ class CreateCaseTest {
         caseDetails.setState(Submitted);
         caseDetails.setId(TEST_CASE_ID);
 
-        createCase.submitted(caseDetails, caseDetails);
-
-        verify(applicationReceivedNotification)
-            .sendToSubject(caseData, hyphenatedCaseRef);
-        verify(applicationReceivedNotification)
-            .sendToApplicant(caseData, hyphenatedCaseRef);
-        verify(applicationReceivedNotification)
-            .sendToRepresentative(caseData, hyphenatedCaseRef);
-    }
-
-    @Test
-    void shouldNotSendApplicationReceivedNotificationsWhenSubmittedEventTriggered() {
-        final CaseData caseData = caseData();
-        final String hyphenatedCaseRef = caseData.formatCaseRef(TEST_CASE_ID);
-        caseData.setHyphenatedCaseRef(hyphenatedCaseRef);
-        caseData.getCicCase().setSubjectCIC(emptySet());
-        caseData.getCicCase().setApplicantCIC(emptySet());
-        caseData.getCicCase().setRepresentativeCIC(emptySet());
-
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        caseDetails.setData(caseData);
-        caseDetails.setState(Submitted);
-        caseDetails.setId(TEST_CASE_ID);
+        doAnswer(invocation -> {
+            NotificationContext context = invocation.getArgument(0);
+            if (context.getNotification() == applicationReceivedNotification) {
+                context.getCorrespondenceParties().add(NotificationParties.REPRESENTATIVE);
+                context.getCorrespondenceParties().add(NotificationParties.APPLICANT);
+                context.getCorrespondenceParties().add(NotificationParties.SUBJECT);
+            }
+            return null;
+        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
 
         createCase.submitted(caseDetails, caseDetails);
 
-        verifyNoInteractions(applicationReceivedNotification);
+        SubmittedCallbackResponse response =
+            createCase.submitted(caseDetails, caseDetails);
+
+        assertThat(response.getConfirmationHeader())
+            .contains("# Case Created");
     }
 
     @Test

@@ -14,9 +14,11 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.sptribs.caseworker.model.EditCicaCaseDetails;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
+import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
@@ -41,6 +43,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SPACE;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.APPLICANT;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.REPRESENTATIVE;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.RESPONDENT;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.SUBJECT;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_1;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_2;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_3;
@@ -64,6 +70,10 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.HEARING_DATE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.HEARING_TIME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.NO;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.YES;
+import static uk.gov.hmcts.sptribs.notification.NotificationHelper.getHearingNotificationParties;
+import static uk.gov.hmcts.sptribs.notification.NotificationHelper.getNotificationParties;
+import static uk.gov.hmcts.sptribs.notification.NotificationHelper.getNotificationPartiesBundle;
+import static uk.gov.hmcts.sptribs.notification.NotificationHelper.getPartiesOnCase;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_DATE_1;
 
 @ExtendWith(MockitoExtension.class)
@@ -580,6 +590,150 @@ public class NotificationHelperTest {
             .containsEntry("CaseDocument2", EMPTY_PLACEHOLDER)
             .containsEntry("DocumentAvailable1", NO)
             .containsEntry("DocumentAvailable2", NO);
+    }
+
+    @Test
+    void shouldReturnCorrespondencePartiesBasedOnHearingNotificationPartiesOnCase() {
+        Set<NotificationParties> testHearingParties = Set.of(RESPONDENT, SUBJECT, REPRESENTATIVE);
+
+        final CicCase cicCase = CicCase.builder()
+            .hearingNotificationParties(testHearingParties)
+            .build();
+
+        Set<NotificationParties> correspondenceParties = getHearingNotificationParties(cicCase);
+
+        assertThat(correspondenceParties.size()).isEqualTo(3);
+        assertThat(correspondenceParties).contains(REPRESENTATIVE);
+        assertThat(correspondenceParties).contains(RESPONDENT);
+        assertThat(correspondenceParties).contains(SUBJECT);
+    }
+
+    @Test
+    void shouldReturnCorrespondencePartiesBasedOnHearingNotificationPartiesOnCaseExcludingStatedParties() {
+        Set<NotificationParties> testHearingParties = Set.of(RESPONDENT, SUBJECT, REPRESENTATIVE);
+
+        final CicCase cicCase = CicCase.builder()
+            .hearingNotificationParties(testHearingParties)
+            .build();
+
+        Set<NotificationParties> correspondenceParties = getHearingNotificationParties(cicCase, Set.of(SUBJECT));
+
+        assertThat(correspondenceParties.size()).isEqualTo(2);
+        assertThat(correspondenceParties).contains(REPRESENTATIVE);
+        assertThat(correspondenceParties).contains(RESPONDENT);
+        assertThat(correspondenceParties).doesNotContain(SUBJECT);
+    }
+
+    @Test
+    void shouldReturnEmptyCorrespondencePartiesIfHearingNotificationPartiesIsNull() {
+        final CicCase cicCase = CicCase.builder()
+            .build();
+
+        Set<NotificationParties> correspondenceParties = getHearingNotificationParties(cicCase, Set.of(SUBJECT));
+
+        assertThat(correspondenceParties.size()).isEqualTo(0);
+    }
+
+    @Test
+    void shouldReturnCorrespondencePartiesBasedOnNotificationPartiesOnCase() {
+
+        final CicCase cicCase = CicCase.builder()
+            .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .build();
+
+        Set<NotificationParties> correspondenceParties = getNotificationParties(cicCase);
+
+        assertThat(correspondenceParties.size()).isEqualTo(4);
+        assertThat(correspondenceParties).contains(REPRESENTATIVE);
+        assertThat(correspondenceParties).contains(RESPONDENT);
+        assertThat(correspondenceParties).contains(SUBJECT);
+        assertThat(correspondenceParties).contains(APPLICANT);
+    }
+
+    @Test
+    void shouldReturnCorrespondencePartiesBasedOnNotificationPartiesOnCaseExcludingStatedParties() {
+        final CicCase cicCase = CicCase.builder()
+            .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .build();
+
+        Set<NotificationParties> correspondenceParties = getNotificationParties(cicCase, Set.of(APPLICANT));
+
+        assertThat(correspondenceParties.size()).isEqualTo(3);
+        assertThat(correspondenceParties).contains(REPRESENTATIVE);
+        assertThat(correspondenceParties).contains(RESPONDENT);
+        assertThat(correspondenceParties).contains(SUBJECT);
+        assertThat(correspondenceParties).doesNotContain(APPLICANT);
+    }
+
+    @Test
+    void shouldReturnCorrespondencePartiesBasedOnPartiesOnCase() {
+
+        final CicCase cicCase = CicCase.builder()
+            .applicantCIC(Set.of(ApplicantCIC.APPLICANT_CIC))
+            .representativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .subjectCIC(Set.of(SubjectCIC.SUBJECT))
+            .build();
+
+        Set<NotificationParties> correspondenceParties = getPartiesOnCase(cicCase);
+
+        assertThat(correspondenceParties.size()).isEqualTo(3);
+        assertThat(correspondenceParties).contains(REPRESENTATIVE);
+        assertThat(correspondenceParties).contains(SUBJECT);
+        assertThat(correspondenceParties).contains(APPLICANT);
+    }
+
+    @Test
+    void shouldReturnCorrespondencePartiesBasedOnPartiesOnCaseExcludingStatedParties() {
+        final CicCase cicCase = CicCase.builder()
+            .applicantCIC(Set.of(ApplicantCIC.APPLICANT_CIC))
+            .representativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .subjectCIC(Set.of(SubjectCIC.SUBJECT))
+            .build();
+
+        Set<NotificationParties> correspondenceParties = getPartiesOnCase(cicCase, Set.of(APPLICANT));
+
+        assertThat(correspondenceParties.size()).isEqualTo(2);
+        assertThat(correspondenceParties).contains(REPRESENTATIVE);
+        assertThat(correspondenceParties).contains(SUBJECT);
+        assertThat(correspondenceParties).doesNotContain(APPLICANT);
+    }
+
+    @Test
+    void shouldReturnBundleCorrespondencePartiesBasedOnPartiesOnCase() {
+
+        final CicCase cicCase = CicCase.builder()
+            .applicantCIC(Set.of(ApplicantCIC.APPLICANT_CIC))
+            .respondentEmail("test@test.com")
+            .build();
+
+        Set<NotificationParties> correspondenceParties = getNotificationPartiesBundle(cicCase);
+
+        assertThat(correspondenceParties.size()).isEqualTo(2);
+        assertThat(correspondenceParties).contains(RESPONDENT);
+        assertThat(correspondenceParties).contains(APPLICANT);
+    }
+
+    @Test
+    void bundleCorrespondencePartiesShouldNotContainApplicantIfRepresentativeIsPresentOnCase() {
+
+        final CicCase cicCase = CicCase.builder()
+            .applicantCIC(Set.of(ApplicantCIC.APPLICANT_CIC))
+            .representativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .respondentEmail("test@test.com")
+            .build();
+
+        Set<NotificationParties> correspondenceParties = getNotificationPartiesBundle(cicCase);
+
+        assertThat(correspondenceParties.size()).isEqualTo(2);
+        assertThat(correspondenceParties).contains(RESPONDENT);
+        assertThat(correspondenceParties).contains(REPRESENTATIVE);
+        assertThat(correspondenceParties).doesNotContain(APPLICANT);
     }
 
     private DynamicList getDynamicList() {

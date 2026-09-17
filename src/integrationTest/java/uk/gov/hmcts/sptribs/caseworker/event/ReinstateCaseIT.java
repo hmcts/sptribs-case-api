@@ -189,9 +189,9 @@ public class ReinstateCaseIT {
             .inPath(CONFIRMATION_HEADER)
             .isString()
             .contains("""
-                        # Case reinstated\s
-                        ##  The case record will now be reopened.\s
-                        ## A notification has been sent to: Subject, Respondent, Representative, Applicant\s"""
+                        # Case reinstated.\s
+                        ## The case record will now be reopened.\s
+                        ## A notification has been sent to: Applicant, Representative, Respondent, Subject\s"""
             );
 
         verify(notificationServiceCIC, times(4)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
@@ -228,7 +228,9 @@ public class ReinstateCaseIT {
         assertThatJson(response)
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Case Reinstate notification failed \n## Please resend the notification");
+            .contains("# Case Reinstate notification failed")
+            .contains("## A notification could not be sent to: Applicant, Representative, Respondent, Subject")
+            .contains("## Please resend the notification.");
 
         verifyNoInteractions(notificationServiceCIC);
     }

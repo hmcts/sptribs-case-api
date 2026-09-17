@@ -105,9 +105,12 @@ public class CaseworkerMaintainLinkCaseIT {
             .getResponse()
             .getContentAsString();
 
+
         assertThatJson(response)
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Case Link update notification failed \n## Please resend the notification \n");
+            .contains("# Case link update notification failed")
+            .contains("## A notification could not be sent to: Subject")
+            .contains("## Please resend the notification.");
     }
 }

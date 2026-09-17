@@ -35,7 +35,8 @@ public class CaseworkerLinkCaseFT extends FunctionalTestSuite {
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .isEqualTo("# Case Link notification failed \n## Please resend the notification");
+            .isEqualTo("# Case link notification failed \n## A notification could not be sent to: Subject"
+                + " \n## Please resend the notification.");
     }
 
     @Test
@@ -47,7 +48,7 @@ public class CaseworkerLinkCaseFT extends FunctionalTestSuite {
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .isEqualTo("# Case Link created \n");
+            .isEqualTo("# Case Link created \n## A notification has been sent to: Subject");
 
         long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
 

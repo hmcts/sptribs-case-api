@@ -106,11 +106,10 @@ public class CaseworkerEditRecordListingFT extends FunctionalTestSuite {
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("""
-                # Listing record updated\s
-                ##  If any changes are made to this hearing,  \
-                remember to make those changes in this listing record.\s
-                ## A notification has been sent to: Subject""");
+            .contains("# Listing record updated")
+            .contains("## If any changes are made to this hearing,")
+            .contains("## remember to make those changes in this listing record.")
+            .contains("## A notification has been sent to: Subject");
 
         long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
 
@@ -142,7 +141,8 @@ public class CaseworkerEditRecordListingFT extends FunctionalTestSuite {
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Update listing notification failed \n## Please resend the notification");
+            .contains("# Update listing notification failed \n## No notification recipients found "
+                + "\n## Please resend the notification");
     }
 
     @Test

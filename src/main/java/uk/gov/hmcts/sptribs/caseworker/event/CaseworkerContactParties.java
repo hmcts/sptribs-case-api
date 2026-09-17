@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -20,24 +19,27 @@ import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.PartiesToContact;
 import uk.gov.hmcts.sptribs.common.service.ContactPartiesService;
+import uk.gov.hmcts.sptribs.notification.NotificationConstantProfiles;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.lang.String.format;
+import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CONTACT_PARTIES;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
@@ -73,6 +75,7 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
     private final ContactPartiesSelectDocument contactPartiesSelectDocument;
 
     private final ContactPartiesNotification contactPartiesNotification;
+    private final NotificationDispatcher notificationDispatcher;
     private final NotificationHelper notificationHelper;
     private final ContactPartiesService contactPartiesService;
     private static final int DOC_ATTACH_LIMIT = 10;
@@ -155,52 +158,39 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
 
-        final CaseData data = details.getData();
-        final CicCase cicCase = data.getCicCase();
-        String caseNumber = data.getHyphenatedCaseRef();
-
-        try {
-            sendContactPartiesNotification(details, cicCase, caseNumber);
-
-            return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Message sent %n## %s", MessageUtil.generateSimpleMessage(cicCase)))
-                .build();
-        } catch (Exception notificationException) {
-            log.error("Contact Parties notification failed with exception : {}", notificationException.getMessage());
-
-            return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Contact Parties notification failed %n## Please resend the notification"))
-                .build();
-        }
-    }
-
-    private void sendContactPartiesNotification(CaseDetails<CaseData, State> details, CicCase cicCase, String caseNumber) {
+        final CaseData caseData = details.getData();
+        String caseNumber = caseData.getHyphenatedCaseRef();
 
         final Map<String, String> uploadedDocuments = notificationHelper
-            .buildDocumentList(details.getData().getContactPartiesDocuments().getDocumentList(), DOC_ATTACH_LIMIT);
+            .buildDocumentList(caseData.getContactPartiesDocuments().getDocumentList(), DOC_ATTACH_LIMIT);
 
-        List<String> correspondenceIds = new ArrayList<>();
+        NotificationContextRequest request = NotificationContextRequest.builder()
+            .caseData(caseData)
+            .caseReference(caseNumber)
+            .notification(contactPartiesNotification)
+            .uploadedDocuments(uploadedDocuments)
+            .build();
 
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
-            correspondenceIds.add(contactPartiesNotification.sendToSubject(details.getData(), caseNumber, uploadedDocuments));
-        }
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
-            correspondenceIds.add(contactPartiesNotification.sendToRepresentative(details.getData(), caseNumber,
-                uploadedDocuments));
-        }
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyApplicant())) {
-            correspondenceIds.add(contactPartiesNotification.sendToApplicant(details.getData(), caseNumber,
-                uploadedDocuments));
-        }
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
-            correspondenceIds.add(contactPartiesNotification.sendToRespondent(details.getData(), caseNumber,
-                uploadedDocuments));
-        }
+        NotificationContext notificationContext = NotificationConstantProfiles.CONTACT_PARTIES.buildContext(
+            request);
 
-        if (!correspondenceIds.isEmpty()) {
-            contactPartiesService.linkCorrespondenceIdsToDocuments(details.getData(), uploadedDocuments, correspondenceIds);
+        notificationDispatcher.sendToCorrespondenceParties(notificationContext);
+
+        if (isEmpty(notificationContext.getErrors())) {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Message sent %n## %s",
+                    MessageUtil.generateSimpleMessageFromCorrespondenceParties(notificationContext.getCorrespondenceParties())))
+                .build();
+        } else {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(
+                    format("# Contact Parties notification failed %n## %s %n## Please resend the notification. ",
+                        generateSimpleErrorMessage(notificationContext.getErrors()))
+                )
+                .build();
         }
     }
+
 
     private String extractDocNameAndCategory(String label) {
 

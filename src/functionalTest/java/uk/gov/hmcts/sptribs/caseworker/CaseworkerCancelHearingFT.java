@@ -93,7 +93,8 @@ public class CaseworkerCancelHearingFT extends FunctionalTestSuite {
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Cancel hearing notification failed \n## Please resend the notification");
+            .contains("# Cancel hearing notification failed")
+            .contains("## Please resend the notification");
     }
 
     @Test

@@ -79,9 +79,11 @@ public class CicDssUpdateCaseEventFT extends FunctionalTestSuite {
         final Response response = triggerCallback(caseData, CITIZEN_DSS_UPDATE_CASE_SUBMISSION, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
-        assertThatJson(response.asString(),
-            json -> json.inPath("confirmation_header").isEqualTo("# CIC Dss Update Case Event Email notifications sent")
-        );
+        assertThatJson(response.asString())
+            .inPath("$.confirmation_header")
+            .isString()
+            .isEqualTo("# CIC Dss Update Case Event Email notifications sent "
+                    + "\n## A notification has been sent to: Applicant, Tribunal");
 
         long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
 
@@ -112,9 +114,10 @@ public class CicDssUpdateCaseEventFT extends FunctionalTestSuite {
         final Response response = triggerCallback(caseData, CITIZEN_DSS_UPDATE_CASE_SUBMISSION, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
-        assertThatJson(response.asString(),
-            json -> json.inPath("confirmation_header")
-                .isEqualTo("# CIC Dss Update Case Event Email notification failed %n## Please resend the notification")
-        );
+        assertThatJson(response.asString())
+            .inPath("$.confirmation_header")
+            .isString()
+            .isEqualTo("# CIC Dss Update Case Event Email notification failed. \n## "
+                + "A notification could not be sent to: Applicant \n## Please resend the notification. ");
     }
 }
