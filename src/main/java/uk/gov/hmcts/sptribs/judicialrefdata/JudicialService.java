@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
@@ -56,7 +57,8 @@ public class JudicialService {
     }
 
     public String populateJudicialId(CaseData caseData) {
-        if (isNull(caseData.getListing().getSummary().getJudge())) {
+        if (isNull(caseData.getListing().getSummary().getJudge())
+            || CollectionUtils.isEmpty(caseData.getListing().getSummary().getJudgeList())) {
             return EMPTY_PLACEHOLDER;
         }
 

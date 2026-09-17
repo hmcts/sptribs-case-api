@@ -5,8 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.NullArgumentException;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -17,12 +16,12 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.document.am.model.Classification;
 import uk.gov.hmcts.reform.ccd.document.am.model.DocumentUploadRequest;
 import uk.gov.hmcts.reform.ccd.document.am.util.InMemoryMultipartFile;
-import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationType;
 import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfigCIC;
 import uk.gov.hmcts.sptribs.common.repositories.CorrespondenceRepository;
+import uk.gov.hmcts.sptribs.common.service.PdfServiceClient;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.idam.CICUser;
@@ -74,7 +73,7 @@ public class NotificationServiceCIC {
 
     private final CaseDocumentClientApi caseDocumentClientApi;
 
-    private final PDFServiceClient pdfServiceClient;
+    private final PdfServiceClient pdfServiceClient;
 
     private static final int FIRST_ADDRESS_LINE = 1;
 
@@ -242,7 +241,7 @@ public class NotificationServiceCIC {
                 : Objects.toString(notificationRequest.getDestinationAddress(), "");
 
             if (formattedAddress.isEmpty()) {
-                throw new NullArgumentException("Recipient address");
+                throw new IllegalArgumentException("Recipient address");
             }
 
             saveLetterCorrespondence(
@@ -271,7 +270,7 @@ public class NotificationServiceCIC {
                 ioException
             );
             throw new NotificationException(ioException);
-        } catch (NullArgumentException nullArgumentException) {
+        } catch (IllegalArgumentException nullArgumentException) {
             log.error("Failed to send letter due to missing data. Reference ID: {}. Reason: {}",
                 referenceId,
                 nullArgumentException.getMessage(),

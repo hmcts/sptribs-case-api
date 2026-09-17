@@ -21,6 +21,9 @@ management:
 spring:
   application:
     name: sptribs Case API
+  http:
+    converters:
+      preferred-json-mapper: jackson2
   config:
     import: "optional:configtree:/mnt/secrets/sptribs/"
   main:
