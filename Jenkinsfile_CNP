@@ -73,10 +73,11 @@ def secrets = [
                 secret('s2s-case-api-secret', 'S2S_SECRET'),
                 secret('ccd-importer-username', 'DEFINITION_IMPORTER_USERNAME'),
                 secret('ccd-importer-password', 'DEFINITION_IMPORTER_PASSWORD')
-        ],
-        'sptribs-prod'    :[
-          secret('s2s-case-api-secret', 'S2S_SECRET_PROD')
         ]
+//        ,
+//        'sptribs-prod'    :[
+//          secret('s2s-case-api-secret', 'S2S_SECRET_PROD')
+//        ]
 ]
 
 AppPipelineConfig pipelineConf = new AppPipelineConfig()
