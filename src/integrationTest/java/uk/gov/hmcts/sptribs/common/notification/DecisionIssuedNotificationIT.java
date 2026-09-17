@@ -113,7 +113,6 @@ public class DecisionIssuedNotificationIT {
 
             verify(notificationServiceCIC)
                 .sendEmail(notificationRequestCaptor.capture(), anyList(), eq(TEST_CASE_ID.toString()), eq(null));
-            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(null));
 
             NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
