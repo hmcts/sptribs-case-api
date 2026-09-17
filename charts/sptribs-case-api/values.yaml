@@ -97,5 +97,5 @@ java:
 
     CCD_SERVICEBUS_DESTINATION: ccd-case-events-{{ .Values.global.environment }}
 
-    CITIZEN_DASHBOARD_ENABLED: false
+    CITIZEN_DASHBOARD_ENABLED: true
     SPTRIBS_FRONTEND_URL: "https://sptribs-frontend.{{ .Values.global.environment }}.platform.hmcts.net"
