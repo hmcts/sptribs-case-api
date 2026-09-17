@@ -521,7 +521,7 @@ public abstract class FunctionalTestSuite {
                                                    String caseDocumentTypeId) throws SQLException, IOException {
         String caseDataJsonString = JSON.getDefault().toJSON(caseData);
         final String env = getenv().getOrDefault("S2S_URL_BASE", "aat");
-        if (!env.equals("aat")) {
+        if (env.equals("demo") || env.equals("ithc")) {
             caseDataJsonString = caseDataJsonString.replace("aat", env);
         }
 
