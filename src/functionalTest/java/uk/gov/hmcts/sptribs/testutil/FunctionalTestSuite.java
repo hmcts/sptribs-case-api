@@ -56,6 +56,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.lang.System.getenv;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -519,6 +520,10 @@ public abstract class FunctionalTestSuite {
     private void generateAndSetUuidInCaseDataAndDB(Map<String, Object> caseData, Long testCaseRef,
                                                    String caseDocumentTypeId) throws SQLException, IOException {
         String caseDataJsonString = JSON.getDefault().toJSON(caseData);
+        final String env = getenv().getOrDefault("S2S_URL_BASE", "aat");
+        if (!env.equals("aat")) {
+            caseDataJsonString = caseDataJsonString.replace("aat", env);
+        }
 
         Pattern placeholderPattern = Pattern.compile("\\$\\{UUID(\\d+)}");
         Matcher matcher = placeholderPattern.matcher(caseDataJsonString);
