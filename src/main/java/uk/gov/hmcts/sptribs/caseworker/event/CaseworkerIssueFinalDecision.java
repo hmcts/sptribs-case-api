@@ -3,7 +3,6 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -34,6 +33,8 @@ import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseFinalDecisionIssuedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -47,6 +48,7 @@ import java.util.Optional;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_FINAL_DECISION;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getSelectedNotificationParties;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
@@ -165,35 +167,22 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
         Document finalDecisionGuidance = getFinalDecisionGuidanceDocument(details.getId());
         data.getCaseIssueFinalDecision().setFinalDecisionGuidance(finalDecisionGuidance);
         try {
-            final Map<String, String> uploadedDocuments = Optional
+            Map<String, String> uploadedDocuments = Optional
                 .ofNullable(caseFinalDecisionIssuedNotification.getUploadedDocuments(data))
                 .orElseGet(Map::of);
-            final List<String> correspondenceIds = new ArrayList<>();
-            final StringBuilder messageLine2 = new StringBuilder(100);
-            messageLine2.append(" A notification will be sent  to: ");
-            if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
-                messageLine2.append("Subject, ");
-                addCorrespondenceId(correspondenceIds,
-                    caseFinalDecisionIssuedNotification.sendToSubject(details.getData(), caseNumber, uploadedDocuments));
-            }
-            if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
-                messageLine2.append("Representative, ");
-                addCorrespondenceId(correspondenceIds,
-                    caseFinalDecisionIssuedNotification.sendToRepresentative(details.getData(), caseNumber, uploadedDocuments));
-            }
-            if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
-                messageLine2.append("Respondent, ");
-                addCorrespondenceId(correspondenceIds,
-                    caseFinalDecisionIssuedNotification.sendToRespondent(details.getData(), caseNumber, uploadedDocuments));
-            }
-            if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyApplicant())) {
-                messageLine2.append("Applicant ");
-                addCorrespondenceId(correspondenceIds,
-                    caseFinalDecisionIssuedNotification.sendToApplicant(details.getData(), caseNumber, uploadedDocuments));
-            }
-
-            if (!correspondenceIds.isEmpty() && !uploadedDocuments.isEmpty()) {
-                contactPartiesService.linkCorrespondenceIdsToDocuments(data, uploadedDocuments, correspondenceIds);
+            NotificationContext notificationContext = NotificationContext.builder()
+                .caseData(data)
+                .caseReference(caseNumber)
+                .uploadedDocuments(uploadedDocuments)
+                .correspondenceParties(getSelectedNotificationParties(cicCase))
+                .notification(caseFinalDecisionIssuedNotification)
+                .build();
+            new NotificationDispatcher(contactPartiesService).sendToCorrespondenceParties(notificationContext);
+            if (!notificationContext.getErrors().isEmpty()) {
+                log.error("Issue final decision notification failed for recipients: {}", notificationContext.getErrors());
+                return SubmittedCallbackResponse.builder()
+                    .confirmationHeader(format("# Issue final decision notification failed %n## Please resend the notification"))
+                    .build();
             }
         } catch (Exception notificationException) {
             log.error("Issue final decision notification failed with exception : {}", notificationException.getMessage());
@@ -235,10 +224,5 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
         }
     }
 
-    private void addCorrespondenceId(List<String> correspondenceIds, String correspondenceId) {
-        if (correspondenceId != null) {
-            correspondenceIds.add(correspondenceId);
-        }
-    }
 
 }

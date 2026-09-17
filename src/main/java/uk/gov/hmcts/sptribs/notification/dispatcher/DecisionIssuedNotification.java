@@ -19,6 +19,7 @@ import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.util.HashMap;
 import java.util.List;
@@ -71,11 +72,11 @@ public class DecisionIssuedNotification implements PartiesNotification {
             addDashboardLink(templateVars);
 
             notificationResponse = sendEmailNotificationWithAttachment(cicCase.getEmail(),
-                caseData, uploadedDocuments, templateVars, getTemplateName(), caseNumber);
+                caseData, uploadedDocuments, templateVars, getTemplateName(), caseNumber, Party.SUBJECT);
 
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVars);
-            notificationResponse = sendLetterNotification(templateVars, caseNumber);
+            notificationResponse = sendLetterNotification(templateVars, caseNumber, Party.SUBJECT);
         }
 
         cicCase.setSubjectNotifyList(notificationResponse);
@@ -97,10 +98,10 @@ public class DecisionIssuedNotification implements PartiesNotification {
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             addDashboardLink(templateVars);
             notificationResponse = sendEmailNotificationWithAttachment(cicCase.getRepresentativeEmailAddress(),
-                caseData, uploadedDocuments, templateVars, getTemplateName(), caseNumber);
+                caseData, uploadedDocuments, templateVars, getTemplateName(), caseNumber, Party.REPRESENTATIVE);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVars);
-            notificationResponse = sendLetterNotification(templateVars, caseNumber);
+            notificationResponse = sendLetterNotification(templateVars, caseNumber, Party.REPRESENTATIVE);
         }
 
         cicCase.setRepNotificationResponse(notificationResponse);
@@ -119,7 +120,7 @@ public class DecisionIssuedNotification implements PartiesNotification {
         final Map<String, Object> templateVars = notificationHelper.getRespondentCommonVars(caseNumber, caseData);
 
         final NotificationResponse notificationResponse = sendEmailNotificationWithAttachment(cicCase.getRespondentEmail(),
-            caseData, uploadedDocuments, templateVars, DECISION_ISSUED_EMAIL, caseNumber);
+            caseData, uploadedDocuments, templateVars, DECISION_ISSUED_EMAIL, caseNumber, Party.RESPONDENT);
         cicCase.setAppNotificationResponse(notificationResponse);
         return notificationResponse == null ? null : notificationResponse.getId();
     }
@@ -140,11 +141,11 @@ public class DecisionIssuedNotification implements PartiesNotification {
             addDashboardLink(templateVars);
 
             notificationResponse = sendEmailNotificationWithAttachment(cicCase.getApplicantEmailAddress(),
-                caseData, uploadedDocuments, templateVars, getTemplateName(), caseNumber);
+                caseData, uploadedDocuments, templateVars, getTemplateName(), caseNumber, Party.APPLICANT);
 
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getApplicantAddress(), templateVars);
-            notificationResponse = sendLetterNotification(templateVars, caseNumber);
+            notificationResponse = sendLetterNotification(templateVars, caseNumber, Party.APPLICANT);
         }
 
         cicCase.setSubjectNotifyList(notificationResponse);
@@ -156,7 +157,8 @@ public class DecisionIssuedNotification implements PartiesNotification {
                                                                      Map<String, String> uploadedDocumentIds,
                                                                      final Map<String, Object> templateVars,
                                                                      TemplateName templateName,
-                                                                     String caseReferenceNumber) {
+                                                                     String caseReferenceNumber,
+                                                                     Party receivingParty) {
         uploadedDocumentIds = uploadedDocumentIds.isEmpty() ? getUploadedDocuments(caseData) : uploadedDocumentIds;
         final NotificationRequest emailRequest = notificationHelper.buildEmailNotificationRequest(
             destinationAddress,
@@ -164,14 +166,16 @@ public class DecisionIssuedNotification implements PartiesNotification {
             uploadedDocumentIds,
             templateVars,
             templateName);
-        return notificationService.sendEmail(emailRequest, getDecisionDocuments(caseData), caseReferenceNumber, null);
+        return notificationService.sendEmail(emailRequest, getDecisionDocuments(caseData), caseReferenceNumber, receivingParty);
     }
 
-    private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter, String caseReferenceNumber) {
+    private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter,
+                                                        String caseReferenceNumber,
+                                                        Party receivingParty) {
         final NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(
             templateVarsLetter,
             TemplateName.DECISION_ISSUED_POST);
-        return notificationService.sendLetter(letterRequest, caseReferenceNumber);
+        return notificationService.sendLetter(letterRequest, caseReferenceNumber, receivingParty);
     }
 
     public Map<String, String> getUploadedDocuments(CaseData caseData) {

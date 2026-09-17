@@ -52,7 +52,6 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -549,9 +548,9 @@ class CaseworkerCreateAndSendOrderTest {
                     ## Please resend the order""");
         verify(newOrderIssuedNotification, times(1)).sendToSubject(any(CaseData.class), anyString(), anyMap());
 
-        verify(newOrderIssuedNotification, never()).sendToRepresentative(any(CaseData.class), anyString(), anyMap());
-        verify(newOrderIssuedNotification, never()).sendToRespondent(any(CaseData.class), anyString(), anyMap());
-        verify(newOrderIssuedNotification, never()).sendToApplicant(any(CaseData.class), anyString(), anyMap());
+        verify(newOrderIssuedNotification, times(1)).sendToRepresentative(any(CaseData.class), anyString(), anyMap());
+        verify(newOrderIssuedNotification, times(1)).sendToRespondent(any(CaseData.class), anyString(), anyMap());
+        verify(newOrderIssuedNotification, times(1)).sendToApplicant(any(CaseData.class), anyString(), anyMap());
     }
 
     @Test
@@ -579,8 +578,8 @@ class CaseworkerCreateAndSendOrderTest {
         verify(newOrderIssuedNotification, times(1)).sendToSubject(any(CaseData.class), anyString(), anyMap());
         verify(newOrderIssuedNotification, times(1)).sendToRepresentative(any(CaseData.class), anyString(), anyMap());
 
-        verify(newOrderIssuedNotification, never()).sendToRespondent(any(CaseData.class), anyString(), anyMap());
-        verify(newOrderIssuedNotification, never()).sendToApplicant(any(CaseData.class), anyString(), anyMap());
+        verify(newOrderIssuedNotification, times(1)).sendToRespondent(any(CaseData.class), anyString(), anyMap());
+        verify(newOrderIssuedNotification, times(1)).sendToApplicant(any(CaseData.class), anyString(), anyMap());
 
     }
 
@@ -610,7 +609,7 @@ class CaseworkerCreateAndSendOrderTest {
         verify(newOrderIssuedNotification, times(1)).sendToRepresentative(any(CaseData.class), anyString(), anyMap());
         verify(newOrderIssuedNotification, times(1)).sendToRespondent(any(CaseData.class), anyString(), anyMap());
 
-        verify(newOrderIssuedNotification, never()).sendToApplicant(any(CaseData.class), anyString(), anyMap());
+        verify(newOrderIssuedNotification, times(1)).sendToApplicant(any(CaseData.class), anyString(), anyMap());
     }
 
     @Test

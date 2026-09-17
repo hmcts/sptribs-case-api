@@ -3,7 +3,6 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestClientException;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -46,7 +45,9 @@ import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.dispatcher.AnonymityAppliedNotification;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -60,6 +61,7 @@ import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.UPLOAD_A_NE
 import static uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil.applyAnonymityCaseFlag;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_AND_SEND_ORDER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getSelectedNotificationParties;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
 import static uk.gov.hmcts.sptribs.caseworker.util.SendOrderUtil.updateCicCaseOrderList;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -305,36 +307,17 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
             caseData.getContactPartiesDocuments().getDocumentList(),
             10
         );
-        List<String> correspondenceIds = new ArrayList<>();
-
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartySubject())) {
-            addCorrespondenceId(correspondenceIds,
-                newOrderIssuedNotification.sendToSubject(caseData, caseNumber, uploadedDocuments));
-        }
-
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRepresentative())) {
-            addCorrespondenceId(correspondenceIds,
-                newOrderIssuedNotification.sendToRepresentative(caseData, caseNumber, uploadedDocuments));
-        }
-
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRespondent())) {
-            addCorrespondenceId(correspondenceIds,
-                newOrderIssuedNotification.sendToRespondent(caseData, caseNumber, uploadedDocuments));
-        }
-
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyApplicant())) {
-            addCorrespondenceId(correspondenceIds,
-                newOrderIssuedNotification.sendToApplicant(caseData, caseNumber, uploadedDocuments));
-        }
-
-        if (!correspondenceIds.isEmpty()) {
-            contactPartiesService.linkCorrespondenceIdsToDocuments(caseData, uploadedDocuments, correspondenceIds);
-        }
-    }
-
-    private void addCorrespondenceId(List<String> correspondenceIds, String correspondenceId) {
-        if (correspondenceId != null) {
-            correspondenceIds.add(correspondenceId);
+        NotificationContext notificationContext = NotificationContext.builder()
+            .caseData(caseData)
+            .caseReference(caseNumber)
+            .uploadedDocuments(uploadedDocuments)
+            .correspondenceParties(getSelectedNotificationParties(caseData.getCicCase()))
+            .notification(newOrderIssuedNotification)
+            .build();
+        new NotificationDispatcher(contactPartiesService).sendToCorrespondenceParties(notificationContext);
+        if (!notificationContext.getErrors().isEmpty()) {
+            throw new NotificationException(new Exception(
+                "Send order notification failed for recipients: " + notificationContext.getErrors()));
         }
     }
 

@@ -45,8 +45,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -163,9 +161,6 @@ class CaseworkerIssueCaseTest {
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerIssueCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
-        doNothing().when(caseIssuedNotification).sendToSubject(caseData, caseData.getHyphenatedCaseRef());
-        doNothing().when(caseIssuedNotification).sendToApplicant(caseData, caseData.getHyphenatedCaseRef());
-        doNothing().when(caseIssuedNotification).sendToRepresentative(caseData, caseData.getHyphenatedCaseRef());
         when(caseIssuedNotification.getUploadedDocuments(caseData)).thenReturn(Map.of("doc", "uuid"));
         when(caseIssuedNotification.sendToRespondent(eq(caseData), eq(caseData.getHyphenatedCaseRef()), anyMap()))
             .thenReturn("test-correspondence-id");
@@ -194,15 +189,6 @@ class CaseworkerIssueCaseTest {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
 
-        doThrow(NotificationException.class)
-            .when(caseIssuedNotification)
-            .sendToSubject(caseData, hyphenatedCaseRef);
-        doThrow(NotificationException.class)
-            .when(caseIssuedNotification)
-            .sendToApplicant(caseData, hyphenatedCaseRef);
-        doThrow(NotificationException.class)
-            .when(caseIssuedNotification)
-            .sendToRepresentative(caseData, hyphenatedCaseRef);
         when(caseIssuedNotification.sendToRespondent(eq(caseData), eq(hyphenatedCaseRef), anyMap()))
             .thenThrow(NotificationException.class);
 
@@ -211,7 +197,7 @@ class CaseworkerIssueCaseTest {
         assertThat(submittedResponse.getConfirmationHeader())
             .isEqualTo("""
                 # Issue case notification failed\s
-                ## A notification could not be sent to: Subject, Applicant, Representative, Respondent\s
+                ## A notification could not be sent to: Respondent\s
                 ## Please resend the notification.""");
     }
 
