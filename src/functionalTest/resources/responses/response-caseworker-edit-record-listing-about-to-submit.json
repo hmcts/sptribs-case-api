@@ -105,8 +105,7 @@
     "recFile": [],
     "hearingList": [],
     "closedDayCount": "",
-    "currentEvent": "",
-    "firstHearingDate": ""
+    "currentEvent": ""
   },
   "errors": [],
   "state": "AwaitingHearing"
