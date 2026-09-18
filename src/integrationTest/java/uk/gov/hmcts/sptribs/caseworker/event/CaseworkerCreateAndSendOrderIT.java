@@ -368,9 +368,9 @@ public class CaseworkerCreateAndSendOrderIT {
         assertThatJson(response)
                 .inPath(CONFIRMATION_HEADER)
                 .isString()
-                .contains("# Send order notification failed \n## Please resend the order");
+                .contains("Failed to send order notifications for case");
 
-        verify(notificationServiceCIC, times(1)).sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED),
+        verify(notificationServiceCIC, times(4)).sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED),
             eq(null));
     }
 
