@@ -36,6 +36,7 @@ import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.content.PreviewDraftOrderTemplateContent;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
@@ -54,6 +55,7 @@ import java.util.UUID;
 import static java.lang.String.format;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
 import static uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate.CIC3_RULE_27;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Draft;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
@@ -108,19 +110,22 @@ public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole
             Charset.defaultCharset()
         );
         final CaseData caseData = objectMapper.readValue(json, CaseData.class);
-        uploadTestDocumentAndUpdateCaseData(caseData);
-        addOrderDocument(caseData);
-        addDraftOrderDocument(caseData, details.getId());
-        addDecisionDocument(caseData);
-        addFinalDecisionDocument(caseData);
-        addDocumentManagementDocument(caseData);
+        List<String> errors = new ArrayList<>();
+        Long caseId = details.getId();
+        uploadTestDocumentAndUpdateCaseData(caseData, caseId, errors);
+        addOrderDocument(caseData, caseId, errors);
+        addDraftOrderDocument(caseData, caseId, errors);
+        addDecisionDocument(caseData, caseId, errors);
+        addFinalDecisionDocument(caseData, caseId, errors);
+        addDocumentManagementDocument(caseData, caseId, errors);
 
-        caseData.setHyphenatedCaseRef(caseData.formatCaseRef(details.getId()));
+        caseData.setHyphenatedCaseRef(caseData.formatCaseRef(caseId));
         setDefaultCaseDetails(caseData);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(Submitted)
+            .errors(errors)
             .build();
     }
 
@@ -170,7 +175,7 @@ public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole
         );
     }
 
-    private void uploadTestDocumentAndUpdateCaseData(CaseData caseData) {
+    private void uploadTestDocumentAndUpdateCaseData(CaseData caseData, Long caseId, List<String> errors) {
         final UploadResponse uploadResponse = uploadApplicantDocument();
 
         if (uploadResponse != null) {
@@ -183,6 +188,8 @@ public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole
             testDocumentListValue.setValue(caseworkerCICDocument);
 
             caseData.getCicCase().setApplicantDocumentsUploaded(List.of(testDocumentListValue));
+            saveDocumentToDocumentsTable(caseworkerCICDocument.getDocumentLink(), caseId, caseworkerCICDocument.getDocumentCategory(),
+                CaseDocumentType.APPLICATION, errors);
         }
     }
 
@@ -212,7 +219,7 @@ public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole
         return null;
     }
 
-    private void addOrderDocument(CaseData caseData) {
+    private void addOrderDocument(CaseData caseData, Long caseId, List<String> errors) {
         final UploadResponse uploadResponse = uploadApplicantDocument();
 
         if (uploadResponse != null) {
@@ -239,10 +246,11 @@ public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole
             orderListValue.setValue(order);
 
             caseData.getCicCase().setOrderList(List.of(orderListValue));
+            saveDocumentToDocumentsTable(document, caseId, DocumentType.TRIBUNAL_DIRECTION, CaseDocumentType.ORDER, errors);
         }
     }
 
-    private void addDraftOrderDocument(CaseData caseData,Long caseId) {
+    private void addDraftOrderDocument(CaseData caseData, Long caseId, List<String> errors) {
 
         Calendar cal = Calendar.getInstance();
         String date = simpleDateFormat.format(cal.getTime());
@@ -274,9 +282,10 @@ public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole
         listValues.add(listValue);
 
         caseData.getCicCase().setDraftOrderCICList(listValues);
+        saveDocumentToDocumentsTable(generalOrderDocument, caseId, DocumentType.TRIBUNAL_DIRECTION, CaseDocumentType.DRAFT_ORDER, errors);
     }
 
-    private void addDecisionDocument(CaseData caseData) {
+    private void addDecisionDocument(CaseData caseData, Long caseId, List<String> errors) {
         final UploadResponse uploadResponse = uploadApplicantDocument();
 
 
@@ -296,10 +305,11 @@ public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole
                 .build();
 
             caseData.getCaseIssueDecision().setDecisionDocument(doc);
+            saveDocumentToDocumentsTable(document, caseId, DocumentType.TRIBUNAL_DIRECTION, CaseDocumentType.DECISION, errors);
         }
     }
 
-    private void addFinalDecisionDocument(CaseData caseData) {
+    private void addFinalDecisionDocument(CaseData caseData, Long caseId, List<String> errors) {
         final UploadResponse uploadResponse = uploadApplicantDocument();
 
         if (uploadResponse != null) {
@@ -313,10 +323,11 @@ public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole
                 .build();
 
             caseData.getCaseIssueFinalDecision().setFinalDecisionDraft(document);
+            saveDocumentToDocumentsTable(document, caseId, DocumentType.TRIBUNAL_DIRECTION, CaseDocumentType.FINAL_DECISION, errors);
         }
     }
 
-    private void addDocumentManagementDocument(CaseData caseData) {
+    private void addDocumentManagementDocument(CaseData caseData, Long caseId, List<String> errors) {
         final UploadResponse uploadResponse = uploadApplicantDocument();
 
         if (uploadResponse != null) {
@@ -341,6 +352,21 @@ public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole
             documentList.add(caseworkerCICDocumentListValue);
 
             caseData.getAllDocManagement().setCaseworkerCICDocument(documentList);
+            saveDocumentToDocumentsTable(document, caseId, caseworkerCICDocument.getDocumentCategory(),
+                CaseDocumentType.DOCUMENT_MANAGEMENT, errors);
+        }
+    }
+
+    private void saveDocumentToDocumentsTable(Document document, Long caseId, DocumentType documentType,
+                                              CaseDocumentType caseDocumentType, List<String> errors) {
+        if (document == null) {
+            return;
+        }
+
+        try {
+            documentsService.buildAndSaveNewDocumentEntity(document, caseId, documentType, caseDocumentType);
+        } catch (RuntimeException e) {
+            errors.add(handleDocumentException(document, e.getMessage()));
         }
     }
 
