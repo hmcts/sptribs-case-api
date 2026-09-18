@@ -328,7 +328,6 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                 );
             } catch (RuntimeException e) {
                 errors.add(handleDocumentException(document.getValue().getDocumentLink(), e.getMessage()));
-                log.error("{}{}", e.getMessage(), caseData.getCaseNumber());
             }
         }
     }
