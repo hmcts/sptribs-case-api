@@ -76,11 +76,11 @@ def secrets = [
         ]
   ]
 
-//if (env.ENVIRONMENT == 'prod') {
-//  secrets['sptribs-prod'] = [
-//    secret('s2s-case-api-secret', 'S2S_SECRET_PROD')
-//  ]
-//}
+if (env.ENVIRONMENT == 'prod') {
+  secrets['sptribs-prod'] = [
+    secret('s2s-case-api-secret', 'S2S_SECRET_PROD')
+  ]
+}
 
 AppPipelineConfig pipelineConf = new AppPipelineConfig()
 pipelineConf.vaultSecrets = secrets
