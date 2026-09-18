@@ -348,7 +348,7 @@ public class CaseworkerCreateAndSendOrderIT {
                 .build())
             .build();
 
-        when(notificationServiceCIC.sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(null)))
+        when(notificationServiceCIC.sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), any()))
             .thenThrow(new NotificationException(new NotificationClientException("GovNotify API Failure")));
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
@@ -368,10 +368,9 @@ public class CaseworkerCreateAndSendOrderIT {
         assertThatJson(response)
                 .inPath(CONFIRMATION_HEADER)
                 .isString()
-                .contains("Failed to send order notifications for case");
+                .contains("# Send order notification failed \n## Please resend the order");
 
-        verify(notificationServiceCIC, times(4)).sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED),
-            eq(null));
+        verify(notificationServiceCIC, times(4)).sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), any());
     }
 
     @Test
