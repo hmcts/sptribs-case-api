@@ -179,7 +179,7 @@ public class NotificationHelper {
         final Map<String, String> uploadedDocuments = new HashMap<>();
 
         int count = 0;
-        if (ObjectUtils.isNotEmpty(documentList.getValue())) {
+        if (documentList != null && ObjectUtils.isNotEmpty(documentList.getValue())) {
             final List<DynamicListElement> documents = documentList.getValue();
             for (DynamicListElement element : documents) {
                 count++;

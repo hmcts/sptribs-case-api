@@ -82,6 +82,23 @@ public final class EventUtil {
         return parties;
     }
 
+    public static Set<NotificationParties> getSelectedNotificationParties(final CicCase cicCase) {
+        Set<NotificationParties> parties = new HashSet<>();
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
+            parties.add(NotificationParties.SUBJECT);
+        }
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
+            parties.add(NotificationParties.RESPONDENT);
+        }
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
+            parties.add(NotificationParties.REPRESENTATIVE);
+        }
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyApplicant())) {
+            parties.add(NotificationParties.APPLICANT);
+        }
+        return parties;
+    }
+
 
     public static String parseHyphen(String selectedVenue, int index) {
         String[] values = (selectedVenue != null) ? Arrays.stream(selectedVenue.split(HYPHEN))

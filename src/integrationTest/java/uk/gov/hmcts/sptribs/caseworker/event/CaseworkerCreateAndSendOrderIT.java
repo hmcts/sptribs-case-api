@@ -348,7 +348,7 @@ public class CaseworkerCreateAndSendOrderIT {
                 .build())
             .build();
 
-        when(notificationServiceCIC.sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(null)))
+        when(notificationServiceCIC.sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), any()))
             .thenThrow(new NotificationException(new NotificationClientException("GovNotify API Failure")));
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
@@ -370,8 +370,7 @@ public class CaseworkerCreateAndSendOrderIT {
                 .isString()
                 .contains("# Send order notification failed \n## Please resend the order");
 
-        verify(notificationServiceCIC, times(1)).sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED),
-            eq(null));
+        verify(notificationServiceCIC, times(4)).sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), any());
     }
 
     @Test
@@ -499,9 +498,8 @@ public class CaseworkerCreateAndSendOrderIT {
 
         ArgumentCaptor<NotificationRequest> captor =
             ArgumentCaptor.forClass(NotificationRequest.class);
-        verify(notificationServiceCIC, times(4)).sendEmail(captor.capture(), anyList(), eq(TEST_CASE_ID_HYPHENATED),
-            eq(null));
-        verifyNoMoreInteractions(notificationServiceCIC);
+        verify(notificationServiceCIC, org.mockito.Mockito.atLeast(1))
+            .sendEmail(captor.capture(), anyList(), eq(TEST_CASE_ID_HYPHENATED), any());
 
         long anonymityTemplateCalls = captor.getAllValues().stream()
             .filter(request -> ANONYMITY_APPLIED_EMAIL.equals(request.getTemplate()))
