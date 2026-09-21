@@ -19,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class IdamTokenGenerator {
 
-    private static final Logger log = LoggerFactory.getLogger(IdamTokenGenerator.class);
     @Value("${idam.solicitor.username}")
     private String solicitorUsername;
 
@@ -58,6 +57,8 @@ public class IdamTokenGenerator {
 
     @Autowired
     private IdamClient idamClient;
+
+    private static final Logger log = LoggerFactory.getLogger(IdamTokenGenerator.class);
 
     private final Cache<String, String> cache = Caffeine.newBuilder().expireAfterWrite(2, TimeUnit.HOURS).build();
 
@@ -107,7 +108,7 @@ public class IdamTokenGenerator {
     }
 
     public String generateIdamTokenForCitizen() {
-        log.info("CITIZEN USERNAME: {}", citizenUsername);
+        System.out.println(("CITIZEN USERNAME: " + citizenUsername));
         String citizenUserToken = cache.getIfPresent(citizenUsername);
         if (citizenUserToken == null) {
             citizenUserToken = idamClient.getAccessToken(citizenUsername, citizenPassword);
