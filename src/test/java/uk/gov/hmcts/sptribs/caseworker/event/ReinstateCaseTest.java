@@ -267,9 +267,9 @@ class ReinstateCaseTest {
         reinstateCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         verify(documentsService).updateDocumentCategories(argThat(documents -> documents.size() == 1
-            && documents.get(0).getValue().getDocumentCategory() == DocumentType.HOSPITAL_RECORDS));
+            && documents.getFirst().getValue().getDocumentCategory() == DocumentType.HOSPITAL_RECORDS));
         verify(documentsService).removeDocuments(argThat(documents -> documents.size() == 1
-            && documents.get(0).getValue().getDocumentLink().getBinaryUrl().equals("removed-binary-url")));
+            && documents.getFirst().getValue().getDocumentLink().getBinaryUrl().equals("removed-binary-url")));
     }
 
 
