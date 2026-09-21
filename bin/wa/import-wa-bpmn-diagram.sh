@@ -2,7 +2,6 @@
 
 set -eu
 workspace=${1}
-ENVIRONMENT=${2}
 
 s2sSecret=${S2S_SECRET:-AABBCCDDEEFFGGHH}
 
