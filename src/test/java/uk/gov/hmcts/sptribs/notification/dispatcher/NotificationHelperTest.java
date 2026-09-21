@@ -420,7 +420,7 @@ public class NotificationHelperTest {
         notificationHelper.addHearingPostponedTemplateVars(cicCase, templateVars);
 
         // Then
-        assertThat(templateVars).containsEntry(HEARING_DATE, LocalDate.now().toString())
+        assertThat(templateVars).containsEntry(HEARING_DATE, HEARING_DATE_1.toString())
                 .containsEntry(HEARING_TIME, "11:00");
     }
 

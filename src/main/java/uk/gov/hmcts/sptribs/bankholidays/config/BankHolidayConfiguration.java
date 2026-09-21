@@ -3,50 +3,54 @@ package uk.gov.hmcts.sptribs.bankholidays.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
-import org.springframework.beans.factory.ObjectFactory;
-import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.http.converter.autoconfigure.ClientHttpMessageConvertersCustomizer;
+import org.springframework.cloud.openfeign.support.FeignHttpMessageConverters;
+import org.springframework.cloud.openfeign.support.HttpMessageConverterCustomizer;
 import org.springframework.cloud.openfeign.support.ResponseEntityDecoder;
 import org.springframework.cloud.openfeign.support.SpringDecoder;
 import org.springframework.cloud.openfeign.support.SpringEncoder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
-import java.util.Arrays;
+import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.TEXT_PLAIN;
 
 @Configuration
 public class BankHolidayConfiguration {
-    private final ObjectMapper objectMapper;
 
-    public BankHolidayConfiguration(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
+    @Bean
+    public FeignHttpMessageConverters feignHttpMessageConverters(
+        ObjectProvider<ClientHttpMessageConvertersCustomizer> clientCustomizers,
+        ObjectProvider<HttpMessageConverterCustomizer> feignCustomizers
+    ) {
+        return new FeignHttpMessageConverters(clientCustomizers, feignCustomizers);
     }
 
     @Bean
-    public Decoder feignDecoder() {
+    public Decoder feignDecoder(ObjectProvider<FeignHttpMessageConverters> messageConverters) {
+        return new ResponseEntityDecoder(new SpringDecoder(messageConverters));
+    }
+
+    @Bean
+    @SuppressWarnings("removal")
+    public HttpMessageConverterCustomizer bankHolidayHttpMessageConverterCustomizer(ObjectMapper objectMapper) {
         MappingJackson2HttpMessageConverter jacksonConverter =
             new MappingJackson2HttpMessageConverter(objectMapper);
-        jacksonConverter.setSupportedMediaTypes(Arrays.asList(
+        jacksonConverter.setSupportedMediaTypes(List.of(
             APPLICATION_JSON,
             new MediaType("application", "*+json"),
             TEXT_PLAIN
         ));
-        ObjectFactory<HttpMessageConverters> objectFactory =
-            () -> new HttpMessageConverters(jacksonConverter);
-        return new ResponseEntityDecoder(new SpringDecoder(objectFactory));
+        return converters -> converters.addFirst(jacksonConverter);
     }
 
     @Bean
-    public Encoder feignEncoder() {
-        HttpMessageConverter<Object> jacksonConverter =
-            new MappingJackson2HttpMessageConverter(objectMapper);
-        ObjectFactory<HttpMessageConverters> objectFactory =
-            () -> new HttpMessageConverters(jacksonConverter);
-        return new SpringEncoder(objectFactory);
+    public Encoder feignEncoder(ObjectProvider<FeignHttpMessageConverters> messageConverters) {
+        return new SpringEncoder(messageConverters);
     }
 }

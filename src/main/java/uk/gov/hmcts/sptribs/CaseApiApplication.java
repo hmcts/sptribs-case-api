@@ -27,7 +27,6 @@ import java.util.TimeZone;
 
 @SpringBootApplication(
     scanBasePackages = {"uk.gov.hmcts.ccd.sdk", "uk.gov.hmcts.sptribs", "uk.gov.hmcts.reform.ccd.document"}
-
 )
 @EnableFeignClients(
     clients = {

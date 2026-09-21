@@ -41,7 +41,6 @@ import uk.gov.hmcts.sptribs.testutil.data.CaseDocumentsFTDataManager;
 import uk.gov.hmcts.sptribs.testutil.data.CorrespondenceDocumentFTDataManager;
 import uk.gov.hmcts.sptribs.testutil.data.FunctionalTestDataManager;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
-import wiremock.org.eclipse.jetty.util.ajax.JSON;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -508,7 +507,7 @@ public abstract class FunctionalTestSuite {
     }
 
     private void generateAndSetUuidInCaseDataAndDB(Map<String, Object> caseData, Long testCaseRef) throws SQLException, IOException {
-        String caseDataJsonString = JSON.getDefault().toJSON(caseData);
+        String caseDataJsonString = objectMapper.writeValueAsString(caseData);
 
         Pattern placeholderPattern = Pattern.compile("\\$\\{UUID(\\d+)}");
         Matcher matcher = placeholderPattern.matcher(caseDataJsonString);
