@@ -107,8 +107,8 @@ public class IdamTokenGenerator {
     }
 
     public String generateIdamTokenForCitizen() {
-        String citizenUserToken = cache.getIfPresent(citizenUsername);
         log.info("CITIZEN USERNAME: {}", citizenUsername);
+        String citizenUserToken = cache.getIfPresent(citizenUsername);
         if (citizenUserToken == null) {
             citizenUserToken = idamClient.getAccessToken(citizenUsername, citizenPassword);
             cache.put(citizenUsername, citizenUserToken);
