@@ -9,20 +9,12 @@ import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import tools.jackson.core.JacksonException;
-import tools.jackson.core.JsonParser;
-import tools.jackson.databind.DatabindException;
-import tools.jackson.databind.DeserializationContext;
-import uk.gov.hmcts.ccd.sdk.ResolvedConfigRegistry;
 import uk.gov.hmcts.ccd.sdk.api.HasRole;
-import uk.gov.hmcts.ccd.sdk.runtime.CcdCallbackExecutor;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.reform.ccd.document.am.healthcheck.InternalHealth;
-import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 
 import java.io.IOException;
@@ -33,7 +25,6 @@ import java.util.List;
 import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static com.fasterxml.jackson.core.JsonParser.Feature.INCLUDE_SOURCE_IN_LOCATION;
-import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static com.fasterxml.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS;
 import static com.fasterxml.jackson.databind.MapperFeature.INFER_BUILDER_TYPE_BINDINGS;
 import static com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer.INSTANCE;
@@ -66,25 +57,6 @@ public class JacksonConfiguration {
         mapper.enable(INCLUDE_SOURCE_IN_LOCATION);
 
         return mapper;
-    }
-
-    @Bean
-    @Primary
-    public CcdCallbackExecutor sptribsCcdCallbackExecutor(
-        ResolvedConfigRegistry registry,
-        ObjectMapper mapper
-    ) {
-        tools.jackson.databind.module.SimpleModule module =
-            new tools.jackson.databind.module.SimpleModule("sptribs-case-data");
-        module.addDeserializer(
-            CriminalInjuriesCompensationData.class,
-            new CaseDataDeserializer(mapper)
-        );
-        tools.jackson.databind.ObjectMapper caseDataMapper = tools.jackson.databind.json.JsonMapper.builder()
-            .findAndAddModules()
-            .addModule(module)
-            .build();
-        return new CcdCallbackExecutor(registry, caseDataMapper);
     }
 
     private static final class DynamicListDeserializer
@@ -196,37 +168,4 @@ public class JacksonConfiguration {
         return node.hasNonNull(field) ? node.get(field).asText() : null;
     }
 
-    private static final class CaseDataDeserializer
-        extends tools.jackson.databind.deser.std.StdDeserializer<CriminalInjuriesCompensationData> {
-        private final ObjectMapper mapper;
-
-        private CaseDataDeserializer(ObjectMapper mapper) {
-            super(CriminalInjuriesCompensationData.class);
-            this.mapper = mapper;
-        }
-
-        @Override
-        public CriminalInjuriesCompensationData deserialize(
-            JsonParser parser,
-            DeserializationContext context
-        ) throws JacksonException {
-            try {
-                final String json = context.readTree(parser).toString();
-                final CriminalInjuriesCompensationData caseData = mapper.readValue(
-                    json,
-                    CriminalInjuriesCompensationData.class
-                );
-                if (caseData.getListing() != null) {
-                    caseData.getListing().setSummary(
-                        mapper.readerFor(HearingSummary.class)
-                            .without(FAIL_ON_UNKNOWN_PROPERTIES)
-                            .readValue(json)
-                    );
-                }
-                return caseData;
-            } catch (com.fasterxml.jackson.core.JsonProcessingException exception) {
-                throw DatabindException.from(parser, "Failed to deserialize case data", exception);
-            }
-        }
-    }
 }
