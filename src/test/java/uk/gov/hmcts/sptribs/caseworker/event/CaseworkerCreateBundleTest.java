@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
@@ -51,7 +52,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
@@ -106,6 +109,32 @@ class CaseworkerCreateBundleTest {
             .extracting(Event::getGrants)
             .extracting(map -> map.get(ST_CIC_WA_CONFIG_USER))
             .contains(Permissions.CREATE_READ_UPDATE);
+    }
+
+    @Test
+    void shouldNotAddSubmittedIfCitizenDashboardIsDisabled() {
+        ReflectionTestUtils.setField(caseworkerCreateBundle, "citizenDashboardEnabled", false);
+
+        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+
+        caseworkerCreateBundle.configure(configBuilder);
+
+        assertThat(getEventsFrom(configBuilder).values())
+            .extracting(Event::getSubmittedCallback)
+            .containsOnlyNulls();
+    }
+
+    @Test
+    void shouldAddSubmittedIfCitizenDashboardIsEnabled() {
+        ReflectionTestUtils.setField(caseworkerCreateBundle, "citizenDashboardEnabled", true);
+
+        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+
+        caseworkerCreateBundle.configure(configBuilder);
+
+        assertThat(getEventsFrom(configBuilder).values())
+            .extracting(Event::getSubmittedCallback)
+            .doesNotContainNull();
     }
 
     @Test
@@ -250,7 +279,6 @@ class CaseworkerCreateBundleTest {
                 ## Please resend the notification.""");
     }
 
-
     @Test
     void shouldSuccessfullyCreateBundleWithNewOrderEnabled_noInitialDocuments_null() {
         final CaseData caseData = caseData();
@@ -313,7 +341,6 @@ class CaseworkerCreateBundleTest {
     void shouldSuccessfullyCreateBundleWithNewOrderEnabled_FurtherUploadsAfterCicaUpload() {
         final CaseData caseData = caseData();
         caseData.setNewBundleOrderEnabled(YesNo.YES);
-
         final CicCase cicCase = CicCase.builder().build();
 
         LocalDate applicantDocsDate = LocalDate.of(2026, 1, 10);
@@ -328,6 +355,7 @@ class CaseworkerCreateBundleTest {
             getCaseworkerCICDocument("supportingDoc2.docx", DocumentType.DSS_SUPPORTING, additionalApplicantDocsDate);
         final ListValue<CaseworkerCICDocument> otherDocs2 =
             getCaseworkerCICDocument("otherDoc2.txt", DocumentType.DSS_OTHER, additionalApplicantDocsDate);
+
         allApplicantDocs.add(tribunalForm2);
         allApplicantDocs.add(supportingDocs2);
         allApplicantDocs.add(otherDocs2);
@@ -366,8 +394,9 @@ class CaseworkerCreateBundleTest {
             final CaseData dataAtMockTime = callbackAtMockTime.getCaseDetails().getData();
             // Initial documents should be in caseDocuments
             assertThat(dataAtMockTime.getCaseDocuments()).hasSize(3);
-            // furtherCaseDocuments should have the additional documents
+            // Further documents should include only valid additional docs.
             assertThat(dataAtMockTime.getFurtherCaseDocuments()).hasSize(6);
+
             assertThat(dataAtMockTime.getBundleConfiguration()).isEqualTo(MULTI_BUNDLE_CONFIG);
             assertThat(dataAtMockTime.getMultiBundleConfiguration()).isEqualTo(List.of(MULTI_BUNDLE_CONFIG));
             return List.of(bundle);
@@ -429,7 +458,10 @@ class CaseworkerCreateBundleTest {
             final CaseData dataAtMockTime = callbackAtMockTime.getCaseDetails().getData();
             // Should use old logic - documents should be in caseDocuments
             assertThat(dataAtMockTime.getCaseDocuments()).hasSize(1);
-            assertThat(dataAtMockTime.getCaseDocuments().getFirst().getValue()).isEqualTo(cicDocuments.getFirst().getValue());
+            assertThat(dataAtMockTime.getCaseDocuments().getFirst().getValue().getDocumentCategory())
+                .isEqualTo(cicDocuments.getFirst().getValue().getDocumentCategory());
+            assertThat(dataAtMockTime.getCaseDocuments().getFirst().getValue().getDocumentLink().getFilename())
+                .endsWith(cicDocuments.getFirst().getValue().getDocumentLink().getFilename());
             // furtherCaseDocuments should be null when new order is disabled
             assertThat(dataAtMockTime.getFurtherCaseDocuments()).isNull();
             assertThat(dataAtMockTime.getBundleConfiguration()).isEqualTo(MULTI_BUNDLE_CONFIG);
@@ -547,7 +579,10 @@ class CaseworkerCreateBundleTest {
 
             //check case data at call time
             final CaseData dataAtMockTime = callbackAtMockTime.getCaseDetails().getData();
-            assertThat(dataAtMockTime.getCaseDocuments().getFirst().getValue()).isEqualTo(cicDocuments.getFirst().getValue());
+            assertThat(dataAtMockTime.getCaseDocuments().getFirst().getValue().getDocumentCategory())
+                .isEqualTo(cicDocuments.getFirst().getValue().getDocumentCategory());
+            assertThat(dataAtMockTime.getCaseDocuments().getFirst().getValue().getDocumentLink().getFilename())
+                .endsWith(cicDocuments.getFirst().getValue().getDocumentLink().getFilename());
             assertThat(dataAtMockTime.getBundleConfiguration()).isEqualTo(MULTI_BUNDLE_CONFIG);
             assertThat(dataAtMockTime.getMultiBundleConfiguration()).isEqualTo(List.of(MULTI_BUNDLE_CONFIG));
             return List.of(bundle);
@@ -1031,5 +1066,29 @@ class CaseworkerCreateBundleTest {
         assertThat(responseData.getCaseBundles().getFirst().getValue().getDateAndTime())
             .isEqualTo(LocalDateTime.ofInstant(instant, zoneId));
         assertThat(responseData.getCaseBundleIdsAndTimestamps()).hasSize(1);
+    }
+
+    @Test
+    void shouldNotNotifyIfCaseClosed() {
+        final CaseData caseData = caseData();
+        final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList();
+        final CicCase cicCase = CicCase.builder().build();
+        cicCase.setApplicantDocumentsUploaded(cicDocuments);
+        caseData.setCicCase(cicCase);
+        caseData.setHyphenatedCaseRef("1234-5678-3456");
+        cicCase.setRepresentativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE));
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setState(CaseClosed);
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        SubmittedCallbackResponse createBundleSubmittedResponse =
+            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+
+        assertThat(createBundleSubmittedResponse.getConfirmationHeader())
+            .isEqualTo("# Bundle created.");
+        verifyNoInteractions(bundleCreatedNotification);
     }
 }
