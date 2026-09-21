@@ -2,7 +2,6 @@ package uk.gov.hmcts.sptribs.testutil;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import groovy.util.logging.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,6 @@ import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.util.concurrent.TimeUnit;
 
-@Slf4j
 @ActiveProfiles("functional")
 @Service
 public class IdamTokenGenerator {
@@ -108,7 +106,6 @@ public class IdamTokenGenerator {
     }
 
     public String generateIdamTokenForCitizen() {
-        System.out.println(("CITIZEN USERNAME: " + citizenUsername));
         String citizenUserToken = cache.getIfPresent(citizenUsername);
         if (citizenUserToken == null) {
             citizenUserToken = idamClient.getAccessToken(citizenUsername, citizenPassword);
