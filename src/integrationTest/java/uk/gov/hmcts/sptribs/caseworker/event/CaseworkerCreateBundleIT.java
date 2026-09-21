@@ -299,8 +299,8 @@ public class CaseworkerCreateBundleIT {
 
         assertThat(placeholdersCaptor.getValue()).containsEntry("caseId", "1616591401473378");
         assertThat(placeholdersCaptor.getValue().get("rowsHtml").toString())
-            .contains("<a href=\"https://manage-case.demo.platform.hmcts.net/documents/" + VALID_DOCUMENT_ID_1 + "/binary\">media-1.mp3</a>")
-            .contains("<a href=\"https://manage-case.demo.platform.hmcts.net/documents/" + VALID_DOCUMENT_ID_2 + "/binary\">media-2.mp4</a>")
+            .contains("<a href=\"http://manage-case.demo.platform.hmcts.net/documents/" + VALID_DOCUMENT_ID_1 + "/binary\">media-1.mp3</a>")
+            .contains("<a href=\"http://manage-case.demo.platform.hmcts.net/documents/" + VALID_DOCUMENT_ID_2 + "/binary\">media-2.mp4</a>")
             .doesNotContain("paper.pdf");
     }
 
