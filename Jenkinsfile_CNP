@@ -1,6 +1,6 @@
 #!groovy
 
-@Library("Infrastructure")
+@Library("Infrastructure@2.7.2")
 
 import uk.gov.hmcts.contino.AppPipelineConfig
 import uk.gov.hmcts.contino.AppPipelineDsl
@@ -73,11 +73,14 @@ def secrets = [
                 secret('s2s-case-api-secret', 'S2S_SECRET'),
                 secret('ccd-importer-username', 'DEFINITION_IMPORTER_USERNAME'),
                 secret('ccd-importer-password', 'DEFINITION_IMPORTER_PASSWORD')
-        ],
-        'sptribs-prod'    :[
-          secret('s2s-case-api-secret', 'S2S_SECRET_PROD')
         ]
-]
+  ]
+
+if (env == 'prod') {
+  secrets['sptribs-prod'] = [
+    secret('s2s-case-api-secret', 'S2S_SECRET_PROD')
+  ]
+}
 
 AppPipelineConfig pipelineConf = new AppPipelineConfig()
 pipelineConf.vaultSecrets = secrets
