@@ -267,11 +267,13 @@ withPipeline(type, product, component) {
   }
 
   afterSuccess('functionalTest:aat') {
+    env.ENVIRONMENT = 'prod'
+    env.CCD_DEF_NAME = 'prod'
+    builder.gradle('generateCCDConfig --rerun-tasks')
+    generateDefinitions()
     withSubscription('prod', product, 'prod') {
-      env.ENVIRONMENT = 'prod'
       env.DEPLOYMENT_ENVIRONMENT = 'prod'
       env.CASE_API_URL = 'http://sptribs-case-api-prod.service.core-compute-prod.internal'
-      env.CCD_DEF_NAME = 'prod'
       env.DEFINITION_STORE_URL_BASE = 'http://ccd-definition-store-api-prod.service.core-compute-prod.internal'
       env.CASE_API_DOCUMENT_DOWNLOAD_URL = 'http://manage-case.platform.hmcts.net/'
       env.SERVICE_AUTH_MICROSERVICE = 'sptribs_case_api'
@@ -280,9 +282,6 @@ withPipeline(type, product, component) {
       env.S2S_URL_BASE = 'http://rpe-service-auth-provider-prod.service.core-compute-prod.internal'
       env.BEFTA_S2S_CLIENT_ID = 'ccd_data'
       env.CAMUNDA_BASE_URL = 'http://camunda-api-prod.service.core-compute-prod.internal'
-
-      builder.gradle('generateCCDConfig --rerun-tasks')
-      generateDefinitions()
 
       withAzureKeyvault(
         azureKeyVaultSecrets: [
@@ -397,7 +396,7 @@ def uploadDmnDiagrams() {
   dir("${WORKSPACE}/bin") {
     tenantId = "st_cic"
     product = "st_cic"
-    sh "./wa/import-dmn-diagram.sh ${WORKSPACE} ${env} ${tenantId} ${product}"
+    sh "./wa/import-dmn-diagram.sh ${WORKSPACE} ${env.ENVIRONMENT} ${tenantId} ${product}"
   }
 }
 
