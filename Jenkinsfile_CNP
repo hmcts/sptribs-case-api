@@ -284,13 +284,16 @@ withPipeline(type, product, component) {
       generateDefinitions()
 
     withSubscription('prod') {
-      secrets['sptribs-prod'] = [
-        secret('s2s-case-api-secret', 'S2S_SECRET_PROD')
-      ]
-    }
-
+      withAzureKeyvault(
+        azureKeyVaultSecrets: [
+          secret('s2s-case-api-secret', 'S2S_SECRET_PROD')
+        ],
+        keyVaultURLOverride: 'https://sptribs-prod.vault.azure.net/'
+      ) {
         uploadDmnDiagrams()
         uploadBpmnDiagram()
+      }
+    }
   }
 
   afterSuccess('akschartsinstall') {
