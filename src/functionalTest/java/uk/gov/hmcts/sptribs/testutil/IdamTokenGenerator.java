@@ -56,8 +56,6 @@ public class IdamTokenGenerator {
     @Autowired
     private IdamClient idamClient;
 
-    private static final Logger log = LoggerFactory.getLogger(IdamTokenGenerator.class);
-
     private final Cache<String, String> cache = Caffeine.newBuilder().expireAfterWrite(2, TimeUnit.HOURS).build();
 
     public String generateIdamTokenForSolicitor() {

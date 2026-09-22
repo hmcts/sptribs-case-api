@@ -76,12 +76,6 @@ def secrets = [
         ]
   ]
 
-if (env.ENVIRONMENT == 'prod') {
-  secrets['sptribs-prod'] = [
-    secret('s2s-case-api-secret', 'S2S_SECRET_PROD')
-  ]
-}
-
 AppPipelineConfig pipelineConf = new AppPipelineConfig()
 pipelineConf.vaultSecrets = secrets
 
@@ -289,8 +283,14 @@ withPipeline(type, product, component) {
 
       generateDefinitions()
 
-      uploadDmnDiagrams()
-      uploadBpmnDiagram()
+    withSubscription('prod') {
+      secrets['sptribs-prod'] = [
+        secret('s2s-case-api-secret', 'S2S_SECRET_PROD')
+      ]
+    }
+
+        uploadDmnDiagrams()
+        uploadBpmnDiagram()
   }
 
   afterSuccess('akschartsinstall') {

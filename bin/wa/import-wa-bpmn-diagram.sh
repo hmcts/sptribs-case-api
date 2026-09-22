@@ -6,7 +6,7 @@ workspace=${1}
 s2sSecret=${S2S_SECRET:-AABBCCDDEEFFGGHH}
 
 if [[ "${ENVIRONMENT}" == 'prod' ]]; then
-  s2sSecret=${S2S_SECRET_PROD:-}
+  s2sSecret=${S2S_SECRET_PROD}
 fi
 
 serviceToken=$($(realpath $workspace)/utils/idam-lease-service-token.sh sptribs_case_api \
