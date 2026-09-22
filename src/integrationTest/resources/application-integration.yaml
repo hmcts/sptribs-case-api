@@ -8,6 +8,7 @@ spring:
   autoconfigure:
     exclude:
       - com.azure.spring.cloud.autoconfigure.implementation.context.AzureTokenCredentialAutoConfiguration
+      - uk.gov.hmcts.reform.ccd.client.CoreCaseDataClientAutoConfiguration
   datasource:
     hikari:
       maximum-pool-size: 2

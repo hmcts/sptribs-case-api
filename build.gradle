@@ -301,7 +301,7 @@ dependencies {
   }
 
   implementation 'io.swagger:swagger-annotations:1.6.16'
-  implementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '6.1.0'
+  implementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '5.2.0'
   implementation(group: 'com.github.hmcts', name:'ccd-case-document-am-client', version: '1.60.0') {
     exclude group: 'org.springframework.boot', module: 'spring-boot-starter-jackson'
   }

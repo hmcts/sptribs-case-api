@@ -49,7 +49,9 @@ spring:
         managed-identity-enabled: true
         client-id: 34df67df-77f4-4c8d-9e89-d59a86ef9ffe
   autoconfigure:
-    exclude: com.azure.spring.cloud.autoconfigure.implementation.context.AzureTokenCredentialAutoConfiguration
+    exclude:
+      - com.azure.spring.cloud.autoconfigure.implementation.context.AzureTokenCredentialAutoConfiguration
+      - uk.gov.hmcts.reform.ccd.client.CoreCaseDataClientAutoConfiguration
   flyway:
     out-of-order: true
 logging:
