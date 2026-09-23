@@ -289,7 +289,7 @@ withPipeline(type, product, component) {
         ],
         keyVaultURLOverride: 'https://sptribs-prod.vault.azure.net/'
       ) {
-        env.S2S_SECRET = env.S2S_SECRET_PROD
+        env.S2S_SECRET_PROD = env.S2S_SECRET_PROD
       }
     }
 
