@@ -289,10 +289,12 @@ withPipeline(type, product, component) {
         ],
         keyVaultURLOverride: 'https://sptribs-prod.vault.azure.net/'
       ) {
-        uploadDmnDiagrams()
-        uploadBpmnDiagram()
+        env.S2S_SECRET = env.S2S_SECRET_PROD
       }
     }
+
+    uploadDmnDiagrams()
+    uploadBpmnDiagram()
   }
 
   afterSuccess('akschartsinstall') {
