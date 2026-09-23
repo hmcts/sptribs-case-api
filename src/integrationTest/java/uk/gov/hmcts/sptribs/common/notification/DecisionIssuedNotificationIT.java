@@ -242,7 +242,8 @@ public class DecisionIssuedNotificationIT {
 
             decisionIssuedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
-            verify(notificationServiceCIC).sendLetter(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(Party.REPRESENTATIVE));
+            verify(notificationServiceCIC).sendLetter(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()),
+                eq(Party.REPRESENTATIVE));
 
             NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -380,7 +381,8 @@ public class DecisionIssuedNotificationIT {
 
             decisionIssuedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
-            verify(notificationServiceCIC).sendLetter(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(Party.APPLICANT));
+            verify(notificationServiceCIC).sendLetter(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()),
+                eq(Party.APPLICANT));
 
             NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
