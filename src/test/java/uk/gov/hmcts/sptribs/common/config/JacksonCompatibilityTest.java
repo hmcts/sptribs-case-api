@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.common.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.ccd.sdk.jackson.UnwrappedPrefixModule;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
@@ -19,7 +20,7 @@ class JacksonCompatibilityTest {
 
     @Test
     void deserializesUnwrappedCaseData() throws Exception {
-        ObjectMapper mapper = new JacksonConfiguration().getMapper();
+        ObjectMapper mapper = mapper();
         CaseData caseData = mapper.readValue(
             "{\"cicCaseSelectedDocumentType\":\"CASE\"}",
             CaseData.class
@@ -30,7 +31,7 @@ class JacksonCompatibilityTest {
 
     @Test
     void deserializesUnwrappedSdkTypes() throws Exception {
-        ObjectMapper mapper = new JacksonConfiguration().getMapper();
+        ObjectMapper mapper = mapper();
         DynamicListElement selected = DynamicListElement.builder()
             .code(UUID.randomUUID())
             .label("selected")
@@ -56,5 +57,10 @@ class JacksonCompatibilityTest {
 
         assertThat(caseData.getCicCase().getOrderDynamicList().getValue()).isEqualTo(selected);
         assertThat(caseData.getCicCase().getSelectedDocumentLink().getUrl()).isEqualTo("http://url/");
+    }
+
+    private static ObjectMapper mapper() {
+        // The SDK registers this module on every ObjectMapper bean; this test builds the mapper outside Spring.
+        return new JacksonConfiguration().getMapper().registerModule(new UnwrappedPrefixModule());
     }
 }
