@@ -16,9 +16,9 @@
           ],
           "draftOrder": {
             "templateGeneratedDocument": {
-              "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/6bcdb209-ba65-4f31-a12a-5abbdf250fb6",
+              "document_url": "http://url/",
               "document_filename": "Order--[AAC]--09-05-2024 09:04:04.pdf",
-              "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/6bcdb209-ba65-4f31-a12a-5abbdf250fb6/binary",
+              "document_binary_url": "http://url/binary",
               "category_id": "TD"
             },
             "orderContentOrderTemplate": "CIC3_Rule_27",

@@ -61,6 +61,46 @@ public class CcdUpdateService {
         }
     }
 
+    public void createCase(final String eventId,
+                           final CICUser user,
+                           final String serviceAuth) {
+
+        final String userId = user.getUserInfo().getUid();
+        final String authorization = user.getAuthToken();
+
+        try {
+            final StartEventResponse startEventResponse = coreCaseDataApi.startForCaseworker(
+                authorization,
+                serviceAuth,
+                userId,
+                ST_CIC_JURISDICTION,
+                ST_CIC_CASE_TYPE,
+                eventId
+            );
+
+            final CaseDataContent caseDataContent = ccdCaseDataContentProvider.createCaseDataContent(
+                startEventResponse,
+                SPTRIBS_CASE_SUBMISSION_EVENT_SUMMARY,
+                SPTRIBS_CASE_SUBMISSION_EVENT_DESCRIPTION
+            );
+
+            coreCaseDataApi.submitForCaseworker(
+                authorization,
+                serviceAuth,
+                userId,
+                ST_CIC_JURISDICTION,
+                ST_CIC_CASE_TYPE,
+                true,
+                caseDataContent
+            );
+
+        } catch (final FeignException e) {
+            final String message = format("Create Case Failed for Event ID: %s", eventId);
+            log.error(message, e);
+            throw new CcdManagementException(message, e);
+        }
+    }
+
     @Retryable(retryFor = {CcdManagementException.class})
     public void submitEventWithRetry(final String caseId,
                                      final String eventId,
@@ -73,29 +113,29 @@ public class CcdUpdateService {
 
         try {
             final StartEventResponse startEventResponse = coreCaseDataApi.startEventForCaseWorker(
-                    authorization,
-                    serviceAuth,
-                    userId,
-                    ST_CIC_JURISDICTION,
-                    ST_CIC_CASE_TYPE,
-                    caseId,
-                    eventId);
+                authorization,
+                serviceAuth,
+                userId,
+                ST_CIC_JURISDICTION,
+                ST_CIC_CASE_TYPE,
+                caseId,
+                eventId);
 
             final CaseDataContent caseDataContent = ccdCaseDataContentProvider.createCaseDataContent(
-                    startEventResponse,
-                    SPTRIBS_CASE_SUBMISSION_EVENT_SUMMARY,
-                    SPTRIBS_CASE_SUBMISSION_EVENT_DESCRIPTION,
-                    caseTask);
+                startEventResponse,
+                SPTRIBS_CASE_SUBMISSION_EVENT_SUMMARY,
+                SPTRIBS_CASE_SUBMISSION_EVENT_DESCRIPTION,
+                caseTask);
 
             coreCaseDataApi.submitEventForCaseWorker(
-                    authorization,
-                    serviceAuth,
-                    userId,
-                    ST_CIC_JURISDICTION,
-                    ST_CIC_CASE_TYPE,
-                    caseId,
-                    true,
-                    caseDataContent);
+                authorization,
+                serviceAuth,
+                userId,
+                ST_CIC_JURISDICTION,
+                ST_CIC_CASE_TYPE,
+                caseId,
+                true,
+                caseDataContent);
         } catch (FeignException e) {
             final String message = format("Submit Event Failed for Case ID: %s, Event ID: %s", caseId, eventId);
             log.error(message, e);
@@ -112,27 +152,27 @@ public class CcdUpdateService {
                                                    final String authorization) {
 
         final StartEventResponse startEventResponse = coreCaseDataApi.startEventForCaseWorker(
-                authorization,
-                serviceAuth,
-                userId,
-                ST_CIC_JURISDICTION,
-                ST_CIC_CASE_TYPE,
-                caseId,
-                eventId);
+            authorization,
+            serviceAuth,
+            userId,
+            ST_CIC_JURISDICTION,
+            ST_CIC_CASE_TYPE,
+            caseId,
+            eventId);
 
         final CaseDataContent caseDataContent = ccdCaseDataContentProvider.createCaseDataContent(
-                startEventResponse,
-                SPTRIBS_CASE_SUBMISSION_EVENT_SUMMARY,
-                SPTRIBS_CASE_SUBMISSION_EVENT_DESCRIPTION);
+            startEventResponse,
+            SPTRIBS_CASE_SUBMISSION_EVENT_SUMMARY,
+            SPTRIBS_CASE_SUBMISSION_EVENT_DESCRIPTION);
 
         coreCaseDataApi.submitEventForCaseWorker(
-                authorization,
-                serviceAuth,
-                userId,
-                ST_CIC_JURISDICTION,
-                ST_CIC_CASE_TYPE,
-                caseId,
-                true,
-                caseDataContent);
+            authorization,
+            serviceAuth,
+            userId,
+            ST_CIC_JURISDICTION,
+            ST_CIC_CASE_TYPE,
+            caseId,
+            true,
+            caseDataContent);
     }
 }

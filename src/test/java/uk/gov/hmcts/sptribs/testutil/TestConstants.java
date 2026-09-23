@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.testutil;
 
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
+import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -113,7 +114,9 @@ public final class TestConstants {
     public static final Integer TEST_JUDICIAL_USERS_PAGE_SIZE = 600;
 
     public static final Long TEST_CASE_ID = 1616591401473378L;
+    public static final String TEST_CASE_ID_STRING = "1616591401473378";
     public static final String TEST_CASE_ID_HYPHENATED = "1616-5914-0147-3378";
+    public static final String TEST_POSTCODE = "SW11 1PD";
     public static final String TEST_SERVICE_AUTH_TOKEN = "Bearer TestServiceAuth";
     public static final String TEST_CICA_REF_NUMBER = "X/12/123456-TM1A";
 
@@ -172,6 +175,10 @@ public final class TestConstants {
 
     public static final String ST_CIC_JURISDICTION = "ST_CIC";
     public static final String ST_CIC_CASE_TYPE = "CriminalInjuriesCompensation";
+
+    public static final DateModel DATE_MODEL = DateModel.builder()
+        .dueDate(LocalDate.of(2026, 1, 2))
+        .build();
 
     private TestConstants() {
     }

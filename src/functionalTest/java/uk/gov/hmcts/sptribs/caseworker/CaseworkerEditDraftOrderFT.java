@@ -35,7 +35,7 @@ public class CaseworkerEditDraftOrderFT extends FunctionalTestSuite {
     public void shouldSuccessFullyUpdateDraftOrderInformationWhenMidEventCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_MID_EVENT);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_DRAFT_ORDER, EDIT_DRAFT_ORDER_MID_EVENT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_DRAFT_ORDER, EDIT_DRAFT_ORDER_MID_EVENT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -48,7 +48,7 @@ public class CaseworkerEditDraftOrderFT extends FunctionalTestSuite {
     public void shouldSuccessFullyInitialiseDraftOrderListWhenAboutToSubmitCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_DRAFT_ORDER, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_DRAFT_ORDER, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -61,7 +61,7 @@ public class CaseworkerEditDraftOrderFT extends FunctionalTestSuite {
     public void shouldTriggerSuccessfulResponseIfSubmitCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_DRAFT_ORDER, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_DRAFT_ORDER, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())

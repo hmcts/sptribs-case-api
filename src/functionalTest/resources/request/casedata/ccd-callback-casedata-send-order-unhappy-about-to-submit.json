@@ -6,9 +6,9 @@
         "documentCategory": "Mental Health records",
         "documentEmailContent": "A test doc",
         "documentLink": {
-          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/5dabdd89-42e4-4294-8d67-a7aae560e6b6",
+          "document_url": "http://dm-store.service.core-compute.internal/documents/5dabdd89-42e4-4294-8d67-a7aae560e6b6",
           "document_filename": "Test-Letter-V2 3.pdf",
-          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/5dabdd89-42e4-4294-8d67-a7aae560e6b6/binary",
+          "document_binary_url": "http://dm-store.service.core-compute.internal/documents/5dabdd89-42e4-4294-8d67-a7aae560e6b6/binary",
           "category_id": "C"
         }
       }
@@ -19,18 +19,18 @@
         "documentCategory": "Application for review",
         "documentEmailContent": "test",
         "documentLink": {
-          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21a",
+          "document_url": "http://dm-store.service.core-compute.internal/documents/708c674f-59c3-418a-b76b-78f2cc52d21a",
           "document_filename": "sample4.m4a",
-          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21a/binary",
+          "document_binary_url": "http://dm-store.service.core-compute.internal/documents/708c674f-59c3-418a-b76b-78f2cc52d21a/binary",
           "category_id": "A"
         }
       }
     }
   ],
   "cicCaseSelectedOrder": {
-    "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/c42d2333-b4c6-4065-a528-3cff9a0cd932",
+    "document_url": "http://dm-store.service.core-compute.internal/documents/c42d2333-b4c6-4065-a528-3cff9a0cd932",
     "document_filename": "test.pdf",
-    "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/c42d2333-b4c6-4065-a528-3cff9a0cd932/binary",
+    "document_binary_url": "http://dm-store.service.core-compute.internal/documents/c42d2333-b4c6-4065-a528-3cff9a0cd932/binary",
     "category_id": "TD"
   },
   "cicCaseOrderList": [
@@ -44,9 +44,9 @@
             "value": {
               "documentEmailContent": "Test",
               "documentLink": {
-                "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/c42d2333-b4c6-4065-a528-3cff9a0cd932",
+                "document_url": "http://dm-store.service.core-compute.internal/documents/c42d2333-b4c6-4065-a528-3cff9a0cd932",
                 "document_filename": "test.pdf",
-                "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/c42d2333-b4c6-4065-a528-3cff9a0cd932/binary",
+                "document_binary_url": "http://dm-store.service.core-compute.internal/documents/c42d2333-b4c6-4065-a528-3cff9a0cd932/binary",
                 "category_id": "TD"
               }
             }
@@ -125,6 +125,5 @@
   "cicCaseCompensationClaimLinkCIC": "No",
   "cicCaseIsRepresentativePresent": "Yes",
   "stayIsCaseStayed": "No",
-  "hearingSummaryExists": "YES",
-  "hyphenatedCaseRef": "1699-9545-8542-9659"
+  "hearingSummaryExists": "YES"
 }

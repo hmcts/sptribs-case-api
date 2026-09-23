@@ -3,8 +3,10 @@ package uk.gov.hmcts.sptribs.caseworker;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
+import java.util.List;
 import java.util.Map;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
@@ -46,7 +48,7 @@ public class CaseworkerEditRecordListingFT extends FunctionalTestSuite {
     public void shouldSetHearingAndRegionFieldsWhenAboutToStartCallBackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_ABOUT_TO_START);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_RECORD_LISTING, ABOUT_TO_START_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_RECORD_LISTING, ABOUT_TO_START_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -59,7 +61,7 @@ public class CaseworkerEditRecordListingFT extends FunctionalTestSuite {
     public void shouldSetHearingVenueFieldsWhenMidEventCallBackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_MID_EVENT);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_RECORD_LISTING, EDIT_RECORD_LISTING_MID_EVENT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_RECORD_LISTING, EDIT_RECORD_LISTING_MID_EVENT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -72,7 +74,7 @@ public class CaseworkerEditRecordListingFT extends FunctionalTestSuite {
     public void shouldSetAdditionalHearingDateAndStateWhenAboutToSubmitCallBackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST_HAPPY);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_RECORD_LISTING, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_RECORD_LISTING, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -85,7 +87,7 @@ public class CaseworkerEditRecordListingFT extends FunctionalTestSuite {
     public void shouldContainErrorWhenNoPartiesEnteredWhenAboutToSubmitCallBackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST_UNHAPPY);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_RECORD_LISTING, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_RECORD_LISTING, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -98,7 +100,7 @@ public class CaseworkerEditRecordListingFT extends FunctionalTestSuite {
     public void shouldTriggerSuccessfulResponseIfSubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST_HAPPY);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_RECORD_LISTING, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_RECORD_LISTING, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -109,18 +111,71 @@ public class CaseworkerEditRecordListingFT extends FunctionalTestSuite {
                 ##  If any changes are made to this hearing,  \
                 remember to make those changes in this listing record.\s
                 ## A notification has been sent to: Subject""");
+
+        long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
+
+        List<CorrespondenceEntity> correspondenceEntities = caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef);
+        assertThat(correspondenceEntities).hasSize(1);
+
+        CorrespondenceEntity firstCorrespondenceEntity = correspondenceEntities.getFirst();
+
+        assertThat(firstCorrespondenceEntity.getId()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
+            .toString().replace("-", "")));
+        assertThat(firstCorrespondenceEntity.getEventType()).isEqualTo("HEARING_UPDATED_EMAIL");
+        assertThat(firstCorrespondenceEntity.getSentOn()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getSentFrom()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getSentTo()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getCorrespondenceType()).isEqualTo("Email");
+        assertThat(firstCorrespondenceEntity.getDocumentUrl()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getDocumentFilename()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getDocumentBinaryUrl()).isNotNull();
     }
 
     @Test
     public void shouldTriggerUnsuccessfulResponseIfBadSubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST_UNHAPPY);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_RECORD_LISTING, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_RECORD_LISTING, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
             .isString()
             .contains("# Update listing notification failed \n## Please resend the notification");
+    }
+
+    @Test
+    public void shouldReturnHearingDateAfterEditInAboutToSubmit() throws Exception {
+        final Map<String, Object> caseData = caseData(CALLBACK_REQUEST_HAPPY);
+        final String hearingCode = "18b88d33-9da8-4ee0-946d-de71d33e4d6f";
+        caseData.put("hearingDate", "2023-04-21");
+        caseData.put("hearingType", "Final");
+        caseData.put("hearingStatus", "Listed");
+        caseData.put("date", "2023-05-25");
+        caseData.put("hearingTime", "10:00");
+
+        caseData.put("hearingList", List.of(
+            Map.of(
+                "id", "1",
+                "value", Map.of(
+                    "hearingType", "Final",
+                    "date", "2023-04-21",
+                    "hearingTime", "10:00",
+                    "hearingStatus", "Listed"
+                )
+            )
+        ));
+        caseData.put("cicCaseHearingList", Map.of(
+            "value", Map.of("code", hearingCode, "label", "1 - Final - 21 Apr 2023 10:00"),
+            "list_items", List.of(Map.of("code", hearingCode, "label", "1 - Final - 21 Apr 2023 10:00"))
+        ));
+
+        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_RECORD_LISTING, ABOUT_TO_SUBMIT_URL, false);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .inPath("$.data.hearingDate")
+            .isEqualTo("2023-05-25");
     }
 }

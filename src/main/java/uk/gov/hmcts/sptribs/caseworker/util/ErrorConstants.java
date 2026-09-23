@@ -12,6 +12,8 @@ public final class ErrorConstants {
     public static final String FAILED_TO_ANONYMISE_CASE = "Failed to generate an anonymised name for the case";
     public static final String MISSING_DUE_DATE = "Updated due date cannot be empty for Other option";
     public static final String EMPTY_DATE_MODEL = "Please select an option from the list before continuing";
+    public static final String FAILED_SAVING_DOCUMENT_TO_DATABASE = "Error saving document with filename: ";
+    public static final String FAILED_SAVING_DOCUMENT_WITH_NO_FILENAME_TO_DATABASE = "Error saving document with no filename";
 
     private ErrorConstants() {
 

@@ -106,6 +106,7 @@ public class CreateCaseIT {
             .caseDocumentsUpload(getCaseworkerCICDocumentUploadList("file.pdf"))
             .build();
         caseData.setCicCase(cicCase);
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
 
         String response = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
             .contentType(APPLICATION_JSON)
@@ -171,7 +172,7 @@ public class CreateCaseIT {
             .contains("# Case Created \n## Case reference number: \n## " + TEST_CASE_ID_HYPHENATED);
 
         verify(coreCaseApiService).submitSupplementaryDataToCcd(TEST_CASE_ID.toString());
-        verify(notificationServiceCIC, times(3)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED));
+        verify(notificationServiceCIC, times(3)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
         verifyNoMoreInteractions(notificationServiceCIC);
     }
 

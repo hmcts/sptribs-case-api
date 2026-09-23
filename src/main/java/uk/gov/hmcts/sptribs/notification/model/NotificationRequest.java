@@ -13,7 +13,7 @@ public class NotificationRequest {
     private TemplateName template;
     private Map<String, Object> templateVars;
     private boolean hasFileAttachments;
-    private Map<String, String> uploadedDocuments;
+    private Map<String, String> templateDocumentVars;
     private byte [] fileContents;
     private byte [] fileContents1;
 }

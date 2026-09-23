@@ -6,18 +6,23 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
+import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
+import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
@@ -28,6 +33,7 @@ import uk.gov.hmcts.sptribs.document.bundling.model.BundleIdAndTimestamp;
 import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.notification.dispatcher.BundleCreatedNotification;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -36,13 +42,19 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
@@ -61,6 +73,8 @@ class CaseworkerCreateBundleTest {
     private static final Instant instant = Instant.now();
     private static final ZoneId zoneId = ZoneId.systemDefault();
 
+    @Mock
+    private BundleCreatedNotification bundleCreatedNotification;
 
     @InjectMocks
     private CaseworkerCreateBundle caseworkerCreateBundle;
@@ -98,6 +112,32 @@ class CaseworkerCreateBundleTest {
     }
 
     @Test
+    void shouldNotAddSubmittedIfCitizenDashboardIsDisabled() {
+        ReflectionTestUtils.setField(caseworkerCreateBundle, "citizenDashboardEnabled", false);
+
+        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+
+        caseworkerCreateBundle.configure(configBuilder);
+
+        assertThat(getEventsFrom(configBuilder).values())
+            .extracting(Event::getSubmittedCallback)
+            .containsOnlyNulls();
+    }
+
+    @Test
+    void shouldAddSubmittedIfCitizenDashboardIsEnabled() {
+        ReflectionTestUtils.setField(caseworkerCreateBundle, "citizenDashboardEnabled", true);
+
+        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+
+        caseworkerCreateBundle.configure(configBuilder);
+
+        assertThat(getEventsFrom(configBuilder).values())
+            .extracting(Event::getSubmittedCallback)
+            .doesNotContainNull();
+    }
+
+    @Test
     void shouldSuccessfullyCreateBundle() {
         final CaseData caseData = caseData();
         final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList();
@@ -115,7 +155,7 @@ class CaseworkerCreateBundleTest {
         when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
         when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
 
-        when(bundlingService.createBundle(any(BundleCallback.class))).thenAnswer(callback -> {
+        when(bundlingService.createBundle(any(BundleCallback.class), eq(TEST_CASE_ID))).thenAnswer(callback -> {
             final BundleCallback callbackAtMockTime = (BundleCallback) callback.getArguments()[0];
 
             //check case data at call time
@@ -143,6 +183,100 @@ class CaseworkerCreateBundleTest {
         //i.e. not in their respective child objects as well (CicCase.applicantDocumentsUploaded)
         assertThat(responseData.getCaseDocuments()).isNull();
         assertThat(responseData.getMultiBundleConfiguration()).isNull();
+    }
+
+    @Test
+    void shouldSuccessfullySendNotificationToRepresentative() {
+
+        final CaseData caseData = caseData();
+        final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList();
+        final CicCase cicCase = CicCase.builder().build();
+        cicCase.setApplicantDocumentsUploaded(cicDocuments);
+        caseData.setCicCase(cicCase);
+        caseData.setHyphenatedCaseRef("1234-5678-3456");
+        cicCase.setRepresentativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE));
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        doAnswer(invocation -> {
+            cicCase.setResNotificationResponse(NotificationResponse.builder().build());
+            return null;
+        }).when(bundleCreatedNotification).sendToRespondent(any(), any());
+
+        doAnswer(invocation -> {
+            cicCase.setRepNotificationResponse(NotificationResponse.builder().build());
+            return null;
+        }).when(bundleCreatedNotification).sendToRepresentative((CaseData) any(), any());
+
+        SubmittedCallbackResponse createBundleSubmittedResponse =
+            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+
+        assertThat(createBundleSubmittedResponse.getConfirmationHeader())
+            .isEqualTo("# Bundle created. \n## A notification has been sent to: Representative, Respondent");
+    }
+
+    @Test
+    void shouldSuccessfullySendNotificationToApplicant() {
+
+        final CaseData caseData = caseData();
+        final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList();
+        final CicCase cicCase = CicCase.builder().build();
+        cicCase.setApplicantDocumentsUploaded(cicDocuments);
+        caseData.setCicCase(cicCase);
+        caseData.setHyphenatedCaseRef("1234-5678-3456");
+        cicCase.setApplicantCIC(Set.of(ApplicantCIC.APPLICANT_CIC));
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        doAnswer(invocation -> {
+            cicCase.setResNotificationResponse(NotificationResponse.builder().build());
+            return null;
+        }).when(bundleCreatedNotification).sendToRespondent(any(), any());
+
+        doAnswer(invocation -> {
+            cicCase.setAppNotificationResponse(NotificationResponse.builder().build());
+            return null;
+        }).when(bundleCreatedNotification).sendToApplicant(any(), any());
+
+        SubmittedCallbackResponse createBundleSubmittedResponse =
+            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+
+        assertThat(createBundleSubmittedResponse.getConfirmationHeader())
+            .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent, Applicant");
+    }
+
+    @Test
+    void shouldReturnFailedToSendNotificationOnError() {
+
+        final CaseData caseData = caseData();
+        final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList();
+        final CicCase cicCase = CicCase.builder().build();
+        cicCase.setApplicantDocumentsUploaded(cicDocuments);
+        caseData.setCicCase(cicCase);
+        cicCase.setRepresentativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE));
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        doThrow(new RuntimeException("Notification Failed")).when(bundleCreatedNotification).sendToRespondent(any(), any());
+        doThrow(new RuntimeException("Notification Failed")).when(bundleCreatedNotification).sendToRepresentative((CaseData) any(), any());
+
+        SubmittedCallbackResponse createBundleSubmittedResponse =
+            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+
+        assertThat(createBundleSubmittedResponse.getConfirmationHeader())
+            .isEqualTo("""
+                # Bundle creation notification failed\s
+                ## A notification could not be sent to: Respondent, Representative\s
+                ## Please resend the notification.""");
     }
 
     @Test
@@ -174,7 +308,7 @@ class CaseworkerCreateBundleTest {
         when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
         when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
 
-        when(bundlingService.createBundle(any(BundleCallback.class))).thenAnswer(callback -> {
+        when(bundlingService.createBundle(any(BundleCallback.class), eq(TEST_CASE_ID))).thenAnswer(callback -> {
             final BundleCallback callbackAtMockTime = (BundleCallback) callback.getArguments()[0];
 
             final CaseData dataAtMockTime = callbackAtMockTime.getCaseDetails().getData();
@@ -207,7 +341,6 @@ class CaseworkerCreateBundleTest {
     void shouldSuccessfullyCreateBundleWithNewOrderEnabled_FurtherUploadsAfterCicaUpload() {
         final CaseData caseData = caseData();
         caseData.setNewBundleOrderEnabled(YesNo.YES);
-
         final CicCase cicCase = CicCase.builder().build();
 
         LocalDate applicantDocsDate = LocalDate.of(2026, 1, 10);
@@ -222,6 +355,7 @@ class CaseworkerCreateBundleTest {
             getCaseworkerCICDocument("supportingDoc2.docx", DocumentType.DSS_SUPPORTING, additionalApplicantDocsDate);
         final ListValue<CaseworkerCICDocument> otherDocs2 =
             getCaseworkerCICDocument("otherDoc2.txt", DocumentType.DSS_OTHER, additionalApplicantDocsDate);
+
         allApplicantDocs.add(tribunalForm2);
         allApplicantDocs.add(supportingDocs2);
         allApplicantDocs.add(otherDocs2);
@@ -254,14 +388,15 @@ class CaseworkerCreateBundleTest {
         when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
         when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
 
-        when(bundlingService.createBundle(any(BundleCallback.class))).thenAnswer(callback -> {
+        when(bundlingService.createBundle(any(BundleCallback.class), eq(TEST_CASE_ID))).thenAnswer(callback -> {
             final BundleCallback callbackAtMockTime = (BundleCallback) callback.getArguments()[0];
 
             final CaseData dataAtMockTime = callbackAtMockTime.getCaseDetails().getData();
             // Initial documents should be in caseDocuments
             assertThat(dataAtMockTime.getCaseDocuments()).hasSize(3);
-            // furtherCaseDocuments should have the additional documents
+            // Further documents should include only valid additional docs.
             assertThat(dataAtMockTime.getFurtherCaseDocuments()).hasSize(6);
+
             assertThat(dataAtMockTime.getBundleConfiguration()).isEqualTo(MULTI_BUNDLE_CONFIG);
             assertThat(dataAtMockTime.getMultiBundleConfiguration()).isEqualTo(List.of(MULTI_BUNDLE_CONFIG));
             return List.of(bundle);
@@ -317,13 +452,16 @@ class CaseworkerCreateBundleTest {
         when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
         when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
 
-        when(bundlingService.createBundle(any(BundleCallback.class))).thenAnswer(callback -> {
+        when(bundlingService.createBundle(any(BundleCallback.class), eq(TEST_CASE_ID))).thenAnswer(callback -> {
             final BundleCallback callbackAtMockTime = (BundleCallback) callback.getArguments()[0];
 
             final CaseData dataAtMockTime = callbackAtMockTime.getCaseDetails().getData();
             // Should use old logic - documents should be in caseDocuments
             assertThat(dataAtMockTime.getCaseDocuments()).hasSize(1);
-            assertThat(dataAtMockTime.getCaseDocuments().getFirst().getValue()).isEqualTo(cicDocuments.getFirst().getValue());
+            assertThat(dataAtMockTime.getCaseDocuments().getFirst().getValue().getDocumentCategory())
+                .isEqualTo(cicDocuments.getFirst().getValue().getDocumentCategory());
+            assertThat(dataAtMockTime.getCaseDocuments().getFirst().getValue().getDocumentLink().getFilename())
+                .endsWith(cicDocuments.getFirst().getValue().getDocumentLink().getFilename());
             // furtherCaseDocuments should be null when new order is disabled
             assertThat(dataAtMockTime.getFurtherCaseDocuments()).isNull();
             assertThat(dataAtMockTime.getBundleConfiguration()).isEqualTo(MULTI_BUNDLE_CONFIG);
@@ -361,7 +499,7 @@ class CaseworkerCreateBundleTest {
 
         Bundle bundle = Bundle.builder().build();
 
-        when(bundlingService.createBundle(any(BundleCallback.class))).thenAnswer(callback -> {
+        when(bundlingService.createBundle(any(BundleCallback.class), eq(TEST_CASE_ID))).thenAnswer(callback -> {
             final BundleCallback callbackAtMockTime = (BundleCallback) callback.getArguments()[0];
 
             final CaseData dataAtMockTime = callbackAtMockTime.getCaseDetails().getData();
@@ -436,12 +574,15 @@ class CaseworkerCreateBundleTest {
         when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
         when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
 
-        when(bundlingService.createBundle(any(BundleCallback.class))).thenAnswer(callback -> {
+        when(bundlingService.createBundle(any(BundleCallback.class), eq(TEST_CASE_ID))).thenAnswer(callback -> {
             final BundleCallback callbackAtMockTime = (BundleCallback) callback.getArguments()[0];
 
             //check case data at call time
             final CaseData dataAtMockTime = callbackAtMockTime.getCaseDetails().getData();
-            assertThat(dataAtMockTime.getCaseDocuments().getFirst().getValue()).isEqualTo(cicDocuments.getFirst().getValue());
+            assertThat(dataAtMockTime.getCaseDocuments().getFirst().getValue().getDocumentCategory())
+                .isEqualTo(cicDocuments.getFirst().getValue().getDocumentCategory());
+            assertThat(dataAtMockTime.getCaseDocuments().getFirst().getValue().getDocumentLink().getFilename())
+                .endsWith(cicDocuments.getFirst().getValue().getDocumentLink().getFilename());
             assertThat(dataAtMockTime.getBundleConfiguration()).isEqualTo(MULTI_BUNDLE_CONFIG);
             assertThat(dataAtMockTime.getMultiBundleConfiguration()).isEqualTo(List.of(MULTI_BUNDLE_CONFIG));
             return List.of(bundle);
@@ -589,7 +730,7 @@ class CaseworkerCreateBundleTest {
                 .build()
         );
 
-        when(bundlingService.createBundle(any(BundleCallback.class))).thenReturn(testBundles);
+        when(bundlingService.createBundle(any(BundleCallback.class), eq(TEST_CASE_ID))).thenReturn(testBundles);
         when(bundlingService.buildBundleListValues(anyList())).thenReturn(testListValueBundles);
 
         final List<ListValue<CaseworkerCICDocument>> documents = getCaseworkerCICDocumentList("test.mp3");
@@ -743,7 +884,7 @@ class CaseworkerCreateBundleTest {
                 .build()
         );
 
-        when(bundlingService.createBundle(any(BundleCallback.class))).thenReturn(testBundles);
+        when(bundlingService.createBundle(any(BundleCallback.class), eq(TEST_CASE_ID))).thenReturn(testBundles);
         when(bundlingService.buildBundleListValues(anyList())).thenReturn(testListValueBundles);
 
         final List<ListValue<CaseworkerCICDocument>> documents = getCaseworkerCICDocumentList("test.mp3");
@@ -840,7 +981,7 @@ class CaseworkerCreateBundleTest {
             .value(Bundle.builder().id(newBundleUUID).build())
             .build());
 
-        when(bundlingService.createBundle(any(BundleCallback.class))).thenReturn(List.of(oldBundle1, oldBundle2));
+        when(bundlingService.createBundle(any(BundleCallback.class), eq(TEST_CASE_ID))).thenReturn(List.of(oldBundle1, oldBundle2));
         when(bundlingService.buildBundleListValues(anyList())).thenReturn(apiReturnedBundles);
         when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
         when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
@@ -898,7 +1039,7 @@ class CaseworkerCreateBundleTest {
             .value(Bundle.builder().id(newBundleUUID).build())
             .build());
 
-        when(bundlingService.createBundle(any(BundleCallback.class))).thenReturn(List.of());
+        when(bundlingService.createBundle(any(BundleCallback.class), eq(TEST_CASE_ID))).thenReturn(List.of());
         when(bundlingService.buildBundleListValues(anyList())).thenReturn(apiReturnedBundles);
         when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
         when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
@@ -925,5 +1066,29 @@ class CaseworkerCreateBundleTest {
         assertThat(responseData.getCaseBundles().getFirst().getValue().getDateAndTime())
             .isEqualTo(LocalDateTime.ofInstant(instant, zoneId));
         assertThat(responseData.getCaseBundleIdsAndTimestamps()).hasSize(1);
+    }
+
+    @Test
+    void shouldNotNotifyIfCaseClosed() {
+        final CaseData caseData = caseData();
+        final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList();
+        final CicCase cicCase = CicCase.builder().build();
+        cicCase.setApplicantDocumentsUploaded(cicDocuments);
+        caseData.setCicCase(cicCase);
+        caseData.setHyphenatedCaseRef("1234-5678-3456");
+        cicCase.setRepresentativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE));
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setState(CaseClosed);
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        SubmittedCallbackResponse createBundleSubmittedResponse =
+            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+
+        assertThat(createBundleSubmittedResponse.getConfirmationHeader())
+            .isEqualTo("# Bundle created.");
+        verifyNoInteractions(bundleCreatedNotification);
     }
 }

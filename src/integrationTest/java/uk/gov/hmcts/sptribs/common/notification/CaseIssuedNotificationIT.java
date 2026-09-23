@@ -83,7 +83,7 @@ public class CaseIssuedNotificationIT {
 
         caseIssuedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(null));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -150,7 +150,7 @@ public class CaseIssuedNotificationIT {
 
         caseIssuedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(null));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -218,7 +218,7 @@ public class CaseIssuedNotificationIT {
 
         caseIssuedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(null));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -294,7 +294,7 @@ public class CaseIssuedNotificationIT {
 
         caseIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(null));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -304,7 +304,7 @@ public class CaseIssuedNotificationIT {
             .isEqualTo(CASE_ISSUED_RESPONDENT_EMAIL);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(expectedTemplateVars);
-        assertThat(notificationRequest.getUploadedDocuments())
+        assertThat(notificationRequest.getTemplateDocumentVars())
             .isNull();
     }
 
@@ -337,7 +337,7 @@ public class CaseIssuedNotificationIT {
 
         caseIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(null));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -347,7 +347,7 @@ public class CaseIssuedNotificationIT {
             .isEqualTo(CASE_ISSUED_RESPONDENT_EMAIL);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(expectedTemplateVars);
-        assertThat(notificationRequest.getUploadedDocuments())
+        assertThat(notificationRequest.getTemplateDocumentVars())
             .isNull();
     }
 
@@ -412,7 +412,8 @@ public class CaseIssuedNotificationIT {
 
         caseIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(selectedDocuments), eq(TEST_CASE_ID.toString()));
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(selectedDocuments), eq(TEST_CASE_ID.toString()),
+            eq(null));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -422,7 +423,7 @@ public class CaseIssuedNotificationIT {
             .isEqualTo(CASE_ISSUED_RESPONDENT_EMAIL);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(expectedTemplateVars);
-        assertThat(notificationRequest.getUploadedDocuments())
+        assertThat(notificationRequest.getTemplateDocumentVars())
             .isNotNull();
     }
 
@@ -488,7 +489,8 @@ public class CaseIssuedNotificationIT {
 
         caseIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(selectedDocuments), eq(TEST_CASE_ID.toString()));
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(),
+            eq(selectedDocuments), eq(TEST_CASE_ID.toString()), eq(null));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -498,7 +500,7 @@ public class CaseIssuedNotificationIT {
             .isEqualTo(CASE_ISSUED_RESPONDENT_EMAIL);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(expectedTemplateVars);
-        assertThat(notificationRequest.getUploadedDocuments())
+        assertThat(notificationRequest.getTemplateDocumentVars())
             .isNotNull();
     }
 }

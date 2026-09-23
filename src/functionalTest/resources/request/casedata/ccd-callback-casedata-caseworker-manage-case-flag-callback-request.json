@@ -114,9 +114,9 @@
       "value": {
         "documentLink": {
           "category_id": "A",
-          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/f784cfb9-cbcb-4d2d-9547-f35d7c4de91e",
+          "document_url": "http://dm-store.service.core-compute.internal/documents/f784cfb9-cbcb-4d2d-9547-f35d7c4de91e",
           "document_filename": "mockFile.pdf",
-          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/f784cfb9-cbcb-4d2d-9547-f35d7c4de91e/binary"
+          "document_binary_url": "http://dm-store.service.core-compute.internal/documents/f784cfb9-cbcb-4d2d-9547-f35d7c4de91e/binary"
         },
         "documentCategory": "ApplicationForm",
         "documentEmailContent": "Lorem ipsum text A - Application Form"

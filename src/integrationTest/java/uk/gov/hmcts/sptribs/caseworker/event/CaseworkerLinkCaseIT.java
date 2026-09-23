@@ -117,7 +117,7 @@ public class CaseworkerLinkCaseIT {
             .isString()
             .contains("# Case Link created \n");
 
-        verify(notificationServiceCIC, times(3)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED));
+        verify(notificationServiceCIC, times(3)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
         verifyNoMoreInteractions(notificationServiceCIC);
     }
 
@@ -138,7 +138,7 @@ public class CaseworkerLinkCaseIT {
                 .build()
         );
 
-        when(notificationServiceCIC.sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED)))
+        when(notificationServiceCIC.sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(null)))
             .thenThrow(new NotificationException(new NotificationClientException("")));
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
@@ -161,7 +161,7 @@ public class CaseworkerLinkCaseIT {
             .isString()
             .contains("# Case Link notification failed \n## Please resend the notification");
 
-        verify(notificationServiceCIC, times(1)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED));
+        verify(notificationServiceCIC, times(1)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
         verifyNoMoreInteractions(notificationServiceCIC);
     }
 

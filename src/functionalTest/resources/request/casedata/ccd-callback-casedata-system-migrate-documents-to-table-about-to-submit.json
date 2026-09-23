@@ -1,0 +1,376 @@
+{
+    "caseFlags": {
+      "details": []
+    },
+    "caseLinks": [],
+    "memberList": [],
+    "regionList": {
+      "value": {
+        "code": "60441279-18cc-4310-8a9f-04d18c37f775",
+        "label": "1-London"
+      },
+      "valueCode": "60441279-18cc-4310-8a9f-04d18c37f775",
+      "list_items": [
+        {
+          "code": "60441279-18cc-4310-8a9f-04d18c37f775",
+          "label": "1-London"
+        },
+        {
+          "code": "3efe333f-a137-4cc6-800f-96cc4a58726e",
+          "label": "10-Northern Ireland"
+        },
+        {
+          "code": "e0f37105-99bc-49a5-ba21-2eeb275e1aa6",
+          "label": "11-Scotland"
+        },
+        {
+          "code": "bb68236a-b9a0-460d-b448-ba024d6e4aae",
+          "label": "12-National"
+        },
+        {
+          "code": "a7d2b88a-4f3e-4f6b-bfc8-5858dfa3c4e5",
+          "label": "2-Midlands"
+        },
+        {
+          "code": "e33bb14a-ec27-48ae-b377-252cb238fe85",
+          "label": "3-North East"
+        },
+        {
+          "code": "a1d7d962-92bb-4fb8-bfc2-11135555f446",
+          "label": "4-North West"
+        },
+        {
+          "code": "7dc7ac8c-2b42-4dad-af04-dcf1d08dc5d1",
+          "label": "5-South East"
+        },
+        {
+          "code": "82598053-187c-4994-b558-51ac54015efa",
+          "label": "6-South West"
+        },
+        {
+          "code": "5fe7ca1d-5002-489d-8170-df65071d4b5a",
+          "label": "7-Wales"
+        }
+      ],
+      "valueLabel": "1-London"
+    },
+    "caseBundles": [],
+    "dataVersion": 0,
+    "hearingList": [
+      {
+        "id": "1",
+        "value": {
+          "date": "2025-02-05",
+          "recFile": [],
+          "session": "morning",
+          "addlInstr": "Updated Lorem Ipsum is simply dummy text of the printing and typesetting industry",
+          "memberList": [],
+          "regionList": {
+            "value": {
+              "code": "60441279-18cc-4310-8a9f-04d18c37f775",
+              "label": "1-London"
+            },
+            "valueCode": "60441279-18cc-4310-8a9f-04d18c37f775",
+            "list_items": [
+              {
+                "code": "60441279-18cc-4310-8a9f-04d18c37f775",
+                "label": "1-London"
+              },
+              {
+                "code": "3efe333f-a137-4cc6-800f-96cc4a58726e",
+                "label": "10-Northern Ireland"
+              },
+              {
+                "code": "e0f37105-99bc-49a5-ba21-2eeb275e1aa6",
+                "label": "11-Scotland"
+              },
+              {
+                "code": "bb68236a-b9a0-460d-b448-ba024d6e4aae",
+                "label": "12-National"
+              },
+              {
+                "code": "a7d2b88a-4f3e-4f6b-bfc8-5858dfa3c4e5",
+                "label": "2-Midlands"
+              },
+              {
+                "code": "e33bb14a-ec27-48ae-b377-252cb238fe85",
+                "label": "3-North East"
+              },
+              {
+                "code": "a1d7d962-92bb-4fb8-bfc2-11135555f446",
+                "label": "4-North West"
+              },
+              {
+                "code": "7dc7ac8c-2b42-4dad-af04-dcf1d08dc5d1",
+                "label": "5-South East"
+              },
+              {
+                "code": "82598053-187c-4994-b558-51ac54015efa",
+                "label": "6-South West"
+              },
+              {
+                "code": "5fe7ca1d-5002-489d-8170-df65071d4b5a",
+                "label": "7-Wales"
+              }
+            ],
+            "valueLabel": "1-London"
+          },
+          "hearingTime": "10:10",
+          "hearingType": "Interlocutory",
+          "roomAtVenue": "The Court Room 2",
+          "numberOfDays": "No",
+          "hearingFormat": "Video",
+          "hearingStatus": "Listed",
+          "hearingVenues": {
+            "value": {
+              "code": "1bd7f723-a4ff-4e46-b8ce-965acc80d04c",
+              "label": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London"
+            },
+            "valueCode": "1bd7f723-a4ff-4e46-b8ce-965acc80d04c",
+            "list_items": [
+              {
+                "code": "1bd7f723-a4ff-4e46-b8ce-965acc80d04c",
+                "label": "East London Tribunal Hearing Centre-2 Clove Crescent,East India Dock London"
+              },
+              {
+                "code": "7e3e5d7e-4cda-419a-8e59-206ba4024c52",
+                "label": "London Tribunals Centre-7 Newgate Street, London"
+              }
+            ],
+            "valueLabel": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London"
+          },
+          "videoCallLink": "http://localhost:3001",
+          "hearingCreatedDate": "2024-02-05",
+          "conferenceCallNumber": "01762534634",
+          "importantInfoDetails": "Updated Lorem Ipsum is simply dummy text of the printing and typesetting industry",
+          "venueNotListedOption": [],
+          "readOnlyHearingVenueName": "East London Tribunal Hearing Centre",
+          "recordListingChangeReason": "Listing record is being changed for testing purpose",
+          "hearingVenueNameAndAddress": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London"
+        }
+      }
+    ],
+    "hearingTime": "10:10",
+    "hearingType": "Interlocutory",
+    "roomAtVenue": "The Court Room 2",
+    "cicCaseEmail": "mhiuixlpc@sub.com",
+    "currentEvent": "",
+    "numberOfDays": "No",
+    "subjectFlags": {
+      "details": [],
+      "partyName": "Subject kaikaqsrf",
+      "roleOnCase": "subject"
+    },
+    "hearingFormat": "Video",
+    "hearingStatus": "Listed",
+    "hearingVenues": {
+      "value": {
+        "code": "1bd7f723-a4ff-4e46-b8ce-965acc80d04c",
+        "label": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London"
+      },
+      "valueCode": "1bd7f723-a4ff-4e46-b8ce-965acc80d04c",
+      "list_items": [
+        {
+          "code": "1bd7f723-a4ff-4e46-b8ce-965acc80d04c",
+          "label": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London"
+        },
+        {
+          "code": "7e3e5d7e-4cda-419a-8e59-206ba4024c52",
+          "label": "London Tribunals Centre-7 Newgate Street, London"
+        }
+      ],
+      "valueLabel": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London"
+    },
+    "orderDueDates": [],
+    "securityClass": "PUBLIC",
+    "videoCallLink": "http://localhost:3001",
+    "cicCaseAddress": {
+      "County": "London",
+      "Country": "UK",
+      "PostCode": "SW11 1PD",
+      "PostTown": "London",
+      "AddressLine1": "1 Subject Rse Way",
+      "AddressLine2": "Test Address Line 2",
+      "AddressLine3": "Test Address Line 3"
+    },
+    "closedDayCount": "",
+    "contactParties": {},
+    "cicCaseFullName": "Subject kaikaqsrf",
+    "cicCaseOrderList": [
+      {
+        "id": "82114d00-72a9-4231-8f4b-e236be9b1295",
+        "value": {
+          "draftOrder": {
+            "templateGeneratedDocument": {
+              "category_id": "TD",
+              "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/f54afe26-172e-44ad-be48-bd68ad53ffbc",
+              "document_filename": "sample_file.pdf",
+              "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/f54afe26-172e-44ad-be48-bd68ad53ffbc/binary"
+            }
+          },
+          "orderSentDate": "2026-07-31"
+        }
+      }
+    ],
+    "cicCaseRegionCIC": "London",
+    "cicCaseSchemeCic": "Year2001",
+    "firstHearingDate": "05 Feb 2025",
+    "hearingVenueName": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London",
+    "stayIsCaseStayed": "No",
+    "cicCasePartiesCIC": [
+      "SubjectCIC",
+      "RepresentativeCIC"
+    ],
+    "cicCaseSubjectCIC": [
+      "SubjectCIC"
+    ],
+    "cicCaseDateOfBirth": "1990-01-01",
+    "cicCaseHearingList": {
+      "value": {
+        "code": "34064639-3e4d-4cea-9395-4dddddf75060",
+        "label": "1 - Case management - 21 Jan 2024 10:10"
+      },
+      "valueCode": "34064639-3e4d-4cea-9395-4dddddf75060",
+      "list_items": [
+        {
+          "code": "34064639-3e4d-4cea-9395-4dddddf75060",
+          "label": "1 - Case management - 21 Jan 2024 10:10"
+        }
+      ],
+      "valueLabel": "1 - Case management - 21 Jan 2024 10:10"
+    },
+    "cicCasePhoneNumber": "07465730467",
+    "hearingCreatedDate": "2024-02-05",
+    "cicCaseCaseCategory": "Assessment",
+    "editCicaCaseDetails": {},
+    "representativeFlags": {
+      "details": [],
+      "partyName": "Representative juiutsqbg",
+      "roleOnCase": "Representative"
+    },
+    "conferenceCallNumber": "01762534634",
+    "importantInfoDetails": "Updated Lorem Ipsum is simply dummy text of the printing and typesetting industry",
+    "venueNotListedOption": [],
+    "caseNameHmctsInternal": "Subject kaikaqsrf",
+    "cicCaseRespondentName": "Appeals team",
+    "newBundleOrderEnabled": "Yes",
+    "caseManagementCategory": {
+      "value": {
+        "code": "ccf09a5b-fafc-4e4d-914f-5072c161883e",
+        "label": "Criminal Injuries Compensation"
+      },
+      "valueCode": "ccf09a5b-fafc-4e4d-914f-5072c161883e",
+      "list_items": [
+        {
+          "code": "ccf09a5b-fafc-4e4d-914f-5072c161883e",
+          "label": "Criminal Injuries Compensation"
+        }
+      ],
+      "valueLabel": "Criminal Injuries Compensation"
+    },
+    "caseManagementLocation": {
+      "region": "11",
+      "baseLocation": "366559"
+    },
+    "cicCaseCaseSubcategory": "MedicalReOpening",
+    "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
+    "cicCaseCaseReceivedDate": "2023-12-21",
+    "cicCaseClaimLinkedToCic": "Yes",
+    "cicCaseSelectedDocument": {},
+    "allCaseworkerCICDocument": [
+      {
+        "value": {
+          "documentLink": {
+            "category_id": "TD",
+            "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/7c6ca230-c5ee-42ac-96c4-e340b110808e",
+            "document_filename": "sample_file.pdf",
+            "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/7c6ca230-c5ee-42ac-96c4-e340b110808e/binary"
+          },
+          "documentCategory": "Linked docs",
+          "documentEmailContent": "some email content"
+        }
+      }
+    ],
+    "cicCaseDraftOrderCICList": [
+      {
+        "id": "1",
+        "value": {
+          "templateGeneratedDocument": {
+            "category_id": "TD",
+            "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/50d3cdd5-20ce-47b7-ae9e-7a798849c19b",
+            "document_filename": "Order--[TestSubject]--31-07-2026 09:42:48.pdf",
+            "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/50d3cdd5-20ce-47b7-ae9e-7a798849c19b/binary"
+          }
+        }
+      }
+    ],
+    "cicCaseRepresentativeCIC": [
+      "RepresentativeCIC"
+    ],
+    "newCaseworkerCICDocument": [],
+    "readOnlyHearingVenueName": "East London Tribunal Hearing Centre",
+    "cicCaseFormReceivedInTime": "No",
+    "cicCaseNotifyPartySubject": [
+      "SubjectCIC"
+    ],
+    "recordListingChangeReason": "Listing record is being changed for testing purpose",
+    "caseBundleIdsAndTimestamps": [],
+    "cicCaseCicaReferenceNumber": "CICATestReference",
+    "hearingVenueNameAndAddress": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London",
+    "cicCaseMissedTheDeadLineCic": "Yes",
+    "cicCaseContactPreferenceType": "Email",
+    "cicCaseNotifyPartyRespondent": [
+      "RespondentCIC"
+    ],
+    "cicCaseRepresentativeOrgName": "mchbnwimfi Limited",
+    "cicCaseRepresentativeFullName": "Representative juiutsqbg",
+    "cicCaseRespondentOrganisation": "CICA",
+    "allCaseworkerCICDocumentUpload": [],
+    "cicCaseIsRepresentativePresent": "Yes",
+    "cicCaseRepresentativeReference": "inthiruvir",
+    "newCaseworkerCICDocumentUpload": [],
+    "cicCaseCompensationClaimLinkCIC": "Yes",
+    "cicCaseIsRepresentativeQualified": "Yes",
+    "cicCaseNotifyPartyRepresentative": [
+      "RepresentativeCIC"
+    ],
+    "cicCaseRepresentativePhoneNumber": "07456831774",
+    "caseIssueDecisionDecisionDocument": {
+      "documentLink": {
+        "category_id": "TD",
+        "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/8ccefd85-a0b1-4acb-bc90-6ce676a3b7a4",
+        "document_filename": "sample_file.pdf",
+        "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/8ccefd85-a0b1-4acb-bc90-6ce676a3b7a4/binary"
+      },
+      "documentEmailContent": "Test Decision"
+    },
+    "cicCaseAlternativeRespondentEmail": "notice.appeals@cica.gov.uk",
+    "cicCaseApplicantDocumentsUploaded": [
+      {
+        "id": "7fa5ebe7-6b85-4747-aaa4-62a939405baa",
+        "value": {
+          "documentLink": {
+            "category_id": "A",
+            "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/f045922d-d08b-4864-a5f3-3145911f0086",
+            "document_filename": "sample_file.pdf",
+            "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/f045922d-d08b-4864-a5f3-3145911f0086/binary"
+          },
+          "documentCategory": "ApplicationForm",
+          "documentEmailContent": "This is a test document uploaded during create case journey"
+        }
+      }
+    ],
+    "cicCaseHearingNotificationParties": [
+      "Representative",
+      "Subject",
+      "Respondent"
+    ],
+    "cicCaseRepresentativeEmailAddress": "laggbmcju@representative.com",
+    "caseIssueFinalDecisionFinalDecisionDraft": {
+      "category_id": "TD",
+      "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/d4748cf4-de21-4e49-8d1e-f5cb2971e2d5",
+      "document_filename": "sample_file.pdf",
+      "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/d4748cf4-de21-4e49-8d1e-f5cb2971e2d5/binary"
+    },
+    "cicCaseRepresentativeContactDetailsPreference": "Email"
+  }

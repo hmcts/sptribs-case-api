@@ -3,9 +3,20 @@ package uk.gov.hmcts.sptribs.notification;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 
+import java.util.Map;
+
 public interface PartiesNotification {
     default void sendToSubject(final CaseData caseData, final String caseNumber) {
         //No operation
+    }
+
+    default String sendToSubject(
+        final CaseData caseData,
+        final String caseNumber,
+        final Map<String, String> uploadedDocuments
+    ) {
+        sendToSubject(caseData, caseNumber);
+        return null;
     }
 
     default void sendToSubject(final DssCaseData dssCaseData, final String caseNumber) {
@@ -16,8 +27,27 @@ public interface PartiesNotification {
         //No operation
     }
 
+    default String sendToApplicant(
+        final CaseData caseData,
+        final String caseNumber,
+        final Map<String, String> uploadedDocuments
+    ) {
+        sendToApplicant(caseData, caseNumber);
+        return null;
+    }
+
+
     default void sendToRepresentative(final CaseData caseData, final String caseNumber) {
         //No operation
+    }
+
+    default String sendToRepresentative(
+        final CaseData caseData,
+        final String caseNumber,
+        final Map<String, String> uploadedDocuments
+    ) {
+        sendToRepresentative(caseData, caseNumber);
+        return null;
     }
 
     default void sendToRepresentative(final DssCaseData dssCaseData, final String caseNumber) {
@@ -28,8 +58,26 @@ public interface PartiesNotification {
         //No operation
     }
 
+    default String sendToRespondent(
+        final CaseData caseData,
+        final String caseNumber,
+        final Map<String, String> uploadedDocuments
+    ) {
+        sendToRespondent(caseData, caseNumber);
+        return null;
+    }
+
     default void sendToTribunal(final CaseData caseData, final String caseNumber) {
         //No operation
+    }
+
+    default String sendToTribunal(
+        final CaseData caseData,
+        final String caseNumber,
+        final Map<String, String> uploadedDocuments
+    ) {
+        sendToTribunal(caseData, caseNumber);
+        return null;
     }
 
 }

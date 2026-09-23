@@ -104,7 +104,7 @@ public class CaseReinstatedNotification implements PartiesNotification {
             destinationAddress,
             templateVars,
             TemplateName.REINSTATED_EMAIL);
-        return notificationService.sendEmail(request, caseReferenceNumber);
+        return notificationService.sendEmail(request, caseReferenceNumber, null);
     }
 
     private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter, String caseReferenceNumber) {

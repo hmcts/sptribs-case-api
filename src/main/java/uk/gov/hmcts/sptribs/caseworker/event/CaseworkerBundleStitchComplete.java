@@ -1,14 +1,20 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
+import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
+import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.ASYNC_STITCH_COMPLETE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -27,9 +33,12 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 @Setter
+@RequiredArgsConstructor
 public class CaseworkerBundleStitchComplete implements CCDConfig<CaseData, State, UserRole> {
 
     private static final String ALWAYS_HIDE = "[STATE]=\"ALWAYS_HIDE\"";
+
+    private final DocumentsService documentsService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -40,11 +49,60 @@ public class CaseworkerBundleStitchComplete implements CCDConfig<CaseData, State
             .description("Bundle: Async Stitching Comp")
             .showCondition(ALWAYS_HIDE)
             .showSummary()
+            .submittedCallback(this::submitted)
             .grant(CREATE_READ_UPDATE, SUPER_USER, ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER,
                 ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER)
             .grantHistoryOnly(ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE))
             .page("createBundle")
             .pageLabel("Create a bundle")
             .done();
+    }
+
+    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
+                                               CaseDetails<CaseData, State> beforeDetails) {
+
+        Long caseId = details.getId();
+
+        log.info("Starting insert for latest case bundle for caseId = {}", caseId);
+
+        Document stitchedDocument = details.getData()
+            .getCaseBundles()
+            .getFirst()
+            .getValue()
+            .getStitchedDocument();
+
+        if (stitchedDocument == null) {
+            log.info("No stitched document found for latest bundle, caseId = {}", caseId);
+            return buildResponse("# No stitched bundle document found");
+        }
+
+        try {
+
+            saveLatestBundleDocument(stitchedDocument, caseId);
+
+            log.info("Successfully inserted latest case bundle document for caseId = {}", caseId);
+
+            return buildResponse("# Documents added successfully");
+
+        } catch (RuntimeException exception) {
+            log.error("Error inserting latest case bundle document for caseId = {}", caseId, exception);
+
+            return buildResponse("# Error saving latest case bundle to document entity");
+        }
+    }
+
+    private SubmittedCallbackResponse buildResponse(String confirmationHeader) {
+        return SubmittedCallbackResponse.builder()
+            .confirmationHeader(confirmationHeader)
+            .build();
+    }
+
+    private void saveLatestBundleDocument(Document stitchedDocument, Long caseId) {
+        documentsService.buildAndSaveNewDocumentEntity(
+            stitchedDocument,
+            caseId,
+            null,
+            CaseDocumentType.BUNDLE
+        );
     }
 }

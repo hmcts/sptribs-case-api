@@ -30,7 +30,7 @@ public class CaseworkerReferToLegalOfficerFT extends FunctionalTestSuite {
     public void shouldGivePositiveResponseWhenValidAboutToStartCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_REFER_TO_LEGAL_OFFICER, ABOUT_TO_START_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_REFER_TO_LEGAL_OFFICER, ABOUT_TO_START_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
     }
@@ -39,7 +39,7 @@ public class CaseworkerReferToLegalOfficerFT extends FunctionalTestSuite {
     public void shouldInitialiseDateReferredWhenValidAboutToSubmitCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_REFER_TO_LEGAL_OFFICER, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_REFER_TO_LEGAL_OFFICER, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -52,7 +52,7 @@ public class CaseworkerReferToLegalOfficerFT extends FunctionalTestSuite {
     public void shouldGivePositiveResponseWhenValidSubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_REFER_TO_LEGAL_OFFICER, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_REFER_TO_LEGAL_OFFICER, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())

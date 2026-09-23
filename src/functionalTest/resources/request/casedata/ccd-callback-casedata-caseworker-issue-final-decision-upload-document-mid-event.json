@@ -51,9 +51,9 @@
         "documentCategory": "ApplicationForm",
         "documentEmailContent": "Lorem ipsum application form",
         "documentLink": {
-          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/d06c860a-030a-4d23-933b-0d16042e6c45",
+          "document_url": "http://dm-store.service.core-compute.internal/documents/d06c860a-030a-4d23-933b-0d16042e6c45",
           "document_filename": "pdf.pdf",
-          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/d06c860a-030a-4d23-933b-0d16042e6c45/binary",
+          "document_binary_url": "http://dm-store.service.core-compute.internal/documents/d06c860a-030a-4d23-933b-0d16042e6c45/binary",
           "category_id": "A"
         }
       },
@@ -73,9 +73,9 @@
   "caseIssueFinalDecisionDocument": {
     "documentEmailContent": "Lorem ipsum description",
     "documentLink": {
-      "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/d96ad81f-a9a9-4be6-914c-7143b45766c5",
+      "document_url": "http://dm-store.service.core-compute.internal/documents/d96ad81f-a9a9-4be6-914c-7143b45766c5",
       "document_filename": "pdf.pdf",
-      "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/d96ad81f-a9a9-4be6-914c-7143b45766c5/binary"
+      "document_binary_url": "http://dm-store.service.core-compute.internal/documents/d96ad81f-a9a9-4be6-914c-7143b45766c5/binary"
     }
   },
   "outcome": "Allowed",

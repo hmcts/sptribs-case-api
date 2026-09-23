@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.caseworker.util;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -27,8 +26,11 @@ import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 
 @ExtendWith(MockitoExtension.class)
@@ -91,7 +93,7 @@ public class DocumentListUtilTest {
         DynamicMultiSelectList result = DocumentListUtil.prepareContactPartiesDocumentList(caseData, "");
 
         //Then
-        Assertions.assertTrue(result.getListItems().isEmpty());
+        assertTrue(result.getListItems().isEmpty());
 
     }
 
@@ -125,38 +127,126 @@ public class DocumentListUtilTest {
         DynamicMultiSelectList result = DocumentListUtil.prepareContactPartiesDocumentList(caseData, "");
 
         //Then
-        Assertions.assertEquals(2, result.getListItems().size());
+        assertEquals(2, result.getListItems().size());
 
     }
 
     @Test
-    void shouldGenerateSelectedAmendDocList() {
+    void shouldFormatDocUrlsCorrectlyForContactPartiesDocList() {
         //Given
+        String baseUrl = "http://mocked-url.com/";
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
-        CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
+
+        String testDocUUID1 = UUID.randomUUID().toString();
+        CaseworkerCICDocument pdfDoc = CaseworkerCICDocument.builder()
             .documentCategory(DocumentType.LINKED_DOCS)
-            .documentLink(Document.builder().binaryUrl("url").filename("name").build())
+            .documentLink(Document.builder()
+                .url(baseUrl + "documents/" + testDocUUID1)
+                .binaryUrl(baseUrl + "documents/" + testDocUUID1 + "/binary")
+                .filename("name.pdf")
+                .build())
             .build();
-        ListValue<CaseworkerCICDocument> list = new ListValue<>();
-        list.setValue(doc);
-        listValueList.add(list);
+        ListValue<CaseworkerCICDocument> pdflistValue = new ListValue<>();
+        pdflistValue.setValue(pdfDoc);
+        listValueList.add(pdflistValue);
+
+        String testDocUUID2 = UUID.randomUUID().toString();
+        CaseworkerCICDocument docxDoc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder()
+                .url(baseUrl + "documents/" + testDocUUID2)
+                .binaryUrl(baseUrl + "documents/" + testDocUUID2 + "/binary")
+                .filename("name.docx")
+                .build())
+            .build();
+        ListValue<CaseworkerCICDocument> docxlistValue = new ListValue<>();
+        docxlistValue.setValue(docxDoc);
+        listValueList.add(docxlistValue);
+
         CicCase cicCase = CicCase.builder()
             .reinstateDocuments(listValueList)
             .build();
-        DocumentManagement documentManagement = DocumentManagement.builder()
-            .build();
-        final CaseData caseData = CaseData.builder()
-            .newDocManagement(documentManagement)
-            .build();
+        final CaseData caseData = CaseData.builder().build();
         caseData.setCicCase(cicCase);
         details.setData(caseData);
+
         //When
+        DynamicMultiSelectList result = DocumentListUtil.prepareContactPartiesDocumentList(caseData, baseUrl);
 
         //Then
-        //assertThat(result).isNotNull();
+        assertEquals(2, result.getListItems().size());
+        assertThat(result.getListItems().getFirst().getLabel().split("]\\(")[1]).startsWith("http://mocked-url.com/documents/");
+        assertThat(result.getListItems().get(1).getLabel().split("]\\(")[1]).startsWith("http://mocked-url.com/documents/");
 
+        //And given
+        baseUrl = "http://mocked-url.com";
+
+        //When
+        result = DocumentListUtil.prepareContactPartiesDocumentList(caseData, baseUrl);
+
+        //Then
+        assertEquals(2, result.getListItems().size());
+        assertThat(result.getListItems().getFirst().getLabel().split("]\\(")[1]).startsWith("http://mocked-url.com/documents/");
+        assertThat(result.getListItems().get(1).getLabel().split("]\\(")[1]).startsWith("http://mocked-url.com/documents/");
+    }
+
+    @Test
+    void shouldFormatDocUrlsCorrectlyForPrepareDocumentList() {
+        //Given
+        String baseUrl = "http://mocked-url.com/";
+
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
+        String testDocUUID1 = UUID.randomUUID().toString();
+        CaseworkerCICDocument pdfDoc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder()
+                .url(baseUrl + "documents/" + testDocUUID1)
+                .binaryUrl(baseUrl + "documents/" + testDocUUID1 + "/binary")
+                .filename("name.pdf")
+                .build())
+            .build();
+        ListValue<CaseworkerCICDocument> pdflistValue = new ListValue<>();
+        pdflistValue.setValue(pdfDoc);
+        listValueList.add(pdflistValue);
+
+        String testDocUUID2 = UUID.randomUUID().toString();
+        CaseworkerCICDocument docxDoc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder()
+                .url(baseUrl + "documents/" + testDocUUID2)
+                .binaryUrl(baseUrl + "documents/" + testDocUUID2 + "/binary")
+                .filename("name.docx")
+                .build())
+            .build();
+        ListValue<CaseworkerCICDocument> docxlistValue = new ListValue<>();
+        docxlistValue.setValue(docxDoc);
+        listValueList.add(docxlistValue);
+
+        final CaseData caseData = CaseData.builder().build();
+        caseData.setAllDocManagement(DocumentManagement.builder().caseworkerCICDocument(listValueList).build());
+        details.setData(caseData);
+
+        //When
+        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData, baseUrl);
+
+        //Then
+        assertEquals(2, result.getListItems().size());
+        assertThat(result.getListItems().getFirst().getLabel().split("]\\(")[1]).startsWith("http://mocked-url.com/documents/");
+        assertThat(result.getListItems().get(1).getLabel().split("]\\(")[1]).startsWith("http://mocked-url.com/documents/");
+
+        //And given
+        baseUrl = "http://mocked-url.com";
+
+        //When
+        result = DocumentListUtil.prepareDocumentList(caseData, baseUrl);
+
+        //Then
+        assertEquals(2, result.getListItems().size());
+        assertThat(result.getListItems().getFirst().getLabel().split("]\\(")[1]).startsWith("http://mocked-url.com/documents/");
+        assertThat(result.getListItems().get(1).getLabel().split("]\\(")[1]).startsWith("http://mocked-url.com/documents/");
     }
 
     @Test

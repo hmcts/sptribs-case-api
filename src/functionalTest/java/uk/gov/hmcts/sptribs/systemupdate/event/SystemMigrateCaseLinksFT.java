@@ -28,7 +28,7 @@ public class SystemMigrateCaseLinksFT extends FunctionalTestSuite {
     @Test
     public void shouldMigrateCaseLinksOnAboutToSubmitAndSetCaseNameHmctsInternal() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST);
-        final Response response = triggerCallback(caseData, SYSTEM_MIGRATE_CASE_LINKS, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, SYSTEM_MIGRATE_CASE_LINKS, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())

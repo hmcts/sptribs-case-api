@@ -16,6 +16,7 @@
     "orderDueDates" : [ ],
     "stayIsCaseStayed" : "No",
     "hearingList" : [ ],
+    "hyphenatedCaseRef" : "1616-5914-0147-3378",
     "closedDayCount" : "",
     "caseIssueFinalDecisionDocument" : {
       "documentLink" : {
@@ -30,5 +31,6 @@
     "dataVersion" : 0,
     "cicCaseSelectedDocument" : { }
   },
-  "state" : "CaseClosed"
+  "state" : "CaseClosed",
+  "errors": []
 }

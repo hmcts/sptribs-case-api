@@ -201,4 +201,17 @@ public final class DocumentUtil {
         return fileExtension != null && validExtensions.contains(fileExtension.toLowerCase(ROOT));
     }
 
+    public static String getDocumentUuidFromCaseworkerCICDocument(CaseworkerCICDocument caseworkerCICDocument) {
+        Document documentLink = caseworkerCICDocument.getDocumentLink();
+        return getUuid(documentLink);
+    }
+
+    public static String getDocumentUuidFromCICDocument(CICDocument cicDocument) {
+        Document document = cicDocument.getDocumentLink();
+        return getUuid(document);
+    }
+
+    public static String getUuid(Document document) {
+        return StringUtils.substringAfterLast(document.getBinaryUrl().replaceFirst("/binary$", ""), "/");
+    }
 }

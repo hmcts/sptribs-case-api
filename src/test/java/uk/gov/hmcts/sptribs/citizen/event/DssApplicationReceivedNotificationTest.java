@@ -1,10 +1,15 @@
 package uk.gov.hmcts.sptribs.citizen.event;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.sptribs.caseworker.model.EditCicaCaseDetails;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
@@ -29,9 +34,12 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.CICA_REF_NUMBER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_REPRESENTATIVE_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_SUBJECT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_PARTY_INFO;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.DASHBOARD_KEY;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.HAS_CICA_NUMBER;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.APPLICATION_RECEIVED;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.APPLICATION_RECEIVED_CY;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.APPLICATION_RECEIVED_NEW_CD;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.APPLICATION_RECEIVED_NEW_CD_CY;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 
 @ExtendWith(MockitoExtension.class)
@@ -51,145 +59,225 @@ class DssApplicationReceivedNotificationTest {
     @InjectMocks
     private DssApplicationReceivedNotification dssApplicationReceivedNotification;
 
-    @Test
-    void shouldNotifySubjectOfApplicationReceivedWithEmail() {
-        final DssCaseData dssCaseData = getMockDssCaseData();
-        dssCaseData.setSubjectEmailAddress("subject@outlook.com");
-        dssCaseData.setLanguagePreference(ENGLISH);
-        final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).build();
-        final NotificationResponse notificationResponse = getMockNotificationResponse();
+    @Nested
+    class WhenCitizenDashboardDisabled {
+        @BeforeEach
+        void setUpFlags() {
+            ReflectionTestUtils.setField(dssApplicationReceivedNotification, "citizenDashboardEnabled", false);
+        }
 
-        Map<String, Object> templateVars = new HashMap<>();
-        templateVars.put(CIC_CASE_SUBJECT_NAME, dssCaseData.getSubjectFullName());
-        templateVars.put(CONTACT_PARTY_INFO, dssCaseData.getNotifyPartyMessage());
-        templateVars.put(HAS_CICA_NUMBER, false);
-        templateVars.put(CICA_REF_NUMBER, "");
+        @Test
+        void shouldNotifySubjectOfApplicationReceivedWithEmail() {
+            final DssCaseData dssCaseData = getMockDssCaseData();
+            dssCaseData.setSubjectEmailAddress("subject@outlook.com");
+            dssCaseData.setLanguagePreference(ENGLISH);
+            final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).build();
+            final NotificationResponse notificationResponse = getMockNotificationResponse();
 
-        when(dssNotificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
-            .thenReturn(NotificationRequest.builder().build());
-        when(dssNotificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(templateVars);
-        when(notificationService.sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER))).thenReturn(notificationResponse);
+            Map<String, Object> templateVars = new HashMap<>();
+            templateVars.put(CIC_CASE_SUBJECT_NAME, dssCaseData.getSubjectFullName());
+            templateVars.put(CONTACT_PARTY_INFO, dssCaseData.getNotifyPartyMessage());
+            templateVars.put(HAS_CICA_NUMBER, false);
+            templateVars.put(CICA_REF_NUMBER, "");
 
-        dssApplicationReceivedNotification.sendToSubject(caseData, CASE_NUMBER);
-
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER));
-        verify(dssNotificationHelper).buildEmailNotificationRequest(
-            dssCaseData.getSubjectEmailAddress(),
-            templateVars,
-            APPLICATION_RECEIVED);
-        assertThat(dssCaseData.getSubjectNotificationResponse().getStatus()).isEqualTo(notificationResponse.getStatus());
-    }
-
-    @Test
-    void shouldNotifySubjectOfApplicationReceivedWithCicaReferenceInEmail() {
-        final DssCaseData dssCaseData = getMockDssCaseData();
-        dssCaseData.setSubjectEmailAddress("subject@outlook.com");
-        dssCaseData.setLanguagePreference(ENGLISH);
-        final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).editCicaCaseDetails(CICA_CASE_DETAILS).build();
-        final NotificationResponse notificationResponse = getMockNotificationResponse();
-
-        Map<String, Object> templateVars = new HashMap<>();
-        templateVars.put(CIC_CASE_SUBJECT_NAME, dssCaseData.getSubjectFullName());
-        templateVars.put(CONTACT_PARTY_INFO, dssCaseData.getNotifyPartyMessage());
-        templateVars.put(HAS_CICA_NUMBER, true);
-        templateVars.put(CICA_REF_NUMBER, CICA_REFERENCE_NUMBER);
-
-        when(dssNotificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+            when(dssNotificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
                 .thenReturn(NotificationRequest.builder().build());
-        when(dssNotificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(templateVars);
-        when(notificationService.sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER))).thenReturn(notificationResponse);
+            when(dssNotificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(templateVars);
+            when(notificationService.sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER), eq(null))).thenReturn(notificationResponse);
 
-        dssApplicationReceivedNotification.sendToSubject(caseData, CASE_NUMBER);
+            dssApplicationReceivedNotification.sendToSubject(caseData, CASE_NUMBER);
 
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER));
-        verify(dssNotificationHelper).buildEmailNotificationRequest(
+            verify(notificationService).sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER), eq(null));
+            verify(dssNotificationHelper).buildEmailNotificationRequest(
                 dssCaseData.getSubjectEmailAddress(),
                 templateVars,
                 APPLICATION_RECEIVED);
-        assertThat(dssCaseData.getSubjectNotificationResponse().getStatus()).isEqualTo(notificationResponse.getStatus());
-    }
+            assertThat(dssCaseData.getSubjectNotificationResponse().getStatus()).isEqualTo(notificationResponse.getStatus());
+        }
 
-    @Test
-    void shouldNotifySubjectOfApplicationReceivedWithWelshEmail() {
-        final DssCaseData dssCaseData = getMockDssCaseData();
-        dssCaseData.setSubjectEmailAddress("subject@outlook.com");
-        dssCaseData.setLanguagePreference(WELSH);
-        final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).build();
-        final NotificationResponse notificationResponse = getMockNotificationResponse();
+        @Test
+        void shouldNotifySubjectOfApplicationReceivedWithCicaReferenceInEmail() {
+            final DssCaseData dssCaseData = getMockDssCaseData();
+            dssCaseData.setSubjectEmailAddress("subject@outlook.com");
+            dssCaseData.setLanguagePreference(ENGLISH);
+            final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).editCicaCaseDetails(CICA_CASE_DETAILS).build();
+            final NotificationResponse notificationResponse = getMockNotificationResponse();
 
-        Map<String, Object> templateVars = new HashMap<>();
-        templateVars.put(CIC_CASE_SUBJECT_NAME, dssCaseData.getSubjectFullName());
-        templateVars.put(CONTACT_PARTY_INFO, dssCaseData.getNotifyPartyMessage());
+            Map<String, Object> templateVars = new HashMap<>();
+            templateVars.put(CIC_CASE_SUBJECT_NAME, dssCaseData.getSubjectFullName());
+            templateVars.put(CONTACT_PARTY_INFO, dssCaseData.getNotifyPartyMessage());
+            templateVars.put(HAS_CICA_NUMBER, true);
+            templateVars.put(CICA_REF_NUMBER, CICA_REFERENCE_NUMBER);
 
-        when(dssNotificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
-            .thenReturn(NotificationRequest.builder().build());
-        when(dssNotificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(templateVars);
-        when(notificationService.sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER))).thenReturn(notificationResponse);
-
-        dssApplicationReceivedNotification.sendToSubject(caseData, CASE_NUMBER);
-
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER));
-        verify(dssNotificationHelper).buildEmailNotificationRequest(
-            dssCaseData.getSubjectEmailAddress(),
-            templateVars,
-            APPLICATION_RECEIVED_CY);
-        assertThat(dssCaseData.getSubjectNotificationResponse().getStatus()).isEqualTo(notificationResponse.getStatus());
-    }
-
-    @Test
-    void shouldNotifyRepresentativeOfApplicationReceivedWithCicaReferenceInEmail() {
-        final DssCaseData dssCaseData = getMockDssCaseData();
-        dssCaseData.setRepresentativeFullName("Rep Full Name");
-        dssCaseData.setRepresentativeEmailAddress("rep@outlook.com");
-        final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).editCicaCaseDetails(CICA_CASE_DETAILS).build();
-        final NotificationResponse notificationResponse = getMockNotificationResponse();
-
-        Map<String, Object> templateVars = new HashMap<>();
-        templateVars.put(CIC_CASE_REPRESENTATIVE_NAME, dssCaseData.getRepresentativeFullName());
-        templateVars.put(CONTACT_PARTY_INFO, dssCaseData.getNotifyPartyMessage());
-        templateVars.put(HAS_CICA_NUMBER, true);
-        templateVars.put(CICA_REF_NUMBER, CICA_REFERENCE_NUMBER);
-
-        when(dssNotificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
-            .thenReturn(NotificationRequest.builder().build());
-        when(dssNotificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(templateVars);
-        when(notificationService.sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER))).thenReturn(notificationResponse);
-
-        dssApplicationReceivedNotification.sendToRepresentative(caseData, CASE_NUMBER);
-
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER));
-        verify(dssNotificationHelper).buildEmailNotificationRequest(
-            dssCaseData.getRepresentativeEmailAddress(),
-            templateVars,
-            APPLICATION_RECEIVED);
-        assertThat(dssCaseData.getRepNotificationResponse().getStatus()).isEqualTo(notificationResponse.getStatus());
-    }
-
-    @Test
-    void shouldNotifyRepresentativeOfApplicationReceivedWithEmail() {
-        final DssCaseData dssCaseData = getMockDssCaseData();
-        dssCaseData.setRepresentativeFullName("Rep Full Name");
-        dssCaseData.setRepresentativeEmailAddress("rep@outlook.com");
-        final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).build();
-        final NotificationResponse notificationResponse = getMockNotificationResponse();
-
-        Map<String, Object> templateVars = new HashMap<>();
-        templateVars.put(CIC_CASE_REPRESENTATIVE_NAME, dssCaseData.getRepresentativeFullName());
-        templateVars.put(CONTACT_PARTY_INFO, dssCaseData.getNotifyPartyMessage());
-
-        when(dssNotificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+            when(dssNotificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
                 .thenReturn(NotificationRequest.builder().build());
-        when(dssNotificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(templateVars);
-        when(notificationService.sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER))).thenReturn(notificationResponse);
+            when(dssNotificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(templateVars);
+            when(notificationService.sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER), eq(null))).thenReturn(notificationResponse);
 
-        dssApplicationReceivedNotification.sendToRepresentative(caseData, CASE_NUMBER);
+            dssApplicationReceivedNotification.sendToSubject(caseData, CASE_NUMBER);
 
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER));
-        verify(dssNotificationHelper).buildEmailNotificationRequest(
+            verify(notificationService).sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER), eq(null));
+            verify(dssNotificationHelper).buildEmailNotificationRequest(
+                dssCaseData.getSubjectEmailAddress(),
+                templateVars,
+                APPLICATION_RECEIVED);
+            assertThat(dssCaseData.getSubjectNotificationResponse().getStatus()).isEqualTo(notificationResponse.getStatus());
+        }
+
+        @Test
+        void shouldNotifySubjectOfApplicationReceivedWithWelshEmail() {
+            final DssCaseData dssCaseData = getMockDssCaseData();
+            dssCaseData.setSubjectEmailAddress("subject@outlook.com");
+            dssCaseData.setLanguagePreference(WELSH);
+            final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).build();
+            final NotificationResponse notificationResponse = getMockNotificationResponse();
+
+            Map<String, Object> templateVars = new HashMap<>();
+            templateVars.put(CIC_CASE_SUBJECT_NAME, dssCaseData.getSubjectFullName());
+            templateVars.put(CONTACT_PARTY_INFO, dssCaseData.getNotifyPartyMessage());
+
+            when(dssNotificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+                .thenReturn(NotificationRequest.builder().build());
+            when(dssNotificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(templateVars);
+            when(notificationService.sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER), eq(null))).thenReturn(notificationResponse);
+
+            dssApplicationReceivedNotification.sendToSubject(caseData, CASE_NUMBER);
+
+            verify(notificationService).sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER), eq(null));
+            verify(dssNotificationHelper).buildEmailNotificationRequest(
+                dssCaseData.getSubjectEmailAddress(),
+                templateVars,
+                APPLICATION_RECEIVED_CY);
+            assertThat(dssCaseData.getSubjectNotificationResponse().getStatus()).isEqualTo(notificationResponse.getStatus());
+        }
+
+        @Test
+        void shouldNotifyRepresentativeOfApplicationReceivedWithCicaReferenceInEmail() {
+            final DssCaseData dssCaseData = getMockDssCaseData();
+            dssCaseData.setRepresentativeFullName("Rep Full Name");
+            dssCaseData.setRepresentativeEmailAddress("rep@outlook.com");
+            dssCaseData.setLanguagePreference(ENGLISH);
+            final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).editCicaCaseDetails(CICA_CASE_DETAILS).build();
+            final NotificationResponse notificationResponse = getMockNotificationResponse();
+
+            Map<String, Object> templateVars = new HashMap<>();
+            templateVars.put(CIC_CASE_REPRESENTATIVE_NAME, dssCaseData.getRepresentativeFullName());
+            templateVars.put(CONTACT_PARTY_INFO, dssCaseData.getNotifyPartyMessage());
+            templateVars.put(HAS_CICA_NUMBER, true);
+            templateVars.put(CICA_REF_NUMBER, CICA_REFERENCE_NUMBER);
+
+            when(dssNotificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+                .thenReturn(NotificationRequest.builder().build());
+            when(dssNotificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(templateVars);
+            when(notificationService.sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER), eq(null))).thenReturn(notificationResponse);
+
+            dssApplicationReceivedNotification.sendToRepresentative(caseData, CASE_NUMBER);
+
+            verify(notificationService).sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER), eq(null));
+            verify(dssNotificationHelper).buildEmailNotificationRequest(
                 dssCaseData.getRepresentativeEmailAddress(),
                 templateVars,
                 APPLICATION_RECEIVED);
-        assertThat(dssCaseData.getRepNotificationResponse().getStatus()).isEqualTo(notificationResponse.getStatus());
+            assertThat(dssCaseData.getRepNotificationResponse().getStatus()).isEqualTo(notificationResponse.getStatus());
+        }
+
+        @Test
+        void shouldNotifyRepresentativeOfApplicationReceivedWithEmail() {
+            final DssCaseData dssCaseData = getMockDssCaseData();
+            dssCaseData.setRepresentativeFullName("Rep Full Name");
+            dssCaseData.setRepresentativeEmailAddress("rep@outlook.com");
+            dssCaseData.setLanguagePreference(ENGLISH);
+            final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).build();
+            final NotificationResponse notificationResponse = getMockNotificationResponse();
+
+            Map<String, Object> templateVars = new HashMap<>();
+            templateVars.put(CIC_CASE_REPRESENTATIVE_NAME, dssCaseData.getRepresentativeFullName());
+            templateVars.put(CONTACT_PARTY_INFO, dssCaseData.getNotifyPartyMessage());
+
+            when(dssNotificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+                .thenReturn(NotificationRequest.builder().build());
+            when(dssNotificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(templateVars);
+            when(notificationService.sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER), eq(null))).thenReturn(notificationResponse);
+
+            dssApplicationReceivedNotification.sendToRepresentative(caseData, CASE_NUMBER);
+
+            verify(notificationService).sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER), eq(null));
+            verify(dssNotificationHelper).buildEmailNotificationRequest(
+                dssCaseData.getRepresentativeEmailAddress(),
+                templateVars,
+                APPLICATION_RECEIVED);
+            assertThat(dssCaseData.getRepNotificationResponse().getStatus()).isEqualTo(notificationResponse.getStatus());
+        }
+    }
+
+    @Nested
+    class WhenCitizenDashboardEnabled {
+        @Captor
+        private ArgumentCaptor<Map<String, Object>> templateVarsCaptor;
+
+        @BeforeEach
+        void setUpFlags() {
+            ReflectionTestUtils.setField(dssApplicationReceivedNotification, "citizenDashboardEnabled", true);
+            ReflectionTestUtils.setField(dssApplicationReceivedNotification, "citizenDashboardUrl", "https://frontend.url/dashboard");
+        }
+
+        @Test
+        void shouldNotifySubjectOfApplicationReceivedWithEmail() {
+            final DssCaseData dssCaseData = getMockDssCaseData();
+            dssCaseData.setSubjectEmailAddress("subject@outlook.com");
+            dssCaseData.setLanguagePreference(ENGLISH);
+            final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).build();
+            final NotificationResponse notificationResponse = getMockNotificationResponse();
+
+            Map<String, Object> templateVars = new HashMap<>();
+            templateVars.put(CIC_CASE_SUBJECT_NAME, dssCaseData.getSubjectFullName());
+            templateVars.put(CONTACT_PARTY_INFO, dssCaseData.getNotifyPartyMessage());
+            templateVars.put(HAS_CICA_NUMBER, false);
+            templateVars.put(CICA_REF_NUMBER, "");
+
+            when(dssNotificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+                .thenReturn(NotificationRequest.builder().build());
+            when(dssNotificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(templateVars);
+            when(notificationService.sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER), eq(null))).thenReturn(notificationResponse);
+
+            dssApplicationReceivedNotification.sendToSubject(caseData, CASE_NUMBER);
+
+            verify(notificationService).sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER), eq(null));
+            verify(dssNotificationHelper).buildEmailNotificationRequest(
+                eq(dssCaseData.getSubjectEmailAddress()),
+                templateVarsCaptor.capture(),
+                eq(APPLICATION_RECEIVED_NEW_CD));
+            assertThat(templateVarsCaptor.getValue()).containsEntry(DASHBOARD_KEY, "https://frontend.url/dashboard");
+            assertThat(dssCaseData.getSubjectNotificationResponse().getStatus()).isEqualTo(notificationResponse.getStatus());
+        }
+
+        @Test
+        void shouldNotifySubjectOfApplicationReceivedWithWelshEmail() {
+            final DssCaseData dssCaseData = getMockDssCaseData();
+            dssCaseData.setSubjectEmailAddress("subject@outlook.com");
+            dssCaseData.setLanguagePreference(WELSH);
+            final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).build();
+            final NotificationResponse notificationResponse = getMockNotificationResponse();
+
+            Map<String, Object> templateVars = new HashMap<>();
+            templateVars.put(CIC_CASE_SUBJECT_NAME, dssCaseData.getSubjectFullName());
+            templateVars.put(CONTACT_PARTY_INFO, dssCaseData.getNotifyPartyMessage());
+
+            when(dssNotificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+                .thenReturn(NotificationRequest.builder().build());
+            when(dssNotificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(templateVars);
+            when(notificationService.sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER), eq(null))).thenReturn(notificationResponse);
+
+            dssApplicationReceivedNotification.sendToSubject(caseData, CASE_NUMBER);
+
+            verify(notificationService).sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER), eq(null));
+            verify(dssNotificationHelper).buildEmailNotificationRequest(
+                eq(dssCaseData.getSubjectEmailAddress()),
+                templateVarsCaptor.capture(),
+                eq(APPLICATION_RECEIVED_NEW_CD_CY));
+            assertThat(templateVarsCaptor.getValue()).containsEntry(DASHBOARD_KEY, "https://frontend.url/dashboard");
+            assertThat(dssCaseData.getSubjectNotificationResponse().getStatus()).isEqualTo(notificationResponse.getStatus());
+        }
     }
 
     private DssCaseData getMockDssCaseData() {
