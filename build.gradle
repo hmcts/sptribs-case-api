@@ -658,6 +658,8 @@ tasks.register('runAndPublishConsumerPactTests', Test) {
 def getCheckedOutGitCommitHash() {
   providers.exec {
     commandLine 'git', 'rev-parse', '--verify', '--short', 'HEAD'
+    // Jenkins stages may not have a checked-out HEAD.
+    ignoreExitValue = true
   }.standardOutput.asText.map { it.trim() }.get()
 }
 
