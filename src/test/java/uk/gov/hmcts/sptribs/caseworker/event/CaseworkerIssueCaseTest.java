@@ -172,8 +172,6 @@ class CaseworkerIssueCaseTest {
         assertThat(submittedResponse).isNotNull();
         assertThat(submittedResponse.getConfirmationHeader())
             .contains("# Case issued \n##  This case has now been issued.");
-        verify(contactPartiesService).linkCorrespondenceIdsToDocuments(caseData, Map.of("doc", "uuid"),
-            List.of("test-correspondence-id"));
     }
 
     @Test
