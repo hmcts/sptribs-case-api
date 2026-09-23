@@ -288,7 +288,9 @@ withPipeline(type, product, component) {
           secret('s2s-case-api-secret', 'S2S_SECRET_PROD')
         ],
         keyVaultURLOverride: 'https://sptribs-prod.vault.azure.net/'
-      ) {}
+      ) {
+        env.S2S_SECRET_PROD = env.S2S_SECRET_PROD
+      }
     }
 
     uploadDmnDiagrams()
