@@ -31,6 +31,9 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
@@ -81,37 +84,8 @@ class CaseworkerEditDraftOrderTest {
     @Test
     void shouldSuccessfullySaveDraftOrder() {
         //Given
-        final CaseData caseData = caseData();
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> updatedCaseDetails = draftOrderDetails();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        caseData.setDraftOrderContentCIC(DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build());
-        DynamicListElement element = DynamicListElement.builder().code(UUID.randomUUID())
-            .label(OrderTemplate.CIC6_GENERAL_DIRECTIONS.getLabel() + "--01-01-2023 11:11:11").build();
-        List<DynamicListElement> elements = new ArrayList<>();
-        elements.add(element);
-        caseData.getCicCase().setDraftOrderDynamicList(DynamicList.builder().value(element).listItems(elements).build());
-        List<ListValue<DraftOrderCIC>> cicList = new ArrayList<>();
-        cicList.add(ListValue.<DraftOrderCIC>builder().value(
-            DraftOrderCIC.builder()
-                .templateGeneratedDocument(Document.builder().filename("draft--user--01-01-2023 11:11:11.pdf")
-                    .build())
-                .draftOrderContentCIC(DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build()).build()
-
-        ).build());
-        caseData.getCicCase().setDraftOrderCICList(cicList);
-        caseData.getCicCase().setOrderTemplateIssued(Document.builder()
-            .filename("draft--user--01-01-2023 11:11:11.pdf")
-            .binaryUrl("new-document-binary-url")
-            .build());
-        caseData.getCicCase().getDraftOrderCICList().getFirst().getValue().setTemplateGeneratedDocument(
-            Document.builder()
-                .filename("draft--user--01-01-2023 11:11:11.pdf")
-                .binaryUrl("previous-document-binary-url")
-                .build());
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
@@ -132,6 +106,64 @@ class CaseworkerEditDraftOrderTest {
         SubmittedCallbackResponse draftCreatedResponse = caseworkerEditDraftOrder.submitted(updatedCaseDetails, beforeDetails);
         //  Then
         assertThat(draftCreatedResponse).isNotNull();
+    }
+
+    @Test
+    void shouldReturnAnErrorWhenSavingDraftOrderFails() {
+        //Given
+        final CaseDetails<CaseData, State> updatedCaseDetails = draftOrderDetails();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        doThrow(new RuntimeException("database unavailable"))
+            .when(documentsService)
+            .buildAndSaveNewDocumentEntity(
+                any(Document.class),
+                eq(TEST_CASE_ID),
+                eq(DocumentType.TRIBUNAL_DIRECTION),
+                eq(CaseDocumentType.DRAFT_ORDER)
+            );
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerEditDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        //Then
+        assertThat(response.getErrors()).containsExactly(
+            "Error saving document with filename: draft--user--01-01-2023 11:11:11.pdf"
+        );
+    }
+
+    private CaseDetails<CaseData, State> draftOrderDetails() {
+        final CaseData caseData = caseData();
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+
+        details.setData(caseData);
+        details.setId(TEST_CASE_ID);
+        details.setCreatedDate(LOCAL_DATE_TIME);
+        caseData.setDraftOrderContentCIC(DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build());
+        DynamicListElement element = DynamicListElement.builder().code(UUID.randomUUID())
+            .label(OrderTemplate.CIC6_GENERAL_DIRECTIONS.getLabel() + "--01-01-2023 11:11:11").build();
+        List<DynamicListElement> elements = new ArrayList<>();
+        elements.add(element);
+        caseData.getCicCase().setDraftOrderDynamicList(DynamicList.builder().value(element).listItems(elements).build());
+        List<ListValue<DraftOrderCIC>> cicList = new ArrayList<>();
+        cicList.add(ListValue.<DraftOrderCIC>builder().value(
+            DraftOrderCIC.builder()
+                .templateGeneratedDocument(Document.builder().filename("draft--user--01-01-2023 11:11:11.pdf")
+                    .build())
+                .draftOrderContentCIC(DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build()).build()
+        ).build());
+        caseData.getCicCase().setDraftOrderCICList(cicList);
+        caseData.getCicCase().setOrderTemplateIssued(Document.builder()
+            .filename("draft--user--01-01-2023 11:11:11.pdf")
+            .binaryUrl("new-document-binary-url")
+            .build());
+        caseData.getCicCase().getDraftOrderCICList().getFirst().getValue().setTemplateGeneratedDocument(
+            Document.builder()
+                .filename("draft--user--01-01-2023 11:11:11.pdf")
+                .binaryUrl("previous-document-binary-url")
+                .build());
+
+        return details;
     }
 
 }
