@@ -199,6 +199,7 @@ public class ReinstateCaseIT extends IntegrationTestBase {
 
         assertThat(caseDocumentITManager.getCount(documentBinaryUrl)).isEqualTo(1);
         assertThat(caseDocumentITManager.findByBinaryUrl(documentBinaryUrl).getDocumentTypeName()).isEqualTo("LINKED_DOCS");
+        assertThat(caseDocumentITManager.findByBinaryUrl(documentBinaryUrl).getCaseDocumentTypeId()).isEqualTo(2L);
     }
 
     @Test

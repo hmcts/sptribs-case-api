@@ -197,6 +197,36 @@ class CaseWorkerCloseTheCaseTest {
     }
 
     @Test
+    void shouldHandleMissingCloseCaseInBeforeDetails() {
+        final Document document = Document.builder()
+            .url("document-url")
+            .binaryUrl("document-binary-url")
+            .filename("document.pdf")
+            .build();
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setData(CaseData.builder()
+            .closeCase(CloseCase.builder().documentsUpload(List.of(
+                ListValue.<CaseworkerCICDocumentUpload>builder()
+                    .id("document-id")
+                    .value(CaseworkerCICDocumentUpload.builder()
+                        .documentLink(document)
+                        .documentCategory(DocumentType.LINKED_DOCS)
+                        .build())
+                    .build()))
+                .build())
+            .build());
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(CaseData.builder().build());
+
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerCloseTheCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        assertThat(response).isNotNull();
+        verify(documentsService).saveDocuments(eq(TEST_CASE_ID), anyList(), eq(CaseDocumentType.DOCUMENT_MANAGEMENT));
+    }
+
+    @Test
     void shouldReturnErrorForInvalidUploadedDocument() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CloseCase closeCase = CloseCase.builder().documentsUpload(getCaseworkerCICDocumentUploadList("file.xml")).build();

@@ -177,9 +177,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
         List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = caseData.getCloseCase().getDocumentsUpload();
         List<ListValue<CaseworkerCICDocument>> documents = updateUploadedDocumentCategory(uploadedDocuments, false);
         caseData.getCloseCase().setDocuments(documents);
-        List<ListValue<CaseworkerCICDocument>> existingDocuments = beforeDetails.getData() == null
-            ? List.of()
-            : beforeDetails.getData().getCloseCase().getDocuments();
+        List<ListValue<CaseworkerCICDocument>> existingDocuments = getExistingDocuments(beforeDetails);
         List<String> errors = new ArrayList<>(documentsService.saveDocuments(
             details.getId(), getAddedDocuments(documents, existingDocuments), DOCUMENT_MANAGEMENT));
         errors.addAll(documentsService.removeDocuments(getRemovedDocuments(existingDocuments, documents)));
@@ -189,6 +187,19 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
             .state(CaseClosed)
             .errors(errors)
             .build();
+    }
+
+    private List<ListValue<CaseworkerCICDocument>> getExistingDocuments(
+        CaseDetails<CaseData, State> beforeDetails
+    ) {
+        if (beforeDetails == null || beforeDetails.getData() == null
+            || beforeDetails.getData().getCloseCase() == null) {
+            return List.of();
+        }
+
+        return beforeDetails.getData().getCloseCase().getDocuments() == null
+            ? List.of()
+            : beforeDetails.getData().getCloseCase().getDocuments();
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,

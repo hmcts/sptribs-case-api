@@ -103,7 +103,15 @@ class CaseworkerEditDraftOrderTest {
 
         ).build());
         caseData.getCicCase().setDraftOrderCICList(cicList);
-        caseData.getCicCase().setOrderTemplateIssued(Document.builder().filename("draft--user--01-01-2023 11:11:11.pdf").build());
+        caseData.getCicCase().setOrderTemplateIssued(Document.builder()
+            .filename("draft--user--01-01-2023 11:11:11.pdf")
+            .binaryUrl("new-document-binary-url")
+            .build());
+        caseData.getCicCase().getDraftOrderCICList().getFirst().getValue().setTemplateGeneratedDocument(
+            Document.builder()
+                .filename("draft--user--01-01-2023 11:11:11.pdf")
+                .binaryUrl("previous-document-binary-url")
+                .build());
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
@@ -119,6 +127,7 @@ class CaseworkerEditDraftOrderTest {
             DocumentType.TRIBUNAL_DIRECTION,
             CaseDocumentType.DRAFT_ORDER
         );
+        verify(documentsService).removeEntryFromDocumentTableByBinaryURL("previous-document-binary-url");
 
         SubmittedCallbackResponse draftCreatedResponse = caseworkerEditDraftOrder.submitted(updatedCaseDetails, beforeDetails);
         //  Then
