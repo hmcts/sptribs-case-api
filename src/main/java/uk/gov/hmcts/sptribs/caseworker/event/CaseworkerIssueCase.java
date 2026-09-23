@@ -38,7 +38,10 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_CASE;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessage;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.APPLICANT;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.REPRESENTATIVE;
 import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.RESPONDENT;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.SUBJECT;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
@@ -148,7 +151,7 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
             .caseData(data)
             .caseReference(caseNumber)
             .uploadedDocuments(uploadedDocuments)
-            .correspondenceParties(EnumSet.of(RESPONDENT))
+            .correspondenceParties(EnumSet.of(RESPONDENT, SUBJECT, APPLICANT, REPRESENTATIVE))
             .notification(caseIssuedNotification)
             .build();
 

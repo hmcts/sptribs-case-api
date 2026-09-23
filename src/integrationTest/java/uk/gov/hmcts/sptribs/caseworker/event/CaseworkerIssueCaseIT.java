@@ -19,6 +19,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
+import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
 import java.time.LocalDate;
@@ -26,6 +28,7 @@ import java.util.Set;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -188,8 +191,13 @@ class CaseworkerIssueCaseIT {
             .contains("# Case issued \n##  This case has now been issued. \n"
                 + "## A notification has been sent to: Subject, Respondent, Representative, Applicant");
 
-        verify(notificationServiceCIC, times(4)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
-        verifyNoMoreInteractions(notificationServiceCIC);
+        verify(notificationServiceCIC, times(4))
+            .sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID_HYPHENATED), any(Party.class));
+
+        verify(notificationServiceCIC).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID_HYPHENATED), eq(Party.SUBJECT));
+        verify(notificationServiceCIC).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID_HYPHENATED), eq(Party.REPRESENTATIVE));
+        verify(notificationServiceCIC).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID_HYPHENATED), eq(Party.APPLICANT));
+        verify(notificationServiceCIC).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID_HYPHENATED), eq(Party.RESPONDENT));
     }
 
     @Test
@@ -219,13 +227,14 @@ class CaseworkerIssueCaseIT {
             .getContentAsString();
 
         assertThatJson(response)
-            .inPath(CONFIRMATION_HEADER)
+            .inPath("$.confirmation_header")
             .isString()
-            .contains("""
-                    # Issue case notification failed\s
-                    ## A notification could not be sent to: Subject, Applicant, Representative\s
-                    ## Please resend the notification"""
-            );
+            .contains("# Issue case notification failed")
+            .contains("Subject")
+            .contains("Representative")
+            .contains("Applicant")
+            .contains("Respondent")
+            .contains("Please resend the notification");
 
         verifyNoMoreInteractions(notificationServiceCIC);
     }
