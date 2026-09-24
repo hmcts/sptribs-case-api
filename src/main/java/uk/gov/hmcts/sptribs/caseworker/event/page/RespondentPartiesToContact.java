@@ -16,6 +16,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
+import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.getSelectedContactPartiesDocuments;
 import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.MINOR_FATAL_SUBJECT_ERROR_MESSAGE;
 import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAST_ONE_CONTACT_PARTY;
 
@@ -72,6 +73,8 @@ public class RespondentPartiesToContact implements CcdPageConfiguration {
                 errors.add(MINOR_FATAL_SUBJECT_ERROR_MESSAGE);
             }
         }
+
+        data.getContactPartiesDocuments().setPreviewDoc(getSelectedContactPartiesDocuments(data));
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)

@@ -5,11 +5,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
+import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
@@ -129,6 +131,50 @@ public class DocumentListUtilTest {
         //Then
         assertEquals(2, result.getListItems().size());
 
+    }
+
+    @Test
+    void shouldResolveSelectedContactPartiesDocumentsForReview() {
+        String documentId = UUID.randomUUID().toString();
+        CaseworkerCICDocument selectedDocument = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder()
+                .url("http://document-store/documents/" + documentId)
+                .binaryUrl("http://document-store/documents/" + documentId + "/binary")
+                .filename("selected.pdf")
+                .build())
+            .build();
+        CaseworkerCICDocument unselectedDocument = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder()
+                .url("http://document-store/documents/" + UUID.randomUUID())
+                .filename("not-selected.docx")
+                .build())
+            .build();
+
+        ListValue<CaseworkerCICDocument> selectedListValue = new ListValue<>();
+        selectedListValue.setValue(selectedDocument);
+        ListValue<CaseworkerCICDocument> unselectedListValue = new ListValue<>();
+        unselectedListValue.setValue(unselectedDocument);
+
+        DynamicMultiSelectList documentList = DynamicMultiSelectList.builder()
+            .value(List.of(DynamicListElement.builder()
+                .label("[selected.pdf Linked documents](http://case-api/documents/" + documentId + "/binary)")
+                .code(UUID.randomUUID())
+                .build()))
+            .build();
+        CaseData caseData = CaseData.builder().build();
+        caseData.setCicCase(CicCase.builder()
+            .applicantDocumentsUploaded(List.of(selectedListValue, unselectedListValue))
+            .build());
+        caseData.setContactPartiesDocuments(ContactPartiesDocuments.builder()
+            .documentList(documentList)
+            .build());
+
+        List<ListValue<CaseworkerCICDocument>> result =
+            DocumentListUtil.getSelectedContactPartiesDocuments(caseData);
+
+        assertThat(result).extracting(ListValue::getValue).containsExactly(selectedDocument);
     }
 
     @Test

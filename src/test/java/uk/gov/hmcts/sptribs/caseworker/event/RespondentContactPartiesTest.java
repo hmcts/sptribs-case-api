@@ -12,6 +12,7 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ContactPartiesSelectDocument;
+import uk.gov.hmcts.sptribs.caseworker.event.page.RespondentContactPartiesReview;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RespondentPartiesToContact;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
@@ -62,6 +63,9 @@ class RespondentContactPartiesTest {
 
     @Mock
     private ContactPartiesSelectDocument contactPartiesSelectDocument;
+
+    @Mock
+    private RespondentContactPartiesReview contactPartiesReview;
 
     @Mock
     private ContactPartiesService contactPartiesService;
