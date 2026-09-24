@@ -94,7 +94,6 @@
     "dssQuestion2": "Date of Birth",
     "dssAnswer2": "case_data.dssCaseDataSubjectDateOfBirth",
     "dssHeaderDetails": "Subject of this case",
-    "firstHearingDate": "",
     "dataVersion": 0,
     "subjectFlags": {
       "partyName": "test_first_name",
