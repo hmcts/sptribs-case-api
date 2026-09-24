@@ -30,6 +30,7 @@ import java.util.ArrayList;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_HEARING_SUMMARY;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
@@ -67,7 +68,7 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
         PageBuilder pageBuilder = new PageBuilder(
             configBuilder
                 .event(CASEWORKER_EDIT_HEARING_SUMMARY)
-                .forStates(AwaitingOutcome)
+                .forStates(AwaitingOutcome, CaseClosed)
                 .name("Hearings: Edit summary")
                 .showSummary()
                 .aboutToStartCallback(this::aboutToStart)
@@ -75,14 +76,9 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
                 .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                    ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
+                    ST_CIC_HEARING_CENTRE_TEAM_LEADER)
                 .grantHistoryOnly(
-                    ST_CIC_CASEWORKER,
-                    ST_CIC_SENIOR_CASEWORKER,
-                    ST_CIC_HEARING_CENTRE_ADMIN,
-                    ST_CIC_HEARING_CENTRE_TEAM_LEADER,
                     ST_CIC_SENIOR_JUDGE,
-                    SUPER_USER,
                     ST_CIC_JUDGE));
         hearingSummarySelect.addTo(pageBuilder);
         editHearingLoadingPage.addTo(pageBuilder);
@@ -106,6 +102,7 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
+            .state(details.getState())
             .build();
     }
 
@@ -127,7 +124,7 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
-            .state(AwaitingOutcome)
+            .state(details.getState())
             .build();
 
     }
