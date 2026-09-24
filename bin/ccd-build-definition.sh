@@ -15,6 +15,10 @@ do
   config_dir=${root_dir}/build/definitions/${dir}
   definitionOutputFile=${build_dir}/ccd-${dir}-${CCD_DEF_NAME:-dev}.xlsx
 
+   if [[ ! -e ${definitionOutputFile} ]]; then
+   touch ${definitionOutputFile}
+   fi
+
   (${scriptPath}/generate-ccd-definition.sh $config_dir $definitionOutputFile "-e *-nonprod.json,*-testing.json") &
 done
 
