@@ -145,6 +145,8 @@ public class DocumentsServiceTest {
             OffsetDateTime.now());
 
         when(caseDocumentTypesCache.getId(CaseDocumentType.ORDER)).thenReturn(3L);
+        when(documentsRepository.updateCaseDocumentTypeIdByDocumentBinaryUrl(applicationDocument.getBinaryUrl(), 3L))
+            .thenReturn(1);
 
         documentsService.updateDocumentToNonDraft(applicationDocument.getBinaryUrl());
 
