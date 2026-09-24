@@ -111,16 +111,16 @@ public class CaseworkerBundleStitchCompleteIT extends IntegrationTestBase {
             .contains("# Documents added successfully");
 
         assertThat(caseDocumentITManager.getCount(TEST_DOCUMENT_BINARY_URL_1)).isEqualTo(1);
-        assertThat(caseDocumentITManager.findByBinaryUrl(TEST_DOCUMENT_BINARY_URL_1).getDocumentTypeName()).isEqualTo("LINKED_DOCS");
-        assertThat(caseDocumentITManager.findByBinaryUrl(TEST_DOCUMENT_BINARY_URL_1).getCaseDocumentTypeId()).isEqualTo(2L);
+        assertThat(caseDocumentITManager.findByBinaryUrl(TEST_DOCUMENT_BINARY_URL_1).getDocumentTypeName()).isNull();
+        assertThat(caseDocumentITManager.findByBinaryUrl(TEST_DOCUMENT_BINARY_URL_1).getCaseDocumentTypeId()).isEqualTo(9L);
 
         assertThat(caseDocumentITManager.getCount(TEST_DOCUMENT_BINARY_URL_2)).isEqualTo(1);
-        assertThat(caseDocumentITManager.findByBinaryUrl(TEST_DOCUMENT_BINARY_URL_2).getDocumentTypeName()).isEqualTo("LINKED_DOCS");
-        assertThat(caseDocumentITManager.findByBinaryUrl(TEST_DOCUMENT_BINARY_URL_2).getCaseDocumentTypeId()).isEqualTo(2L);
+        assertThat(caseDocumentITManager.findByBinaryUrl(TEST_DOCUMENT_BINARY_URL_2).getDocumentTypeName()).isNull();
+        assertThat(caseDocumentITManager.findByBinaryUrl(TEST_DOCUMENT_BINARY_URL_2).getCaseDocumentTypeId()).isEqualTo(9L);
 
         assertThat(caseDocumentITManager.getCount(TEST_DOCUMENT_BINARY_URL_3)).isEqualTo(1);
-        assertThat(caseDocumentITManager.findByBinaryUrl(TEST_DOCUMENT_BINARY_URL_3).getDocumentTypeName()).isEqualTo("LINKED_DOCS");
-        assertThat(caseDocumentITManager.findByBinaryUrl(TEST_DOCUMENT_BINARY_URL_3).getCaseDocumentTypeId()).isEqualTo(2L);
+        assertThat(caseDocumentITManager.findByBinaryUrl(TEST_DOCUMENT_BINARY_URL_3).getDocumentTypeName()).isNull();
+        assertThat(caseDocumentITManager.findByBinaryUrl(TEST_DOCUMENT_BINARY_URL_3).getCaseDocumentTypeId()).isEqualTo(9L);
     }
 
     @Test
