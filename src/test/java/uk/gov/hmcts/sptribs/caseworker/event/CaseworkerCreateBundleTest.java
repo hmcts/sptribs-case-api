@@ -221,12 +221,20 @@ class CaseworkerCreateBundleTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         final Bundle bundle = Bundle.builder().build();
+        AudioVideoEvidenceBundleDocument staleAudioVideoBundleDocument = AudioVideoEvidenceBundleDocument.builder()
+            .documentLink(Document.builder().filename("stale-audio-video-evidence.pdf").build())
+            .build();
+        caseData.setAudioVideoEvidenceBundleDocument(staleAudioVideoBundleDocument);
 
         when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
         when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
         when(audioVideoEvidenceBundleService.createAudioVideoEvidenceBundleDocument(TEST_CASE_ID))
             .thenReturn(Optional.empty());
-        when(bundlingService.createBundle(any(BundleCallback.class), eq(TEST_CASE_ID))).thenReturn(List.of(bundle));
+        when(bundlingService.createBundle(any(BundleCallback.class), eq(TEST_CASE_ID))).thenAnswer(invocation -> {
+            BundleCallback callback = invocation.getArgument(0);
+            assertThat(callback.getCaseDetails().getData().getAudioVideoEvidenceBundleDocument()).isNull();
+            return List.of(bundle);
+        });
 
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());

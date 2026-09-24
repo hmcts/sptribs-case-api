@@ -84,7 +84,7 @@ public class AudioVideoEvidenceBundleService {
         }
     }
 
-    List<AudioVideoDocumentRow> extractRows(Long caseId) {
+    private List<AudioVideoDocumentRow> extractRows(Long caseId) {
         List<AudioVideoDocumentRow> rows = new ArrayList<>();
         for (DocumentEntity entity : documentsService.getAudioVideoDocuments(caseId)) {
             rows.add(toRow(entity));

@@ -134,12 +134,12 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         caseData.setSubjectRepFullName(caseData.getCicCase().getFullName());
         caseData.setSchemeLabel(caseData.getCicCase().getSchemeCic() != null ? caseData.getCicCase().getSchemeCic().getLabel() : "");
 
-        caseData.setAudioVideoEvidenceBundleDocument(null);
-
         try {
-            audioVideoEvidenceBundleService
-                .createAudioVideoEvidenceBundleDocument(details.getId())
-                .ifPresent(caseData::setAudioVideoEvidenceBundleDocument);
+            caseData.setAudioVideoEvidenceBundleDocument(
+                audioVideoEvidenceBundleService
+                    .createAudioVideoEvidenceBundleDocument(details.getId())
+                    .orElse(null)
+            );
         } catch (AudioVideoEvidenceBundleException exception) {
             log.error("Unable to create audio/video evidence document for case {}", details.getId(), exception);
             clearTemporaryBundleData(caseData);
