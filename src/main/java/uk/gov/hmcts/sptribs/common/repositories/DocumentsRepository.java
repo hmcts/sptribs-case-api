@@ -44,7 +44,7 @@ public interface DocumentsRepository extends JpaRepository<DocumentEntity, Long>
             d.updatedAt = current_instant()
         where d.documentBinaryUrl = :documentBinaryUrl
         """)
-    void updateCaseDocumentTypeIdByDocumentBinaryUrl(
+    int updateCaseDocumentTypeIdByDocumentBinaryUrl(
         @Param("documentBinaryUrl") String documentBinaryUrl,
         @Param("caseDocumentTypeId") Long caseDocumentTypeId
     );

@@ -119,9 +119,11 @@ public class DocumentsService {
 
         try {
             Long orderDocumentTypeId = caseDocumentTypesCache.getId(CaseDocumentType.ORDER);
-            documentsRepository.updateCaseDocumentTypeIdByDocumentBinaryUrl(documentBinaryUrl, orderDocumentTypeId);
-            log.info("Draft order updated to non draft case document type successfully for url: {}", documentBinaryUrl);
-
+            if (documentsRepository.updateCaseDocumentTypeIdByDocumentBinaryUrl(documentBinaryUrl, orderDocumentTypeId) == 0) {
+                throw new DataAccessException("No document found with binary URL: " + documentBinaryUrl) {};
+            } else {
+                log.info("Draft order updated document to non draft case document type successfully for url: {}", documentBinaryUrl);
+            }
         } catch (DataAccessException e) {
             throw new DocumentUpdateException("Error updating case document type from draft order to order", e);
         }
