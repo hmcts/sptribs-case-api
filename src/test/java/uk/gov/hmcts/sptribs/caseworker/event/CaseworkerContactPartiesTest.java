@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
@@ -79,7 +80,7 @@ class CaseworkerContactPartiesTest {
     @Mock
     private ContactPartiesSelectDocument contactPartiesSelectDocument;
 
-    @Mock
+    @Spy
     private CaseworkerContactPartiesReview contactPartiesReview;
 
     @Mock
@@ -455,6 +456,7 @@ class CaseworkerContactPartiesTest {
 
         assertThat(response).isNotNull();
         assertThat(response.getData().getContactPartiesDocuments().getDocumentList().getListItems()).hasSize(1);
+        assertThat(response.getData().getContactPartiesDocuments().getPreviewDoc()).isNull();
         assertThat(response.getData().getCicCase().getNotifyPartyMessage()).isEqualTo("");
     }
 
@@ -488,6 +490,7 @@ class CaseworkerContactPartiesTest {
 
         assertThat(contactPartiesResponse.getEventMetadata().getSummary()).isEqualTo("1 Selected documents sent");
         assertThat(contactPartiesResponse.getEventMetadata().getDescription()).contains("Document 1 - Test.pdf");
+        assertThat(caseData.getContactPartiesDocuments().getPreviewDoc()).isNull();
     }
 
 }

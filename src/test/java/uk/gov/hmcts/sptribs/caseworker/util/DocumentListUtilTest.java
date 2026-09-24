@@ -178,6 +178,49 @@ public class DocumentListUtilTest {
     }
 
     @Test
+    void shouldReturnEmptyPreviewWhenNoDocumentsAreSelected() {
+        CaseData caseData = CaseData.builder()
+            .cicCase(CicCase.builder().build())
+            .contactPartiesDocuments(ContactPartiesDocuments.builder().build())
+            .build();
+
+        assertThat(DocumentListUtil.getSelectedContactPartiesDocuments(caseData)).isEmpty();
+
+        caseData.getContactPartiesDocuments().setDocumentList(
+            DynamicMultiSelectList.builder().value(List.of()).build());
+
+        assertThat(DocumentListUtil.getSelectedContactPartiesDocuments(caseData)).isEmpty();
+    }
+
+    @Test
+    void shouldExcludeSelectedDocumentsWithUnsupportedFileTypes() {
+        String documentId = UUID.randomUUID().toString();
+        CaseworkerCICDocument unsupportedDocument = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder()
+                .url("http://document-store/documents/" + documentId)
+                .filename("selected.mp3")
+                .build())
+            .build();
+        ListValue<CaseworkerCICDocument> documentValue = new ListValue<>();
+        documentValue.setValue(unsupportedDocument);
+
+        CaseData caseData = CaseData.builder()
+            .cicCase(CicCase.builder().applicantDocumentsUploaded(List.of(documentValue)).build())
+            .contactPartiesDocuments(ContactPartiesDocuments.builder()
+                .documentList(DynamicMultiSelectList.builder()
+                    .value(List.of(DynamicListElement.builder()
+                        .label("[selected.mp3 Linked documents](http://case-api/documents/" + documentId + "/binary)")
+                        .code(UUID.randomUUID())
+                        .build()))
+                    .build())
+                .build())
+            .build();
+
+        assertThat(DocumentListUtil.getSelectedContactPartiesDocuments(caseData)).isEmpty();
+    }
+
+    @Test
     void shouldFormatDocUrlsCorrectlyForContactPartiesDocList() {
         //Given
         String baseUrl = "http://mocked-url.com/";

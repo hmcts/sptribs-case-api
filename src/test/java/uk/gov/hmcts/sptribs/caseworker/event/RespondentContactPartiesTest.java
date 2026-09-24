@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -64,7 +65,7 @@ class RespondentContactPartiesTest {
     @Mock
     private ContactPartiesSelectDocument contactPartiesSelectDocument;
 
-    @Mock
+    @Spy
     private RespondentContactPartiesReview contactPartiesReview;
 
     @Mock
@@ -309,6 +310,22 @@ class RespondentContactPartiesTest {
         //Then
         assertThat(response).isNotNull();
         assertThat(response.getErrors()).isEmpty();
+    }
+
+    @Test
+    void shouldClearPreviewDocumentsBeforeSubmit() {
+        final CaseData caseData = caseData();
+        caseData.getContactPartiesDocuments().setPreviewDoc(List.of());
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(caseData);
+        details.setState(State.Draft);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            respondentContactParties.aboutToSubmit(details, details);
+
+        assertThat(response.getData()).isSameAs(caseData);
+        assertThat(response.getState()).isEqualTo(State.Draft);
+        assertThat(caseData.getContactPartiesDocuments().getPreviewDoc()).isNull();
     }
 
 }
