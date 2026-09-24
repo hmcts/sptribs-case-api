@@ -141,14 +141,15 @@ public class DocumentsServiceTest {
     @Test
      void shouldUpdateDocumentToNonDraftOrder() {
         Document applicationDocument = buildDocument(HOSPITAL_RECORDS.getCategory());
-        DocumentEntity draftEvidenceDocumentEntity = buildDocumentEntity(HOSPITAL_RECORDS.name(), 3L,
-            OffsetDateTime.now());
 
         when(caseDocumentTypesCache.getId(CaseDocumentType.ORDER)).thenReturn(3L);
         when(documentsRepository.updateCaseDocumentTypeIdByDocumentBinaryUrl(applicationDocument.getBinaryUrl(), 3L))
             .thenReturn(1);
 
         documentsService.updateDocumentToNonDraft(applicationDocument.getBinaryUrl());
+
+        DocumentEntity draftEvidenceDocumentEntity = buildDocumentEntity(HOSPITAL_RECORDS.name(), 3L,
+            OffsetDateTime.now());
 
         verify(documentsRepository, times(1)).updateCaseDocumentTypeIdByDocumentBinaryUrl(
             draftEvidenceDocumentEntity.getDocumentBinaryUrl(), 3L);
