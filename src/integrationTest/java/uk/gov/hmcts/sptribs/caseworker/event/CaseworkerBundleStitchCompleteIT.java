@@ -7,24 +7,27 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.IntegrationTestBase;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.manager.CaseDataITManager;
+import uk.gov.hmcts.sptribs.manager.CaseDocumentITManager;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
 import java.util.List;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -40,16 +43,21 @@ import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.ASYNC_STITCH_COMPLETE;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @ContextConfiguration(initializers = {IdamWireMock.PropertiesInitializer.class})
-public class CaseworkerBundleStitchCompleteIT {
+public class CaseworkerBundleStitchCompleteIT extends IntegrationTestBase {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private CaseDataITManager caseDataITManager;
+
+    @Autowired
+    private CaseDocumentITManager caseDocumentITManager;
 
     @MockitoBean
     private WebMvcConfig webMvcConfig;
@@ -61,6 +69,12 @@ public class CaseworkerBundleStitchCompleteIT {
     private DocumentsRepository documentsRepository;
 
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
+
+    private static final String TEST_DOCUMENT_BINARY_URL_1 = "http://test.com/a1b2c3d4/binary";
+
+    private static final String TEST_DOCUMENT_BINARY_URL_2 = "http://test.com/e5f6g7h8/binary";
+
+    private static final String TEST_DOCUMENT_BINARY_URL_3 = "http://test.com/i9j0k1l2/binary";
 
     @BeforeAll
     static void setUp() {
@@ -95,6 +109,18 @@ public class CaseworkerBundleStitchCompleteIT {
             .inPath(CONFIRMATION_HEADER)
             .isString()
             .contains("# Documents added successfully");
+
+        assertThat(caseDocumentITManager.getCount(TEST_DOCUMENT_BINARY_URL_1)).isEqualTo(1);
+        assertThat(caseDocumentITManager.findByBinaryUrl(TEST_DOCUMENT_BINARY_URL_1).getDocumentTypeName()).isEqualTo("LINKED_DOCS");
+        assertThat(caseDocumentITManager.findByBinaryUrl(TEST_DOCUMENT_BINARY_URL_1).getCaseDocumentTypeId()).isEqualTo(2L);
+
+        assertThat(caseDocumentITManager.getCount(TEST_DOCUMENT_BINARY_URL_2)).isEqualTo(1);
+        assertThat(caseDocumentITManager.findByBinaryUrl(TEST_DOCUMENT_BINARY_URL_2).getDocumentTypeName()).isEqualTo("LINKED_DOCS");
+        assertThat(caseDocumentITManager.findByBinaryUrl(TEST_DOCUMENT_BINARY_URL_2).getCaseDocumentTypeId()).isEqualTo(2L);
+
+        assertThat(caseDocumentITManager.getCount(TEST_DOCUMENT_BINARY_URL_3)).isEqualTo(1);
+        assertThat(caseDocumentITManager.findByBinaryUrl(TEST_DOCUMENT_BINARY_URL_3).getDocumentTypeName()).isEqualTo("LINKED_DOCS");
+        assertThat(caseDocumentITManager.findByBinaryUrl(TEST_DOCUMENT_BINARY_URL_3).getCaseDocumentTypeId()).isEqualTo(2L);
     }
 
     @Test
@@ -172,26 +198,27 @@ public class CaseworkerBundleStitchCompleteIT {
     }
 
     private CaseData setCaseDataWithTestCaseBundles() {
+        caseDataITManager.addCaseData(TEST_CASE_ID, "test", "{}");
         CaseData caseData = caseData();
 
         Document testStitchedDocument1 = Document.builder()
             .filename("stitched-document-1.pdf")
-            .url("http://test.com/a1b2c3d4")
-            .binaryUrl("http://test.com/a1b2c3d4/binary")
+            .url(TEST_DOCUMENT_BINARY_URL_1.replace("/binary", ""))
+            .binaryUrl(TEST_DOCUMENT_BINARY_URL_1)
             .build();
         Bundle testBundle1 = Bundle.builder().stitchedDocument(testStitchedDocument1).build();
 
         Document testStitchedDocument2 = Document.builder()
             .filename("stitched-document-2.pdf")
-            .url("http://test.com/e5f6g7h8")
-            .binaryUrl("http://test.com/e5f6g7h8/binary")
+            .url(TEST_DOCUMENT_BINARY_URL_2.replace("/binary", ""))
+            .binaryUrl(TEST_DOCUMENT_BINARY_URL_2)
             .build();
         Bundle testBundle2 = Bundle.builder().stitchedDocument(testStitchedDocument2).build();
 
         Document testStitchedDocument3 = Document.builder()
             .filename("stitched-document-3.pdf")
-            .url("http://test.com/i9j0k1l2")
-            .binaryUrl("http://test.com/i9j0k1l2/binary")
+            .url(TEST_DOCUMENT_BINARY_URL_3.replace("/binary", ""))
+            .binaryUrl(TEST_DOCUMENT_BINARY_URL_3)
             .build();
         Bundle testBundle3 = Bundle.builder().stitchedDocument(testStitchedDocument3).build();
 
