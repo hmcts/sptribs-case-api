@@ -28,6 +28,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentSaveException;
+import uk.gov.hmcts.sptribs.common.service.ContactPartiesService;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.content.DecisionTemplateContent;
 import uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants;
@@ -40,15 +41,19 @@ import uk.gov.hmcts.sptribs.notification.dispatcher.DecisionIssuedNotification;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
@@ -79,6 +84,9 @@ class CaseworkerIssueDecisionTest {
     @Mock
     private IssueDecisionFooter issueDecisionFooter;
 
+    @Mock
+    private ContactPartiesService contactPartiesService;
+
     private final Clock fixedClock = Clock.fixed(
         LocalDate.of(2026, 5, 15)
             .atStartOfDay(ZoneId.systemDefault())
@@ -94,7 +102,8 @@ class CaseworkerIssueDecisionTest {
             issueDecisionFooter,
             decisionIssuedNotification,
             fixedClock,
-            documentsService
+            documentsService,
+            contactPartiesService
         );
     }
 
@@ -207,6 +216,25 @@ class CaseworkerIssueDecisionTest {
 
         //Then
         assertThat(response.getConfirmationHeader()).contains("Decision notice issued");
+    }
+
+    @Test
+    void shouldLinkCorrespondenceIdsToDecisionDocumentsWhenNotificationSent() {
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseData caseData = caseData();
+        caseData.setHyphenatedCaseRef("1234-5678-90");
+        caseData.setCicCase(CicCase.builder().notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build());
+        details.setData(caseData);
+
+        when(decisionIssuedNotification.getUploadedDocuments(caseData)).thenReturn(Map.of("decisionNotice1", "uuid-1"));
+        when(decisionIssuedNotification.sendToRespondent(eq(caseData), eq("1234-5678-90"), anyMap()))
+            .thenReturn("corr-id-1");
+
+        SubmittedCallbackResponse response = issueDecision.submitted(details, new CaseDetails<>());
+
+        assertThat(response.getConfirmationHeader()).contains("Decision notice issued");
+        verify(contactPartiesService)
+            .linkCorrespondenceIdsToDocuments(caseData, Map.of("decisionNotice1", "uuid-1"), List.of("corr-id-1"));
     }
 
     @Test
