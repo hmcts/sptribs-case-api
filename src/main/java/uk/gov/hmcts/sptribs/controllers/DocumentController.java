@@ -205,17 +205,7 @@ public class DocumentController {
                 elapsedMilliseconds(startedAt)
             );
 
-            boolean downloadStatusRecorded = true;
-            try {
-                documentDownloadStatusService.recordDocumentDownload(ccdReference, party, documentId);
-            } catch (Exception exception) {
-                downloadStatusRecorded = false;
-                log.error(
-                    "event=document_download_status_failed journey=cica_dashboard step=document_download "
-                        + "outcome=partial_success error_type={}",
-                    exception.getClass().getSimpleName()
-                );
-            }
+            boolean downloadStatusRecorded = recordDocumentDownloadStatus(ccdReference, party, documentId);
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.valueOf(documentResponse.mimeType()));
@@ -239,6 +229,20 @@ public class DocumentController {
                 exception.getClass().getSimpleName()
             );
             throw exception;
+        }
+    }
+
+    private boolean recordDocumentDownloadStatus(String ccdReference, Party party, String documentId) {
+        try {
+            documentDownloadStatusService.recordDocumentDownload(ccdReference, party, documentId);
+            return true;
+        } catch (Exception exception) {
+            log.error(
+                "event=document_download_status_failed journey=cica_dashboard step=document_download "
+                    + "outcome=partial_success error_type={}",
+                exception.getClass().getSimpleName()
+            );
+            return false;
         }
     }
 
