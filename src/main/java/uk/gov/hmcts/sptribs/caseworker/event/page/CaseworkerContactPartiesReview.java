@@ -3,7 +3,6 @@ package uk.gov.hmcts.sptribs.caseworker.event.page;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
@@ -22,12 +21,15 @@ public class CaseworkerContactPartiesReview implements CcdPageConfiguration {
             .readonlyWithLabel(ContactPartiesDocuments::getPreviewDoc, "Selected documents")
             .done()
             .label("contactPartiesReviewRecipientsHeading", "## Contact parties")
-            .complex(CaseData::getCicCase)
-            .readonlyWithLabel(CicCase::getNotifyPartySubject, "Subject")
-            .readonlyWithLabel(CicCase::getNotifyPartyApplicant, "Applicant")
-            .readonlyWithLabel(CicCase::getNotifyPartyRepresentative, "Representative")
-            .readonlyWithLabel(CicCase::getNotifyPartyRespondent, "Respondent")
-            .readonlyWithLabel(CicCase::getNotifyPartyMessage, "Message")
-            .done();
+            .label("contactPartiesReviewSubject", "**Subject:** ${cicCaseFullName}",
+                "cicCaseNotifyPartySubjectCONTAINS \"SubjectCIC\"")
+            .label("contactPartiesReviewApplicant", "**Applicant:** ${cicCaseApplicantFullName}",
+                "cicCaseNotifyPartyApplicantCONTAINS \"ApplicantCIC\"")
+            .label("contactPartiesReviewRepresentative", "**Representative:** ${cicCaseRepresentativeFullName}",
+                "cicCaseNotifyPartyRepresentativeCONTAINS \"RepresentativeCIC\"")
+            .label("contactPartiesReviewRespondent", "**Respondent:** ${cicCaseRespondentName}",
+                "cicCaseNotifyPartyRespondentCONTAINS \"RespondentCIC\"")
+            .label("contactPartiesReviewMessageHeading", "## Message")
+            .label("contactPartiesReviewMessage", "${cicCaseNotifyPartyMessage}");
     }
 }

@@ -1,10 +1,8 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
@@ -23,14 +21,15 @@ public class RespondentContactPartiesReview implements CcdPageConfiguration {
             .readonlyWithLabel(ContactPartiesDocuments::getPreviewDoc, "Selected documents")
             .done()
             .label("respondentContactPartiesReviewRecipientsHeading", "## Contact parties")
-            .complex(CaseData::getContactParties)
-            .readonlyWithLabel(ContactParties::getSubjectContactParties, "Subject")
-            .readonlyWithLabel(ContactParties::getApplicantContactParties, "Applicant")
-            .readonlyWithLabel(ContactParties::getRepresentativeContactParties, "Representative")
-            .readonlyWithLabel(ContactParties::getTribunal, "Tribunal")
-            .done()
-            .complex(CaseData::getCicCase)
-            .readonlyWithLabel(CicCase::getNotifyPartyMessage, "Message")
-            .done();
+            .label("respondentContactPartiesReviewSubject", "**Subject:** ${cicCaseFullName}",
+                "contactParties.subjectContactPartiesCONTAINS \"SubjectCIC\"")
+            .label("respondentContactPartiesReviewApplicant", "**Applicant:** ${cicCaseApplicantFullName}",
+                "contactParties.applicantContactPartiesCONTAINS \"ApplicantCIC\"")
+            .label("respondentContactPartiesReviewRepresentative", "**Representative:** ${cicCaseRepresentativeFullName}",
+                "contactParties.representativeContactPartiesCONTAINS \"RepresentativeCIC\"")
+            .label("respondentContactPartiesReviewTribunal", "**Tribunal**",
+                "contactParties.tribunalCONTAINS \"TribunalCIC\"")
+            .label("respondentContactPartiesReviewMessageHeading", "## Message")
+            .label("respondentContactPartiesReviewMessage", "${cicCaseNotifyPartyMessage}");
     }
 }
