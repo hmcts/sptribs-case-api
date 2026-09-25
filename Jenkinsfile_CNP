@@ -1,6 +1,6 @@
 #!groovy
 
-@Library("Infrastructure@2.7.2")
+@Library("Infrastructure@2.8.0")
 
 import uk.gov.hmcts.contino.AppPipelineConfig
 import uk.gov.hmcts.contino.AppPipelineDsl
@@ -268,8 +268,8 @@ withPipeline(type, product, component) {
 
   afterSuccess('functionalTest:aat') {
     env.CCD_DEF_NAME = 'prod'
-    builder.gradle('generateCCDConfig --rerun-tasks')
-    generateDefinitions()
+//    builder.gradle('generateCCDConfig --rerun-tasks')
+//    generateDefinitions()
     env.ENVIRONMENT = 'prod'
     env.DEPLOYMENT_ENVIRONMENT = 'prod'
     env.CASE_API_URL = 'http://sptribs-case-api-prod.service.core-compute-prod.internal'
@@ -289,7 +289,7 @@ withPipeline(type, product, component) {
         ],
         keyVaultURLOverride: 'https://sptribs-prod.vault.azure.net/'
       ) {
-        env.S2S_SECRET = env.S2S_SECRET_PROD
+        env.S2S_SECRET_PROD = env.S2S_SECRET_PROD
       }
     }
 
