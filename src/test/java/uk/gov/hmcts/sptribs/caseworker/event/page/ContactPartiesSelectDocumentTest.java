@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
@@ -46,6 +48,9 @@ class ContactPartiesSelectDocumentTest {
     @InjectMocks
     private ContactPartiesSelectDocument contactPartiesSelectDocument;
 
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private PageBuilder pageBuilder;
+
     @Mock
     private CaseDocumentClientApi caseDocumentClientApi;
 
@@ -56,6 +61,11 @@ class ContactPartiesSelectDocumentTest {
     private AuthTokenGenerator authTokenGenerator;
 
     private CICUser systemUser;
+
+    @Test
+    void shouldAddContactPartiesDocumentPage() {
+        contactPartiesSelectDocument.addTo(pageBuilder);
+    }
 
     @Nested
     class RequireStubbing {

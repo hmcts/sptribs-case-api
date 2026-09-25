@@ -19,9 +19,11 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -202,6 +204,21 @@ public final class DocumentListUtil {
             .build();
     }
 
+    public static List<ListValue<CaseworkerCICDocument>> getSelectedContactPartiesDocuments(final CaseData data) {
+        DynamicMultiSelectList documentList = data.getContactPartiesDocuments().getDocumentList();
+        if (documentList == null || CollectionUtils.isEmpty(documentList.getValue())) {
+            return new ArrayList<>();
+        }
+
+        Set<String> selectedDocumentIds = new HashSet<>(extractDocumentIds(documentList.getValue()));
+        List<CaseworkerCICDocument> selectedDocuments = prepareList(data).stream()
+            .filter(DocumentListUtil::isContactPartiesFileTypeAllowed)
+            .filter(document -> selectedDocumentIds.contains(documentId(document)))
+            .toList();
+
+        return buildListValues(selectedDocuments);
+    }
+
     public static List<ListValue<CaseworkerCICDocument>> addToExistingDocumentList(
             List<ListValue<CaseworkerCICDocument>> existing,
             List<ListValue<CaseworkerCICDocument>> toAdd) {
@@ -220,6 +237,16 @@ public final class DocumentListUtil {
             + " " + doc.getDocumentCategory().getLabel()
             + "](" + url + ")").code(UUID.randomUUID()).build();
         dynamicListElements.add(element);
+    }
+
+    private static boolean isContactPartiesFileTypeAllowed(CaseworkerCICDocument document) {
+        String fileName = document.getDocumentLink().getFilename();
+        String fileExtension = StringUtils.substringAfterLast(fileName, ".");
+        return ContactPartiesAllowedFileTypes.isFileTypeValid(fileExtension);
+    }
+
+    private static String documentId(CaseworkerCICDocument document) {
+        return StringUtils.substringAfterLast(document.getDocumentLink().getUrl(), "/");
     }
 
 

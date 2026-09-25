@@ -11,6 +11,7 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ContactPartiesSelectDocument;
+import uk.gov.hmcts.sptribs.caseworker.event.page.RespondentContactPartiesReview;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RespondentPartiesToContact;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
@@ -64,6 +65,7 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
     private String baseUrl;
     private final ContactPartiesNotification contactPartiesNotification;
     private final ContactPartiesSelectDocument contactPartiesSelectDocument;
+    private final RespondentContactPartiesReview contactPartiesReview;
     private final NotificationHelper notificationHelper;
     private final ContactPartiesService contactPartiesService;
     private static final int DOC_ATTACH_LIMIT = 10;
@@ -85,8 +87,10 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
                     CaseClosed,
                     CaseStayed)
                 .name("Case: CICA Contact parties")
-                .showSummary()
+                .showSummary(false)
+                .endButtonLabel("Confirm and send")
                 .aboutToStartCallback(this::aboutToStart)
+                .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER, ST_CIC_RESPONDENT)
                 .grantHistoryOnly(
@@ -99,6 +103,7 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
         );
         contactPartiesSelectDocument.addTo(pageBuilder);
         resPartiesToContact.addTo(pageBuilder);
+        contactPartiesReview.addTo(pageBuilder);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
@@ -106,10 +111,20 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
         caseData.setContactParties(new ContactParties());
         DynamicMultiSelectList documentList = DocumentListUtil.prepareContactPartiesDocumentList(caseData, baseUrl);
         caseData.getContactPartiesDocuments().setDocumentList(documentList);
+        caseData.getContactPartiesDocuments().setPreviewDoc(null);
         caseData.getCicCase().setNotifyPartyMessage("");
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
+            .build();
+    }
+
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
+                                                                       CaseDetails<CaseData, State> beforeDetails) {
+        details.getData().getContactPartiesDocuments().setPreviewDoc(null);
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(details.getData())
+            .state(details.getState())
             .build();
     }
 
@@ -162,4 +177,3 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
 
     }
 }
-
