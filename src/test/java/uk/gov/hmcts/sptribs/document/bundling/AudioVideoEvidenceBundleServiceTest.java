@@ -314,8 +314,9 @@ class AudioVideoEvidenceBundleServiceTest {
         ArgumentCaptor<Map<String, Object>> placeholdersCaptor = ArgumentCaptor.forClass(Map.class);
         verify(pdfServiceClient).generateFromHtml(any(byte[].class), placeholdersCaptor.capture());
         String rowsHtml = placeholdersCaptor.getValue().get("rowsHtml").toString();
-        assertThat(rowsHtml).contains("https://manage-case.demo.platform.hmcts.net/documents/33333333-3333-3333-3333-333333333333/binary?x=&lt;x&gt;");
-        assertThat(rowsHtml).doesNotContain("http://dm/documents/33333333-3333-3333-3333-333333333333/binary?a=1");
+        assertThat(rowsHtml)
+            .contains("https://manage-case.demo.platform.hmcts.net/documents/33333333-3333-3333-3333-333333333333/binary?x=&lt;x&gt;")
+            .doesNotContain("http://dm/documents/33333333-3333-3333-3333-333333333333/binary?a=1");
     }
 
     @Test

@@ -1,38 +1,29 @@
 package uk.gov.hmcts.sptribs.document.bundling;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ManageCaseDocumentUrlBuilderTest {
 
-    @Test
-    void shouldBuildLegacyDmStoreUrl() {
+    @ParameterizedTest
+    @CsvSource({
+        "http://dm-store/documents/11111111-1111-1111-1111-111111111111/binary, "
+            + "https://manage-case.demo.platform.hmcts.net/documents/11111111-1111-1111-1111-111111111111/binary",
+        "http://ccd-case-document-am-api/cases/documents/22222222-2222-2222-2222-222222222222/binary, "
+            + "https://manage-case.demo.platform.hmcts.net/documentsv2/22222222-2222-2222-2222-222222222222/binary",
+        "http://dm-store/documents/44444444-4444-4444-4444-444444444444/binary?token=abc#top, "
+            + "https://manage-case.demo.platform.hmcts.net/documents/44444444-4444-4444-4444-444444444444/binary"
+    })
+    void shouldBuildPublicBinaryUrl(String sourceUrl, String expectedUrl) {
         ManageCaseDocumentUrlBuilder builder = new ManageCaseDocumentUrlBuilder(
             "https://manage-case.demo.platform.hmcts.net"
         );
 
-        String result = builder.buildPublicBinaryUrl(
-            "http://dm-store/documents/11111111-1111-1111-1111-111111111111/binary"
-        );
-
-        assertThat(result)
-            .isEqualTo("https://manage-case.demo.platform.hmcts.net/documents/11111111-1111-1111-1111-111111111111/binary");
-    }
-
-    @Test
-    void shouldBuildCdamV2Url() {
-        ManageCaseDocumentUrlBuilder builder = new ManageCaseDocumentUrlBuilder(
-            "https://manage-case.demo.platform.hmcts.net"
-        );
-
-        String result = builder.buildPublicBinaryUrl(
-            "http://ccd-case-document-am-api/cases/documents/22222222-2222-2222-2222-222222222222/binary"
-        );
-
-        assertThat(result)
-            .isEqualTo("https://manage-case.demo.platform.hmcts.net/documentsv2/22222222-2222-2222-2222-222222222222/binary");
+        assertThat(builder.buildPublicBinaryUrl(sourceUrl)).isEqualTo(expectedUrl);
     }
 
     @Test
@@ -49,20 +40,6 @@ class ManageCaseDocumentUrlBuilderTest {
 
         assertThat(noSlashBuilder.buildPublicBinaryUrl(source)).isEqualTo(expected);
         assertThat(slashBuilder.buildPublicBinaryUrl(source)).isEqualTo(expected);
-    }
-
-    @Test
-    void shouldDiscardSourceQueryAndFragment() {
-        ManageCaseDocumentUrlBuilder builder = new ManageCaseDocumentUrlBuilder(
-            "https://manage-case.demo.platform.hmcts.net"
-        );
-
-        String result = builder.buildPublicBinaryUrl(
-            "http://dm-store/documents/44444444-4444-4444-4444-444444444444/binary?token=abc#top"
-        );
-
-        assertThat(result)
-            .isEqualTo("https://manage-case.demo.platform.hmcts.net/documents/44444444-4444-4444-4444-444444444444/binary");
     }
 
     @Test

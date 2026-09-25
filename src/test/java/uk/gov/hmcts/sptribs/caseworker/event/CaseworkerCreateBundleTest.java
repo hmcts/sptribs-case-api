@@ -325,9 +325,10 @@ class CaseworkerCreateBundleTest {
         when(audioVideoEvidenceBundleService.createAudioVideoEvidenceBundleDocument(TEST_CASE_ID))
             .thenThrow(new RuntimeException("unexpected"));
 
+        final CaseDetails<CaseData, State> callbackCaseDetails = CaseDetails.<CaseData, State>builder().build();
         assertThatThrownBy(() -> caseworkerCreateBundle.aboutToSubmit(
             updatedCaseDetails,
-            CaseDetails.<CaseData, State>builder().build()
+            callbackCaseDetails
         )).isInstanceOf(RuntimeException.class).hasMessage("unexpected");
 
         verify(bundlingService, never()).createBundle(any(BundleCallback.class), eq(TEST_CASE_ID));

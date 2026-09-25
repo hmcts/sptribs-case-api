@@ -44,6 +44,7 @@ public class AudioVideoEvidenceBundleService {
     private static final String AUDIO_DOCUMENT_TYPE = "Audio Document";
     private static final String VIDEO_DOCUMENT_TYPE = "Video Document";
     private static final String AUDIO_VIDEO_EVIDENCE_TEMPLATE = "/templates/audio_video_evidence.html";
+    private static final String TABLE_CELL_SEPARATOR = "</td><td>";
 
     private final PDFServiceClient pdfServiceClient;
     private final CaseDocumentClientApi caseDocumentClientApi;
@@ -146,11 +147,11 @@ public class AudioVideoEvidenceBundleService {
         for (AudioVideoDocumentRow row : rows) {
             rowsHtml.append("<tr><td>")
                 .append(escapeHtml(row.documentType()))
-                .append("</td><td>")
+                .append(TABLE_CELL_SEPARATOR)
                 .append(buildDocumentLink(row.documentFilename(), row.documentUrl()))
-                .append("</td><td>")
+                .append(TABLE_CELL_SEPARATOR)
                 .append(escapeHtml(row.dateAdded()))
-                .append("</td><td>")
+                .append(TABLE_CELL_SEPARATOR)
                 .append(escapeHtml(row.documentCategory()))
                 .append("</td></tr>");
         }

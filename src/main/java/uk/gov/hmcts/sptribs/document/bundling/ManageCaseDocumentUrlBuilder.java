@@ -18,6 +18,7 @@ public class ManageCaseDocumentUrlBuilder {
     private static final String CASES = "cases";
     private static final String DOCUMENTS_V2 = "documentsv2";
     private static final String BINARY = "binary";
+    private static final String PATH_SEPARATOR = "/";
 
     private final URI manageCaseBaseUri;
 
@@ -99,7 +100,7 @@ public class ManageCaseDocumentUrlBuilder {
     }
 
     private String buildPath(String... segments) {
-        URI pathUri = URI.create("/" + String.join("/", segments));
+        URI pathUri = URI.create(PATH_SEPARATOR + String.join(PATH_SEPARATOR, segments));
         return manageCaseBaseUri.resolve(pathUri).toString();
     }
 }
