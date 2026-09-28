@@ -87,8 +87,9 @@ public class CaseworkerCreateBundleIT {
 
     private static final String CASEWORKER_CREATE_BUNDLE_ABOUT_TO_SUBMIT_RESPONSE =
         "classpath:responses/caseworker-create-bundle-about-to-submit-response.json";
-    private static final String JUDICIAL_USE_NOTICE =
-        "Access to the audio, video, and document records referenced in this table are for judicial use";
+    private static final String NOTE_TO_PARTIES =
+        "<p><b>Note to Parties: A link to the audio or video file was emailed to you on or around the date shown in the "
+            + "\"Date Added\" column.</b></p>";
 
     @Autowired
     private MockMvc mockMvc;
@@ -294,14 +295,14 @@ public class CaseworkerCreateBundleIT {
         verify(pdfServiceClient).generateFromHtml(htmlCaptor.capture(), placeholdersCaptor.capture());
         String html = new String(htmlCaptor.getValue(), java.nio.charset.StandardCharsets.UTF_8);
         assertThat(html)
-            .contains(JUDICIAL_USE_NOTICE)
+            .contains(NOTE_TO_PARTIES)
             .contains("<th>Document type</th>")
             .contains("<th>Document name</th>")
             .contains("<th>Date added</th>")
             .contains("<th>Document category</th>")
             .doesNotContain("<th>Document URL</th>");
-        assertThat(html.indexOf(JUDICIAL_USE_NOTICE))
-            .isLessThan(html.indexOf("<table>"));
+        assertThat(html.indexOf(NOTE_TO_PARTIES))
+            .isGreaterThan(html.indexOf("</table>"));
 
         assertThat(placeholdersCaptor.getValue()).containsEntry("caseId", "1616591401473378");
         assertThat(placeholdersCaptor.getValue().get("rowsHtml").toString())
