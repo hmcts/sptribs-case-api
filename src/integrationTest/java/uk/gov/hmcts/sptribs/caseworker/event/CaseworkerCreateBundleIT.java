@@ -88,8 +88,8 @@ public class CaseworkerCreateBundleIT {
     private static final String CASEWORKER_CREATE_BUNDLE_ABOUT_TO_SUBMIT_RESPONSE =
         "classpath:responses/caseworker-create-bundle-about-to-submit-response.json";
     private static final String NOTE_TO_PARTIES =
-        "<p><b>Note to Parties: A link to the audio or video file was emailed to you on or around the date shown in the "
-            + "\"Date Added\" column.</b></p>";
+        "<p><b>Note to Parties: A link to the audio or video files were emailed to you on or around the date shown in the "
+            + "\"Date Added\" column above.</b></p>";
 
     @Autowired
     private MockMvc mockMvc;
