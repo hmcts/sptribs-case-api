@@ -295,9 +295,9 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
                 "hearingVenues!=\"\" OR roomAtVenue!=\"\" OR addlInstr!=\"\" OR hearingFormat!=\"\" OR shortNotice!=\"\" "
                 + "OR hearingType!=\"\"",
                 "#### Hearing options")
+            .field("hearingType")
             .field("hearingVenues")
             .field("roomAtVenue")
-            .field("hearingType")
             .field("addlInstr")
             .field("hearingFormat")
             .field("shortNotice");
