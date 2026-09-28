@@ -67,6 +67,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private static final String TEST_CREATE = "create-test-case";
     private static final String TEST_CASE_DATA_FILE = "classpath:data/st_cic_test_case.json";
     private static final ClassPathResource SAMPLE_PDF_FILE_RESOURCE =  new ClassPathResource("data/sample_file.pdf");
+    private static final String TEST_DOCUMENT_ERROR = "Unable to upload the test document. Please try again.";
 
     private final ObjectMapper objectMapper;
     private final CcdSupplementaryDataService ccdSupplementaryDataService;
@@ -111,13 +112,20 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             Charset.defaultCharset()
         );
         final CaseData caseData = objectMapper.readValue(json, CaseData.class);
-        uploadTestDocumentAndUpdateCaseData(caseData);
+        List<String> errors = new ArrayList<>();
+        try {
+            uploadTestDocumentAndUpdateCaseData(caseData);
+        } catch (RuntimeException exception) {
+            log.error("Failed to upload create test case document", exception);
+            errors.add(TEST_DOCUMENT_ERROR);
+        }
         caseData.setHyphenatedCaseRef(caseData.formatCaseRef(details.getId()));
         setDefaultCaseDetails(caseData);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getData().getCaseStatus())
+            .errors(errors)
             .build();
     }
 
@@ -186,45 +194,59 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     }
 
     private void uploadTestDocumentAndUpdateCaseData(CaseData caseData) {
-        final UploadResponse uploadResponse = uploadApplicantDocument();
+        final uk.gov.hmcts.sptribs.cdam.model.Document cdamDocument = uploadApplicantDocument();
+        CaseworkerCICDocument caseworkerCICDocument = convertCdamDocumentToCaseworkerCICDocument(cdamDocument);
+        final ListValue<CaseworkerCICDocument> testDocumentListValue = new ListValue<>();
+        testDocumentListValue.setId(UUID.randomUUID().toString());
+        testDocumentListValue.setValue(caseworkerCICDocument);
 
-        if (uploadResponse != null) {
-            final uk.gov.hmcts.sptribs.cdam.model.Document cdamUploadedDocument = uploadResponse.getDocuments().getFirst();
-            log.info("Document uploaded successfully. href: {}", cdamUploadedDocument.links.self.href);
-
-            CaseworkerCICDocument caseworkerCICDocument = convertCdamDocumentToCaseworkerCICDocument(cdamUploadedDocument);
-            final ListValue<CaseworkerCICDocument> testDocumentListValue = new ListValue<>();
-            testDocumentListValue.setId(UUID.randomUUID().toString());
-            testDocumentListValue.setValue(caseworkerCICDocument);
-
-            caseData.getCicCase().setApplicantDocumentsUploaded(List.of(testDocumentListValue));
-        }
+        caseData.getCicCase().setApplicantDocumentsUploaded(List.of(testDocumentListValue));
     }
 
-    private UploadResponse uploadApplicantDocument() {
+    private uk.gov.hmcts.sptribs.cdam.model.Document uploadApplicantDocument() {
         final List<AppsConfig.AppsDetails> appDetails = appsConfig.getApps();
-        if (!appDetails.isEmpty() && appDetails.getFirst() != null) {
-            final String caseType = appsConfig.getApps().getFirst().getCaseType();
-            final String jurisdiction = appsConfig.getApps().getFirst().getJurisdiction();
-            try {
-                final InMemoryMultipartFile inMemoryMultipartFile =
-                    new InMemoryMultipartFile("sample_file.pdf", SAMPLE_PDF_FILE_RESOURCE.getContentAsByteArray());
-
-                final DocumentUploadRequest documentUploadRequest =
-                    new DocumentUploadRequest(Classification.RESTRICTED.toString(),
-                        caseType,
-                        jurisdiction,
-                        List.of(inMemoryMultipartFile));
-
-                final String serviceToken = authTokenGenerator.generate();
-                final String authorizationHeader = httpServletRequest.getHeader(AUTHORIZATION);
-
-                return this.caseDocumentClientApi.uploadDocuments(authorizationHeader, serviceToken, documentUploadRequest);
-            } catch (IOException ioException) {
-                log.error("Failed to upload test document due to {}", ioException.toString());
-            }
+        if (appDetails == null || appDetails.isEmpty() || appDetails.getFirst() == null) {
+            throw new IllegalStateException("No application configuration is available for document upload");
         }
-        return null;
+
+        final String caseType = appDetails.getFirst().getCaseType();
+        final String jurisdiction = appDetails.getFirst().getJurisdiction();
+        final InMemoryMultipartFile inMemoryMultipartFile;
+        try {
+            inMemoryMultipartFile = new InMemoryMultipartFile(
+                "sample_file.pdf", SAMPLE_PDF_FILE_RESOURCE.getContentAsByteArray());
+        } catch (IOException exception) {
+            throw new IllegalStateException("Unable to read the sample test document", exception);
+        }
+
+        final DocumentUploadRequest documentUploadRequest = new DocumentUploadRequest(
+            Classification.RESTRICTED.toString(), caseType, jurisdiction, List.of(inMemoryMultipartFile));
+        final String serviceToken = authTokenGenerator.generate();
+        final String authorizationHeader = httpServletRequest.getHeader(AUTHORIZATION);
+        UploadResponse uploadResponse = caseDocumentClientApi.uploadDocuments(
+            authorizationHeader, serviceToken, documentUploadRequest);
+
+        if (uploadResponse == null || uploadResponse.getDocuments() == null || uploadResponse.getDocuments().isEmpty()) {
+            throw new IllegalStateException("Document upload returned no documents");
+        }
+        uk.gov.hmcts.sptribs.cdam.model.Document document = uploadResponse.getDocuments().getFirst();
+        validateDocument(document);
+        return document;
+    }
+
+    private void validateDocument(uk.gov.hmcts.sptribs.cdam.model.Document document) {
+        if (document == null
+            || document.originalDocumentName == null
+            || document.originalDocumentName.isBlank()
+            || document.links == null
+            || document.links.self == null
+            || document.links.self.href == null
+            || document.links.self.href.isBlank()
+            || document.links.binary == null
+            || document.links.binary.href == null
+            || document.links.binary.href.isBlank()) {
+            throw new IllegalStateException("Document upload returned an invalid document");
+        }
     }
 
     private CaseworkerCICDocument convertCdamDocumentToCaseworkerCICDocument(uk.gov.hmcts.sptribs.cdam.model.Document cdamDocument) {

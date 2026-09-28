@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
-import uk.gov.hmcts.sptribs.systemupdate.service.CcdManagementException;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdUpdateService;
 
 import static uk.gov.hmcts.sptribs.systemupdate.event.SystemCreateTestCase.SYSTEM_CREATE_TEST_CASE;
@@ -48,7 +47,7 @@ public class SystemCreateTestCaseTask implements Runnable {
                 triggerSystemCreateTestCase(user, serviceAuth);
                 successCount++;
             } catch (RuntimeException e) {
-                log.error("Failed to create test case on iteration {}. Error: {}", i + 1, e.getMessage());
+                log.error("Failed to create test case on iteration {}", i + 1, e);
                 failureCount++;
             }
         }
@@ -60,14 +59,7 @@ public class SystemCreateTestCaseTask implements Runnable {
     }
 
 
-    private void triggerSystemCreateTestCase(CICUser user, String serviceAuth) {
-        try {
-            ccdUpdateService.createCase(SYSTEM_CREATE_TEST_CASE, user, serviceAuth);
-
-        } catch (final CcdManagementException e) {
-            log.error("Create test case event failed");
-        } catch (final IllegalArgumentException e) {
-            log.error("Deserialization failed for create test case event");
-        }
+    void triggerSystemCreateTestCase(CICUser user, String serviceAuth) {
+        ccdUpdateService.createCase(SYSTEM_CREATE_TEST_CASE, user, serviceAuth);
     }
 }

@@ -39,6 +39,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
@@ -139,6 +140,32 @@ public class CreateTestCaseTest {
         assertThat(response.getData().getHyphenatedCaseRef()).isEqualTo(TEST_CASE_ID_HYPHENATED);
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(1);
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().getFirst().getValue()).isEqualTo(expectedCICDocument);
+        assertThat(response.getErrors()).isEmpty();
+    }
+
+    @Test
+    void shouldReturnCallbackErrorWhenUploadedDocumentHasNoLinks() throws JsonProcessingException {
+        final CaseData selectedCaseData = CaseData.builder().caseStatus(CaseManagement).build();
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setId(TEST_CASE_ID);
+        caseDetails.setData(selectedCaseData);
+        final AppsConfig.AppsDetails appsDetails = new AppsConfig.AppsDetails();
+        appsDetails.setCaseType("CriminalInjuriesCompensation");
+        appsDetails.setJurisdiction("ST_CIC");
+        final Document invalidDocument = new Document();
+        invalidDocument.setOriginalDocumentName("sample_file.pdf");
+        UploadResponse uploadResponse = new UploadResponse();
+        uploadResponse.setDocuments(List.of(invalidDocument));
+
+        when(appsConfig.getApps()).thenReturn(List.of(appsDetails));
+        when(mapper.readValue(anyString(), eq(CaseData.class))).thenReturn(caseData());
+        when(caseDocumentClientApi.uploadDocuments(any(), any(), any())).thenReturn(uploadResponse);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = createTestCase.aboutToSubmit(caseDetails, caseDetails);
+
+        assertThat(response.getErrors()).containsExactly("Unable to upload the test document. Please try again.");
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNullOrEmpty();
+        verifyNoInteractions(documentsService);
     }
 
     @Test

@@ -22,18 +22,21 @@ import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.content.PreviewDraftOrderTemplateContent;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
@@ -74,6 +77,9 @@ public class SystemCreateTestCaseTest {
     @Mock
     private PreviewDraftOrderTemplateContent previewDraftOrderTemplateContent;
 
+    @Mock
+    private DocumentsService documentTableService;
+
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -100,19 +106,14 @@ public class SystemCreateTestCaseTest {
         caseDetails.setId(TEST_CASE_ID);
         caseDetails.setData(caseData);
 
-        final Document expectedCdamUploadedDocument = new Document();
-        final Document.DocumentLink documentLink = new Document.DocumentLink();
-        documentLink.href = "dmstore-url/doc-id";
-        final Document.DocumentLink binaryDocumentLink = new Document.DocumentLink();
-        binaryDocumentLink.href = "dmstore-url/doc-id/binary";
-        final Document.Links links = new Document.Links();
-        links.self = documentLink;
-        links.binary = binaryDocumentLink;
-        expectedCdamUploadedDocument.setLinks(links);
-        expectedCdamUploadedDocument.setOriginalDocumentName("sample_file.pdf");
-
-        final List<Document> expectedDocuments = new ArrayList<>();
-        expectedDocuments.add(expectedCdamUploadedDocument);
+        final Document expectedCdamUploadedDocument = cdamDocument("applicant-document.pdf");
+        final List<Document> expectedDocuments = List.of(
+            expectedCdamUploadedDocument,
+            cdamDocument("order-document.pdf"),
+            cdamDocument("decision-document.pdf"),
+            cdamDocument("final-decision-document.pdf"),
+            cdamDocument("document-management-document.pdf")
+        );
 
         final uk.gov.hmcts.ccd.sdk.type.Document expectedUploadDocument = uk.gov.hmcts.ccd.sdk.type.Document.builder()
             .url(expectedCdamUploadedDocument.links.self.href)
@@ -129,9 +130,15 @@ public class SystemCreateTestCaseTest {
 
         UploadResponse expectedResponse = new UploadResponse();
         expectedResponse.setDocuments(expectedDocuments);
+        uk.gov.hmcts.ccd.sdk.type.Document draftOrderDocument = uk.gov.hmcts.ccd.sdk.type.Document.builder()
+            .url("dmstore-url/draft-order")
+            .filename("draft-order.pdf")
+            .binaryUrl("dmstore-url/draft-order/binary")
+            .build();
         when(appsConfig.getApps()).thenReturn(List.of(appsDetails));
         when(mapper.readValue(anyString(), eq(CaseData.class))).thenReturn(caseData());
         when(caseDocumentClientApi.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
+        when(documentsService.renderDocument(any(), any(), any(), any(), any(), any())).thenReturn(draftOrderDocument);
 
         AboutToStartOrSubmitResponse<CaseData, State> response = createTestCase.aboutToSubmit(caseDetails, caseDetails);
 
@@ -139,6 +146,96 @@ public class SystemCreateTestCaseTest {
         assertThat(response.getData().getHyphenatedCaseRef()).isEqualTo(TEST_CASE_ID_HYPHENATED);
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(1);
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().getFirst().getValue()).isEqualTo(expectedCICDocument);
+        assertThat(response.getErrors()).isEmpty();
+        verify(caseDocumentClientApi, times(1)).uploadDocuments(any(), any(), any());
+        verifyNoInteractions(documentTableService);
+
+        caseDetails.setData(response.getData());
+        createTestCase.submitted(caseDetails, caseDetails);
+
+        verify(documentTableService).buildAndSaveNewDocumentEntity(
+            any(uk.gov.hmcts.ccd.sdk.type.Document.class),
+            eq(TEST_CASE_ID),
+            eq(DocumentType.APPLICATION_FORM),
+            eq(CaseDocumentType.APPLICATION)
+        );
+        verify(documentTableService, times(1)).buildAndSaveNewDocumentEntity(
+            any(uk.gov.hmcts.ccd.sdk.type.Document.class),
+            eq(TEST_CASE_ID),
+            eq(DocumentType.TRIBUNAL_DIRECTION),
+            eq(CaseDocumentType.ORDER)
+        );
+        verify(documentTableService, times(1)).buildAndSaveNewDocumentEntity(
+            any(uk.gov.hmcts.ccd.sdk.type.Document.class),
+            eq(TEST_CASE_ID),
+            eq(DocumentType.TRIBUNAL_DIRECTION),
+            eq(CaseDocumentType.DECISION)
+        );
+        verify(documentTableService, times(1)).buildAndSaveNewDocumentEntity(
+            any(uk.gov.hmcts.ccd.sdk.type.Document.class),
+            eq(TEST_CASE_ID),
+            eq(DocumentType.TRIBUNAL_DIRECTION),
+            eq(CaseDocumentType.FINAL_DECISION)
+        );
+        verify(documentTableService, times(1)).buildAndSaveNewDocumentEntity(
+            any(uk.gov.hmcts.ccd.sdk.type.Document.class),
+            eq(TEST_CASE_ID),
+            eq(DocumentType.LINKED_DOCS),
+            eq(CaseDocumentType.DOCUMENT_MANAGEMENT)
+        );
+        verify(documentTableService, times(1)).buildAndSaveNewDocumentEntity(
+            draftOrderDocument,
+            TEST_CASE_ID,
+            DocumentType.TRIBUNAL_DIRECTION,
+            CaseDocumentType.DRAFT_ORDER
+        );
+    }
+
+    @Test
+    void shouldReturnCallbackErrorWhenDocumentUploadResponseIsEmpty() throws JsonProcessingException {
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setId(TEST_CASE_ID);
+        caseDetails.setData(CaseData.builder().caseStatus(CaseManagement).build());
+        final AppsConfig.AppsDetails appsDetails = new AppsConfig.AppsDetails();
+        appsDetails.setCaseType("CriminalInjuriesCompensation");
+        appsDetails.setJurisdiction("ST_CIC");
+        UploadResponse uploadResponse = new UploadResponse();
+
+        when(appsConfig.getApps()).thenReturn(List.of(appsDetails));
+        when(mapper.readValue(anyString(), eq(CaseData.class))).thenReturn(caseData());
+        when(caseDocumentClientApi.uploadDocuments(any(), any(), any())).thenReturn(uploadResponse);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = createTestCase.aboutToSubmit(caseDetails, caseDetails);
+
+        assertThat(response.getErrors()).containsExactly("Unable to create the test case documents. Please try again.");
+        verifyNoInteractions(documentTableService);
+    }
+
+    @Test
+    void shouldReturnCallbackErrorWhenDocumentAssemblyReturnsNoDocument() throws JsonProcessingException {
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setId(TEST_CASE_ID);
+        caseDetails.setData(CaseData.builder().caseStatus(CaseManagement).build());
+        final AppsConfig.AppsDetails appsDetails = new AppsConfig.AppsDetails();
+        appsDetails.setCaseType("CriminalInjuriesCompensation");
+        appsDetails.setJurisdiction("ST_CIC");
+        UploadResponse uploadResponse = new UploadResponse();
+        uploadResponse.setDocuments(List.of(
+            cdamDocument("applicant-document.pdf"),
+            cdamDocument("order-document.pdf"),
+            cdamDocument("decision-document.pdf"),
+            cdamDocument("final-decision-document.pdf"),
+            cdamDocument("document-management-document.pdf")
+        ));
+
+        when(appsConfig.getApps()).thenReturn(List.of(appsDetails));
+        when(mapper.readValue(anyString(), eq(CaseData.class))).thenReturn(caseData());
+        when(caseDocumentClientApi.uploadDocuments(any(), any(), any())).thenReturn(uploadResponse);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = createTestCase.aboutToSubmit(caseDetails, caseDetails);
+
+        assertThat(response.getErrors()).containsExactly("Unable to create the test case documents. Please try again.");
+        verifyNoInteractions(documentTableService);
     }
 
     @Test
@@ -153,5 +250,19 @@ public class SystemCreateTestCaseTest {
         createTestCase.submitted(caseDetails, caseDetails);
 
         verify(ccdSupplementaryDataService).submitSupplementaryDataToCcd(TEST_CASE_ID.toString());
+    }
+
+    private static Document cdamDocument(String filename) {
+        final Document document = new Document();
+        final Document.DocumentLink selfLink = new Document.DocumentLink();
+        selfLink.href = "dmstore-url/" + filename;
+        final Document.DocumentLink binaryLink = new Document.DocumentLink();
+        binaryLink.href = "dmstore-url/" + filename + "/binary";
+        final Document.Links links = new Document.Links();
+        links.self = selfLink;
+        links.binary = binaryLink;
+        document.setLinks(links);
+        document.setOriginalDocumentName(filename);
+        return document;
     }
 }
