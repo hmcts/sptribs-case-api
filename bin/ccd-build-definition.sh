@@ -10,6 +10,10 @@ build_dir=${root_dir}/build/ccd-config
 
 mkdir -p ${build_dir}
 
+azure_config_dir="/opt/jenkins/.azure-${DEPLOYMENT_ENVIRONMENT:-aat}"
+[[ -d "${azure_config_dir}" ]] || azure_config_dir="/opt/jenkins/.azure-aat"
+env AZURE_CONFIG_DIR="${azure_config_dir}" az acr login --name hmctsprod
+
 for dir in $(find ${root_dir}/build/definitions/ -maxdepth 1 -mindepth  1 -type d -exec basename {} \;)
 do
   config_dir=${root_dir}/build/definitions/${dir}
