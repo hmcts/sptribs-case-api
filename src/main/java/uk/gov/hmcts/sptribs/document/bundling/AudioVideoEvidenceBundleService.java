@@ -49,7 +49,6 @@ public class AudioVideoEvidenceBundleService {
     private final PDFServiceClient pdfServiceClient;
     private final CaseDocumentClientApi caseDocumentClientApi;
     private final DocumentsService documentsService;
-    private final ManageCaseDocumentUrlBuilder manageCaseDocumentUrlBuilder;
     private final AuthTokenGenerator authTokenGenerator;
     private final HttpServletRequest request;
     private final Clock clock;
@@ -98,7 +97,6 @@ public class AudioVideoEvidenceBundleService {
         return new AudioVideoDocumentRow(
             resolveMediaType(entity.getDocumentFilename()),
             entity.getDocumentFilename(),
-            manageCaseDocumentUrlBuilder.buildPublicBinaryUrl(entity.getDocumentBinaryUrl()),
             savedDate == null ? UNKNOWN : savedDate.toString(),
             resolveDocumentType(entity.getDocumentTypeName())
         );
@@ -148,7 +146,7 @@ public class AudioVideoEvidenceBundleService {
             rowsHtml.append("<tr><td>")
                 .append(escapeHtml(row.documentType()))
                 .append(TABLE_CELL_SEPARATOR)
-                .append(buildDocumentLink(row.documentFilename(), row.documentUrl()))
+                .append(escapeHtml(row.documentFilename()))
                 .append(TABLE_CELL_SEPARATOR)
                 .append(escapeHtml(row.dateAdded()))
                 .append(TABLE_CELL_SEPARATOR)
@@ -169,12 +167,6 @@ public class AudioVideoEvidenceBundleService {
         } catch (IOException exception) {
             throw new IllegalStateException("Unable to load audio/video evidence PDF template", exception);
         }
-    }
-
-    private String buildDocumentLink(String filename, String documentUrl) {
-        String safeFileName = escapeHtml(filename);
-        String safeUrl = escapeHtml(documentUrl);
-        return "<a href=\"" + safeUrl + "\">" + safeFileName + "</a>";
     }
 
     private String escapeHtml(String value) {
@@ -247,7 +239,6 @@ public class AudioVideoEvidenceBundleService {
     record AudioVideoDocumentRow(
         String documentType,
         String documentFilename,
-        String documentUrl,
         String dateAdded,
         String documentCategory
     ) {

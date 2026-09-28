@@ -87,6 +87,8 @@ public class CaseworkerCreateBundleIT {
 
     private static final String CASEWORKER_CREATE_BUNDLE_ABOUT_TO_SUBMIT_RESPONSE =
         "classpath:responses/caseworker-create-bundle-about-to-submit-response.json";
+    private static final String JUDICIAL_USE_NOTICE =
+        "Access to the audio, video, and document records referenced in this table are for judicial use";
 
     @Autowired
     private MockMvc mockMvc;
@@ -292,15 +294,21 @@ public class CaseworkerCreateBundleIT {
         verify(pdfServiceClient).generateFromHtml(htmlCaptor.capture(), placeholdersCaptor.capture());
         String html = new String(htmlCaptor.getValue(), java.nio.charset.StandardCharsets.UTF_8);
         assertThat(html)
+            .contains(JUDICIAL_USE_NOTICE)
             .contains("<th>Document type</th>")
-            .contains("<th>Document URL</th>")
+            .contains("<th>Document name</th>")
             .contains("<th>Date added</th>")
-            .contains("<th>Document category</th>");
+            .contains("<th>Document category</th>")
+            .doesNotContain("<th>Document URL</th>");
+        assertThat(html.indexOf(JUDICIAL_USE_NOTICE))
+            .isLessThan(html.indexOf("<table>"));
 
         assertThat(placeholdersCaptor.getValue()).containsEntry("caseId", "1616591401473378");
         assertThat(placeholdersCaptor.getValue().get("rowsHtml").toString())
-            .contains("<a href=\"http://manage-case.demo.platform.hmcts.net/documents/" + VALID_DOCUMENT_ID_1 + "/binary\">media-1.mp3</a>")
-            .contains("<a href=\"http://manage-case.demo.platform.hmcts.net/documents/" + VALID_DOCUMENT_ID_2 + "/binary\">media-2.mp4</a>")
+            .contains("<td>media-1.mp3</td>")
+            .contains("<td>media-2.mp4</td>")
+            .doesNotContain("<a href=")
+            .doesNotContain(VALID_DOCUMENT_ID_1, VALID_DOCUMENT_ID_2)
             .doesNotContain("paper.pdf");
     }
 
