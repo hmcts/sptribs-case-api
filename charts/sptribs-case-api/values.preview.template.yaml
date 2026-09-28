@@ -448,9 +448,6 @@ ccd-case-document-am-api:
       CASE_DOCUMENT_S2S_AUTHORISED_SERVICES: ccd_case_document_am_api,ccd_gw,xui_webapp,ccd_data,bulk_scan_processor,em_npa_app,dg_docassembly_api,em_stitching_api,em_ccd_orchestrator,bulk_scan_orchestrator,sptribs_case_api,sptribs_frontend
       CCD_DATA_STORE_API_BASE_URL: http://{{ .Release.Name }}-ccd-data-store-api
       LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_CCD: DEBUG
-      DM_STORE_URL: http://dm-store-aat.service.core-compute-aat.internal
-      IDAM_API_URL: https://idam-web-public.aat.platform.hmcts.net
-      IDAM_S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
     autoscaling:
       enabled: false
 
