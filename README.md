@@ -116,5 +116,4 @@ TASK_NAME=SystemProgressHeldCasesTask ./gradlew bootRun
 `deploy-demo-dmn.sh` can be used to manually deploy local DMN files to Demo environment
 
 ## License
-
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
