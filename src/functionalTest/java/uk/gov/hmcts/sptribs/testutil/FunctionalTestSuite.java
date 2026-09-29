@@ -175,11 +175,27 @@ public abstract class FunctionalTestSuite {
         return triggerCallback(caseData, eventId, url, true, createTestDocument);
     }
 
+    protected Response triggerCallback(Map<String, Object> caseData, String eventId, String url, boolean createTestDocument,
+                                       String userToken) throws IOException, SQLException {
+
+        return triggerCallback(caseData, eventId, url, true, createTestDocument, userToken);
+    }
+
     private Response triggerCallback(Map<String, Object> caseData,
                                      String eventId,
                                      String url,
                                      boolean createCase,
                                      boolean createTestDocument) throws IOException, SQLException {
+        return triggerCallback(caseData, eventId, url, createCase, createTestDocument,
+            idamTokenGenerator.generateIdamTokenForCaseworker());
+    }
+
+    private Response triggerCallback(Map<String, Object> caseData,
+                                     String eventId,
+                                     String url,
+                                     boolean createCase,
+                                     boolean createTestDocument,
+                                     String userToken) throws IOException, SQLException {
 
         Long testCaseRef = 1234567890123456L;
         boolean createCaseForSubmittedOrAboutToSubmitEvent =
@@ -194,7 +210,7 @@ public abstract class FunctionalTestSuite {
         }
 
         if (createCaseForSubmittedOrAboutToSubmitEvent) {
-            return triggerCallback(caseData, eventId, url, testCaseRef);
+            return triggerCallback(caseData, eventId, url, testCaseRef, userToken);
         }
 
         CallbackRequest request = CallbackRequest
@@ -219,10 +235,15 @@ public abstract class FunctionalTestSuite {
             )
             .build();
 
-        return triggerCallback(request, url);
+        return triggerCallback(request, url, userToken);
     }
 
     protected Response triggerCallback(Map<String, Object> caseData, String eventId, String url, Long caseId) throws IOException {
+        return triggerCallback(caseData, eventId, url, caseId, idamTokenGenerator.generateIdamTokenForCaseworker());
+    }
+
+    protected Response triggerCallback(Map<String, Object> caseData, String eventId, String url, Long caseId,
+                                       String userToken) throws IOException {
         CallbackRequest request = CallbackRequest
             .builder()
             .eventId(eventId)
@@ -245,7 +266,7 @@ public abstract class FunctionalTestSuite {
             )
             .build();
 
-        return triggerCallback(request, url);
+        return triggerCallback(request, url, userToken);
     }
 
     protected Response triggerCallback(Map<String, Object> caseData, String eventId, String url, State state) throws IOException {
@@ -306,13 +327,17 @@ public abstract class FunctionalTestSuite {
     }
 
     protected Response triggerCallback(CallbackRequest request, String url) {
+        return triggerCallback(request, url, idamTokenGenerator.generateIdamTokenForCaseworker());
+    }
+
+    protected Response triggerCallback(CallbackRequest request, String url, String userToken) {
         return RestAssured
             .given()
             .relaxedHTTPSValidation()
             .baseUri(testUrl)
             .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
             .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generateCcdDataToken())
-            .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForSolicitor())
+            .header(AUTHORIZATION, userToken)
             .body(request)
             .when()
             .post(url);

@@ -116,7 +116,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         try {
             uploadTestDocumentAndUpdateCaseData(caseData);
         } catch (RuntimeException exception) {
-            log.error("Failed to upload create test case document", exception);
+            log.error("Failed to upload create test case document: {}", exception.getMessage(), exception);
             errors.add(TEST_DOCUMENT_ERROR);
         }
         caseData.setHyphenatedCaseRef(caseData.formatCaseRef(details.getId()));

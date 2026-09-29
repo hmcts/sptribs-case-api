@@ -99,7 +99,6 @@ public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole
     private final CaseDocumentClientApi caseDocumentClientApi;
     private final CaseDataDocumentService caseDataDocumentService;
     private final PreviewDraftOrderTemplateContent previewDraftOrderTemplateContent;
-    private final HttpServletRequest request;
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -135,7 +134,7 @@ public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole
             addFinalDecisionDocument(caseData, findDocument(uploadedDocuments, FINAL_DECISION_DOCUMENT_FILENAME));
             addDocumentManagementDocument(caseData, findDocument(uploadedDocuments, DOCUMENT_MANAGEMENT_FILENAME));
         } catch (RuntimeException exception) {
-            log.error("Failed to create system test case documents", exception);
+            log.error("Failed to create system test case documents: {}", exception.getMessage(), exception);
             errors.add(TEST_DOCUMENT_ERROR);
         }
 
@@ -300,7 +299,7 @@ public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole
             CIC3_RULE_27.getId(),
             LanguagePreference.ENGLISH,
             filename,
-            request
+            httpServletRequest
         );
         validateAssembledDocument(generalOrderDocument);
 
