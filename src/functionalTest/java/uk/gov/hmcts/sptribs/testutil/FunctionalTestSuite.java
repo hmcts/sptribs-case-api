@@ -187,7 +187,7 @@ public abstract class FunctionalTestSuite {
                                      boolean createCase,
                                      boolean createTestDocument) throws IOException, SQLException {
         return triggerCallback(caseData, eventId, url, createCase, createTestDocument,
-            idamTokenGenerator.generateIdamTokenForCaseworker());
+            idamTokenGenerator.generateIdamTokenForSolicitor());
     }
 
     private Response triggerCallback(Map<String, Object> caseData,
@@ -239,7 +239,7 @@ public abstract class FunctionalTestSuite {
     }
 
     protected Response triggerCallback(Map<String, Object> caseData, String eventId, String url, Long caseId) throws IOException {
-        return triggerCallback(caseData, eventId, url, caseId, idamTokenGenerator.generateIdamTokenForCaseworker());
+        return triggerCallback(caseData, eventId, url, caseId, idamTokenGenerator.generateIdamTokenForSolicitor());
     }
 
     protected Response triggerCallback(Map<String, Object> caseData, String eventId, String url, Long caseId,
@@ -327,7 +327,7 @@ public abstract class FunctionalTestSuite {
     }
 
     protected Response triggerCallback(CallbackRequest request, String url) {
-        return triggerCallback(request, url, idamTokenGenerator.generateIdamTokenForCaseworker());
+        return triggerCallback(request, url, idamTokenGenerator.generateIdamTokenForSolicitor());
     }
 
     protected Response triggerCallback(CallbackRequest request, String url, String userToken) {
@@ -560,6 +560,7 @@ public abstract class FunctionalTestSuite {
 
     @BeforeAll
     void setUpDataManager() {
+        RestAssured.useRelaxedHTTPSValidation();
         functionalTestDataManager.connectToDB();
     }
 

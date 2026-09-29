@@ -42,6 +42,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static java.lang.String.format;
 import static java.lang.System.getenv;
@@ -113,11 +114,29 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         );
         final CaseData caseData = objectMapper.readValue(json, CaseData.class);
         List<String> errors = new ArrayList<>();
-        try {
-            uploadTestDocumentAndUpdateCaseData(caseData);
-        } catch (RuntimeException exception) {
-            log.error("Failed to upload create test case document: {}", exception.getMessage(), exception);
-            errors.add(TEST_DOCUMENT_ERROR);
+        int maxAttempts = 3;
+        for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+            try {
+                uploadTestDocumentAndUpdateCaseData(caseData);
+                break;
+            } catch (RuntimeException exception) {
+                if (attempt == maxAttempts) {
+                    log.error("Failed to upload create test case document after {} attempts: {}",
+                        maxAttempts, exception.getMessage(), exception);
+                    errors.add(TEST_DOCUMENT_ERROR);
+                } else {
+                    log.warn("Attempt {} to upload create test case document failed: {}. Retrying...",
+                        attempt, exception.getMessage());
+                    try {
+                        TimeUnit.SECONDS.sleep(2L * attempt);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        log.error("Thread interrupted during retry wait", e);
+                        errors.add(TEST_DOCUMENT_ERROR);
+                        break;
+                    }
+                }
+            }
         }
         caseData.setHyphenatedCaseRef(caseData.formatCaseRef(details.getId()));
         setDefaultCaseDetails(caseData);

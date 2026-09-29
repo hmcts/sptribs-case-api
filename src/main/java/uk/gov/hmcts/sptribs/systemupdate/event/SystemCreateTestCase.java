@@ -52,6 +52,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static java.lang.String.format;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -125,17 +126,35 @@ public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole
         final CaseData caseData = objectMapper.readValue(json, CaseData.class);
         List<String> errors = new ArrayList<>();
         Long caseId = details.getId();
-        try {
-            List<uk.gov.hmcts.sptribs.cdam.model.Document> uploadedDocuments = uploadTestDocuments();
-            addApplicantDocument(caseData, findDocument(uploadedDocuments, APPLICANT_DOCUMENT_FILENAME));
-            addOrderDocument(caseData, findDocument(uploadedDocuments, ORDER_DOCUMENT_FILENAME));
-            addDraftOrderDocument(caseData, caseId);
-            addDecisionDocument(caseData, findDocument(uploadedDocuments, DECISION_DOCUMENT_FILENAME));
-            addFinalDecisionDocument(caseData, findDocument(uploadedDocuments, FINAL_DECISION_DOCUMENT_FILENAME));
-            addDocumentManagementDocument(caseData, findDocument(uploadedDocuments, DOCUMENT_MANAGEMENT_FILENAME));
-        } catch (RuntimeException exception) {
-            log.error("Failed to create system test case documents: {}", exception.getMessage(), exception);
-            errors.add(TEST_DOCUMENT_ERROR);
+        int maxAttempts = 3;
+        for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+            try {
+                List<uk.gov.hmcts.sptribs.cdam.model.Document> uploadedDocuments = uploadTestDocuments();
+                addApplicantDocument(caseData, findDocument(uploadedDocuments, APPLICANT_DOCUMENT_FILENAME));
+                addOrderDocument(caseData, findDocument(uploadedDocuments, ORDER_DOCUMENT_FILENAME));
+                addDraftOrderDocument(caseData, caseId);
+                addDecisionDocument(caseData, findDocument(uploadedDocuments, DECISION_DOCUMENT_FILENAME));
+                addFinalDecisionDocument(caseData, findDocument(uploadedDocuments, FINAL_DECISION_DOCUMENT_FILENAME));
+                addDocumentManagementDocument(caseData, findDocument(uploadedDocuments, DOCUMENT_MANAGEMENT_FILENAME));
+                break;
+            } catch (RuntimeException exception) {
+                if (attempt == maxAttempts) {
+                    log.error("Failed to create system test case documents after {} attempts: {}",
+                        maxAttempts, exception.getMessage(), exception);
+                    errors.add(TEST_DOCUMENT_ERROR);
+                } else {
+                    log.warn("Attempt {} to create system test case documents failed: {}. Retrying...",
+                        attempt, exception.getMessage());
+                    try {
+                        TimeUnit.SECONDS.sleep(2L * attempt);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        log.error("Thread interrupted during retry wait", e);
+                        errors.add(TEST_DOCUMENT_ERROR);
+                        break;
+                    }
+                }
+            }
         }
 
         caseData.setHyphenatedCaseRef(caseData.formatCaseRef(caseId));
