@@ -67,6 +67,10 @@ public class ContactPartiesSelectDocument implements CcdPageConfiguration {
             validateDocumentFileSizes(list.getValue(), errors);
         }
 
+        if (errors.isEmpty() && data.getCicCase() != null) {
+            data.getContactPartiesDocuments().setPreviewDoc(DocumentListUtil.getSelectedContactPartiesDocuments(data));
+        }
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .errors(errors)

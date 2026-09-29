@@ -51,6 +51,10 @@ public class RespondentPartiesToContact implements CcdPageConfiguration {
             .done()
             .complex(CaseData::getCicCase)
             .mandatory(CicCase::getNotifyPartyMessage)
+            .done()
+            .complex(CaseData::getContactPartiesDocuments)
+            .optional(ContactPartiesDocuments::getPreviewDoc, ALWAYS_HIDE, null,
+                "Selected documents", null, "#TABLE(documentLink)")
             .done();
     }
 
@@ -75,9 +79,7 @@ public class RespondentPartiesToContact implements CcdPageConfiguration {
             }
         }
 
-        ContactPartiesDocuments documents = data.getContactPartiesDocuments();
-        documents.setPreviewDoc(getSelectedContactPartiesDocuments(data));
-        documents.setReviewDocuments(documents.getPreviewDoc());
+        data.getContactPartiesDocuments().setPreviewDoc(getSelectedContactPartiesDocuments(data));
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)

@@ -16,12 +16,16 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
@@ -323,13 +327,52 @@ class ContactPartiesSelectDocumentTest {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         ContactPartiesDocuments contactPartiesDocuments = new ContactPartiesDocuments();
         contactPartiesDocuments.setDocumentList(DynamicMultiSelectList.builder().build());
+        contactPartiesDocuments.setPreviewDoc(List.of(new ListValue<>()));
         final CaseData caseData = CaseData.builder()
+            .cicCase(CicCase.builder().build())
             .contactPartiesDocuments(contactPartiesDocuments)
             .build();
         caseDetails.setData(caseData);
 
         final AboutToStartOrSubmitResponse<CaseData, State> response = contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
         assertThat(response.getErrors()).isEmpty();
+        assertThat(contactPartiesDocuments.getPreviewDoc()).isEmpty();
+    }
+
+    @Test
+    void midEventPreparesTheSelectedDocumentForTheReview() {
+        ReflectionTestUtils.setField(contactPartiesSelectDocument, "citizenDashboardEnabled", true);
+
+        UUID documentId = UUID.randomUUID();
+        uk.gov.hmcts.ccd.sdk.type.Document document = uk.gov.hmcts.ccd.sdk.type.Document.builder()
+            .url("https://example.test/documents/" + documentId)
+            .binaryUrl("https://example.test/documents/" + documentId + "/binary")
+            .filename("selected.pdf")
+            .build();
+        CaseworkerCICDocument selectedDocument = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(document)
+            .build();
+        ListValue<CaseworkerCICDocument> documentValue = new ListValue<>();
+        documentValue.setValue(selectedDocument);
+        DynamicListElement selection = DynamicListElement.builder()
+            .code(documentId)
+            .label("[selected.pdf](https://example.test/documents/" + documentId + "/binary)")
+            .build();
+        CaseData data = CaseData.builder()
+            .cicCase(CicCase.builder().reinstateDocuments(List.of(documentValue)).build())
+            .contactPartiesDocuments(ContactPartiesDocuments.builder()
+                .documentList(DynamicMultiSelectList.builder().value(List.of(selection)).build())
+                .build())
+            .build();
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(data);
+
+        contactPartiesSelectDocument.midEvent(details, details);
+
+        assertThat(data.getContactPartiesDocuments().getPreviewDoc())
+            .extracting(value -> value.getValue().getDocumentLink())
+            .containsExactly(document);
     }
 
     @Test
