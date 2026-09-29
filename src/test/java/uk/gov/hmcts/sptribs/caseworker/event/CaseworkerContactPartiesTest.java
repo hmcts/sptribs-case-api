@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CaseworkerContactPartiesReview;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ContactPartiesSelectDocument;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
+import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -189,6 +190,33 @@ class CaseworkerContactPartiesTest {
             partiesToContact.midEvent(updatedCaseDetails, beforeDetails);
         assertThat(response).isNotNull();
         assertThat(response.getErrors()).isEmpty();
+    }
+
+    @Test
+    void shouldShowSelectedDocumentsAsNativeDocumentFieldsOnReview() {
+        final CaseData caseData = caseData();
+        final Document document = Document.builder()
+            .url("http://manage-case.test/documents/selected")
+            .binaryUrl("http://manage-case.test/documents/selected/binary")
+            .filename("selected.pdf")
+            .build();
+        caseData.getCicCase().setReinstateDocuments(List.of(new ListValue<>("1", CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(document)
+            .build())));
+        DynamicMultiSelectList documentList = DocumentListUtil.prepareContactPartiesDocumentList(caseData,
+            "http://manage-case.test");
+        documentList.setValue(documentList.getListItems());
+        caseData.getContactPartiesDocuments().setDocumentList(documentList);
+        caseData.getCicCase().setNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
+
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(caseData);
+
+        partiesToContact.midEvent(details, details);
+
+        assertThat(caseData.getContactPartiesDocuments().getReviewDocument1().getDocumentLink()).isSameAs(document);
+        assertThat(caseData.getContactPartiesDocuments().getReviewDocument2()).isNull();
     }
 
 
@@ -469,6 +497,9 @@ class CaseworkerContactPartiesTest {
         caseData.setCicCase(cicCase);
 
         ContactPartiesDocuments contactPartiesDocuments = new ContactPartiesDocuments();
+        contactPartiesDocuments.setReviewDocument1(CaseworkerCICDocument.builder()
+            .documentLink(Document.builder().filename("Test.pdf").build())
+            .build());
         List<DynamicListElement> selection = List.of(DynamicListElement.builder()
                 .code(UUID.randomUUID())
                 .label("[Document 1 - Test.pdf][https://manage-cases.hmcts.net/test123")
@@ -491,6 +522,7 @@ class CaseworkerContactPartiesTest {
         assertThat(contactPartiesResponse.getEventMetadata().getSummary()).isEqualTo("1 Selected documents sent");
         assertThat(contactPartiesResponse.getEventMetadata().getDescription()).contains("Document 1 - Test.pdf");
         assertThat(caseData.getContactPartiesDocuments().getPreviewDoc()).isNull();
+        assertThat(caseData.getContactPartiesDocuments().getReviewDocument1()).isNull();
     }
 
 }

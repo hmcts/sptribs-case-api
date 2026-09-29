@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -68,7 +69,9 @@ public class PartiesToContact implements CcdPageConfiguration {
             }
         }
 
-        data.getContactPartiesDocuments().setPreviewDoc(getSelectedContactPartiesDocuments(data));
+        ContactPartiesDocuments documents = data.getContactPartiesDocuments();
+        documents.setPreviewDoc(getSelectedContactPartiesDocuments(data));
+        documents.setReviewDocuments(documents.getPreviewDoc());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)

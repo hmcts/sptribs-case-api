@@ -10,7 +10,9 @@ import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ContactPartiesSelectDocument;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RespondentContactPartiesReview;
@@ -27,6 +29,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.TribunalCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.service.ContactPartiesService;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
 
@@ -40,6 +44,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.prepareContactPartiesDocumentList;
 import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAST_ONE_CONTACT_PARTY;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.RESPONDENT_CONTACT_PARTIES;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
@@ -137,6 +142,32 @@ class RespondentContactPartiesTest {
 
         //Then
         assertThat(response).isNotNull();
+    }
+
+    @Test
+    void shouldShowSelectedDocumentsAsNativeDocumentFieldsOnReview() {
+        final CaseData caseData = caseData();
+        final Document document = Document.builder()
+            .url("http://manage-case.test/documents/selected")
+            .binaryUrl("http://manage-case.test/documents/selected/binary")
+            .filename("selected.pdf")
+            .build();
+        caseData.getCicCase().setReinstateDocuments(List.of(new ListValue<>("1", CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(document)
+            .build())));
+        DynamicMultiSelectList documentList = prepareContactPartiesDocumentList(caseData, "http://manage-case.test");
+        documentList.setValue(documentList.getListItems());
+        caseData.getContactPartiesDocuments().setDocumentList(documentList);
+        caseData.getContactParties().setTribunal(Set.of(TribunalCIC.TRIBUNAL));
+
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(caseData);
+
+        respondentPartiesToContact.midEvent(details, details);
+
+        assertThat(caseData.getContactPartiesDocuments().getReviewDocument1().getDocumentLink()).isSameAs(document);
+        assertThat(caseData.getContactPartiesDocuments().getReviewDocument2()).isNull();
     }
 
     @Test
@@ -316,6 +347,9 @@ class RespondentContactPartiesTest {
     void shouldClearPreviewDocumentsBeforeSubmit() {
         final CaseData caseData = caseData();
         caseData.getContactPartiesDocuments().setPreviewDoc(List.of());
+        caseData.getContactPartiesDocuments().setReviewDocument1(CaseworkerCICDocument.builder()
+            .documentLink(Document.builder().filename("selected.pdf").build())
+            .build());
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         details.setData(caseData);
         details.setState(State.Draft);
@@ -326,6 +360,7 @@ class RespondentContactPartiesTest {
         assertThat(response.getData()).isSameAs(caseData);
         assertThat(response.getState()).isEqualTo(State.Draft);
         assertThat(caseData.getContactPartiesDocuments().getPreviewDoc()).isNull();
+        assertThat(caseData.getContactPartiesDocuments().getReviewDocument1()).isNull();
     }
 
 }

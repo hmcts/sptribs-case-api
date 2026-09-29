@@ -112,6 +112,7 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
         DynamicMultiSelectList documentList = DocumentListUtil.prepareContactPartiesDocumentList(caseData, baseUrl);
         caseData.getContactPartiesDocuments().setDocumentList(documentList);
         caseData.getContactPartiesDocuments().setPreviewDoc(null);
+        caseData.getContactPartiesDocuments().setReviewDocuments(List.of());
         caseData.getCicCase().setNotifyPartyMessage("");
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -122,6 +123,7 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         details.getData().getContactPartiesDocuments().setPreviewDoc(null);
+        details.getData().getContactPartiesDocuments().setReviewDocuments(List.of());
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(details.getData())
             .state(details.getState())
