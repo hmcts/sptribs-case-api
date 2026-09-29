@@ -101,6 +101,12 @@ public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole
     private final CaseDataDocumentService caseDataDocumentService;
     private final PreviewDraftOrderTemplateContent previewDraftOrderTemplateContent;
 
+    private long retryDelayMs = 2000L;
+
+    void setRetryDelayMs(long retryDelayMs) {
+        this.retryDelayMs = retryDelayMs;
+    }
+
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder
@@ -146,7 +152,7 @@ public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole
                     log.warn("Attempt {} to create system test case documents failed: {}. Retrying...",
                         attempt, exception.getMessage());
                     try {
-                        TimeUnit.SECONDS.sleep(2L * attempt);
+                        TimeUnit.MILLISECONDS.sleep(retryDelayMs * attempt);
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                         log.error("Thread interrupted during retry wait", e);

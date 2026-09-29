@@ -79,6 +79,12 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
     private final DocumentsService documentsService;
 
+    private long retryDelayMs = 2000L;
+
+    void setRetryDelayMs(long retryDelayMs) {
+        this.retryDelayMs = retryDelayMs;
+    }
+
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         final List<UserRole> roles = new ArrayList<>();
@@ -128,7 +134,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                     log.warn("Attempt {} to upload create test case document failed: {}. Retrying...",
                         attempt, exception.getMessage());
                     try {
-                        TimeUnit.SECONDS.sleep(2L * attempt);
+                        TimeUnit.MILLISECONDS.sleep(retryDelayMs * attempt);
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                         log.error("Thread interrupted during retry wait", e);

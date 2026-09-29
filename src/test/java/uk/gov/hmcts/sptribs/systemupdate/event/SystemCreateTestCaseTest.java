@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.systemupdate.event;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -12,7 +13,9 @@ import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -34,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -79,6 +83,11 @@ public class SystemCreateTestCaseTest {
 
     @Mock
     private DocumentsService documentTableService;
+
+    @BeforeEach
+    void setUp() {
+        createTestCase.setRetryDelayMs(0L);
+    }
 
 
     @Test
@@ -250,6 +259,173 @@ public class SystemCreateTestCaseTest {
         createTestCase.submitted(caseDetails, caseDetails);
 
         verify(ccdSupplementaryDataService).submitSupplementaryDataToCcd(TEST_CASE_ID.toString());
+    }
+
+    @Test
+    void shouldRetryAndSucceedWhenFirstUploadAttemptFails() throws JsonProcessingException {
+        final CaseData caseData = CaseData.builder().caseStatus(CaseManagement).build();
+        final AppsConfig.AppsDetails appsDetails = new AppsConfig.AppsDetails();
+        appsDetails.setCaseType("CriminalInjuriesCompensation");
+        appsDetails.setJurisdiction("ST_CIC");
+
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setId(TEST_CASE_ID);
+        caseDetails.setData(caseData);
+
+        UploadResponse expectedResponse = createValidSystemUploadResponse();
+        uk.gov.hmcts.ccd.sdk.type.Document draftOrderDocument = createDraftOrderDocument();
+
+        when(appsConfig.getApps()).thenReturn(List.of(appsDetails));
+        when(mapper.readValue(anyString(), eq(CaseData.class))).thenReturn(caseData());
+        when(caseDocumentClientApi.uploadDocuments(any(), any(), any()))
+            .thenThrow(new RuntimeException("Transient upload error"))
+            .thenReturn(expectedResponse);
+        when(documentsService.renderDocument(any(), any(), any(), any(), any(), any()))
+            .thenReturn(draftOrderDocument);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            createTestCase.aboutToSubmit(caseDetails, caseDetails);
+
+        assertThat(response.getState()).isEqualTo(Submitted);
+        assertThat(response.getErrors()).isEmpty();
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(1);
+        verify(caseDocumentClientApi, times(2)).uploadDocuments(any(), any(), any());
+    }
+
+    @Test
+    void shouldFailAfterMaxAttemptsWhenUploadConsistentlyFails() throws JsonProcessingException {
+        final CaseData caseData = CaseData.builder().caseStatus(CaseManagement).build();
+        final AppsConfig.AppsDetails appsDetails = new AppsConfig.AppsDetails();
+        appsDetails.setCaseType("CriminalInjuriesCompensation");
+        appsDetails.setJurisdiction("ST_CIC");
+
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setId(TEST_CASE_ID);
+        caseDetails.setData(caseData);
+
+        when(appsConfig.getApps()).thenReturn(List.of(appsDetails));
+        when(mapper.readValue(anyString(), eq(CaseData.class))).thenReturn(caseData());
+        when(caseDocumentClientApi.uploadDocuments(any(), any(), any()))
+            .thenThrow(new RuntimeException("Persistent upload failure"));
+
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            createTestCase.aboutToSubmit(caseDetails, caseDetails);
+
+        assertThat(response.getErrors())
+            .containsExactly("Unable to create the test case documents. Please try again.");
+        verify(caseDocumentClientApi, times(3)).uploadDocuments(any(), any(), any());
+    }
+
+    @Test
+    void shouldHandleThreadInterruptionDuringRetry() throws JsonProcessingException {
+        createTestCase.setRetryDelayMs(50L);
+        final CaseData caseData = CaseData.builder().caseStatus(CaseManagement).build();
+        final AppsConfig.AppsDetails appsDetails = new AppsConfig.AppsDetails();
+        appsDetails.setCaseType("CriminalInjuriesCompensation");
+        appsDetails.setJurisdiction("ST_CIC");
+
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setId(TEST_CASE_ID);
+        caseDetails.setData(caseData);
+
+        when(appsConfig.getApps()).thenReturn(List.of(appsDetails));
+        when(mapper.readValue(anyString(), eq(CaseData.class))).thenReturn(caseData());
+        when(caseDocumentClientApi.uploadDocuments(any(), any(), any())).thenAnswer(invocation -> {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Upload failed before interrupt check");
+        });
+
+        try {
+            AboutToStartOrSubmitResponse<CaseData, State> response =
+                createTestCase.aboutToSubmit(caseDetails, caseDetails);
+            assertThat(response.getErrors())
+                .containsExactly("Unable to create the test case documents. Please try again.");
+            verify(caseDocumentClientApi, times(1)).uploadDocuments(any(), any(), any());
+        } finally {
+            Thread.interrupted();
+        }
+    }
+
+    @Test
+    void shouldHandleExceptionWhenSubmittingSupplementaryData() {
+        final CaseData caseData = caseData();
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setData(caseData);
+        caseDetails.setState(Submitted);
+        caseDetails.setId(TEST_CASE_ID);
+
+        doThrow(new RuntimeException("CCD failure"))
+            .when(ccdSupplementaryDataService).submitSupplementaryDataToCcd(TEST_CASE_ID.toString());
+
+        SubmittedCallbackResponse response = createTestCase.submitted(caseDetails, caseDetails);
+
+        assertThat(response.getConfirmationHeader()).contains("# Case Created");
+        verify(ccdSupplementaryDataService).submitSupplementaryDataToCcd(TEST_CASE_ID.toString());
+    }
+
+    @Test
+    void shouldAddErrorWhenDocumentTableSaveThrowsRuntimeException() {
+        final CaseData caseData = caseData();
+        uk.gov.hmcts.ccd.sdk.type.Document testDocument = createDraftOrderDocument();
+        CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
+            .documentLink(testDocument)
+            .documentCategory(DocumentType.APPLICATION_FORM)
+            .build();
+        ListValue<CaseworkerCICDocument> listValue = new ListValue<>();
+        listValue.setId("1");
+        listValue.setValue(caseworkerCICDocument);
+        caseData.getCicCase().setApplicantDocumentsUploaded(List.of(listValue));
+
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setData(caseData);
+        caseDetails.setState(Submitted);
+        caseDetails.setId(TEST_CASE_ID);
+
+        doThrow(new RuntimeException("Database error"))
+            .when(documentTableService).buildAndSaveNewDocumentEntity(any(), any(), any(), any());
+
+        SubmittedCallbackResponse response = createTestCase.submitted(caseDetails, caseDetails);
+
+        assertThat(response.getConfirmationHeader())
+            .contains("# Case created")
+            .contains("Some document metadata could not be saved");
+    }
+
+    @Test
+    void shouldReturnCallbackErrorWhenAppsConfigIsEmpty() throws JsonProcessingException {
+        final CaseData caseData = CaseData.builder().caseStatus(CaseManagement).build();
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setId(TEST_CASE_ID);
+        caseDetails.setData(caseData);
+
+        when(appsConfig.getApps()).thenReturn(List.of());
+        when(mapper.readValue(anyString(), eq(CaseData.class))).thenReturn(caseData());
+
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            createTestCase.aboutToSubmit(caseDetails, caseDetails);
+
+        assertThat(response.getErrors())
+            .containsExactly("Unable to create the test case documents. Please try again.");
+    }
+
+    private static UploadResponse createValidSystemUploadResponse() {
+        UploadResponse expectedResponse = new UploadResponse();
+        expectedResponse.setDocuments(List.of(
+            cdamDocument("applicant-document.pdf"),
+            cdamDocument("order-document.pdf"),
+            cdamDocument("decision-document.pdf"),
+            cdamDocument("final-decision-document.pdf"),
+            cdamDocument("document-management-document.pdf")
+        ));
+        return expectedResponse;
+    }
+
+    private static uk.gov.hmcts.ccd.sdk.type.Document createDraftOrderDocument() {
+        return uk.gov.hmcts.ccd.sdk.type.Document.builder()
+            .url("dmstore-url/draft-order")
+            .filename("draft-order.pdf")
+            .binaryUrl("dmstore-url/draft-order/binary")
+            .build();
     }
 
     private static Document cdamDocument(String filename) {

@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.common.event;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -75,6 +76,11 @@ public class CreateTestCaseTest {
 
     @Mock
     private DocumentsService documentsService;
+
+    @BeforeEach
+    void setUp() {
+        createTestCase.setRetryDelayMs(0L);
+    }
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -220,5 +226,130 @@ public class CreateTestCaseTest {
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
             any(), eq(TEST_CASE_ID), eq(DocumentType.DSS_TRIBUNAL_FORM), eq(CaseDocumentType.APPLICATION)
         );
+    }
+
+    @Test
+    void shouldRetryAndSucceedWhenFirstUploadAttemptFails() throws JsonProcessingException {
+        final CaseData caseData = CaseData.builder().caseStatus(CaseManagement).build();
+        final AppsConfig.AppsDetails appsDetails = new AppsConfig.AppsDetails();
+        appsDetails.setCaseType("CriminalInjuriesCompensation");
+        appsDetails.setJurisdiction("ST_CIC");
+
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setId(TEST_CASE_ID);
+        caseDetails.setData(caseData);
+
+        when(appsConfig.getApps()).thenReturn(List.of(appsDetails));
+        when(mapper.readValue(anyString(), eq(CaseData.class))).thenReturn(caseData());
+        when(caseDocumentClientApi.uploadDocuments(any(), any(), any()))
+            .thenThrow(new RuntimeException("Transient upload error"))
+            .thenReturn(createValidUploadResponse());
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = createTestCase.aboutToSubmit(caseDetails, caseDetails);
+
+        assertThat(response.getErrors()).isEmpty();
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(1);
+        verify(caseDocumentClientApi, times(2)).uploadDocuments(any(), any(), any());
+    }
+
+    @Test
+    void shouldFailAfterMaxAttemptsWhenUploadConsistentlyFails() throws JsonProcessingException {
+        final CaseData caseData = CaseData.builder().caseStatus(CaseManagement).build();
+        final AppsConfig.AppsDetails appsDetails = new AppsConfig.AppsDetails();
+        appsDetails.setCaseType("CriminalInjuriesCompensation");
+        appsDetails.setJurisdiction("ST_CIC");
+
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setId(TEST_CASE_ID);
+        caseDetails.setData(caseData);
+
+        when(appsConfig.getApps()).thenReturn(List.of(appsDetails));
+        when(mapper.readValue(anyString(), eq(CaseData.class))).thenReturn(caseData());
+        when(caseDocumentClientApi.uploadDocuments(any(), any(), any()))
+            .thenThrow(new RuntimeException("Persistent upload failure"));
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = createTestCase.aboutToSubmit(caseDetails, caseDetails);
+
+        assertThat(response.getErrors()).containsExactly("Unable to upload the test document. Please try again.");
+        verify(caseDocumentClientApi, times(3)).uploadDocuments(any(), any(), any());
+    }
+
+    @Test
+    void shouldHandleThreadInterruptionDuringRetry() throws JsonProcessingException {
+        createTestCase.setRetryDelayMs(50L);
+        final CaseData caseData = CaseData.builder().caseStatus(CaseManagement).build();
+        final AppsConfig.AppsDetails appsDetails = new AppsConfig.AppsDetails();
+        appsDetails.setCaseType("CriminalInjuriesCompensation");
+        appsDetails.setJurisdiction("ST_CIC");
+
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setId(TEST_CASE_ID);
+        caseDetails.setData(caseData);
+
+        when(appsConfig.getApps()).thenReturn(List.of(appsDetails));
+        when(mapper.readValue(anyString(), eq(CaseData.class))).thenReturn(caseData());
+        when(caseDocumentClientApi.uploadDocuments(any(), any(), any())).thenAnswer(invocation -> {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Upload failed before interrupt check");
+        });
+
+        try {
+            AboutToStartOrSubmitResponse<CaseData, State> response =
+                createTestCase.aboutToSubmit(caseDetails, caseDetails);
+            assertThat(response.getErrors()).containsExactly("Unable to upload the test document. Please try again.");
+            verify(caseDocumentClientApi, times(1)).uploadDocuments(any(), any(), any());
+        } finally {
+            Thread.interrupted();
+        }
+    }
+
+    @Test
+    void shouldHandleExceptionWhenSubmittingSupplementaryData() {
+        final CaseData caseData = caseData();
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setData(caseData);
+        caseDetails.setState(Submitted);
+        caseDetails.setId(TEST_CASE_ID);
+
+        doThrow(new RuntimeException("CCD error"))
+            .when(ccdSupplementaryDataService).submitSupplementaryDataToCcd(TEST_CASE_ID.toString());
+
+        SubmittedCallbackResponse response = createTestCase.submitted(caseDetails, caseDetails);
+
+        assertThat(response.getConfirmationHeader())
+            .contains(format("# Case Created %n## Case reference number:"));
+        verify(ccdSupplementaryDataService).submitSupplementaryDataToCcd(TEST_CASE_ID.toString());
+    }
+
+    @Test
+    void shouldReturnCallbackErrorWhenAppsConfigIsEmpty() throws JsonProcessingException {
+        final CaseData caseData = CaseData.builder().caseStatus(CaseManagement).build();
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setId(TEST_CASE_ID);
+        caseDetails.setData(caseData);
+
+        when(appsConfig.getApps()).thenReturn(List.of());
+        when(mapper.readValue(anyString(), eq(CaseData.class))).thenReturn(caseData());
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = createTestCase.aboutToSubmit(caseDetails, caseDetails);
+
+        assertThat(response.getErrors()).containsExactly("Unable to upload the test document. Please try again.");
+    }
+
+    private UploadResponse createValidUploadResponse() {
+        final Document expectedCdamUploadedDocument = new Document();
+        final Document.DocumentLink documentLink = new Document.DocumentLink();
+        documentLink.href = "dmstore-url/doc-id";
+        final Document.DocumentLink binaryDocumentLink = new Document.DocumentLink();
+        binaryDocumentLink.href = "dmstore-url/doc-id/binary";
+        final Document.Links links = new Document.Links();
+        links.self = documentLink;
+        links.binary = binaryDocumentLink;
+        expectedCdamUploadedDocument.setLinks(links);
+        expectedCdamUploadedDocument.setOriginalDocumentName("sample_file.pdf");
+
+        final UploadResponse expectedResponse = new UploadResponse();
+        expectedResponse.setDocuments(List.of(expectedCdamUploadedDocument));
+        return expectedResponse;
     }
 }
