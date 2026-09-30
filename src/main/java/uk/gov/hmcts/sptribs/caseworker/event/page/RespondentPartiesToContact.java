@@ -54,7 +54,7 @@ public class RespondentPartiesToContact implements CcdPageConfiguration {
             .done()
             .complex(CaseData::getContactPartiesDocuments)
             .optional(ContactPartiesDocuments::getPreviewDoc, ALWAYS_HIDE, null,
-                "Selected documents", null, "#TABLE(documentLink)")
+                "Selected documents", null, null)
             .done();
     }
 
