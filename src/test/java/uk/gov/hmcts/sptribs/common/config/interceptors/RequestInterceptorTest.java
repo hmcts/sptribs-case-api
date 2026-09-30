@@ -8,17 +8,23 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.BEARER;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CCD_DATA;
@@ -41,13 +47,17 @@ class RequestInterceptorTest {
     @InjectMocks
     private RequestInterceptor requestInterceptor;
 
+    private MockMvc mockMvc;
+
     private Object testObj;
 
     @BeforeEach
     public void setUp() {
         setField(requestInterceptor, "authorisedServices", List.of("ccd_data", "test_service"));
-        lenient().when(request.getRequestURI()).thenReturn("");
         this.testObj = new Object();
+        mockMvc = MockMvcBuilders.standaloneSetup(new PersistenceController())
+            .addInterceptors(requestInterceptor)
+            .build();
     }
 
     @Test
@@ -110,31 +120,27 @@ class RequestInterceptorTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenNonCcdDataServiceCallsCcdPersistenceEndpoint() {
+    void shouldRejectEncodedCcdPersistencePathForNonCcdDataService() throws Exception {
         //Given
-        when(validator.getServiceName(AUTH_TOKEN_WITH_BEARER_PREFIX)).thenReturn("test_service");
-        when(request.getHeader(SERVICE_AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(request.getRequestURI()).thenReturn("/ccd-persistence/cases");
+        when(validator.getServiceName("Bearer test-service-token")).thenReturn("test_service");
 
         //When / Then
-        assertThatThrownBy(() -> requestInterceptor.preHandle(request, response, new Object()))
-            .isExactlyInstanceOf(UnAuthorisedServiceException.class)
-            .hasMessage("Service not authorised to access ccd-persistence endpoints");
+        assertThatThrownBy(() -> mockMvc.perform(MockMvcRequestBuilders.post(
+            URI.create("/%63cd-persistence/cases"))
+            .header(SERVICE_AUTHORIZATION, "test-service-token")))
+            .hasRootCauseExactlyInstanceOf(UnAuthorisedServiceException.class)
+            .hasRootCauseMessage("Service not authorised to access ccd-persistence endpoints");
     }
 
     @Test
-    void shouldAllowCcdDataServiceToCallCcdPersistenceEndpoint() {
+    void shouldAllowCcdDataServiceToCallEncodedCcdPersistencePath() throws Exception {
         //Given
-        when(validator.getServiceName(AUTH_TOKEN_WITH_BEARER_PREFIX)).thenReturn(CCD_DATA);
-        when(request.getHeader(SERVICE_AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(request.getRequestURI()).thenReturn("/ccd-persistence/cases");
+        when(validator.getServiceName("Bearer ccd-data-token")).thenReturn(CCD_DATA);
 
         //When
-        Boolean result = requestInterceptor.preHandle(request, response, testObj);
-
-        //Then
-        assertThat(result).isTrue();
-        verify(validator).getServiceName(AUTH_TOKEN_WITH_BEARER_PREFIX);
+        mockMvc.perform(MockMvcRequestBuilders.post(URI.create("/%63cd-persistence/cases"))
+                .header(SERVICE_AUTHORIZATION, "ccd-data-token"))
+            .andExpect(status().isOk());
     }
 
     @Test
@@ -149,5 +155,13 @@ class RequestInterceptorTest {
         //Then
         assertThat(result).isTrue();
         verify(validator).getServiceName(AUTH_TOKEN_WITH_BEARER_PREFIX);
+    }
+
+    @RestController
+    static class PersistenceController {
+        @PostMapping("/ccd-persistence/cases")
+        void createCase() {
+            // The request must be rejected by the interceptor before this handler runs.
+        }
     }
 }
