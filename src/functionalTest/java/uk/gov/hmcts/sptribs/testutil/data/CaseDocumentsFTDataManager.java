@@ -71,7 +71,7 @@ public class CaseDocumentsFTDataManager extends FunctionalTestDataManager {
 
     public static int generateDocumentId() {
         List<Integer> existingDocumentIds = new ArrayList<>();
-        String sql = "SELECT * FROM public.case_documents";
+        String sql = "SELECT id FROM public.case_documents";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
