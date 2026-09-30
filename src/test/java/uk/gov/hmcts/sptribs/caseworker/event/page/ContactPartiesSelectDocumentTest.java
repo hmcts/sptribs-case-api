@@ -327,7 +327,7 @@ class ContactPartiesSelectDocumentTest {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         ContactPartiesDocuments contactPartiesDocuments = new ContactPartiesDocuments();
         contactPartiesDocuments.setDocumentList(DynamicMultiSelectList.builder().build());
-        contactPartiesDocuments.setPreviewDoc(List.of(new ListValue<>()));
+        contactPartiesDocuments.setD01(uk.gov.hmcts.ccd.sdk.type.Document.builder().filename("stale.pdf").build());
         final CaseData caseData = CaseData.builder()
             .cicCase(CicCase.builder().build())
             .contactPartiesDocuments(contactPartiesDocuments)
@@ -336,7 +336,7 @@ class ContactPartiesSelectDocumentTest {
 
         final AboutToStartOrSubmitResponse<CaseData, State> response = contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
         assertThat(response.getErrors()).isEmpty();
-        assertThat(contactPartiesDocuments.getPreviewDoc()).isEmpty();
+        assertThat(contactPartiesDocuments.getD01()).isNull();
     }
 
     @Test
@@ -370,9 +370,7 @@ class ContactPartiesSelectDocumentTest {
 
         contactPartiesSelectDocument.midEvent(details, details);
 
-        assertThat(data.getContactPartiesDocuments().getPreviewDoc())
-            .extracting(value -> value.getValue().getDocumentLink())
-            .containsExactly(document);
+        assertThat(data.getContactPartiesDocuments().getD01()).isEqualTo(document);
     }
 
     @Test

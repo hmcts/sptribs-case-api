@@ -38,6 +38,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.lang.String.format;
+import static uk.gov.hmcts.sptribs.caseworker.util.ContactPartiesReviewUtil.clearReviewDocuments;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CONTACT_PARTIES;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
@@ -125,7 +126,9 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
         caseData.setContactParties(new ContactParties());
         DynamicMultiSelectList documentList = DocumentListUtil.prepareContactPartiesDocumentList(caseData, baseUrl);
         caseData.getContactPartiesDocuments().setDocumentList(documentList);
-        caseData.getContactPartiesDocuments().setPreviewDoc(null);
+        clearReviewDocuments(caseData.getContactPartiesDocuments());
+        caseData.getContactPartiesDocuments().setReviewSelectedParties(null);
+        caseData.getContactPartiesDocuments().setReviewMessage(null);
         caseData.getCicCase().setNotifyPartyMessage("");
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -138,7 +141,9 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         final CaseData caseData = details.getData();
 
-        caseData.getContactPartiesDocuments().setPreviewDoc(null);
+        clearReviewDocuments(caseData.getContactPartiesDocuments());
+        caseData.getContactPartiesDocuments().setReviewSelectedParties(null);
+        caseData.getContactPartiesDocuments().setReviewMessage(null);
 
         StringBuilder sentDocListBuilder = new StringBuilder();
 

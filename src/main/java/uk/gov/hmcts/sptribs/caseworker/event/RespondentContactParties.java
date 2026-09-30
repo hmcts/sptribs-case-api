@@ -31,6 +31,7 @@ import java.util.Map;
 
 import static java.lang.String.format;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
+import static uk.gov.hmcts.sptribs.caseworker.util.ContactPartiesReviewUtil.clearReviewDocuments;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.RESPONDENT_CONTACT_PARTIES;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
@@ -111,7 +112,9 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
         caseData.setContactParties(new ContactParties());
         DynamicMultiSelectList documentList = DocumentListUtil.prepareContactPartiesDocumentList(caseData, baseUrl);
         caseData.getContactPartiesDocuments().setDocumentList(documentList);
-        caseData.getContactPartiesDocuments().setPreviewDoc(null);
+        clearReviewDocuments(caseData.getContactPartiesDocuments());
+        caseData.getContactPartiesDocuments().setReviewSelectedParties(null);
+        caseData.getContactPartiesDocuments().setReviewMessage(null);
         caseData.getCicCase().setNotifyPartyMessage("");
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -121,7 +124,9 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
-        details.getData().getContactPartiesDocuments().setPreviewDoc(null);
+        clearReviewDocuments(details.getData().getContactPartiesDocuments());
+        details.getData().getContactPartiesDocuments().setReviewSelectedParties(null);
+        details.getData().getContactPartiesDocuments().setReviewMessage(null);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(details.getData())
             .state(details.getState())

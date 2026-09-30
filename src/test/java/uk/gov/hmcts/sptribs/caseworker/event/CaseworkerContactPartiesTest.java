@@ -112,7 +112,7 @@ class CaseworkerContactPartiesTest {
     }
 
     @Test
-    void shouldShowSelectedDocumentsOnlyOnReviewPage() {
+    void shouldShowOnlyDocumentsPartiesAndMessageOnReviewPage() {
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         caseWorkerContactParties.configure(configBuilder);
@@ -122,12 +122,25 @@ class CaseworkerContactPartiesTest {
         assertThat(event.getFields().getPageLabels()).containsEntry("contactPartiesReview", "Check your answers");
         assertThat(event.getFields().getFields().stream()
             .map(field -> field.build())
-            .filter(field -> "contactPartiesDocumentsPreviewDoc".equals(field.getId())))
+            .filter(field -> "contactPartiesReview".equals(field.getPage()))
+            .map(field -> field.getId()))
+            .containsExactly("contactPartiesDocumentsD01", "contactPartiesDocumentsD02", "contactPartiesDocumentsD03",
+                "contactPartiesDocumentsD04", "contactPartiesDocumentsD05", "contactPartiesDocumentsD06",
+                "contactPartiesDocumentsD07", "contactPartiesDocumentsD08", "contactPartiesDocumentsD09",
+                "contactPartiesDocumentsD10",
+                "contactPartiesDocumentsReviewSelectedParties", "contactPartiesDocumentsReviewMessage");
+        assertThat(event.getFields().getFields().stream()
+            .map(field -> field.build())
+            .filter(field -> "contactPartiesReview".equals(field.getPage())))
+            .allSatisfy(field -> assertThat(field.getContext()).isEqualTo(DisplayContext.ReadOnly));
+        assertThat(event.getFields().getFields().stream()
+            .map(field -> field.build())
+            .filter(field -> "contactPartiesDocumentsD01".equals(field.getId())))
             .singleElement()
             .satisfies(field -> {
                 assertThat(field.getContext()).isEqualTo(DisplayContext.ReadOnly);
                 assertThat(field.getPage()).isEqualTo("contactPartiesReview");
-                assertThat(field.getShowCondition()).isNull();
+                assertThat(field.getShowCondition()).isEqualTo("contactPartiesDocumentsD01!=\"\"");
                 assertThat(field.getDisplayContextParameter()).isNull();
             });
     }
@@ -194,6 +207,7 @@ class CaseworkerContactPartiesTest {
             .representativeFullName(TEST_SOLICITOR_NAME)
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyMessage("Review message")
             .build();
         caseData.setCicCase(cicCase);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -206,6 +220,46 @@ class CaseworkerContactPartiesTest {
             partiesToContact.midEvent(updatedCaseDetails, beforeDetails);
         assertThat(response).isNotNull();
         assertThat(response.getErrors()).isEmpty();
+        assertThat(caseData.getContactPartiesDocuments().getReviewSelectedParties())
+            .isEqualTo("Subject: " + TEST_FIRST_NAME + "\nRepresentative: " + TEST_SOLICITOR_NAME);
+        assertThat(caseData.getContactPartiesDocuments().getReviewMessage()).isEqualTo("Review message");
+    }
+
+    @Test
+    void shouldShowSelectedDocumentLinksAndClearLinksRemovedOnReturnToReview() {
+        CaseData caseData = caseData();
+        UUID firstId = UUID.randomUUID();
+        UUID secondId = UUID.randomUUID();
+        Document first = Document.builder().url("https://example.test/documents/" + firstId)
+            .filename("first.pdf").build();
+        Document second = Document.builder().url("https://example.test/documents/" + secondId)
+            .filename("second.pdf").build();
+        ListValue<CaseworkerCICDocument> firstValue = new ListValue<>();
+        firstValue.setValue(CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS).documentLink(first).build());
+        ListValue<CaseworkerCICDocument> secondValue = new ListValue<>();
+        secondValue.setValue(CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS).documentLink(second).build());
+        caseData.getCicCase().setReinstateDocuments(List.of(firstValue, secondValue));
+        caseData.getCicCase().setNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
+        DynamicListElement firstSelection = DynamicListElement.builder().code(firstId)
+            .label("[first.pdf](https://example.test/documents/" + firstId + "/binary)").build();
+        DynamicListElement secondSelection = DynamicListElement.builder().code(secondId)
+            .label("[second.pdf](https://example.test/documents/" + secondId + "/binary)").build();
+        caseData.getContactPartiesDocuments().setDocumentList(DynamicMultiSelectList.builder()
+            .value(List.of(firstSelection, secondSelection)).build());
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(caseData);
+
+        assertThat(partiesToContact.midEvent(details, details).getErrors()).isEmpty();
+        assertThat(caseData.getContactPartiesDocuments().getD01()).isEqualTo(first);
+        assertThat(caseData.getContactPartiesDocuments().getD02()).isEqualTo(second);
+        assertThat(caseData.getContactPartiesDocuments().getD03()).isNull();
+
+        caseData.getContactPartiesDocuments().getDocumentList().setValue(List.of(secondSelection));
+        assertThat(partiesToContact.midEvent(details, details).getErrors()).isEmpty();
+        assertThat(caseData.getContactPartiesDocuments().getD01()).isEqualTo(second);
+        assertThat(caseData.getContactPartiesDocuments().getD02()).isNull();
     }
 
 
@@ -465,6 +519,7 @@ class CaseworkerContactPartiesTest {
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
             .build();
+        caseData.getContactPartiesDocuments().setD10(Document.builder().filename("stale.pdf").build());
         updatedCaseDetails.setData(caseData);
 
         ReflectionTestUtils.setField(caseWorkerContactParties, "baseUrl", "http://mocked-url.com/");
@@ -473,7 +528,8 @@ class CaseworkerContactPartiesTest {
 
         assertThat(response).isNotNull();
         assertThat(response.getData().getContactPartiesDocuments().getDocumentList().getListItems()).hasSize(1);
-        assertThat(response.getData().getContactPartiesDocuments().getPreviewDoc()).isNull();
+        assertThat(response.getData().getContactPartiesDocuments().getD01()).isNull();
+        assertThat(response.getData().getContactPartiesDocuments().getD10()).isNull();
         assertThat(response.getData().getCicCase().getNotifyPartyMessage()).isEqualTo("");
     }
 
@@ -494,8 +550,11 @@ class CaseworkerContactPartiesTest {
             .value(selection)
             .listItems(selection)
             .build());
+        contactPartiesDocuments.setReviewSelectedParties("Subject: Test Subject");
+        contactPartiesDocuments.setReviewMessage("Review message");
 
         caseData.setContactPartiesDocuments(contactPartiesDocuments);
+        caseData.getContactPartiesDocuments().setD10(Document.builder().filename("selected.pdf").build());
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
@@ -507,7 +566,10 @@ class CaseworkerContactPartiesTest {
 
         assertThat(contactPartiesResponse.getEventMetadata().getSummary()).isEqualTo("1 Selected documents sent");
         assertThat(contactPartiesResponse.getEventMetadata().getDescription()).contains("Document 1 - Test.pdf");
-        assertThat(caseData.getContactPartiesDocuments().getPreviewDoc()).isNull();
+        assertThat(caseData.getContactPartiesDocuments().getD01()).isNull();
+        assertThat(caseData.getContactPartiesDocuments().getD10()).isNull();
+        assertThat(caseData.getContactPartiesDocuments().getReviewSelectedParties()).isNull();
+        assertThat(caseData.getContactPartiesDocuments().getReviewMessage()).isNull();
     }
 
 }

@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static uk.gov.hmcts.sptribs.caseworker.util.ContactPartiesReviewUtil.setReviewDocuments;
+
 @Component
 @Slf4j
 @RequiredArgsConstructor
@@ -68,7 +70,7 @@ public class ContactPartiesSelectDocument implements CcdPageConfiguration {
         }
 
         if (errors.isEmpty() && data.getCicCase() != null) {
-            data.getContactPartiesDocuments().setPreviewDoc(DocumentListUtil.getSelectedContactPartiesDocuments(data));
+            setReviewDocuments(data);
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
