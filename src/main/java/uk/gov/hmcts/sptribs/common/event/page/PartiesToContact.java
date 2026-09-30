@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -47,10 +46,6 @@ public class PartiesToContact implements CcdPageConfiguration {
             .optional(CicCase::getNotifyPartyRespondent, "cicCaseRespondentName!=\"\" ",
                 "", RECIPIENT_LABEL, "${cicCaseRespondentName}")
             .mandatory(CicCase::getNotifyPartyMessage)
-            .done()
-            .complex(CaseData::getContactPartiesDocuments)
-            .optional(ContactPartiesDocuments::getPreviewDoc, ALWAYS_HIDE, null,
-                "Selected documents", null, null)
             .done();
     }
 

@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
+import uk.gov.hmcts.ccd.sdk.api.DisplayContext;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
@@ -84,14 +85,24 @@ class RespondentContactPartiesTest {
     }
 
     @Test
-    void shouldUseBuiltInCheckYourAnswersPage() {
+    void shouldShowSelectedDocumentsOnlyOnReviewPage() {
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         respondentContactParties.configure(configBuilder);
 
         Event<CaseData, UserRole, State> event = getEventsFrom(configBuilder).get(RESPONDENT_CONTACT_PARTIES);
-        assertThat(event.isShowSummary()).isTrue();
-        assertThat(event.getFields().getPageLabels()).doesNotContainKey("contactPartiesReview");
+        assertThat(event.isShowSummary()).isFalse();
+        assertThat(event.getFields().getPageLabels()).containsEntry("contactPartiesReview", "Check your answers");
+        assertThat(event.getFields().getFields().stream()
+            .map(field -> field.build())
+            .filter(field -> "contactPartiesDocumentsPreviewDoc".equals(field.getId())))
+            .singleElement()
+            .satisfies(field -> {
+                assertThat(field.getContext()).isEqualTo(DisplayContext.ReadOnly);
+                assertThat(field.getPage()).isEqualTo("contactPartiesReview");
+                assertThat(field.getShowCondition()).isNull();
+                assertThat(field.getDisplayContextParameter()).isNull();
+            });
     }
 
     @Test

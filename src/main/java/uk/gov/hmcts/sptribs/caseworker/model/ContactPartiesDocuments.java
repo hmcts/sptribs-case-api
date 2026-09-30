@@ -26,7 +26,7 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.DynamicMultiSelectList;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ContactPartiesDocuments {
 
-    // Keep the hidden collection for CCD's native document-viewer table on the event summary.
+    // Keep the selected documents for the read-only review page.
     @CCD(
         label = "Selected documents",
         showSummaryContent = true,

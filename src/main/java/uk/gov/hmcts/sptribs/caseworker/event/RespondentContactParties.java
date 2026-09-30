@@ -11,6 +11,7 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ContactPartiesSelectDocument;
+import uk.gov.hmcts.sptribs.caseworker.event.page.RespondentContactPartiesReview;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RespondentPartiesToContact;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
@@ -58,6 +59,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class RespondentContactParties implements CCDConfig<CaseData, State, UserRole> {
 
     private static final CcdPageConfiguration resPartiesToContact = new RespondentPartiesToContact();
+    private static final CcdPageConfiguration contactPartiesReview = new RespondentContactPartiesReview();
 
 
     @Value("${case_document_am.url}")
@@ -85,7 +87,7 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
                     CaseClosed,
                     CaseStayed)
                 .name("Case: CICA Contact parties")
-                .showSummary()
+                .showSummary(false)
                 .endButtonLabel("Confirm and send")
                 .aboutToStartCallback(this::aboutToStart)
                 .aboutToSubmitCallback(this::aboutToSubmit)
@@ -101,6 +103,7 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
         );
         contactPartiesSelectDocument.addTo(pageBuilder);
         resPartiesToContact.addTo(pageBuilder);
+        contactPartiesReview.addTo(pageBuilder);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
