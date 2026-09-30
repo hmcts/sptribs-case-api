@@ -188,9 +188,11 @@ public class DocumentsServiceTest {
     @Test
     void shouldNotThrowExceptionWhenDocumentAlreadyExistsInDB() {
         Document applicationDocument = buildDocument(DSS_SUPPORTING.getCategory());
-        when(caseDocumentTypesCache.getId(CaseDocumentType.ORDER)).thenReturn(3L);
+        DocumentEntity applicationDocumentEntity = buildDocumentEntity(DSS_SUPPORTING.getCategory(), 3L, OffsetDateTime.now());
 
-        when(documentsRepository.findByDocumentIdUuid("test-document.pdf")).thenReturn(Optional.empty());
+        when(caseDocumentTypesCache.getId(CaseDocumentType.ORDER)).thenReturn(3L);
+        when(documentsRepository.findByDocumentIdUuid("test-document.pdf")).thenReturn(Optional.of(applicationDocumentEntity));
+
         assertDoesNotThrow(() -> documentsService.buildAndSaveNewDocumentEntity(applicationDocument, TEST_CASE_ID,
             ORDER_AND_DECISION_DOCUMENT, CaseDocumentType.ORDER));
     }
