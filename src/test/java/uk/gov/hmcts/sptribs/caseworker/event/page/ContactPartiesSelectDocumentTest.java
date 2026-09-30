@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
@@ -33,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -304,7 +306,6 @@ class ContactPartiesSelectDocumentTest {
 
             assertThat(exception.getMessage()).isEqualTo("Failed to retrieve document with id " + documentId);
         }
-
     }
 
     @Test
@@ -321,4 +322,35 @@ class ContactPartiesSelectDocumentTest {
         assertThat(response.getErrors()).isEmpty();
     }
 
+    @Test
+    void midEventAllowsAllDocuments_WhenCitizenDashboardEnabled() {
+        ReflectionTestUtils.setField(contactPartiesSelectDocument, "citizenDashboardEnabled", true);
+
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        UUID documentId = UUID.randomUUID();
+        String label = "[Large Document](http://example/documents/" + documentId + ")";
+
+        ContactPartiesDocuments contactPartiesDocuments = new ContactPartiesDocuments();
+        DynamicListElement element = DynamicListElement.builder()
+            .code(documentId)
+            .label(label)
+            .build();
+        List<DynamicListElement> selection = List.of(element);
+        contactPartiesDocuments.setDocumentList(DynamicMultiSelectList.builder()
+            .value(selection)
+            .listItems(selection)
+            .build());
+
+        final CaseData caseData = CaseData.builder()
+            .contactPartiesDocuments(contactPartiesDocuments)
+            .build();
+        caseDetails.setData(caseData);
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response = contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
+
+        assertThat(response.getErrors()).isEmpty();
+        verifyNoInteractions(idamService);
+        verifyNoInteractions(authTokenGenerator);
+        verifyNoInteractions(caseDocumentClientApi);
+    }
 }
