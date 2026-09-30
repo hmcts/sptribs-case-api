@@ -111,7 +111,10 @@ class RespondentContactPartiesTest {
         assertThat(event.getFields().getFields().stream()
             .map(field -> field.build())
             .filter(field -> "contactPartiesReview".equals(field.getPage())))
-            .allSatisfy(field -> assertThat(field.getContext()).isEqualTo(DisplayContext.ReadOnly));
+            .allSatisfy(field -> {
+                assertThat(field.getContext()).isEqualTo(DisplayContext.ReadOnly);
+                assertThat(field.getShowCondition()).isNull();
+            });
         assertThat(event.getFields().getFields().stream()
             .map(field -> field.build())
             .filter(field -> "contactPartiesDocumentsD01".equals(field.getId())))
@@ -119,7 +122,7 @@ class RespondentContactPartiesTest {
             .satisfies(field -> {
                 assertThat(field.getContext()).isEqualTo(DisplayContext.ReadOnly);
                 assertThat(field.getPage()).isEqualTo("contactPartiesReview");
-                assertThat(field.getShowCondition()).isEqualTo("contactPartiesDocumentsD01!=\"\"");
+                assertThat(field.getShowCondition()).isNull();
                 assertThat(field.getDisplayContextParameter()).isNull();
             });
     }
