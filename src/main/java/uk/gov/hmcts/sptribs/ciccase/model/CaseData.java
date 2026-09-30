@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -61,6 +62,7 @@ import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
 import uk.gov.hmcts.sptribs.document.model.AbstractCaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.notification.model.Correspondence;
+import uk.gov.hmcts.sptribs.systemupdate.convert.LenientLocalDateDeserializer;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -521,6 +523,7 @@ public class CaseData {
 
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonDeserialize(using = LenientLocalDateDeserializer.class)
     private LocalDate firstHearingDate;
 
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})

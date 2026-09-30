@@ -268,6 +268,9 @@ feature:
     skipMigrated: ${INITIAL_DOCUMENTS_MIGRATION_SKIP_MIGRATED:false}
     batchSize: ${INITIAL_DOCUMENTS_MIGRATION_BATCH_SIZE:100}
     batchPauseMs: ${INITIAL_DOCUMENTS_MIGRATION_BATCH_PAUSE:5000}
+  fix-first-hearing-date-task:
+    enabled: ${FIX_FIRST_HEARING_DATE_ENABLED:false}
+    caseReference: ${FIX_FIRST_HEARING_DATE_TEST_CASE_REF:}
   citizen-dashboard:
     enabled: ${CITIZEN_DASHBOARD_ENABLED:false}
 
