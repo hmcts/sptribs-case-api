@@ -69,28 +69,11 @@ public class CaseDocumentsFTDataManager extends FunctionalTestDataManager {
         }
     }
 
-    public static int generateDocumentId() {
-        List<Integer> existingDocumentIds = new ArrayList<>();
-        String sql = "SELECT id FROM public.case_documents";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                existingDocumentIds.add(rs.getInt("id"));
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Failed to generate document id", e);
-        }
-        Collections.sort(existingDocumentIds);
-
-        return existingDocumentIds.isEmpty() ? 0 : existingDocumentIds.getLast() + 1;
-    }
-
 
     public static void saveTestDocumentEntity(long reference, String testDocumentUrl, String testDocumentFilename,
                                               String documentTypeName, String caseDocumentTypeId, Timestamp savedAt) throws SQLException {
         String sql = "INSERT INTO " + TABLE_CASE_DOCUMENTS + " ("
-            + "id"
-            + ", " + KEY_CASE_DOCUMENTS_REFERENCE
+            + KEY_CASE_DOCUMENTS_REFERENCE
             + ", saved_at"
             + ", document_url"
             + ", document_binary_url"
@@ -98,16 +81,15 @@ public class CaseDocumentsFTDataManager extends FunctionalTestDataManager {
             + ", document_type_name"
             + ", case_document_type_id"
             + ", updated_at"
-            + ") VALUES (?, ?, ?, ?, ?, ?, ?, CAST(" + caseDocumentTypeId + " AS bigint), ?)";
+            + ") VALUES (?, ?, ?, ?, ?, ?, CAST(" + caseDocumentTypeId + " AS bigint), ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, generateDocumentId());
-            stmt.setLong(2, reference);
-            stmt.setTimestamp(3, savedAt);
-            stmt.setString(4, testDocumentUrl);
-            stmt.setString(5, testDocumentUrl + "/binary");
-            stmt.setString(6, testDocumentFilename);
-            stmt.setString(7, documentTypeName);
-            stmt.setTimestamp(8, savedAt);
+            stmt.setLong(1, reference);
+            stmt.setTimestamp(2, savedAt);
+            stmt.setString(3, testDocumentUrl);
+            stmt.setString(4, testDocumentUrl + "/binary");
+            stmt.setString(5, testDocumentFilename);
+            stmt.setString(6, documentTypeName);
+            stmt.setTimestamp(7, savedAt);
             stmt.executeUpdate();
         }
     }
