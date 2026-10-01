@@ -101,7 +101,7 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Bundle created. \n## A notification has been sent to");
+            .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent");
     }
 
     @Test

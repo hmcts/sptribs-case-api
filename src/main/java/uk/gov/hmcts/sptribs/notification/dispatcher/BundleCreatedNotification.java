@@ -24,8 +24,6 @@ import static uk.gov.hmcts.sptribs.notification.TemplateName.BUNDLE_CREATED_EMAI
 @Slf4j
 public class BundleCreatedNotification implements PartiesNotification {
 
-    private static final String DEFAULT_RESPONDENT_EMAIL = "appeals.team@cica.gov.uk";
-
     private final NotificationServiceCIC notificationService;
 
     private final NotificationHelper notificationHelper;
@@ -35,6 +33,9 @@ public class BundleCreatedNotification implements PartiesNotification {
 
     @Value("${feature.citizen-dashboard.enabled}")
     private boolean citizenDashboardEnabled;
+
+    @Value("${uk.gov.notify.email.templateVars.respondentEmail}")
+    private String defaultRespondentEmail;
 
     @Autowired
     public BundleCreatedNotification(NotificationServiceCIC notificationService, NotificationHelper notificationHelper) {
@@ -98,7 +99,7 @@ public class BundleCreatedNotification implements PartiesNotification {
 
         final String respondentEmail = StringUtils.hasText(cicCase.getRespondentEmail())
             ? cicCase.getRespondentEmail()
-            : DEFAULT_RESPONDENT_EMAIL;
+            : defaultRespondentEmail;
 
         final NotificationResponse notificationResponse = sendEmailNotification(
             templateVarsRespondent,

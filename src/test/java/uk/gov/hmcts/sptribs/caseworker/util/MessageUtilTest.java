@@ -19,7 +19,6 @@ import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessage;
-import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessageBundleCreation;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASEWORKER_USER_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_NAME;
 
@@ -107,7 +106,7 @@ public class MessageUtilTest {
     }
 
     @Test
-    void shouldSuccessfullyGenerateBundleCreationMessage() {
+    void shouldGenerateMessageInRecipientOrder() {
         Set<NotificationParties> parties = Set.of(
             NotificationParties.SUBJECT,
             NotificationParties.RESPONDENT,
@@ -115,7 +114,7 @@ public class MessageUtilTest {
             NotificationParties.APPLICANT
         );
 
-        String result = generateSimpleMessageBundleCreation(parties);
+        String result = generateSimpleMessage(parties);
 
         assertThat(result)
             .isEqualTo("A notification has been sent to: Subject, Respondent, Representative, Applicant");

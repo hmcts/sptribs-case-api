@@ -125,23 +125,4 @@ public final class MessageUtil {
             return FAILED_SAVING_DOCUMENT_WITH_NO_FILENAME_TO_DATABASE;
         }
     }
-
-    public static String generateSimpleMessageBundleCreation(final Set<NotificationParties> notificationParties) {
-        final StringBuilder message = new StringBuilder(100);
-        message.append("A notification has been sent to: ");
-
-        if (notificationParties.contains(NotificationParties.SUBJECT)) {
-            message.append(SUBJECT + COMMA_SPACE);
-        }
-        if (notificationParties.contains(NotificationParties.RESPONDENT)) {
-            message.append(RESPONDENT + COMMA_SPACE);
-        }
-        if (notificationParties.contains(NotificationParties.REPRESENTATIVE)) {
-            message.append(REPRESENTATIVE + COMMA_SPACE);
-        }
-        if (notificationParties.contains(NotificationParties.APPLICANT)) {
-            message.append(APPLICANT + COMMA_SPACE);
-        }
-        return message.substring(0, message.length() - 2);
-    }
 }

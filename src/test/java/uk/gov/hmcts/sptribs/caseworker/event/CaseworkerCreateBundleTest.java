@@ -1249,15 +1249,8 @@ class CaseworkerCreateBundleTest {
             .respondentEmail("  ")
             .build();
         caseData.setCicCase(cicCase);
-        caseData.setHyphenatedCaseRef("1234-5678-3456");
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        updatedCaseDetails.setState(state);
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-
-        SubmittedCallbackResponse response =
-            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+        SubmittedCallbackResponse response = submitBundle(caseData, state);
 
         verify(bundleCreatedNotification).sendToRespondent(caseData, "1234-5678-3456");
         assertThat(response.getConfirmationHeader())
@@ -1271,15 +1264,8 @@ class CaseworkerCreateBundleTest {
             .respondentEmail(null)
             .build();
         caseData.setCicCase(cicCase);
-        caseData.setHyphenatedCaseRef("1234-5678-3456");
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        updatedCaseDetails.setState(State.CaseManagement);
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-
-        SubmittedCallbackResponse response =
-            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+        SubmittedCallbackResponse response = submitBundle(caseData);
 
         verify(bundleCreatedNotification).sendToRespondent(caseData, "1234-5678-3456");
         assertThat(response.getConfirmationHeader())
@@ -1295,15 +1281,8 @@ class CaseworkerCreateBundleTest {
             .email("subject@email.com")
             .build();
         caseData.setCicCase(cicCase);
-        caseData.setHyphenatedCaseRef("1234-5678-3456");
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        updatedCaseDetails.setState(State.CaseManagement);
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-
-        SubmittedCallbackResponse response =
-            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+        SubmittedCallbackResponse response = submitBundle(caseData);
 
         verify(bundleCreatedNotification).sendToSubject(caseData, "1234-5678-3456");
         verify(bundleCreatedNotification).sendToRespondent(caseData, "1234-5678-3456");
@@ -1320,15 +1299,8 @@ class CaseworkerCreateBundleTest {
             .email("subject@email.com")
             .build();
         caseData.setCicCase(cicCase);
-        caseData.setHyphenatedCaseRef("1234-5678-3456");
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        updatedCaseDetails.setState(State.CaseManagement);
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-
-        SubmittedCallbackResponse response =
-            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+        SubmittedCallbackResponse response = submitBundle(caseData);
 
         verify(bundleCreatedNotification, never()).sendToSubject(any(CaseData.class), any());
         verify(bundleCreatedNotification).sendToRespondent(caseData, "1234-5678-3456");
@@ -1345,15 +1317,8 @@ class CaseworkerCreateBundleTest {
             .email("subject@email.com")
             .build();
         caseData.setCicCase(cicCase);
-        caseData.setHyphenatedCaseRef("1234-5678-3456");
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        updatedCaseDetails.setState(State.CaseManagement);
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-
-        SubmittedCallbackResponse response =
-            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+        SubmittedCallbackResponse response = submitBundle(caseData);
 
         verify(bundleCreatedNotification, never()).sendToSubject(any(CaseData.class), any());
         verify(bundleCreatedNotification).sendToRespondent(caseData, "1234-5678-3456");
@@ -1370,15 +1335,8 @@ class CaseworkerCreateBundleTest {
             .email("subject@email.com")
             .build();
         caseData.setCicCase(cicCase);
-        caseData.setHyphenatedCaseRef("1234-5678-3456");
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        updatedCaseDetails.setState(State.CaseManagement);
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-
-        SubmittedCallbackResponse response =
-            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+        SubmittedCallbackResponse response = submitBundle(caseData);
 
         verify(bundleCreatedNotification, never()).sendToSubject(any(CaseData.class), any());
         verify(bundleCreatedNotification).sendToRespondent(caseData, "1234-5678-3456");
@@ -1396,15 +1354,8 @@ class CaseworkerCreateBundleTest {
             .applicantEmailAddress("app@email.com")
             .build();
         caseData.setCicCase(cicCase);
-        caseData.setHyphenatedCaseRef("1234-5678-3456");
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        updatedCaseDetails.setState(State.CaseManagement);
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-
-        SubmittedCallbackResponse response =
-            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+        SubmittedCallbackResponse response = submitBundle(caseData);
 
         verify(bundleCreatedNotification).sendToRespondent(caseData, "1234-5678-3456");
         verify(bundleCreatedNotification).sendToRepresentative(caseData, "1234-5678-3456");
@@ -1421,15 +1372,8 @@ class CaseworkerCreateBundleTest {
             .applicantEmailAddress("app@email.com")
             .build();
         caseData.setCicCase(cicCase);
-        caseData.setHyphenatedCaseRef("1234-5678-3456");
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        updatedCaseDetails.setState(State.CaseManagement);
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-
-        SubmittedCallbackResponse response =
-            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+        SubmittedCallbackResponse response = submitBundle(caseData);
 
         verify(bundleCreatedNotification, never()).sendToApplicant(any(), any());
         verify(bundleCreatedNotification).sendToRespondent(caseData, "1234-5678-3456");
@@ -1449,15 +1393,8 @@ class CaseworkerCreateBundleTest {
             .applicantEmailAddress("")
             .build();
         caseData.setCicCase(cicCase);
-        caseData.setHyphenatedCaseRef("1234-5678-3456");
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        updatedCaseDetails.setState(State.CaseManagement);
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-
-        SubmittedCallbackResponse response =
-            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+        SubmittedCallbackResponse response = submitBundle(caseData);
 
         verify(bundleCreatedNotification, never()).sendToSubject(any(CaseData.class), any());
         verify(bundleCreatedNotification, never()).sendToRepresentative(any(CaseData.class), any());
@@ -1476,15 +1413,8 @@ class CaseworkerCreateBundleTest {
             .email("subject@email.com")
             .build();
         caseData.setCicCase(cicCase);
-        caseData.setHyphenatedCaseRef("1234-5678-3456");
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        updatedCaseDetails.setState(State.CaseManagement);
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-
-        SubmittedCallbackResponse response =
-            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+        SubmittedCallbackResponse response = submitBundle(caseData);
 
         verify(bundleCreatedNotification).sendToSubject(caseData, "1234-5678-3456");
         assertThat(response.getConfirmationHeader())
@@ -1501,17 +1431,10 @@ class CaseworkerCreateBundleTest {
             .representativeEmailAddress("rep@email.com")
             .build();
         caseData.setCicCase(cicCase);
-        caseData.setHyphenatedCaseRef("1234-5678-3456");
-
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        updatedCaseDetails.setState(State.CaseManagement);
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
 
         doThrow(new RuntimeException("Subject Send Failed")).when(bundleCreatedNotification).sendToSubject(any(CaseData.class), any());
 
-        SubmittedCallbackResponse response =
-            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+        SubmittedCallbackResponse response = submitBundle(caseData);
 
         verify(bundleCreatedNotification).sendToSubject(caseData, "1234-5678-3456");
         verify(bundleCreatedNotification).sendToRespondent(caseData, "1234-5678-3456");
@@ -1533,15 +1456,8 @@ class CaseworkerCreateBundleTest {
             .appNotificationResponse(NotificationResponse.builder().build())
             .build();
         caseData.setCicCase(cicCase);
-        caseData.setHyphenatedCaseRef("1234-5678-3456");
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        updatedCaseDetails.setState(State.CaseManagement);
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-
-        SubmittedCallbackResponse response =
-            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+        SubmittedCallbackResponse response = submitBundle(caseData);
 
         verify(bundleCreatedNotification, never()).sendToSubject(any(CaseData.class), any());
         verify(bundleCreatedNotification, never()).sendToRepresentative(any(CaseData.class), any());
@@ -1550,5 +1466,20 @@ class CaseworkerCreateBundleTest {
 
         assertThat(response.getConfirmationHeader())
             .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent");
+    }
+
+    private SubmittedCallbackResponse submitBundle(CaseData caseData) {
+        return submitBundle(caseData, State.CaseManagement);
+    }
+
+    private SubmittedCallbackResponse submitBundle(CaseData caseData, State state) {
+        caseData.setHyphenatedCaseRef("1234-5678-3456");
+
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setState(state);
+        details.setData(caseData);
+        details.setId(TEST_CASE_ID);
+
+        return caseworkerCreateBundle.submitted(details, CaseDetails.<CaseData, State>builder().build());
     }
 }
