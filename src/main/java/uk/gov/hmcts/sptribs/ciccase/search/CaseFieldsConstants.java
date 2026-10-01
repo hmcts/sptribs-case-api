@@ -10,6 +10,7 @@ public final class CaseFieldsConstants {
 
     public static final String HEARING_DATE = "firstHearingDate";
     public static final String HEARING_LOCATION = "hearingVenueName";
+    public static final String HEARING_TYPE = "hearingType";
     public static final String HEARING_FORMAT = "hearingFormat";
     public static final String SHORT_NOTICE = "shortNotice";
     public static final String CASE_CATEGORY = "cicCaseCaseCategory";
