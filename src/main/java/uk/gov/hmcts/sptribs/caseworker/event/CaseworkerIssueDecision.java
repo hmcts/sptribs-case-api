@@ -3,7 +3,6 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
@@ -24,19 +23,25 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentSaveException;
+import uk.gov.hmcts.sptribs.common.service.ContactPartiesService;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.DecisionIssuedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_DECISION;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getSelectedNotificationParties;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -66,6 +71,7 @@ public class CaseworkerIssueDecision implements CCDConfig<CaseData, State, UserR
     private final DecisionIssuedNotification decisionIssuedNotification;
     private final Clock clock;
     private final DocumentsService documentsService;
+    private final ContactPartiesService contactPartiesService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -132,7 +138,14 @@ public class CaseworkerIssueDecision implements CCDConfig<CaseData, State, UserR
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
         try {
-            sendIssueDecisionNotification(details.getData().getHyphenatedCaseRef(), details.getData());
+            NotificationContext notificationContext =
+                sendIssueDecisionNotification(details.getData().getHyphenatedCaseRef(), details.getData());
+            if (!notificationContext.getErrors().isEmpty()) {
+                log.error("Issue a decision notification failed for recipients: {}", notificationContext.getErrors());
+                return SubmittedCallbackResponse.builder()
+                    .confirmationHeader(format("# Issue a decision notification failed %n## Please resend the notification"))
+                    .build();
+            }
         } catch (Exception notificationException) {
             log.error("Issue a decision notification failed with exception : {}", notificationException.getMessage());
             return SubmittedCallbackResponse.builder()
@@ -146,21 +159,21 @@ public class CaseworkerIssueDecision implements CCDConfig<CaseData, State, UserR
             .build();
     }
 
-    private void sendIssueDecisionNotification(String caseNumber, CaseData data) {
-
-        if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartySubject())) {
-            decisionIssuedNotification.sendToSubject(data, caseNumber);
-        }
-        if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRespondent())) {
-            decisionIssuedNotification.sendToRespondent(data, caseNumber);
-        }
-        if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRepresentative())) {
-            decisionIssuedNotification.sendToRepresentative(data, caseNumber);
-        }
-        if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyApplicant())) {
-            decisionIssuedNotification.sendToApplicant(data, caseNumber);
-        }
+    private NotificationContext sendIssueDecisionNotification(String caseNumber, CaseData data) {
+        final Map<String, String> uploadedDocuments = Optional
+            .ofNullable(decisionIssuedNotification.getUploadedDocuments(data))
+            .orElseGet(Map::of);
+        NotificationContext notificationContext = NotificationContext.builder()
+            .caseData(data)
+            .caseReference(caseNumber)
+            .uploadedDocuments(uploadedDocuments)
+            .correspondenceParties(getSelectedNotificationParties(data.getCicCase()))
+            .notification(decisionIssuedNotification)
+            .build();
+        new NotificationDispatcher(contactPartiesService).sendToCorrespondenceParties(notificationContext);
+        return notificationContext;
     }
+
 
     private void saveDecisionDocumentToDB(Document decisionDocument, Long caseId, List<String> errors) {
         try {

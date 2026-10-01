@@ -3,7 +3,6 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -27,12 +26,15 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentSaveException;
+import uk.gov.hmcts.sptribs.common.service.ContactPartiesService;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseFinalDecisionIssuedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -42,9 +44,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_FINAL_DECISION;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getSelectedNotificationParties;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
@@ -90,6 +94,8 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
     private final Clock clock;
 
     private final DocumentsService documentsService;
+
+    private final ContactPartiesService contactPartiesService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -161,23 +167,22 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
         Document finalDecisionGuidance = getFinalDecisionGuidanceDocument(details.getId());
         data.getCaseIssueFinalDecision().setFinalDecisionGuidance(finalDecisionGuidance);
         try {
-            final StringBuilder messageLine2 = new StringBuilder(100);
-            messageLine2.append(" A notification will be sent  to: ");
-            if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
-                messageLine2.append("Subject, ");
-                caseFinalDecisionIssuedNotification.sendToSubject(details.getData(), caseNumber);
-            }
-            if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
-                messageLine2.append("Representative, ");
-                caseFinalDecisionIssuedNotification.sendToRepresentative(details.getData(), caseNumber);
-            }
-            if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
-                messageLine2.append("Respondent, ");
-                caseFinalDecisionIssuedNotification.sendToRespondent(details.getData(), caseNumber);
-            }
-            if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyApplicant())) {
-                messageLine2.append("Applicant ");
-                caseFinalDecisionIssuedNotification.sendToApplicant(details.getData(), caseNumber);
+            Map<String, String> uploadedDocuments = Optional
+                .ofNullable(caseFinalDecisionIssuedNotification.getUploadedDocuments(data))
+                .orElseGet(Map::of);
+            NotificationContext notificationContext = NotificationContext.builder()
+                .caseData(data)
+                .caseReference(caseNumber)
+                .uploadedDocuments(uploadedDocuments)
+                .correspondenceParties(getSelectedNotificationParties(cicCase))
+                .notification(caseFinalDecisionIssuedNotification)
+                .build();
+            new NotificationDispatcher(contactPartiesService).sendToCorrespondenceParties(notificationContext);
+            if (!notificationContext.getErrors().isEmpty()) {
+                log.error("Issue final decision notification failed for recipients: {}", notificationContext.getErrors());
+                return SubmittedCallbackResponse.builder()
+                    .confirmationHeader(format("# Issue final decision notification failed %n## Please resend the notification"))
+                    .build();
             }
         } catch (Exception notificationException) {
             log.error("Issue final decision notification failed with exception : {}", notificationException.getMessage());
@@ -218,4 +223,6 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
             errors.add(handleDocumentException(finalDecisionDocument, e.getMessage()));
         }
     }
+
+
 }
