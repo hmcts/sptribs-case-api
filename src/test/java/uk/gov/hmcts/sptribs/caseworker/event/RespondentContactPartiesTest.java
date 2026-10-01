@@ -111,10 +111,13 @@ class RespondentContactPartiesTest {
         assertThat(event.getFields().getFields().stream()
             .map(field -> field.build())
             .filter(field -> "contactPartiesReview".equals(field.getPage())))
-            .allSatisfy(field -> {
-                assertThat(field.getContext()).isEqualTo(DisplayContext.ReadOnly);
-                assertThat(field.getShowCondition()).isNull();
-            });
+            .allSatisfy(field -> assertThat(field.getContext()).isEqualTo(DisplayContext.ReadOnly));
+        assertThat(event.getFields().getFields().stream()
+            .map(field -> field.build())
+            .filter(field -> field.getId().matches("contactPartiesDocumentsD\\d{2}")))
+            .allSatisfy(field -> assertThat(field.getShowCondition())
+                .isEqualTo("contactPartiesDocumentsActCONTAINS \""
+                    + field.getId().substring("contactPartiesDocuments".length()) + "\""));
         assertThat(event.getFields().getFields().stream()
             .map(field -> field.build())
             .filter(field -> "contactPartiesDocumentsD01".equals(field.getId())))
@@ -122,7 +125,7 @@ class RespondentContactPartiesTest {
             .satisfies(field -> {
                 assertThat(field.getContext()).isEqualTo(DisplayContext.ReadOnly);
                 assertThat(field.getPage()).isEqualTo("contactPartiesReview");
-                assertThat(field.getShowCondition()).isNull();
+                assertThat(field.getShowCondition()).isEqualTo("contactPartiesDocumentsActCONTAINS \"D01\"");
                 assertThat(field.getDisplayContextParameter()).isNull();
             });
     }

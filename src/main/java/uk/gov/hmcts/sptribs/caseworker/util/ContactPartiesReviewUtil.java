@@ -5,12 +5,15 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
+import uk.gov.hmcts.sptribs.caseworker.model.Slot;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.getSelectedContactPartiesDocuments;
@@ -44,6 +47,12 @@ public final class ContactPartiesReviewUtil {
     public static void setReviewDocuments(CaseData data) {
         List<ListValue<CaseworkerCICDocument>> documents = getSelectedContactPartiesDocuments(data);
         ContactPartiesDocuments reviewDocuments = data.getContactPartiesDocuments();
+        Set<Slot> populatedSlots = EnumSet.noneOf(Slot.class);
+        Slot[] slots = Slot.values();
+        for (int index = 0; index < Math.min(documents.size(), slots.length); index++) {
+            populatedSlots.add(slots[index]);
+        }
+        reviewDocuments.setAct(populatedSlots);
         reviewDocuments.setD01(documentAt(documents, 0));
         reviewDocuments.setD02(documentAt(documents, 1));
         reviewDocuments.setD03(documentAt(documents, 2));
@@ -57,6 +66,7 @@ public final class ContactPartiesReviewUtil {
     }
 
     public static void clearReviewDocuments(ContactPartiesDocuments documents) {
+        documents.setAct(null);
         documents.setD01(null);
         documents.setD02(null);
         documents.setD03(null);

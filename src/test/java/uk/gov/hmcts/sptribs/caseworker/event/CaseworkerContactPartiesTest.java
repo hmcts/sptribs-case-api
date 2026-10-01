@@ -114,6 +114,8 @@ class CaseworkerContactPartiesTest {
     @Test
     void shouldShowOnlyDocumentsPartiesAndMessageOnReviewPage() {
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        ReflectionTestUtils.setField(caseWorkerContactParties, "contactPartiesSelectDocument",
+            new ContactPartiesSelectDocument(null, null, null));
 
         caseWorkerContactParties.configure(configBuilder);
 
@@ -132,9 +134,20 @@ class CaseworkerContactPartiesTest {
         assertThat(event.getFields().getFields().stream()
             .map(field -> field.build())
             .filter(field -> "contactPartiesReview".equals(field.getPage())))
-            .allSatisfy(field -> {
-                assertThat(field.getContext()).isEqualTo(DisplayContext.ReadOnly);
-                assertThat(field.getShowCondition()).isNull();
+            .allSatisfy(field -> assertThat(field.getContext()).isEqualTo(DisplayContext.ReadOnly));
+        assertThat(event.getFields().getFields().stream()
+            .map(field -> field.build())
+            .filter(field -> field.getId().matches("contactPartiesDocumentsD\\d{2}")))
+            .allSatisfy(field -> assertThat(field.getShowCondition())
+                .isEqualTo("contactPartiesDocumentsActCONTAINS \""
+                    + field.getId().substring("contactPartiesDocuments".length()) + "\""));
+        assertThat(event.getFields().getFields().stream()
+            .map(field -> field.build())
+            .filter(field -> "contactPartiesDocumentsAct".equals(field.getId())))
+            .singleElement()
+            .satisfies(field -> {
+                assertThat(field.getPage()).isEqualTo("contactPartiesSelectDocument");
+                assertThat(field.getShowCondition()).isEqualTo("[STATE]=\"ALWAYS_HIDE\"");
             });
         assertThat(event.getFields().getFields().stream()
             .map(field -> field.build())
@@ -143,7 +156,7 @@ class CaseworkerContactPartiesTest {
             .satisfies(field -> {
                 assertThat(field.getContext()).isEqualTo(DisplayContext.ReadOnly);
                 assertThat(field.getPage()).isEqualTo("contactPartiesReview");
-                assertThat(field.getShowCondition()).isNull();
+                assertThat(field.getShowCondition()).isEqualTo("contactPartiesDocumentsActCONTAINS \"D01\"");
                 assertThat(field.getDisplayContextParameter()).isNull();
             });
     }

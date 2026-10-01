@@ -6,6 +6,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
+import uk.gov.hmcts.sptribs.caseworker.model.Slot;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
@@ -41,13 +42,18 @@ class ContactPartiesReviewUtilTest {
 
         ContactPartiesReviewUtil.setReviewDocuments(data);
 
+        assertThat(data.getContactPartiesDocuments().getAct()).containsExactlyInAnyOrder(Slot.values());
         assertThat(data.getContactPartiesDocuments().getD01().getFilename()).isEqualTo("document1.pdf");
         assertThat(data.getContactPartiesDocuments().getD10().getFilename()).isEqualTo("document10.pdf");
 
         data.getContactPartiesDocuments().getDocumentList().setValue(List.of());
         ContactPartiesReviewUtil.setReviewDocuments(data);
 
+        assertThat(data.getContactPartiesDocuments().getAct()).isEmpty();
         assertThat(data.getContactPartiesDocuments().getD01()).isNull();
         assertThat(data.getContactPartiesDocuments().getD10()).isNull();
+
+        ContactPartiesReviewUtil.clearReviewDocuments(data.getContactPartiesDocuments());
+        assertThat(data.getContactPartiesDocuments().getAct()).isNull();
     }
 }
