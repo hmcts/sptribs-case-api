@@ -43,8 +43,8 @@ class ContactPartiesReviewUtilTest {
         ContactPartiesReviewUtil.setReviewDocuments(data);
 
         assertThat(data.getContactPartiesDocuments().getAct()).containsExactlyInAnyOrder(Slot.values());
-        assertThat(data.getContactPartiesDocuments().getD01().getFilename()).isEqualTo("document1.pdf");
-        assertThat(data.getContactPartiesDocuments().getD10().getFilename()).isEqualTo("document10.pdf");
+        assertThat(data.getContactPartiesDocuments().getD01()).isEqualTo(documents.getFirst().getValue());
+        assertThat(data.getContactPartiesDocuments().getD10()).isEqualTo(documents.get(9).getValue());
 
         data.getContactPartiesDocuments().getDocumentList().setValue(List.of());
         ContactPartiesReviewUtil.setReviewDocuments(data);

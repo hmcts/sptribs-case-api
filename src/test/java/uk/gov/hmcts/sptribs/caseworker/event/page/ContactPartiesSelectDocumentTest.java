@@ -327,7 +327,8 @@ class ContactPartiesSelectDocumentTest {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         ContactPartiesDocuments contactPartiesDocuments = new ContactPartiesDocuments();
         contactPartiesDocuments.setDocumentList(DynamicMultiSelectList.builder().build());
-        contactPartiesDocuments.setD01(uk.gov.hmcts.ccd.sdk.type.Document.builder().filename("stale.pdf").build());
+        contactPartiesDocuments.setD01(CaseworkerCICDocument.builder()
+            .documentLink(uk.gov.hmcts.ccd.sdk.type.Document.builder().filename("stale.pdf").build()).build());
         final CaseData caseData = CaseData.builder()
             .cicCase(CicCase.builder().build())
             .contactPartiesDocuments(contactPartiesDocuments)
@@ -370,7 +371,7 @@ class ContactPartiesSelectDocumentTest {
 
         contactPartiesSelectDocument.midEvent(details, details);
 
-        assertThat(data.getContactPartiesDocuments().getD01()).isEqualTo(document);
+        assertThat(data.getContactPartiesDocuments().getD01()).isEqualTo(selectedDocument);
     }
 
     @Test

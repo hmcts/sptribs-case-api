@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.util;
 
 import org.apache.commons.lang3.StringUtils;
-import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
@@ -79,8 +78,8 @@ public final class ContactPartiesReviewUtil {
         documents.setD10(null);
     }
 
-    private static Document documentAt(List<ListValue<CaseworkerCICDocument>> documents, int index) {
-        return documents == null || documents.size() <= index ? null : documents.get(index).getValue().getDocumentLink();
+    private static CaseworkerCICDocument documentAt(List<ListValue<CaseworkerCICDocument>> documents, int index) {
+        return documents == null || documents.size() <= index ? null : documents.get(index).getValue();
     }
 
     private static void addParty(List<String> parties, boolean isSelected, String role, String name) {

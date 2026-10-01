@@ -209,7 +209,7 @@ class RespondentContactPartiesTest {
         details.setData(caseData);
 
         assertThat(respondentPartiesToContact.midEvent(details, details).getErrors()).isEmpty();
-        assertThat(caseData.getContactPartiesDocuments().getD01()).isEqualTo(document);
+        assertThat(caseData.getContactPartiesDocuments().getD01()).isEqualTo(documentValue.getValue());
         assertThat(caseData.getContactPartiesDocuments().getD02()).isNull();
     }
 
@@ -389,7 +389,8 @@ class RespondentContactPartiesTest {
     @Test
     void shouldClearPreviewDocumentsBeforeSubmit() {
         final CaseData caseData = caseData();
-        caseData.getContactPartiesDocuments().setD01(Document.builder().filename("selected.pdf").build());
+        caseData.getContactPartiesDocuments().setD01(CaseworkerCICDocument.builder()
+            .documentLink(Document.builder().filename("selected.pdf").build()).build());
         caseData.getContactPartiesDocuments().setReviewSelectedParties("Tribunal");
         caseData.getContactPartiesDocuments().setReviewMessage("Review message");
         final CaseDetails<CaseData, State> details = new CaseDetails<>();

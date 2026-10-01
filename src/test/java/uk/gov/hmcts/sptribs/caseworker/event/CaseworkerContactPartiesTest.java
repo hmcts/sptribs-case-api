@@ -268,13 +268,13 @@ class CaseworkerContactPartiesTest {
         details.setData(caseData);
 
         assertThat(partiesToContact.midEvent(details, details).getErrors()).isEmpty();
-        assertThat(caseData.getContactPartiesDocuments().getD01()).isEqualTo(first);
-        assertThat(caseData.getContactPartiesDocuments().getD02()).isEqualTo(second);
+        assertThat(caseData.getContactPartiesDocuments().getD01()).isEqualTo(firstValue.getValue());
+        assertThat(caseData.getContactPartiesDocuments().getD02()).isEqualTo(secondValue.getValue());
         assertThat(caseData.getContactPartiesDocuments().getD03()).isNull();
 
         caseData.getContactPartiesDocuments().getDocumentList().setValue(List.of(secondSelection));
         assertThat(partiesToContact.midEvent(details, details).getErrors()).isEmpty();
-        assertThat(caseData.getContactPartiesDocuments().getD01()).isEqualTo(second);
+        assertThat(caseData.getContactPartiesDocuments().getD01()).isEqualTo(secondValue.getValue());
         assertThat(caseData.getContactPartiesDocuments().getD02()).isNull();
     }
 
@@ -535,7 +535,8 @@ class CaseworkerContactPartiesTest {
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
             .build();
-        caseData.getContactPartiesDocuments().setD10(Document.builder().filename("stale.pdf").build());
+        caseData.getContactPartiesDocuments().setD10(CaseworkerCICDocument.builder()
+            .documentLink(Document.builder().filename("stale.pdf").build()).build());
         updatedCaseDetails.setData(caseData);
 
         ReflectionTestUtils.setField(caseWorkerContactParties, "baseUrl", "http://mocked-url.com/");
@@ -570,7 +571,8 @@ class CaseworkerContactPartiesTest {
         contactPartiesDocuments.setReviewMessage("Review message");
 
         caseData.setContactPartiesDocuments(contactPartiesDocuments);
-        caseData.getContactPartiesDocuments().setD10(Document.builder().filename("selected.pdf").build());
+        caseData.getContactPartiesDocuments().setD10(CaseworkerCICDocument.builder()
+            .documentLink(Document.builder().filename("selected.pdf").build()).build());
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();

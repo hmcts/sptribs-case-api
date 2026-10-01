@@ -8,10 +8,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
-import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.util.Set;
 
@@ -32,34 +32,34 @@ public class ContactPartiesDocuments {
     private Set<Slot> act;
 
     @CCD(label = "Document 1", access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private Document d01;
+    private CaseworkerCICDocument d01;
 
     @CCD(label = "Document 2", access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private Document d02;
+    private CaseworkerCICDocument d02;
 
     @CCD(label = "Document 3", access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private Document d03;
+    private CaseworkerCICDocument d03;
 
     @CCD(label = "Document 4", access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private Document d04;
+    private CaseworkerCICDocument d04;
 
     @CCD(label = "Document 5", access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private Document d05;
+    private CaseworkerCICDocument d05;
 
     @CCD(label = "Document 6", access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private Document d06;
+    private CaseworkerCICDocument d06;
 
     @CCD(label = "Document 7", access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private Document d07;
+    private CaseworkerCICDocument d07;
 
     @CCD(label = "Document 8", access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private Document d08;
+    private CaseworkerCICDocument d08;
 
     @CCD(label = "Document 9", access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private Document d09;
+    private CaseworkerCICDocument d09;
 
     @CCD(label = "Document 10", access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private Document d10;
+    private CaseworkerCICDocument d10;
 
     @CCD(label = "Selected parties", typeOverride = TextArea,
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
