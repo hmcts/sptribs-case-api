@@ -25,6 +25,7 @@ import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -43,7 +44,12 @@ public class DocumentsService {
     public void buildAndSaveNewDocumentEntity(Document document, Long caseReferenceNumber,
                                               DocumentType documentType, CaseDocumentType caseDocumentType) {
         try {
+            String documentId =
+                StringUtils.substringAfterLast(document.getBinaryUrl().replace("/binary", ""), "/");
 
+            if (documentsRepository.findByDocumentIdUuid(documentId).isPresent()) {
+                log.info("Document with ID {} already exists in the database.", documentId);
+            }
             documentsRepository.save(DocumentEntity.builder()
                 .caseReferenceNumber(caseReferenceNumber)
                 .documentUrl(document.getUrl())
@@ -52,7 +58,6 @@ public class DocumentsService {
                 .documentTypeName(documentType != null ? documentType.name() : null)
                 .caseDocumentTypeId(caseDocumentTypesCache.getId(caseDocumentType))
                 .build());
-
         } catch (DataAccessException e) {
             throw new DocumentSaveException("Error saving document entity to database", e);
         }
@@ -119,9 +124,11 @@ public class DocumentsService {
 
         try {
             Long orderDocumentTypeId = caseDocumentTypesCache.getId(CaseDocumentType.ORDER);
-            documentsRepository.updateCaseDocumentTypeIdByDocumentBinaryUrl(documentBinaryUrl, orderDocumentTypeId);
-            log.info("Draft order updated to non draft case document type successfully for url: {}", documentBinaryUrl);
-
+            if (documentsRepository.updateCaseDocumentTypeIdByDocumentBinaryUrl(documentBinaryUrl, orderDocumentTypeId) == 0) {
+                throw new DataAccessException("No document found with binary URL: " + documentBinaryUrl) {};
+            } else {
+                log.info("Draft order updated document to non draft case document type successfully for url: {}", documentBinaryUrl);
+            }
         } catch (DataAccessException e) {
             throw new DocumentUpdateException("Error updating case document type from draft order to order", e);
         }
@@ -162,6 +169,35 @@ public class DocumentsService {
             .latestCaseBundleDocument(latestBundle.orElse(null))
             .orderAndDecisionDocuments(orderDecisionDocuments)
             .build();
+    }
+
+    public List<DocumentEntity> getAudioVideoDocuments(Long caseReferenceNumber) {
+        if (caseReferenceNumber == null) {
+            return List.of();
+        }
+
+        try {
+            return documentsRepository.findByCaseReferenceNumberOrderBySavedAtAsc(caseReferenceNumber)
+                .stream()
+                .filter(this::isAudioVideo)
+                .toList();
+        } catch (DataAccessException e) {
+            throw new DocumentLookupException("Error getting audio video documents by case reference", e);
+        }
+    }
+
+    private boolean isAudioVideo(DocumentEntity document) {
+        if (document == null
+            || StringUtils.isBlank(document.getDocumentFilename())
+            || StringUtils.isBlank(document.getDocumentBinaryUrl())) {
+            return false;
+        }
+
+        String extension = StringUtils.substringAfterLast(
+            document.getDocumentFilename(),
+            "."
+        ).toLowerCase(Locale.ROOT);
+        return "mp3".equals(extension) || "mp4".equals(extension);
     }
 
     @Transactional
