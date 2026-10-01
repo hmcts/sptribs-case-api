@@ -5,9 +5,9 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
@@ -17,7 +17,9 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
@@ -38,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -55,6 +58,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMes
 import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.APPLICANT;
 import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.REPRESENTATIVE;
 import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.RESPONDENT;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.SUBJECT;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -84,10 +88,6 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
     @Autowired
     private final BundleCreatedNotification bundleCreatedNotification;
 
-
-    @Value("${feature.citizen-dashboard.enabled}")
-    private boolean citizenDashboardEnabled;
-
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
@@ -98,15 +98,12 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
                 .description("Bundle: Create a bundle")
                 .showSummary()
                 .aboutToSubmitCallback(this::aboutToSubmit)
+                .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_WA_CONFIG_USER)
                 .grantHistoryOnly(ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE)
                 .publishToCamunda();
-
-        if (citizenDashboardEnabled) {
-            eventBuilder.submittedCallback(this::submitted);
-        }
 
         new PageBuilder(eventBuilder)
             .page("createBundle")
@@ -189,36 +186,48 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         final CicCase cicCase = data.getCicCase();
         final String caseNumber = data.getHyphenatedCaseRef();
         final List<String> errors = new ArrayList<>();
+        final Set<NotificationParties> sentParties = new LinkedHashSet<>();
 
-        if (cicCase.getRespondentEmail() != null) {
+        if (!CollectionUtils.isEmpty(cicCase.getSubjectCIC())
+            && cicCase.getCaseSubcategory() != CaseSubcategory.FATAL
+            && cicCase.getCaseSubcategory() != CaseSubcategory.MINOR
+            && StringUtils.hasText(cicCase.getEmail())) {
             try {
-                bundleCreatedNotification.sendToRespondent(data, caseNumber);
+                bundleCreatedNotification.sendToSubject(data, caseNumber);
+                sentParties.add(SUBJECT);
             } catch (Exception notificationException) {
-                errors.add(RESPONDENT.getLabel());
+                errors.add(SUBJECT.getLabel());
             }
         }
-        if (!CollectionUtils.isEmpty(cicCase.getRepresentativeCIC())) {
+
+        try {
+            bundleCreatedNotification.sendToRespondent(data, caseNumber);
+            sentParties.add(RESPONDENT);
+        } catch (Exception notificationException) {
+            errors.add(RESPONDENT.getLabel());
+        }
+
+        if (!CollectionUtils.isEmpty(cicCase.getRepresentativeCIC())
+            && StringUtils.hasText(cicCase.getRepresentativeEmailAddress())) {
             try {
                 bundleCreatedNotification.sendToRepresentative(data, caseNumber);
+                sentParties.add(REPRESENTATIVE);
             } catch (Exception notificationException) {
                 errors.add(REPRESENTATIVE.getLabel());
             }
         }
-        if (CollectionUtils.isEmpty(cicCase.getRepresentativeCIC())
-            && !CollectionUtils.isEmpty(cicCase.getApplicantCIC())) {
+
+        if (!CollectionUtils.isEmpty(cicCase.getApplicantCIC())
+            && StringUtils.hasText(cicCase.getApplicantEmailAddress())) {
             try {
                 bundleCreatedNotification.sendToApplicant(data, caseNumber);
+                sentParties.add(APPLICANT);
             } catch (Exception notificationException) {
                 errors.add(APPLICANT.getLabel());
             }
         }
 
-        if (isEmpty(errors)) {
-            return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Bundle created. %n## %s",
-                    generateSimpleMessageBundleCreation(details.getData().getCicCase())))
-                .build();
-        } else {
+        if (!isEmpty(errors)) {
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(
                     format("# Bundle creation notification failed %n## %s %n## Please resend the notification.",
@@ -226,6 +235,17 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
                 )
                 .build();
         }
+
+        if (isEmpty(sentParties)) {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader("# Bundle created.")
+                .build();
+        }
+
+        return SubmittedCallbackResponse.builder()
+            .confirmationHeader(format("# Bundle created. %n## %s",
+                generateSimpleMessageBundleCreation(sentParties)))
+            .build();
     }
 
     private void setCaseBundleRequestDocuments(CaseData caseData, List<CaseworkerCICDocument> allDocuments) {

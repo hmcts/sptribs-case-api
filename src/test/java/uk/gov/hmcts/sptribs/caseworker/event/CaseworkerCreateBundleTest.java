@@ -3,10 +3,11 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
@@ -20,10 +21,13 @@ import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.document.bundling.AudioVideoEvidenceBundleException;
@@ -121,22 +125,7 @@ class CaseworkerCreateBundleTest {
     }
 
     @Test
-    void shouldNotAddSubmittedIfCitizenDashboardIsDisabled() {
-        ReflectionTestUtils.setField(caseworkerCreateBundle, "citizenDashboardEnabled", false);
-
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
-
-        caseworkerCreateBundle.configure(configBuilder);
-
-        assertThat(getEventsFrom(configBuilder).values())
-            .extracting(Event::getSubmittedCallback)
-            .containsOnlyNulls();
-    }
-
-    @Test
-    void shouldAddSubmittedIfCitizenDashboardIsEnabled() {
-        ReflectionTestUtils.setField(caseworkerCreateBundle, "citizenDashboardEnabled", true);
-
+    void shouldAddSubmittedCallbackUnconditionally() {
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         caseworkerCreateBundle.configure(configBuilder);
@@ -344,6 +333,7 @@ class CaseworkerCreateBundleTest {
         caseData.setCicCase(cicCase);
         caseData.setHyphenatedCaseRef("1234-5678-3456");
         cicCase.setRepresentativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE));
+        cicCase.setRepresentativeEmailAddress("rep@email.com");
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
@@ -364,7 +354,7 @@ class CaseworkerCreateBundleTest {
             caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
 
         assertThat(createBundleSubmittedResponse.getConfirmationHeader())
-            .isEqualTo("# Bundle created. \n## A notification has been sent to: Representative, Respondent");
+            .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent, Representative");
     }
 
     @Test
@@ -377,6 +367,7 @@ class CaseworkerCreateBundleTest {
         caseData.setCicCase(cicCase);
         caseData.setHyphenatedCaseRef("1234-5678-3456");
         cicCase.setApplicantCIC(Set.of(ApplicantCIC.APPLICANT_CIC));
+        cicCase.setApplicantEmailAddress("app@email.com");
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
@@ -409,6 +400,7 @@ class CaseworkerCreateBundleTest {
         cicCase.setApplicantDocumentsUploaded(cicDocuments);
         caseData.setCicCase(cicCase);
         cicCase.setRepresentativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE));
+        cicCase.setRepresentativeEmailAddress("rep@email.com");
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
@@ -1224,7 +1216,12 @@ class CaseworkerCreateBundleTest {
     void shouldNotNotifyIfCaseClosed() {
         final CaseData caseData = caseData();
         final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList();
-        final CicCase cicCase = CicCase.builder().build();
+        final CicCase cicCase = CicCase.builder()
+            .subjectNotifyList(NotificationResponse.builder().build())
+            .repNotificationResponse(NotificationResponse.builder().build())
+            .appNotificationResponse(NotificationResponse.builder().build())
+            .resNotificationResponse(NotificationResponse.builder().build())
+            .build();
         cicCase.setApplicantDocumentsUploaded(cicDocuments);
         caseData.setCicCase(cicCase);
         caseData.setHyphenatedCaseRef("1234-5678-3456");
@@ -1242,5 +1239,316 @@ class CaseworkerCreateBundleTest {
         assertThat(createBundleSubmittedResponse.getConfirmationHeader())
             .isEqualTo("# Bundle created.");
         verifyNoInteractions(bundleCreatedNotification);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = {"CaseManagement", "AwaitingHearing", "ReadyToList"})
+    void shouldNotifyRespondentInEligibleNonClosedStatesEvenWhenStoredRespondentEmailIsBlank(State state) {
+        final CaseData caseData = caseData();
+        final CicCase cicCase = CicCase.builder()
+            .respondentEmail("  ")
+            .build();
+        caseData.setCicCase(cicCase);
+        caseData.setHyphenatedCaseRef("1234-5678-3456");
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setState(state);
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+
+        SubmittedCallbackResponse response =
+            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+
+        verify(bundleCreatedNotification).sendToRespondent(caseData, "1234-5678-3456");
+        assertThat(response.getConfirmationHeader())
+            .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent");
+    }
+
+    @Test
+    void shouldNotifyRespondentWhenStoredRespondentEmailIsNull() {
+        final CaseData caseData = caseData();
+        final CicCase cicCase = CicCase.builder()
+            .respondentEmail(null)
+            .build();
+        caseData.setCicCase(cicCase);
+        caseData.setHyphenatedCaseRef("1234-5678-3456");
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setState(State.CaseManagement);
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+
+        SubmittedCallbackResponse response =
+            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+
+        verify(bundleCreatedNotification).sendToRespondent(caseData, "1234-5678-3456");
+        assertThat(response.getConfirmationHeader())
+            .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent");
+    }
+
+    @Test
+    void shouldNotifySubjectWhenSelectedAndCaseSubcategoryIsNotFatalOrMinor() {
+        final CaseData caseData = caseData();
+        final CicCase cicCase = CicCase.builder()
+            .subjectCIC(Set.of(SubjectCIC.SUBJECT))
+            .caseSubcategory(CaseSubcategory.OTHER)
+            .email("subject@email.com")
+            .build();
+        caseData.setCicCase(cicCase);
+        caseData.setHyphenatedCaseRef("1234-5678-3456");
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setState(State.CaseManagement);
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+
+        SubmittedCallbackResponse response =
+            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+
+        verify(bundleCreatedNotification).sendToSubject(caseData, "1234-5678-3456");
+        verify(bundleCreatedNotification).sendToRespondent(caseData, "1234-5678-3456");
+        assertThat(response.getConfirmationHeader())
+            .isEqualTo("# Bundle created. \n## A notification has been sent to: Subject, Respondent");
+    }
+
+    @Test
+    void shouldSuppressSubjectNotificationWhenCaseSubcategoryIsFatal() {
+        final CaseData caseData = caseData();
+        final CicCase cicCase = CicCase.builder()
+            .subjectCIC(Set.of(SubjectCIC.SUBJECT))
+            .caseSubcategory(CaseSubcategory.FATAL)
+            .email("subject@email.com")
+            .build();
+        caseData.setCicCase(cicCase);
+        caseData.setHyphenatedCaseRef("1234-5678-3456");
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setState(State.CaseManagement);
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+
+        SubmittedCallbackResponse response =
+            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+
+        verify(bundleCreatedNotification, never()).sendToSubject(any(CaseData.class), any());
+        verify(bundleCreatedNotification).sendToRespondent(caseData, "1234-5678-3456");
+        assertThat(response.getConfirmationHeader())
+            .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent");
+    }
+
+    @Test
+    void shouldSuppressSubjectNotificationWhenCaseSubcategoryIsMinor() {
+        final CaseData caseData = caseData();
+        final CicCase cicCase = CicCase.builder()
+            .subjectCIC(Set.of(SubjectCIC.SUBJECT))
+            .caseSubcategory(CaseSubcategory.MINOR)
+            .email("subject@email.com")
+            .build();
+        caseData.setCicCase(cicCase);
+        caseData.setHyphenatedCaseRef("1234-5678-3456");
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setState(State.CaseManagement);
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+
+        SubmittedCallbackResponse response =
+            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+
+        verify(bundleCreatedNotification, never()).sendToSubject(any(CaseData.class), any());
+        verify(bundleCreatedNotification).sendToRespondent(caseData, "1234-5678-3456");
+        assertThat(response.getConfirmationHeader())
+            .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent");
+    }
+
+    @Test
+    void shouldNotNotifySubjectWhenSubjectCicIsNotSelected() {
+        final CaseData caseData = caseData();
+        final CicCase cicCase = CicCase.builder()
+            .subjectCIC(null)
+            .caseSubcategory(CaseSubcategory.OTHER)
+            .email("subject@email.com")
+            .build();
+        caseData.setCicCase(cicCase);
+        caseData.setHyphenatedCaseRef("1234-5678-3456");
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setState(State.CaseManagement);
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+
+        SubmittedCallbackResponse response =
+            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+
+        verify(bundleCreatedNotification, never()).sendToSubject(any(CaseData.class), any());
+        verify(bundleCreatedNotification).sendToRespondent(caseData, "1234-5678-3456");
+        assertThat(response.getConfirmationHeader())
+            .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent");
+    }
+
+    @Test
+    void shouldNotifyBothApplicantAndRepresentativeWhenBothAreSelected() {
+        final CaseData caseData = caseData();
+        final CicCase cicCase = CicCase.builder()
+            .representativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .representativeEmailAddress("rep@email.com")
+            .applicantCIC(Set.of(ApplicantCIC.APPLICANT_CIC))
+            .applicantEmailAddress("app@email.com")
+            .build();
+        caseData.setCicCase(cicCase);
+        caseData.setHyphenatedCaseRef("1234-5678-3456");
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setState(State.CaseManagement);
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+
+        SubmittedCallbackResponse response =
+            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+
+        verify(bundleCreatedNotification).sendToRespondent(caseData, "1234-5678-3456");
+        verify(bundleCreatedNotification).sendToRepresentative(caseData, "1234-5678-3456");
+        verify(bundleCreatedNotification).sendToApplicant(caseData, "1234-5678-3456");
+        assertThat(response.getConfirmationHeader())
+            .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent, Representative, Applicant");
+    }
+
+    @Test
+    void shouldNotNotifyApplicantWhenApplicantCicIsNotSelectedEvenWithEmail() {
+        final CaseData caseData = caseData();
+        final CicCase cicCase = CicCase.builder()
+            .applicantCIC(null)
+            .applicantEmailAddress("app@email.com")
+            .build();
+        caseData.setCicCase(cicCase);
+        caseData.setHyphenatedCaseRef("1234-5678-3456");
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setState(State.CaseManagement);
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+
+        SubmittedCallbackResponse response =
+            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+
+        verify(bundleCreatedNotification, never()).sendToApplicant(any(), any());
+        verify(bundleCreatedNotification).sendToRespondent(caseData, "1234-5678-3456");
+        assertThat(response.getConfirmationHeader())
+            .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent");
+    }
+
+    @Test
+    void shouldNotSendNotificationWhenSubjectApplicantOrRepresentativeEmailIsMissingOrBlank() {
+        final CaseData caseData = caseData();
+        final CicCase cicCase = CicCase.builder()
+            .subjectCIC(Set.of(SubjectCIC.SUBJECT))
+            .email("   ")
+            .representativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .representativeEmailAddress(null)
+            .applicantCIC(Set.of(ApplicantCIC.APPLICANT_CIC))
+            .applicantEmailAddress("")
+            .build();
+        caseData.setCicCase(cicCase);
+        caseData.setHyphenatedCaseRef("1234-5678-3456");
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setState(State.CaseManagement);
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+
+        SubmittedCallbackResponse response =
+            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+
+        verify(bundleCreatedNotification, never()).sendToSubject(any(CaseData.class), any());
+        verify(bundleCreatedNotification, never()).sendToRepresentative(any(CaseData.class), any());
+        verify(bundleCreatedNotification, never()).sendToApplicant(any(), any());
+        verify(bundleCreatedNotification).sendToRespondent(caseData, "1234-5678-3456");
+        assertThat(response.getConfirmationHeader())
+            .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent");
+    }
+
+    @Test
+    void shouldNotifySubjectWithPostContactPreferenceIfEmailIsPresent() {
+        final CaseData caseData = caseData();
+        final CicCase cicCase = CicCase.builder()
+            .subjectCIC(Set.of(SubjectCIC.SUBJECT))
+            .contactPreferenceType(ContactPreferenceType.POST)
+            .email("subject@email.com")
+            .build();
+        caseData.setCicCase(cicCase);
+        caseData.setHyphenatedCaseRef("1234-5678-3456");
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setState(State.CaseManagement);
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+
+        SubmittedCallbackResponse response =
+            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+
+        verify(bundleCreatedNotification).sendToSubject(caseData, "1234-5678-3456");
+        assertThat(response.getConfirmationHeader())
+            .isEqualTo("# Bundle created. \n## A notification has been sent to: Subject, Respondent");
+    }
+
+    @Test
+    void shouldContinueSendingWhenOneSendThrowsAndIncludeSubjectInFailureMessage() {
+        final CaseData caseData = caseData();
+        final CicCase cicCase = CicCase.builder()
+            .subjectCIC(Set.of(SubjectCIC.SUBJECT))
+            .email("subject@email.com")
+            .representativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .representativeEmailAddress("rep@email.com")
+            .build();
+        caseData.setCicCase(cicCase);
+        caseData.setHyphenatedCaseRef("1234-5678-3456");
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setState(State.CaseManagement);
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+
+        doThrow(new RuntimeException("Subject Send Failed")).when(bundleCreatedNotification).sendToSubject(any(CaseData.class), any());
+
+        SubmittedCallbackResponse response =
+            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+
+        verify(bundleCreatedNotification).sendToSubject(caseData, "1234-5678-3456");
+        verify(bundleCreatedNotification).sendToRespondent(caseData, "1234-5678-3456");
+        verify(bundleCreatedNotification).sendToRepresentative(caseData, "1234-5678-3456");
+
+        assertThat(response.getConfirmationHeader())
+            .isEqualTo("""
+                # Bundle creation notification failed\s
+                ## A notification could not be sent to: Subject\s
+                ## Please resend the notification.""");
+    }
+
+    @Test
+    void shouldNotIncludePreviouslyStoredNotificationResponsesInCurrentConfirmation() {
+        final CaseData caseData = caseData();
+        final CicCase cicCase = CicCase.builder()
+            .subjectNotifyList(NotificationResponse.builder().build())
+            .repNotificationResponse(NotificationResponse.builder().build())
+            .appNotificationResponse(NotificationResponse.builder().build())
+            .build();
+        caseData.setCicCase(cicCase);
+        caseData.setHyphenatedCaseRef("1234-5678-3456");
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setState(State.CaseManagement);
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+
+        SubmittedCallbackResponse response =
+            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+
+        verify(bundleCreatedNotification, never()).sendToSubject(any(CaseData.class), any());
+        verify(bundleCreatedNotification, never()).sendToRepresentative(any(CaseData.class), any());
+        verify(bundleCreatedNotification, never()).sendToApplicant(any(), any());
+        verify(bundleCreatedNotification).sendToRespondent(caseData, "1234-5678-3456");
+
+        assertThat(response.getConfirmationHeader())
+            .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent");
     }
 }

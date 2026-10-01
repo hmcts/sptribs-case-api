@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
@@ -23,6 +24,8 @@ import static uk.gov.hmcts.sptribs.notification.TemplateName.BUNDLE_CREATED_EMAI
 @Slf4j
 public class BundleCreatedNotification implements PartiesNotification {
 
+    private static final String DEFAULT_RESPONDENT_EMAIL = "appeals.team@cica.gov.uk";
+
     private final NotificationServiceCIC notificationService;
 
     private final NotificationHelper notificationHelper;
@@ -37,6 +40,23 @@ public class BundleCreatedNotification implements PartiesNotification {
     public BundleCreatedNotification(NotificationServiceCIC notificationService, NotificationHelper notificationHelper) {
         this.notificationService = notificationService;
         this.notificationHelper = notificationHelper;
+    }
+
+    @Override
+    public void sendToSubject(final CaseData caseData, final String caseNumber) {
+        final CicCase cicCase = caseData.getCicCase();
+        final Map<String, Object> templateVarsSubject = notificationHelper.getSubjectCommonVars(caseNumber, caseData);
+        templateVarsSubject.put(CommonConstants.CIC_CASE_SUBJECT_NAME, cicCase.getFullName());
+        addDashboardLink(templateVarsSubject);
+
+        final NotificationResponse notificationResponse = sendEmailNotification(
+            templateVarsSubject,
+            cicCase.getEmail(),
+            BUNDLE_CREATED_EMAIL_CITIZEN,
+            caseNumber
+        );
+
+        cicCase.setSubjectNotifyList(notificationResponse);
     }
 
     @Override
@@ -76,10 +96,16 @@ public class BundleCreatedNotification implements PartiesNotification {
         templateVarsRespondent.put(CommonConstants.CIC_CASE_RESPONDENT_NAME, cicCase.getRespondentName());
         addDashboardLink(templateVarsRespondent);
 
-        final NotificationResponse notificationResponse;
+        final String respondentEmail = StringUtils.hasText(cicCase.getRespondentEmail())
+            ? cicCase.getRespondentEmail()
+            : DEFAULT_RESPONDENT_EMAIL;
 
-        notificationResponse = sendEmailNotification(templateVarsRespondent,
-            cicCase.getRespondentEmail(), BUNDLE_CREATED_EMAIL_RESPONDENT, caseNumber);
+        final NotificationResponse notificationResponse = sendEmailNotification(
+            templateVarsRespondent,
+            respondentEmail,
+            BUNDLE_CREATED_EMAIL_RESPONDENT,
+            caseNumber
+        );
 
         cicCase.setResNotificationResponse(notificationResponse);
     }
