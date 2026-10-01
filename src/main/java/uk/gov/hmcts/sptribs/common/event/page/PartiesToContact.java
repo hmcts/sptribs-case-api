@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
+import static uk.gov.hmcts.sptribs.caseworker.util.ContactPartiesReviewUtil.caseworkerSelectedParties;
+import static uk.gov.hmcts.sptribs.caseworker.util.ContactPartiesReviewUtil.setReviewDocuments;
 import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.MINOR_FATAL_SUBJECT_ERROR_MESSAGE;
 import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAST_ONE_CONTACT_PARTY;
 
@@ -66,6 +68,10 @@ public class PartiesToContact implements CcdPageConfiguration {
                 errors.add(MINOR_FATAL_SUBJECT_ERROR_MESSAGE);
             }
         }
+
+        setReviewDocuments(data);
+        data.getContactPartiesDocuments().setReviewSelectedParties(cicCase == null ? null : caseworkerSelectedParties(cicCase));
+        data.getContactPartiesDocuments().setReviewMessage(cicCase == null ? null : cicCase.getNotifyPartyMessage());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)

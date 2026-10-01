@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static uk.gov.hmcts.sptribs.caseworker.util.ContactPartiesReviewUtil.setReviewDocuments;
+
 @Component
 @Slf4j
 @RequiredArgsConstructor
@@ -49,7 +51,8 @@ public class ContactPartiesSelectDocument implements CcdPageConfiguration {
                 "Note: Gov.Notify only supports sending documents in the formats of PDF, CSV, txt, rtf, MS Word Document "
                     + "file and MS Excel File. Your file must be smaller than 2MB")
             .complex(CaseData::getContactPartiesDocuments)
-            .optionalWithLabel(ContactPartiesDocuments::getDocumentList,"Selected Documents")
+            .readonly(ContactPartiesDocuments::getAct, "[STATE]=\"ALWAYS_HIDE\"")
+            .optionalNoSummary(ContactPartiesDocuments::getDocumentList, null, "Selected documents")
             .done();
     }
 
@@ -65,6 +68,10 @@ public class ContactPartiesSelectDocument implements CcdPageConfiguration {
 
         if (!citizenDashboardEnabled && list != null && list.getValue() != null) {
             validateDocumentFileSizes(list.getValue(), errors);
+        }
+
+        if (errors.isEmpty() && data.getCicCase() != null) {
+            setReviewDocuments(data);
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()

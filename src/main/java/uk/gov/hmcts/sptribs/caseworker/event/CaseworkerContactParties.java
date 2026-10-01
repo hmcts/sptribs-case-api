@@ -15,6 +15,7 @@ import uk.gov.hmcts.ccd.sdk.api.EventMetadata;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.CaseworkerContactPartiesReview;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ContactPartiesSelectDocument;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
@@ -37,6 +38,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.lang.String.format;
+import static uk.gov.hmcts.sptribs.caseworker.util.ContactPartiesReviewUtil.clearReviewDocuments;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CONTACT_PARTIES;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
@@ -70,6 +72,7 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
     private String baseUrl;
 
     private static final CcdPageConfiguration partiesToContact = new PartiesToContact();
+    private static final CcdPageConfiguration contactPartiesReview = new CaseworkerContactPartiesReview();
     private final ContactPartiesSelectDocument contactPartiesSelectDocument;
 
     private final ContactPartiesNotification contactPartiesNotification;
@@ -94,7 +97,8 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
                     CaseClosed,
                     CaseStayed)
                 .name("Case: Contact parties")
-                .showSummary()
+                .showSummary(false)
+                .endButtonLabel("Confirm and send")
                 .aboutToStartCallback(this::aboutToStart)
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::submitted)
@@ -114,6 +118,7 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
         PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         contactPartiesSelectDocument.addTo(pageBuilder);
         partiesToContact.addTo(pageBuilder);
+        contactPartiesReview.addTo(pageBuilder);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
@@ -121,6 +126,9 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
         caseData.setContactParties(new ContactParties());
         DynamicMultiSelectList documentList = DocumentListUtil.prepareContactPartiesDocumentList(caseData, baseUrl);
         caseData.getContactPartiesDocuments().setDocumentList(documentList);
+        clearReviewDocuments(caseData.getContactPartiesDocuments());
+        caseData.getContactPartiesDocuments().setReviewSelectedParties(null);
+        caseData.getContactPartiesDocuments().setReviewMessage(null);
         caseData.getCicCase().setNotifyPartyMessage("");
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -132,6 +140,10 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         final CaseData caseData = details.getData();
+
+        clearReviewDocuments(caseData.getContactPartiesDocuments());
+        caseData.getContactPartiesDocuments().setReviewSelectedParties(null);
+        caseData.getContactPartiesDocuments().setReviewMessage(null);
 
         StringBuilder sentDocListBuilder = new StringBuilder();
 
