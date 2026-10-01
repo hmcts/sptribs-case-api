@@ -10,7 +10,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
 
@@ -27,7 +26,7 @@ public class SystemMigrateFirstHearingDateCase implements CCDConfig<CaseData, St
             .aboutToSubmitCallback(this::aboutToSubmit)
             .name("Fix first hearing date")
             .description("Clears stale firstHearingDate values")
-            .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE, CASEWORKER);
+            .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
