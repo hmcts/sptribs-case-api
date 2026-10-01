@@ -44,7 +44,7 @@ public interface DocumentsRepository extends JpaRepository<DocumentEntity, Long>
             d.updatedAt = current_instant()
         where d.documentBinaryUrl = :documentBinaryUrl
         """)
-    void updateCaseDocumentTypeIdByDocumentBinaryUrl(
+    int updateCaseDocumentTypeIdByDocumentBinaryUrl(
         @Param("documentBinaryUrl") String documentBinaryUrl,
         @Param("caseDocumentTypeId") Long caseDocumentTypeId
     );
@@ -91,6 +91,8 @@ public interface DocumentsRepository extends JpaRepository<DocumentEntity, Long>
         @Param("caseReference") Long caseReference,
         @Param("caseDocumentIds") List<Long> caseDocumentIds
     );
+
+    List<DocumentEntity> findByCaseReferenceNumberOrderBySavedAtAsc(Long caseReferenceNumber);
 
     Optional<DocumentEntity> findFirstByCaseReferenceNumberAndCaseDocumentTypeIdOrderBySavedAtDesc(
         Long caseReferenceNumber,

@@ -47,8 +47,7 @@ public class CaseworkerCaseFlagFT extends FunctionalTestSuite {
     public void shouldTriggerSuccessfulResponseIfSubmitCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_SUBMITTED);
 
-        final Long caseId = createCaseInCcd().getId();
-        functionalTestDataManager.addReference(caseId);
+        final Long caseId = createCaseInCcd(false).getId();
 
         final String hyphenatedCaseRef = CaseData.builder().build().formatCaseRef(caseId);
         caseData.put("hyphenatedCaseRef", hyphenatedCaseRef);
@@ -83,8 +82,7 @@ public class CaseworkerCaseFlagFT extends FunctionalTestSuite {
         caseDataBefore.remove("cicCaseAnonymisedAppellantName");
         caseDataBefore.put("cicCaseAnonymityAlreadyApplied", "No");
 
-        final Long caseId = createCaseInCcd().getId();
-        functionalTestDataManager.addReference(caseId);
+        final Long caseId = createCaseInCcd(false).getId();
 
         final String hyphenatedCaseRef = CaseData.builder().build().formatCaseRef(caseId);
         caseData.put("hyphenatedCaseRef", hyphenatedCaseRef);
