@@ -1,6 +1,7 @@
 #!groovy
 
-@Library("Infrastructure@2.8.0")
+//@Library("Infrastructure@2.8.0")
+@Library("Infrastucture@highleveldatasetupstaging")
 
 import uk.gov.hmcts.contino.AppPipelineConfig
 import uk.gov.hmcts.contino.AppPipelineDsl
@@ -89,7 +90,8 @@ withPipeline(type, product, component) {
     syncBranchesWithMaster(['demo', 'perftest', 'ithc'])
     afterSuccess('checkout') {
       def subscription = 'nonprod'
-      if (env.ENVIRONMENT == 'ithc' || env.ENVIRONMENT == 'demo' || env.ENVIRONMENT == 'perftest') {
+      if (env.ENVIRONMENT == 'ithc' || env.ENVIRONMENT == 'demo' || env.ENVIRONMENT == 'perftest' || env.ENVIRONMENT == 'staging') {
+      //      if (env.ENVIRONMENT == 'ithc' || env.ENVIRONMENT == 'demo' || env.ENVIRONMENT == 'perftest') {
         withSubscription(subscription) {
             uploadDmnDiagrams()
             uploadBpmnDiagram()
@@ -100,6 +102,7 @@ withPipeline(type, product, component) {
     MetricsPublisher metricsPublisher = new MetricsPublisher(this, currentBuild, product, component)
     approvedEnvironmentRepository(params.environment, metricsPublisher) {
       if(params.environment != 'prod') {
+        enableHighLevelDataSetupForStaging()
         enableHighLevelDataSetup()
       }
     }
@@ -182,7 +185,8 @@ withPipeline(type, product, component) {
     ]
   }
 
-  afterAlways('functionalTest:aat') {
+  //  afterAlways('functionalTest:aat') {
+  afterAlways('functionalTest:staging') {
     publishHTML target: [
       allowMissing         : true,
       alwaysLinkToLastBuild: true,
@@ -204,7 +208,8 @@ withPipeline(type, product, component) {
     ]
   }
 
-  afterAlways('smoketest:aat') {
+  //    afterAlways('smoketest:aat') {
+  afterAlways('smoketest:staging') {
     publishHTML target: [
       allowMissing         : true,
       alwaysLinkToLastBuild: true,
@@ -215,7 +220,26 @@ withPipeline(type, product, component) {
     ]
   }
 
-  before('highleveldatasetup') {
+  //  before('highleveldatasetup') {
+  before('highleveldatasetup:staging') {
+    builder.gradle('generateCCDConfig --rerun-tasks')
+    generateDefinitions()
+  }
+
+  before('highleveldatasetup:aat') {
+    env.ENVIRONMENT="aat"
+    env.CASE_API_URL="http://sptribs-case-api-aat.service.core-compute-aat.internal"
+    env.CCD_DEF_NAME="aat"
+    env.ELASTIC_SEARCH_ENABLED=true
+    env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
+    env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+    env.CAMUNDA_BASE_URL = "http://camunda-api-aat.service.core-compute-aat.internal"
+    env.FT_POSTGRES_HOST = "sptribs-aat-flexible-db-v15-aat.postgres.database.azure.com"
+    env.FT_POSTGRES_PORT = "5432"
+    setCommonEnvVariables()
+
+    enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
+
     builder.gradle('generateCCDConfig --rerun-tasks')
     generateDefinitions()
   }
@@ -252,22 +276,38 @@ withPipeline(type, product, component) {
     enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
   }
 
+//  onMaster {
+//    env.ENVIRONMENT="aat"
+//    env.CASE_API_URL="http://sptribs-case-api-aat.service.core-compute-aat.internal"
+//    env.CCD_DEF_NAME="aat"
+//    env.ELASTIC_SEARCH_ENABLED=true
+//    env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
+//    env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+//    env.CAMUNDA_BASE_URL = "http://camunda-api-aat.service.core-compute-aat.internal"
+//    env.FT_POSTGRES_HOST = "sptribs-aat-flexible-db-v15-aat.postgres.database.azure.com"
+//    env.FT_POSTGRES_PORT = "5432"
+//    setCommonEnvVariables()
+//
+//    enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
+//  }
+
   onMaster {
-    env.ENVIRONMENT="aat"
-    env.CASE_API_URL="http://sptribs-case-api-aat.service.core-compute-aat.internal"
-    env.CCD_DEF_NAME="aat"
+    env.ENVIRONMENT="staging"
+    env.CASE_API_URL="http://sptribs-case-api-staging.service.core-compute-staging.internal"
+    env.CCD_DEF_NAME="staging"
     env.ELASTIC_SEARCH_ENABLED=true
     env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
-    env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-    env.CAMUNDA_BASE_URL = "http://camunda-api-aat.service.core-compute-aat.internal"
-    env.FT_POSTGRES_HOST = "sptribs-aat-flexible-db-v15-aat.postgres.database.azure.com"
+    env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-staging.service.core-compute-aat.internal"
+    env.CAMUNDA_BASE_URL = "http://camunda-api-staging.service.core-compute-staging.internal"
+    env.FT_POSTGRES_HOST = "sptribs-staging-flexible-db-v15-staging.postgres.database.azure.com"
     env.FT_POSTGRES_PORT = "5432"
     setCommonEnvVariables()
 
     enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
   }
 
-  afterSuccess('functionalTest:aat') {
+  //  afterSuccess('functionalTest:aat') {
+  afterSuccess('functionalTest:staging') {
     env.CCD_DEF_NAME = 'prod'
     env.ENVIRONMENT = 'prod'
     env.DEPLOYMENT_ENVIRONMENT = 'prod'
@@ -339,12 +379,16 @@ withPipeline(type, product, component) {
     env.CAMUNDA_BASE_URL = "http://camunda-api-ithc.service.core-compute-ithc.internal"
   }
 
-  before('functionalTest:aat') {
-    uploadDmnDiagrams()
-    uploadBpmnDiagram()
-  }
+//  before('functionalTest:staging') {
+//    uploadDmnDiagrams()
+//    uploadBpmnDiagram()
+//  }
+//
+//  before('functionalTest:aat') {
+//    configureFtDatabase()
+//  }
 
-  before('functionalTest:aat') {
+  before('functionalTest:staging') {
     configureFtDatabase()
   }
 
@@ -364,9 +408,9 @@ withPipeline(type, product, component) {
 }
 
 def setCommonEnvVariables() {
-    env.IDAM_API_URL_BASE = "https://idam-web-public.aat.platform.hmcts.net"
-    env.S2S_URL_BASE = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-    env.FEE_API_URL = "http://fees-register-api-aat.service.core-compute-aat.internal"
+    env.IDAM_API_URL_BASE = "https://idam-web-public.staging.platform.hmcts.net"
+    env.S2S_URL_BASE = "http://rpe-service-auth-provider-staging.service.core-compute-staging.internal"
+    env.FEE_API_URL = "http://fees-register-api-staging.service.core-compute-staging.internal"
     env.BEFTA_S2S_CLIENT_ID = "ccd_data"
 }
 
@@ -375,8 +419,10 @@ def configureFtDatabase() {
     env.FT_POSTGRES_USERNAME = env.SPTRIBS_POSTGRES_USERNAME_PREVIEW
     env.FT_POSTGRES_PASSWORD = env.SPTRIBS_POSTGRES_PASSWORD_PREVIEW
   } else {
-    env.FT_POSTGRES_USERNAME = env.POSTGRES_USERNAME_AAT
-    env.FT_POSTGRES_PASSWORD = env.POSTGRES_PASSWORD_AAT
+    env.FT_POSTGRES_USERNAME = env.POSTGRES_USERNAME_STAGING
+    env.FT_POSTGRES_PASSWORD = env.POSTGRES_PASSWORD_STAGING
+//    env.FT_POSTGRES_USERNAME = env.POSTGRES_USERNAME_AAT
+//    env.FT_POSTGRES_PASSWORD = env.POSTGRES_PASSWORD_AAT
   }
 
   echo "Using FT DB user env for ${env.ENVIRONMENT}"
