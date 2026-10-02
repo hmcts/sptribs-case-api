@@ -15,7 +15,6 @@ import uk.gov.hmcts.sptribs.document.DocumentFileTypes;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -64,7 +63,7 @@ public final class DocumentListUtil {
         Map<CaseDocumentType, List<CaseworkerCICDocument>> docTypeAndDocMap = new HashMap<>();
 
         addDocsToMapIfNotNull(docTypeAndDocMap, CaseDocumentType.HEARING_RECORD,
-            getHearingSummaryDocumentsForMigration(data).stream()
+            getHearingSummaryDocuments(data).stream()
                 .filter(document -> document != null
                     && document.getDocumentLink() != null
                     && DocumentFileTypes.isAudioOrVideo(document.getDocumentLink().getFilename()))
@@ -276,15 +275,6 @@ public final class DocumentListUtil {
     }
 
     private static List<CaseworkerCICDocument> getHearingSummaryDocuments(CaseData caseData) {
-        return extractHearingSummaryDocuments(caseData, false);
-    }
-
-    private static List<CaseworkerCICDocument> getHearingSummaryDocumentsForMigration(CaseData caseData) {
-        return extractHearingSummaryDocuments(caseData, true);
-    }
-
-    private static List<CaseworkerCICDocument> extractHearingSummaryDocuments(CaseData caseData,
-                                                                                boolean includeHearingDate) {
         List<CaseworkerCICDocument> hearingSummaryDocs = new ArrayList<>();
 
         Stream.ofNullable(caseData.getHearingList())
@@ -294,21 +284,10 @@ public final class DocumentListUtil {
             .filter(hearing -> !isNull(hearing.getSummary()) && !isEmpty(hearing.getSummary().getRecFile()))
             .forEach(hearing -> hearing.getSummary().getRecFile().stream()
                 .filter(recFile -> recFile != null && recFile.getValue() != null)
-                .map(recFile -> includeHearingDate
-                    ? copyWithHearingDate(recFile.getValue(), hearing.getDate())
-                    : recFile.getValue())
+                .map(ListValue::getValue)
                 .forEach(hearingSummaryDocs::add));
 
         return hearingSummaryDocs;
-    }
-
-    private static CaseworkerCICDocument copyWithHearingDate(CaseworkerCICDocument document, LocalDate hearingDate) {
-        return CaseworkerCICDocument.builder()
-            .documentCategory(document.getDocumentCategory())
-            .documentEmailContent(document.getDocumentEmailContent())
-            .documentLink(document.getDocumentLink())
-            .date(hearingDate)
-            .build();
     }
 
     public static List<ListValue<CaseworkerCICDocument>> getAllDecisionDocuments(CaseData caseData) {

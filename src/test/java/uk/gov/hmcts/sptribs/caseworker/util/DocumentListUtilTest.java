@@ -381,10 +381,12 @@ public class DocumentListUtilTest {
     }
 
     @Test
-    void shouldClassifyAudioAndVideoHearingRecordsAndUseHearingDate() {
+    void shouldClassifyAudioAndVideoHearingRecordsWithoutReplacingDocumentDates() {
         LocalDate hearingDate = LocalDate.of(2025, 2, 5);
+        LocalDate documentDate = LocalDate.of(2025, 2, 8);
         CaseworkerCICDocument audio = CaseworkerCICDocument.builder()
             .documentCategory(DocumentType.LINKED_DOCS)
+            .date(documentDate)
             .documentLink(Document.builder()
                 .url("audio-url")
                 .binaryUrl("audio-binary")
@@ -422,7 +424,10 @@ public class DocumentListUtilTest {
 
         assertThat(documents.get(CaseDocumentType.HEARING_RECORD))
             .hasSize(3)
-            .allSatisfy(document -> assertThat(document.getDate()).isEqualTo(hearingDate));
+            .containsExactly(audio, video, audioWithAlternativeExtension);
+        assertThat(audio.getDate()).isEqualTo(documentDate);
+        assertThat(video.getDate()).isNull();
+        assertThat(audioWithAlternativeExtension.getDate()).isNull();
     }
 
     @Test

@@ -18,7 +18,6 @@ import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.systemupdate.service.MigrationDocumentService;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.Mockito.verify;
@@ -28,6 +27,7 @@ class SystemMigrateCaseDocumentsToDocTableTest {
 
     private static final long CASE_ID = 123L;
     private static final LocalDate HEARING_DATE = LocalDate.of(2025, 2, 5);
+    private static final LocalDate DOCUMENT_DATE = LocalDate.of(2025, 2, 8);
 
     @Mock
     private MigrationDocumentService documentsService;
@@ -42,7 +42,7 @@ class SystemMigrateCaseDocumentsToDocTableTest {
         Listing hearing = Listing.builder()
             .date(HEARING_DATE)
             .summary(HearingSummary.builder()
-                .recFile(List.of(document(audioRecording), document(videoRecording)))
+                .recFile(List.of(document(audioRecording, DOCUMENT_DATE), document(videoRecording, null)))
                 .build())
             .build();
         CaseDetails<CaseData, State> details = new CaseDetails<>();
@@ -53,11 +53,10 @@ class SystemMigrateCaseDocumentsToDocTableTest {
 
         systemMigrateCaseDocumentsToDocTable.aboutToSubmit(details, new CaseDetails<>());
 
-        LocalDateTime uploadedAt = HEARING_DATE.atStartOfDay();
         verify(documentsService).buildAndSaveNewDocumentEntityWithDocDateTime(
-            audioRecording, CASE_ID, DocumentType.LINKED_DOCS, CaseDocumentType.HEARING_RECORD, uploadedAt);
+            audioRecording, CASE_ID, DocumentType.LINKED_DOCS, CaseDocumentType.HEARING_RECORD, DOCUMENT_DATE.atStartOfDay());
         verify(documentsService).buildAndSaveNewDocumentEntityWithDocDateTime(
-            videoRecording, CASE_ID, DocumentType.LINKED_DOCS, CaseDocumentType.HEARING_RECORD, uploadedAt);
+            videoRecording, CASE_ID, DocumentType.LINKED_DOCS, CaseDocumentType.HEARING_RECORD, null);
     }
 
     private static Document recording(String filename, String binaryUrl) {
@@ -68,11 +67,12 @@ class SystemMigrateCaseDocumentsToDocTableTest {
             .build();
     }
 
-    private static ListValue<CaseworkerCICDocument> document(Document document) {
+    private static ListValue<CaseworkerCICDocument> document(Document document, LocalDate date) {
         return ListValue.<CaseworkerCICDocument>builder()
             .value(CaseworkerCICDocument.builder()
                 .documentCategory(DocumentType.LINKED_DOCS)
                 .documentLink(document)
+                .date(date)
                 .build())
             .build();
     }
