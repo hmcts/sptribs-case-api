@@ -378,7 +378,7 @@ withPipeline(type, product, component) {
     env.CAMUNDA_BASE_URL = "http://camunda-api-ithc.service.core-compute-ithc.internal"
   }
 
-//  before('functionalTest:staging') {
+//  before('functionalTest:aat') {
 //    uploadDmnDiagrams()
 //    uploadBpmnDiagram()
 //  }
