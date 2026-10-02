@@ -36,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -213,12 +214,15 @@ public class DocumentsServiceTest {
     @Test
      void shouldUpdateDocumentToNonDraftOrder() {
         Document applicationDocument = buildDocument(HOSPITAL_RECORDS.getCategory());
-        DocumentEntity draftEvidenceDocumentEntity = buildDocumentEntity(HOSPITAL_RECORDS.name(), 3L,
-            OffsetDateTime.now());
 
         when(caseDocumentTypesCache.getId(CaseDocumentType.ORDER)).thenReturn(3L);
+        when(documentsRepository.updateCaseDocumentTypeIdByDocumentBinaryUrl(applicationDocument.getBinaryUrl(), 3L))
+            .thenReturn(1);
 
         documentsService.updateDocumentToNonDraft(applicationDocument.getBinaryUrl());
+
+        DocumentEntity draftEvidenceDocumentEntity = buildDocumentEntity(HOSPITAL_RECORDS.name(), 3L,
+            OffsetDateTime.now());
 
         verify(documentsRepository, times(1)).updateCaseDocumentTypeIdByDocumentBinaryUrl(
             draftEvidenceDocumentEntity.getDocumentBinaryUrl(), 3L);
@@ -234,7 +238,35 @@ public class DocumentsServiceTest {
 
         assertThatThrownBy(() -> documentsService.updateDocumentToNonDraft(applicationDocument.getBinaryUrl())).isInstanceOf(
                 RuntimeException.class).hasMessageContaining("Error updating case document type from draft order to order")
-            .hasCauseInstanceOf(DataAccessException.class);
+            .hasCauseInstanceOf(DataAccessException.class)
+            .hasRootCauseMessage("DB error");
+    }
+
+    @Test
+    void shouldThrowRuntimeExceptionWhenNumberOfDocumentsUpdatedIsZero() {
+        Document applicationDocument = buildDocument(DSS_SUPPORTING.getCategory());
+        when(caseDocumentTypesCache.getId(CaseDocumentType.ORDER)).thenReturn(3L);
+
+        when(documentsRepository.updateCaseDocumentTypeIdByDocumentBinaryUrl(
+            applicationDocument.getBinaryUrl(), 3L)).thenReturn(0);
+
+        assertThatThrownBy(() -> documentsService.updateDocumentToNonDraft(applicationDocument.getBinaryUrl())).isInstanceOf(
+                RuntimeException.class).hasMessageContaining(
+                "Error updating case document type from draft order to order")
+            .hasCauseInstanceOf(DataAccessException.class)
+            .hasRootCauseMessage("No document found with binary URL: " + applicationDocument.getBinaryUrl());
+    }
+
+    @Test
+    void shouldNotThrowExceptionWhenDocumentAlreadyExistsInDB() {
+        Document applicationDocument = buildDocument(DSS_SUPPORTING.getCategory());
+        DocumentEntity applicationDocumentEntity = buildDocumentEntity(DSS_SUPPORTING.getCategory(), 3L, OffsetDateTime.now());
+
+        when(caseDocumentTypesCache.getId(CaseDocumentType.ORDER)).thenReturn(3L);
+        when(documentsRepository.findByDocumentIdUuid("test-document.pdf")).thenReturn(Optional.of(applicationDocumentEntity));
+
+        assertDoesNotThrow(() -> documentsService.buildAndSaveNewDocumentEntity(applicationDocument, TEST_CASE_ID,
+            ORDER_AND_DECISION_DOCUMENT, CaseDocumentType.ORDER));
     }
 
     @Test

@@ -44,23 +44,22 @@ public class DocumentsService {
     private final CaseDocumentTypesCache caseDocumentTypesCache;
 
     public void buildAndSaveNewDocumentEntity(Document document, Long caseReferenceNumber,
-                                               DocumentType documentType, CaseDocumentType caseDocumentType) {
+                                              DocumentType documentType, CaseDocumentType caseDocumentType) {
         try {
+            String documentId =
+                StringUtils.substringAfterLast(document.getBinaryUrl().replace("/binary", ""), "/");
 
-            int rowsInserted = documentsRepository.insertIgnoreDuplicate(
-                caseReferenceNumber,
-                document.getUrl(),
-                document.getFilename(),
-                document.getBinaryUrl(),
-                documentType != null ? documentType.name() : null,
-                caseDocumentTypesCache.getId(caseDocumentType),
-                OffsetDateTime.now()
-            );
-
-            if (rowsInserted == 0) {
-                log.info("Document already exists in document table: {}", document.getBinaryUrl());
+            if (documentsRepository.findByDocumentIdUuid(documentId).isPresent()) {
+                log.info("Document with ID {} already exists in the database.", documentId);
             }
-
+            documentsRepository.save(DocumentEntity.builder()
+                .caseReferenceNumber(caseReferenceNumber)
+                .documentUrl(document.getUrl())
+                .documentFilename(document.getFilename())
+                .documentBinaryUrl(document.getBinaryUrl())
+                .documentTypeName(documentType != null ? documentType.name() : null)
+                .caseDocumentTypeId(caseDocumentTypesCache.getId(caseDocumentType))
+                .build());
         } catch (DataAccessException e) {
             throw new DocumentSaveException("Error saving document entity to database", e);
         }
@@ -183,9 +182,11 @@ public class DocumentsService {
 
         try {
             Long orderDocumentTypeId = caseDocumentTypesCache.getId(CaseDocumentType.ORDER);
-            documentsRepository.updateCaseDocumentTypeIdByDocumentBinaryUrl(documentBinaryUrl, orderDocumentTypeId);
-            log.info("Draft order updated to non draft case document type successfully for url: {}", documentBinaryUrl);
-
+            if (documentsRepository.updateCaseDocumentTypeIdByDocumentBinaryUrl(documentBinaryUrl, orderDocumentTypeId) == 0) {
+                throw new DataAccessException("No document found with binary URL: " + documentBinaryUrl) {};
+            } else {
+                log.info("Draft order updated document to non draft case document type successfully for url: {}", documentBinaryUrl);
+            }
         } catch (DataAccessException e) {
             throw new DocumentUpdateException("Error updating case document type from draft order to order", e);
         }
