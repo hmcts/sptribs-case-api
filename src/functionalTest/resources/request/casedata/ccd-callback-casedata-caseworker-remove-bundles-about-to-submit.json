@@ -32,8 +32,8 @@
         "description": "",
         "stitchedDocument": {
           "document_filename": "1-cicBundle.pdf",
-          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/${UUID1}",
-          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/${UUID1}/binary"
+          "document_url": "http://dm-store.service.core-compute.internal/documents/${UUID1}",
+          "document_binary_url": "http://dm-store.service.core-compute.internal/documents/${UUID1}/binary"
         },
         "folders": [
           {
@@ -125,8 +125,8 @@
         "description": "",
         "stitchedDocument": {
           "document_filename": "2-cicBundle.pdf",
-          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/${UUID2}",
-          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/${UUID2}/binary"
+          "document_url": "http://dm-store.service.core-compute.internal/documents/${UUID2}",
+          "document_binary_url": "http://dm-store.service.core-compute.internal/documents/${UUID2}/binary"
         },
         "folders": [
           {
@@ -218,8 +218,8 @@
         "description": "",
         "stitchedDocument": {
           "document_filename": "3-cicBundle.pdf",
-          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/${UUID3}",
-          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/${UUID3}/binary"
+          "document_url": "http://dm-store.service.core-compute.internal/documents/${UUID3}",
+          "document_binary_url": "http://dm-store.service.core-compute.internal/documents/${UUID3}/binary"
         },
         "folders": [
           {
