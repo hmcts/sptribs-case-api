@@ -26,7 +26,7 @@ public class CloseCaseRejectionDetails implements CcdPageConfiguration {
             .complex(CaseData::getCloseCase)
             .optional(CloseCase::getRejectionName)
             .mandatory(CloseCase::getRejectionReason)
-            .mandatory(CloseCase::getRejectionDetails, "closeRejectionReason = \"other\"")
+            .mandatory(CloseCase::getRejectionDetails, "closeRejectionReason = \"other\"", true)
             .done();
     }
 
