@@ -27,7 +27,6 @@
       }
     },
     "caseIssueFinalDecisionFinalDecisionDate": "${json-unit.regex}^\\d{4}-\\d{2}-\\d{2}$",
-    "firstHearingDate" : "",
     "dataVersion" : 0,
     "cicCaseSelectedDocument" : { }
   },

@@ -135,7 +135,6 @@
     "hearingList": [],
     "hyphenatedCaseRef": "${json-unit.regex}^\\d{4}-\\d{4}-\\d{4}-\\d{4}",
     "closedDayCount": "",
-    "firstHearingDate": "",
     "cicCaseAnonymiseYesOrNo": "No",
     "dataVersion": 0
   }
