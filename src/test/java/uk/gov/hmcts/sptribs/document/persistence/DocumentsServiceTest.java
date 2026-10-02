@@ -34,9 +34,9 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -260,10 +260,9 @@ public class DocumentsServiceTest {
     @Test
     void shouldNotThrowExceptionWhenDocumentAlreadyExistsInDB() {
         Document applicationDocument = buildDocument(DSS_SUPPORTING.getCategory());
-        DocumentEntity applicationDocumentEntity = buildDocumentEntity(DSS_SUPPORTING.getCategory(), 3L, OffsetDateTime.now());
 
         when(caseDocumentTypesCache.getId(CaseDocumentType.ORDER)).thenReturn(3L);
-        when(documentsRepository.findByDocumentIdUuid("test-document.pdf")).thenReturn(Optional.of(applicationDocumentEntity));
+        when(documentsRepository.insertIgnoreDuplicate(any(), any(), any(), any(), any(), any(), any())).thenReturn(0);
 
         assertDoesNotThrow(() -> documentsService.buildAndSaveNewDocumentEntity(applicationDocument, TEST_CASE_ID,
             ORDER_AND_DECISION_DOCUMENT, CaseDocumentType.ORDER));
