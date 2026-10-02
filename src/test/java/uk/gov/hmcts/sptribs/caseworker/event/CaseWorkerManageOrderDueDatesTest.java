@@ -166,7 +166,7 @@ class CaseWorkerManageOrderDueDatesTest {
 
         assertEquals(LocalDate.now(fixedClock).plusDays(21),
             response.getData().getCicCase().getFirstOrderDueDate(),
-            "checking the first order due date set is actualy the earliest");
+            "checking the first order due date set is actually the earliest");
 
     }
 

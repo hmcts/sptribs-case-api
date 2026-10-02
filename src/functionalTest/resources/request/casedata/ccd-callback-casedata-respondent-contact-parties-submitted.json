@@ -18,18 +18,19 @@
         "documentCategory": "ApplicationForm",
         "documentEmailContent": "Lorem ipsum",
         "documentLink": {
-          "document_filename": "pdf.pdf"
+          "document_filename": "pdf.pdf",
+          "document_url": "http://manage-case.platform.hmcts.net/documents/null",
+          "document_binary_url": "http://test-doc/documents/null/binary"
         }
       }
     }
   ],
-  "hyphenatedCaseRef": "1234-5678-9012-3456",
   "contactPartiesDocumentsDocumentList": {
     "value": [],
     "list_items": [
       {
         "code": "a17fa26b-6e91-48ba-841e-8ab75c772463",
-        "label": "[pdf.pdf A - Application Form](http://manage-case.demo.platform.hmcts.net/documents/null/binary)"
+        "label": "[pdf.pdf A - Application Form](http://manage-case.platform.hmcts.net/documents/null/binary)"
       }
     ]
   }

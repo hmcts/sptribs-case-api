@@ -45,7 +45,9 @@ import java.util.Set;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -171,11 +173,12 @@ public class CaseworkerCreateAndSendOrderIT {
         Document document = Document.builder()
             .categoryId("TD")
             .filename("Order--[AAC]--09-05-2024 09:04:04.pdf")
-            .binaryUrl("http://dm-store-aat.service.core-compute-aat.internal/documents/6bcdb209-ba65-4f31-a12a-5abbdf250fb6/binary")
-            .url("http://dm-store-aat.service.core-compute-aat.internal/documents/6bcdb209-ba65-4f31-a12a-5abbdf250fb6")
+            .binaryUrl("http://url/binary")
+            .url("http://url/")
             .build();
 
         final CaseData caseData = CaseData.builder()
+            .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
             .draftOrderContentCIC(draftOrderContentCIC)
             .cicCase(CicCase.builder()
                 .orderIssuingType(CREATE_AND_SEND_NEW_ORDER)
@@ -318,7 +321,7 @@ public class CaseworkerCreateAndSendOrderIT {
             .isString()
             .contains("# Order sent \n## A notification has been sent to: Subject, Respondent, Representative, Applicant");
 
-        verify(notificationServiceCIC, times(4)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED));
+        verify(notificationServiceCIC, times(4)).sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
         verifyNoMoreInteractions(notificationServiceCIC);
     }
 
@@ -345,7 +348,7 @@ public class CaseworkerCreateAndSendOrderIT {
                 .build())
             .build();
 
-        when(notificationServiceCIC.sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED)))
+        when(notificationServiceCIC.sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(null)))
             .thenThrow(new NotificationException(new NotificationClientException("GovNotify API Failure")));
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
@@ -367,7 +370,8 @@ public class CaseworkerCreateAndSendOrderIT {
                 .isString()
                 .contains("# Send order notification failed \n## Please resend the order");
 
-        verify(notificationServiceCIC, times(1)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED));
+        verify(notificationServiceCIC, times(1)).sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED),
+            eq(null));
     }
 
     @Test
@@ -425,13 +429,16 @@ public class CaseworkerCreateAndSendOrderIT {
 
         ArgumentCaptor<NotificationRequest> captor =
             ArgumentCaptor.forClass(NotificationRequest.class);
-        verify(notificationServiceCIC, times(5)).sendEmail(captor.capture(), eq(TEST_CASE_ID_HYPHENATED));
+        verify(notificationServiceCIC, times(1)).sendEmail(captor.capture(), eq(TEST_CASE_ID_HYPHENATED),
+            eq(null));
+        verify(notificationServiceCIC, times(4)).sendEmail(captor.capture(), anyList(), eq(TEST_CASE_ID_HYPHENATED),
+            eq(null));
         verifyNoMoreInteractions(notificationServiceCIC);
 
         long anonymityTemplateCalls = captor.getAllValues().stream()
             .filter(request -> ANONYMITY_APPLIED_EMAIL.equals(request.getTemplate()))
             .count();
-        org.assertj.core.api.Assertions.assertThat(anonymityTemplateCalls).isEqualTo(1);
+        assertThat(anonymityTemplateCalls).isEqualTo(1);
     }
 
     @Test
@@ -492,12 +499,13 @@ public class CaseworkerCreateAndSendOrderIT {
 
         ArgumentCaptor<NotificationRequest> captor =
             ArgumentCaptor.forClass(NotificationRequest.class);
-        verify(notificationServiceCIC, times(4)).sendEmail(captor.capture(), eq(TEST_CASE_ID_HYPHENATED));
+        verify(notificationServiceCIC, times(4)).sendEmail(captor.capture(), anyList(), eq(TEST_CASE_ID_HYPHENATED),
+            eq(null));
         verifyNoMoreInteractions(notificationServiceCIC);
 
         long anonymityTemplateCalls = captor.getAllValues().stream()
             .filter(request -> ANONYMITY_APPLIED_EMAIL.equals(request.getTemplate()))
             .count();
-        org.assertj.core.api.Assertions.assertThat(anonymityTemplateCalls).isZero();
+        assertThat(anonymityTemplateCalls).isZero();
     }
 }

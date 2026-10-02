@@ -49,6 +49,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_HYPHENATED;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
@@ -181,6 +182,7 @@ public class CaseworkerCreateDraftOrderIT {
                     .build())
                 .build()
             )
+            .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
             .hearingList(getHearingList())
             .draftOrderContentCIC(DraftOrderContentCIC.builder()
                 .orderTemplate(CIC3_RULE_27)

@@ -316,7 +316,7 @@ public class CaseworkerCloseTheCaseIT {
                     ## Use 'Reinstate case' if this case needs to be reopened in the future."""
             );
 
-        verify(notificationServiceCIC, times(4)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED));
+        verify(notificationServiceCIC, times(4)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
         verifyNoMoreInteractions(notificationServiceCIC);
     }
 

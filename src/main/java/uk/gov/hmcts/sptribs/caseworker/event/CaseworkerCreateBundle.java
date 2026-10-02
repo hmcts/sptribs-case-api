@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -12,11 +13,16 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.document.bundling.AudioVideoEvidenceBundleException;
+import uk.gov.hmcts.sptribs.document.bundling.AudioVideoEvidenceBundleService;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundlingService;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleCallback;
@@ -24,6 +30,7 @@ import uk.gov.hmcts.sptribs.document.bundling.model.BundleIdAndTimestamp;
 import uk.gov.hmcts.sptribs.document.bundling.model.Callback;
 import uk.gov.hmcts.sptribs.document.model.AbstractCaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.notification.dispatcher.BundleCreatedNotification;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -37,10 +44,17 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.lang.String.format;
 import static java.util.Collections.emptyList;
+import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.extractDocumentsFromListValues;
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.getAllCaseDocuments;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CREATE_BUNDLE;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessageBundleCreation;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.APPLICANT;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.REPRESENTATIVE;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.RESPONDENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -62,9 +76,17 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRole> {
 
     private final BundlingService bundlingService;
+    private final AudioVideoEvidenceBundleService audioVideoEvidenceBundleService;
 
     @Autowired
     private final Clock clock;
+
+    @Autowired
+    private final BundleCreatedNotification bundleCreatedNotification;
+
+
+    @Value("${feature.citizen-dashboard.enabled}")
+    private boolean citizenDashboardEnabled;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -82,10 +104,14 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
                 .grantHistoryOnly(ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE)
                 .publishToCamunda();
 
+        if (citizenDashboardEnabled) {
+            eventBuilder.submittedCallback(this::submitted);
+        }
+
         new PageBuilder(eventBuilder)
-                .page("createBundle")
-                .pageLabel("Create a bundle")
-                .done();
+            .page("createBundle")
+            .pageLabel("Create a bundle")
+            .done();
     }
 
     @SneakyThrows
@@ -107,21 +133,99 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         caseData.setCaseNumber(String.valueOf(details.getId()));
         caseData.setSubjectRepFullName(caseData.getCicCase().getFullName());
         caseData.setSchemeLabel(caseData.getCicCase().getSchemeCic() != null ? caseData.getCicCase().getSchemeCic().getLabel() : "");
+
+        try {
+            caseData.setAudioVideoEvidenceBundleDocument(
+                audioVideoEvidenceBundleService
+                    .createAudioVideoEvidenceBundleDocument(details.getId())
+                    .orElse(null)
+            );
+        } catch (AudioVideoEvidenceBundleException exception) {
+            log.error("Unable to create audio/video evidence document for case {}", details.getId(), exception);
+            clearTemporaryBundleData(caseData);
+            return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+                .data(caseData)
+                .errors(List.of(
+                    "The audio/video evidence document could not be created. "
+                        + "No bundle has been created. Please try again."
+                ))
+                .build();
+        }
+
         details.setData(caseData);
 
         final Callback callback = new Callback(details, beforeDetails, CREATE_BUNDLE, true);
         final BundleCallback bundleCallback = new BundleCallback(callback);
 
         List<ListValue<Bundle>> existingBundles = getExistingBundles(beforeDetails);
-        caseData.setCaseBundles(getConfiguredCaseBundles(caseData, bundleCallback, existingBundles));
+        try {
+            caseData.setCaseBundles(getConfiguredCaseBundles(caseData, bundleCallback, existingBundles));
+        } catch (RuntimeException exception) {
+            deleteAudioVideoEvidenceBundleDocument(caseData);
+            throw exception;
+        }
 
-        caseData.setMultiBundleConfiguration(null);
-        caseData.setCaseDocuments(null);
-        caseData.setFurtherCaseDocuments(null);
+        if (caseData.getCaseBundles() == null) {
+            deleteAudioVideoEvidenceBundleDocument(caseData);
+        }
+
+        clearTemporaryBundleData(caseData);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
+    }
+
+    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
+                                               CaseDetails<CaseData, State> beforeDetails) {
+
+        if (details.getState() == CaseClosed) {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader("# Bundle created.")
+                .build();
+        }
+
+        final CaseData data = details.getData();
+        final CicCase cicCase = data.getCicCase();
+        final String caseNumber = data.getHyphenatedCaseRef();
+        final List<String> errors = new ArrayList<>();
+
+        if (cicCase.getRespondentEmail() != null) {
+            try {
+                bundleCreatedNotification.sendToRespondent(data, caseNumber);
+            } catch (Exception notificationException) {
+                errors.add(RESPONDENT.getLabel());
+            }
+        }
+        if (!CollectionUtils.isEmpty(cicCase.getRepresentativeCIC())) {
+            try {
+                bundleCreatedNotification.sendToRepresentative(data, caseNumber);
+            } catch (Exception notificationException) {
+                errors.add(REPRESENTATIVE.getLabel());
+            }
+        }
+        if (CollectionUtils.isEmpty(cicCase.getRepresentativeCIC())
+            && !CollectionUtils.isEmpty(cicCase.getApplicantCIC())) {
+            try {
+                bundleCreatedNotification.sendToApplicant(data, caseNumber);
+            } catch (Exception notificationException) {
+                errors.add(APPLICANT.getLabel());
+            }
+        }
+
+        if (isEmpty(errors)) {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Bundle created. %n## %s",
+                    generateSimpleMessageBundleCreation(details.getData().getCicCase())))
+                .build();
+        } else {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(
+                    format("# Bundle creation notification failed %n## %s %n## Please resend the notification.",
+                        generateSimpleErrorMessage(errors))
+                )
+                .build();
+        }
     }
 
     private void setCaseBundleRequestDocuments(CaseData caseData, List<CaseworkerCICDocument> allDocuments) {
@@ -129,7 +233,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
 
         if (!CollectionUtils.isEmpty(initialDocuments)) {
             caseData.setCaseDocuments(convertToBundleDocumentType(initialDocuments));
-            caseData.setFurtherCaseDocuments(convertToBundleDocumentType(getFurtherDocuments(allDocuments, initialDocuments)));
+            caseData.setFurtherCaseDocuments(convertToBundleDocumentTypeFurtherDocs(getFurtherDocuments(allDocuments, initialDocuments)));
         } else {
             caseData.setCaseDocuments(convertToBundleDocumentType(allDocuments));
         }
@@ -156,6 +260,33 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         return docs.stream().filter(CaseworkerCICDocument::isValidBundleDocument).map(AbstractCaseworkerCICDocument::new).toList();
     }
 
+    private List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> convertToBundleDocumentTypeFurtherDocs(
+        List<CaseworkerCICDocument> docs) {
+        return docs.stream()
+            .filter(CaseworkerCICDocument::isValidBundleDocument)
+            .map(this::updateFurtherDocumentFileNames)
+            .map(AbstractCaseworkerCICDocument::new)
+            .toList();
+    }
+
+    private CaseworkerCICDocument updateFurtherDocumentFileNames(CaseworkerCICDocument doc) {
+        String filename = doc.getDocumentLink().getFilename();
+        String category = doc.getDocumentCategory() != null ? doc.getDocumentCategory().getType() : null;
+        String updatedFilename = filename != null && category != null ? category + " - " + filename : filename;
+
+        return CaseworkerCICDocument.builder()
+            .documentCategory(doc.getDocumentCategory())
+            .documentEmailContent(doc.getDocumentEmailContent())
+            .documentLink(Document.builder()
+                .url(doc.getDocumentLink().getUrl())
+                .binaryUrl(doc.getDocumentLink().getBinaryUrl())
+                .categoryId(doc.getDocumentCategory().getCategory())
+                .filename(updatedFilename)
+                .build())
+            .date(doc.getDate())
+            .build();
+    }
+
     private List<ListValue<Bundle>> getExistingBundles(CaseDetails<CaseData, State> beforeDetails) {
         if (beforeDetails == null || beforeDetails.getData() == null) {
             return emptyList();
@@ -166,7 +297,8 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
     private List<ListValue<Bundle>> getConfiguredCaseBundles(CaseData caseData,
                                                              BundleCallback bundleCallback,
                                                              List<ListValue<Bundle>> existingBundles) {
-        List<ListValue<Bundle>> caseBundles = bundlingService.buildBundleListValues(bundlingService.createBundle(bundleCallback));
+        List<ListValue<Bundle>> caseBundles = bundlingService.buildBundleListValues(bundlingService.createBundle(bundleCallback,
+            Long.parseLong(caseData.getCaseNumber())));
 
         if (caseBundles == null) {
             return null;
@@ -228,5 +360,20 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         }
 
         return caseBundles;
+    }
+
+    private void clearTemporaryBundleData(CaseData caseData) {
+        caseData.setMultiBundleConfiguration(null);
+        caseData.setCaseDocuments(null);
+        caseData.setFurtherCaseDocuments(null);
+        caseData.setAudioVideoEvidenceBundleDocument(null);
+    }
+
+    private void deleteAudioVideoEvidenceBundleDocument(CaseData caseData) {
+        if (caseData.getAudioVideoEvidenceBundleDocument() != null) {
+            audioVideoEvidenceBundleService.deleteAudioVideoEvidenceBundleDocument(
+                caseData.getAudioVideoEvidenceBundleDocument().getDocumentLink()
+            );
+        }
     }
 }

@@ -88,18 +88,22 @@ wa:
   wa-message-cron-service:
     job:
       schedule: "*/1 * * * *"
+      suspend: false
 
   wa-initiation-batch:
     job:
       schedule: "*/1 * * * *"
+      suspend: false
 
   wa-reconfiguration-batch:
     job:
       schedule: "*/1 * * * *"
+      suspend: false
 
   wa-termination-batch:
     job:
       schedule: "*/1 * * * *"
+      suspend: false
 
   #disable wa db as we are using the postgres flexible server
   wa:

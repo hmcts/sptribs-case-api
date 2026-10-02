@@ -46,9 +46,9 @@
       "value": {
         "documentLink": {
           "category_id": "A",
-          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/07b7a69a-51a7-4089-9b23-f046ba8f3d7f",
+          "document_url": "http://dm-store.service.core-compute.internal/documents/07b7a69a-51a7-4089-9b23-f046ba8f3d7f",
           "document_filename": "pdf.pdf",
-          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/07b7a69a-51a7-4089-9b23-f046ba8f3d7f/binary"
+          "document_binary_url": "http://dm-store.service.core-compute.internal/documents/07b7a69a-51a7-4089-9b23-f046ba8f3d7f/binary"
         },
         "documentCategory": "ApplicationForm",
         "documentEmailContent": "Lorem ipsum form"

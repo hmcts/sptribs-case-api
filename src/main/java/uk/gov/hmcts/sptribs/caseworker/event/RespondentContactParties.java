@@ -20,7 +20,13 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.service.ContactPartiesService;
+import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import static java.lang.String.format;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
@@ -58,6 +64,9 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
     private String baseUrl;
     private final ContactPartiesNotification contactPartiesNotification;
     private final ContactPartiesSelectDocument contactPartiesSelectDocument;
+    private final NotificationHelper notificationHelper;
+    private final ContactPartiesService contactPartiesService;
+    private static final int DOC_ATTACH_LIMIT = 10;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -128,21 +137,29 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
     private void sendContactPartiesNotification(CaseDetails<CaseData, State> details, CaseData data, String caseNumber) {
         final ContactParties contactParties = data.getContactParties();
         final CaseData caseData = details.getData();
+        final Map<String, String> uploadedDocuments = notificationHelper
+            .buildDocumentList(caseData.getContactPartiesDocuments().getDocumentList(), DOC_ATTACH_LIMIT);
+        List<String> correspondenceIds = new ArrayList<>();
 
         if (contactParties != null) {
             if (!isEmpty(contactParties.getSubjectContactParties())) {
-                contactPartiesNotification.sendToSubject(caseData, caseNumber);
+                correspondenceIds.add(contactPartiesNotification.sendToSubject(caseData, caseNumber, uploadedDocuments));
             }
             if (!isEmpty(contactParties.getRepresentativeContactParties())) {
-                contactPartiesNotification.sendToRepresentative(caseData, caseNumber);
+                correspondenceIds.add(contactPartiesNotification.sendToRepresentative(caseData, caseNumber, uploadedDocuments));
             }
             if (!isEmpty(contactParties.getApplicantContactParties())) {
-                contactPartiesNotification.sendToApplicant(caseData, caseNumber);
+                correspondenceIds.add(contactPartiesNotification.sendToApplicant(caseData, caseNumber, uploadedDocuments));
             }
             if (!isEmpty(contactParties.getTribunal())) {
-                contactPartiesNotification.sendToTribunal(caseData, caseNumber);
+                correspondenceIds.add(contactPartiesNotification.sendToTribunal(caseData, caseNumber, uploadedDocuments));
             }
         }
+
+        if (!correspondenceIds.isEmpty()) {
+            contactPartiesService.linkCorrespondenceIdsToDocuments(caseData, uploadedDocuments, correspondenceIds);
+        }
+
     }
 }
 

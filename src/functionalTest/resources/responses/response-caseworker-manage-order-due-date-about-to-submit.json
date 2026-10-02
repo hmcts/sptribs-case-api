@@ -35,9 +35,9 @@
           ],
           "draftOrder": {
             "templateGeneratedDocument": {
-              "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/e58a6e2b-9fdf-45ba-975f-6bcd59c71344",
+              "document_url": "http://dm-store.service.core-compute.internal/documents/e58a6e2b-9fdf-45ba-975f-6bcd59c71344",
               "document_filename": "SENT :Order--[Subject AutoTesting]--29-05-2024 13:36:27.pdf",
-              "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/e58a6e2b-9fdf-45ba-975f-6bcd59c71344/binary",
+              "document_binary_url": "http://dm-store.service.core-compute.internal/documents/e58a6e2b-9fdf-45ba-975f-6bcd59c71344/binary",
               "category_id": "TD"
             },
             "orderContentOrderTemplate": "CIC3_Rule_27",

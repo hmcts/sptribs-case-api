@@ -105,7 +105,7 @@ public class CancelHearingNotification implements PartiesNotification {
             destinationAddress,
             templateVars,
             TemplateName.HEARING_CANCELLED_EMAIL);
-        return notificationService.sendEmail(request, caseReferenceNumber);
+        return notificationService.sendEmail(request, caseReferenceNumber, null);
     }
 
     private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter, String caseReferenceNumber) {

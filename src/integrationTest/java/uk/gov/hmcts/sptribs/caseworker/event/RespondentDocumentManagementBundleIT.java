@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.sptribs.IntegrationTestBase;
 import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
 import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -33,6 +35,7 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.model.PageNumberFormat;
+import uk.gov.hmcts.sptribs.manager.CaseDataITManager;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
 import java.util.ArrayList;
@@ -73,6 +76,8 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_HYPHENATED;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 
@@ -80,7 +85,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @ContextConfiguration(initializers = {IdamWireMock.PropertiesInitializer.class})
-class RespondentDocumentManagementBundleIT {
+class RespondentDocumentManagementBundleIT extends IntegrationTestBase {
 
     private static final TypeReference<Map<String, Object>> RESPONSE_TYPE = new TypeReference<>() {};
     private static final Map<String, String> CATEGORY_TO_FOLDER = Map.ofEntries(
@@ -114,6 +119,9 @@ class RespondentDocumentManagementBundleIT {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private CaseDataITManager caseDataITManager;
+
     @MockitoBean
     private WebMvcConfig webMvcConfig;
 
@@ -136,12 +144,18 @@ class RespondentDocumentManagementBundleIT {
         IdamWireMock.stopAndReset();
     }
 
+    @BeforeEach
+    void setUpCase() {
+        caseDataITManager.addCaseData(TEST_CASE_ID, "test", "{}");
+    }
+
     @Test
     void shouldSeparateInitialAndFurtherDocumentsWhenCreatingBundle() throws Exception {
         when(auditEventService.hasCaseEvent(anyString(), eq(RESPONDENT_DOCUMENT_MANAGEMENT)))
             .thenReturn(false, true);
 
         CaseData caseData = prepareInitialCaseData();
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
 
         caseData.getNewDocManagement().setCaseworkerCICDocumentUpload(
             createUploads(
@@ -195,7 +209,8 @@ class RespondentDocumentManagementBundleIT {
             .containsExactlyInAnyOrder("initial-application.pdf", "initial-linked.pdf");
 
         assertThat(furtherDocumentNames.get())
-            .containsExactlyInAnyOrder("second-application.pdf", "second-linked.pdf", "caseworker-direction.pdf");
+            .containsExactlyInAnyOrder("Application Form - second-application.pdf", "Linked docs - second-linked.pdf",
+                "Direction / decision notices - caseworker-direction.pdf");
 
         verify(bundlingClient).createBundle(
             eq(SERVICE_AUTHORIZATION),
@@ -213,7 +228,8 @@ class RespondentDocumentManagementBundleIT {
         assertThat(folderDocumentNames.get("Linked documents"))
             .containsExactly("initial-linked.pdf");
         assertThat(folderDocumentNames.get("Further Documents"))
-            .containsExactlyInAnyOrder("second-application.pdf", "second-linked.pdf", "caseworker-direction.pdf")
+            .containsExactlyInAnyOrder("Application Form - second-application.pdf", "Linked docs - second-linked.pdf",
+                "Direction / decision notices - caseworker-direction.pdf")
             .doesNotContain("initial-application.pdf", "initial-linked.pdf");
     }
 
@@ -389,10 +405,17 @@ class RespondentDocumentManagementBundleIT {
     private List<ListValue<CaseworkerCICDocumentUpload>> createUploads(DocumentUploadSpec... specs) {
         List<ListValue<CaseworkerCICDocumentUpload>> uploads = new ArrayList<>();
         for (DocumentUploadSpec spec : specs) {
+            String documentId = UUID.randomUUID().toString();
+            String documentUrl = "http://localhost:8080/documents/" + documentId;
+            String documentBinaryUrl = documentUrl + "/binary";
             CaseworkerCICDocumentUpload upload = CaseworkerCICDocumentUpload.builder()
                 .documentCategory(spec.documentType())
                 .documentEmailContent("Description for " + spec.fileName())
-                .documentLink(Document.builder().filename(spec.fileName()).build())
+                .documentLink(Document.builder()
+                    .filename(spec.fileName())
+                    .url(documentUrl)
+                    .binaryUrl(documentBinaryUrl)
+                    .build())
                 .build();
             ListValue<CaseworkerCICDocumentUpload> listValue = new ListValue<>();
             listValue.setId(UUID.randomUUID().toString());

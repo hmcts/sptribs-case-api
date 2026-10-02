@@ -27,6 +27,8 @@ import uk.gov.hmcts.sptribs.common.event.page.RepresentativeDetails;
 import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
 import uk.gov.hmcts.sptribs.common.event.page.SubjectDetails;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
+import uk.gov.hmcts.sptribs.document.service.DocumentDownloadStatusService;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_CASE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -61,10 +63,12 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
     private static final CcdPageConfiguration editContactPreferenceDetails = new ContactPreferenceDetails();
 
     private final SubmissionService submissionService;
+    private final DocumentDownloadStatusService documentDownloadStatusService;
 
     @Autowired
-    public CaseworkerEditCase(SubmissionService submissionService) {
+    public CaseworkerEditCase(SubmissionService submissionService, DocumentDownloadStatusService documentDownloadStatusService) {
         this.submissionService = submissionService;
+        this.documentDownloadStatusService = documentDownloadStatusService;
     }
 
     @Override
@@ -95,6 +99,18 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
         if (checkNull(beforeData) && beforeData.getCicCase().getPartiesCIC().contains(PartiesCIC.APPLICANT)
             && checkNull(data) && !data.getCicCase().getPartiesCIC().contains(PartiesCIC.APPLICANT)) {
             CicCaseFieldsUtil.removeApplicant(data);
+        }
+
+        final String currentName = data.getCicCase() != null ? data.getCicCase().getRepresentativeFullName() : null;
+        final String beforeName = beforeData.getCicCase() != null ? beforeData.getCicCase().getRepresentativeFullName() : null;
+        boolean hasNameChanged = beforeName != null && !beforeName.isBlank() && !beforeName.equalsIgnoreCase(currentName);
+
+        final String currentEmail = data.getCicCase() != null ? data.getCicCase().getRepresentativeEmailAddress() : null;
+        final String beforeEmail = beforeData.getCicCase() != null ? beforeData.getCicCase().getRepresentativeEmailAddress() : null;
+        boolean hasEmailChanged = beforeEmail != null && !beforeEmail.isBlank() && !beforeEmail.equalsIgnoreCase(currentEmail);
+
+        if (hasNameChanged && hasEmailChanged) {
+            documentDownloadStatusService.deleteDocumentDownloadStatusesForCaseAndParty(details.getId(), Party.REPRESENTATIVE);
         }
 
         CaseDetails<CaseData, State> submittedDetails = submissionService.submitApplication(details);

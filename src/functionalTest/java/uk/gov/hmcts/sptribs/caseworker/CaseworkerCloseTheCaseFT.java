@@ -3,8 +3,10 @@ package uk.gov.hmcts.sptribs.caseworker;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
+import java.util.List;
 import java.util.Map;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
@@ -51,7 +53,8 @@ public class CaseworkerCloseTheCaseFT extends FunctionalTestSuite {
         final Response response = triggerCallback(
             caseData,
             CASEWORKER_CLOSE_THE_CASE,
-            CLOSE_CASE_UPLOAD_DOCUMENTS_MID_EVENT_URL
+            CLOSE_CASE_UPLOAD_DOCUMENTS_MID_EVENT_URL,
+            false
         );
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
@@ -67,7 +70,8 @@ public class CaseworkerCloseTheCaseFT extends FunctionalTestSuite {
         final Response response = triggerCallback(
             caseData,
             CASEWORKER_CLOSE_THE_CASE,
-            CLOSE_CASE_UPLOAD_DOCUMENTS_MID_EVENT_URL
+            CLOSE_CASE_UPLOAD_DOCUMENTS_MID_EVENT_URL,
+            false
         );
 
         assertThatJson(response.asString())
@@ -80,7 +84,7 @@ public class CaseworkerCloseTheCaseFT extends FunctionalTestSuite {
     public void shouldPopulateJudgesListInAboutToStartCallback() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_CASE_DATA);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_CLOSE_THE_CASE, ABOUT_TO_START_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_CLOSE_THE_CASE, ABOUT_TO_START_URL, false);
         final String responseAsString = response.asString();
 
         assertThatJson(responseAsString)
@@ -103,7 +107,7 @@ public class CaseworkerCloseTheCaseFT extends FunctionalTestSuite {
     public void shouldUpdateCategoryToCaseworkerDocumentInAboutToSubmitCallback() throws Exception {
         final Map<String, Object> caseData = caseData(ABOUT_TO_SUBMIT_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_CLOSE_THE_CASE, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_CLOSE_THE_CASE, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -115,7 +119,7 @@ public class CaseworkerCloseTheCaseFT extends FunctionalTestSuite {
     public void shouldSendEmailSuccessfullyInSubmittedCallback() throws Exception {
         final Map<String, Object> caseData = caseData(SUBMITTED_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_CLOSE_THE_CASE, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_CLOSE_THE_CASE, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -125,13 +129,32 @@ public class CaseworkerCloseTheCaseFT extends FunctionalTestSuite {
                     + "## A notification has been sent to: Subject \\n"
                     + "## Use 'Reinstate case' if this case needs to be reopened in the future."
             );
+
+        long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
+
+        List<CorrespondenceEntity> correspondenceEntities = caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef);
+        assertThat(correspondenceEntities).hasSize(1);
+
+        CorrespondenceEntity firstCorrespondenceEntity = correspondenceEntities.getFirst();
+
+        assertThat(firstCorrespondenceEntity.getId()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
+            .toString().replace("-", "")));
+        assertThat(firstCorrespondenceEntity.getEventType()).isEqualTo("CASE_WITHDRAWN_EMAIL");
+        assertThat(firstCorrespondenceEntity.getSentOn()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getSentFrom()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getSentTo()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getCorrespondenceType()).isEqualTo("Email");
+        assertThat(firstCorrespondenceEntity.getDocumentUrl()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getDocumentFilename()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getDocumentBinaryUrl()).isNotNull();
     }
 
     @Test
     public void shouldErrorSubmittedCallback() throws Exception {
         final Map<String, Object> caseData = caseData(SUBMITTED_REQUEST_WITHOUT_EMAIL);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_CLOSE_THE_CASE, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_CLOSE_THE_CASE, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())

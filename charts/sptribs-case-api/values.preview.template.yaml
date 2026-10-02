@@ -21,6 +21,8 @@ java:
     POSTGRES_NAME: "{{ .Values.global.databaseNamePrefix }}sptribs-case-api"
     POSTGRES_USERNAME: ${SPTRIBS_POSTGRES_USERNAME_PREVIEW}
     POSTGRES_CONNECTION_OPTIONS: ""
+    CITIZEN_DASHBOARD_ENABLED: false
+    SPTRIBS_FRONTEND_URL: "https://sptribs-frontend.aat.platform.hmcts.net/dashboard"
   keyVaults:
     sptribs:
       secrets:
@@ -187,6 +189,7 @@ ccd:
         USER_PROFILE_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
         IDAM_ADMIN_WEB_SERVICE_KEY: ${ADMIN_S2S_KEY}
         IDAM_OAUTH2_AW_CLIENT_SECRET: ${ADMIN_WEB_IDAM_SECRET}
+        SESSION_KEYS: '${SESSION_KEYS}'
 
   importer:
     userprofile:

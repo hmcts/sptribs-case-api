@@ -11,10 +11,10 @@
       }
     ]
   },
-  "hyphenatedCaseRef": "1714-0484-2347-8720",
   "cicCaseHearingNotificationParties": [
     "Subject"
   ],
+  "cicCaseContactPreferenceType": "Email",
   "hearingType": "CaseManagement",
   "hearingFormat": "Face to Face",
   "hearingSummaryExists": null,

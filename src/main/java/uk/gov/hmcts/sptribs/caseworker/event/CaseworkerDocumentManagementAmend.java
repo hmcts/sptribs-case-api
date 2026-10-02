@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -21,6 +22,10 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.CaseDocumentListUtil.updateCaseDocumentList;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_DOCUMENT_MANAGEMENT_AMEND;
@@ -53,10 +58,12 @@ import static uk.gov.hmcts.sptribs.document.DocumentConstants.REINSTATE_TYPE;
 @Component
 @Slf4j
 @Setter
+@RequiredArgsConstructor
 public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, State, UserRole> {
 
     private static final CcdPageConfiguration selectDocuments = new DocumentManagementSelectDocuments();
     private static final CcdPageConfiguration amendDocuments = new DocumentManagementAmendDocuments();
+    private final DocumentsService documentsService;
 
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
@@ -114,6 +121,21 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
         final String selectedDocumentEmailContent = cicCase.getSelectedDocumentEmailContent();
         final Document selectedDocumentLink = cicCase.getSelectedDocumentLink();
         final String selectedDocumentType = cicCase.getSelectedDocumentType();
+
+        List<String> errors = new ArrayList<>();
+        if (!selectedDocumentCategory.getCategory().equals(selectedDocumentLink.getCategoryId())) {
+            try {
+                documentsService.setNewDocumentTypeName(
+                    selectedDocumentLink.getBinaryUrl(),
+                    selectedDocumentCategory.name()
+                );
+            } catch (RuntimeException e) {
+                log.error("Document entity with filename {} could not be assigned new category ID or document type ID: {}",
+                    selectedDocumentLink.getFilename(), e.getMessage());
+                errors.add("Document with filename " + selectedDocumentLink.getFilename()
+                    + " could not be assigned new category ID");
+            }
+        }
 
         switch (selectedDocumentType) {
             case CASE_TYPE:
@@ -173,11 +195,13 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
             default:
                 break;
         }
+
         cicCase.setSelectedDocumentCategory(null);
         cicCase.setSelectedDocumentEmailContent(null);
         cicCase.setSelectedDocumentLink(null);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
+            .errors(errors)
             .build();
 
     }

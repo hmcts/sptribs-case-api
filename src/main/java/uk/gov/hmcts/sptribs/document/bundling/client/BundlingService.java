@@ -29,6 +29,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.BUNDLE_FILE_NAME;
 import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.CASE_BUNDLES;
 import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.DESCRIPTION;
 import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.DOCUMENTS;
@@ -53,8 +54,6 @@ import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.VALUE;
 @SuppressWarnings("unchecked")
 public class BundlingService {
 
-    private static final String BUNDLE_FILE_NAME = "st_cic_bundle_all_case.yaml";
-
     @Autowired
     private HttpServletRequest httpServletRequest;
 
@@ -67,7 +66,7 @@ public class BundlingService {
     @Autowired
     private Clock clock;
 
-    public List<Bundle> createBundle(Callback callback) {
+    public List<Bundle> createBundle(Callback callback, Long caseNumber) {
         BundleResponse response;
         try {
             response = bundlingClient.createBundle(
@@ -75,7 +74,7 @@ public class BundlingService {
                 httpServletRequest.getHeader(AUTHORIZATION),
                 callback);
 
-            return getBundleFromResponse((List<LinkedHashMap<String, Object>>) response.getData().get(CASE_BUNDLES));
+            return getBundleFromResponse((List<LinkedHashMap<String, Object>>) response.getData().get(CASE_BUNDLES), caseNumber);
         } catch (FeignException exception) {
             log.error("Unable to create bundle {}",
                 exception.getMessage());
@@ -151,19 +150,23 @@ public class BundlingService {
         return newList;
     }
 
-    private List<Bundle> getBundleFromResponse(List<LinkedHashMap<String, Object>> response) {
+    private List<Bundle> getBundleFromResponse(List<LinkedHashMap<String, Object>> response, Long caseNumber) {
         List<Bundle> bundleList = new ArrayList<>();
+
         Optional.ofNullable(response).ifPresent(list ->
             list.forEach(res -> {
                 LinkedHashMap<String, Object> objectLinkedHashMap = (LinkedHashMap<String, Object>) res.get(VALUE);
-                Bundle bundle = buildBundle(objectLinkedHashMap);
+                Bundle bundle = buildBundle(objectLinkedHashMap, caseNumber);
 
                 bundle.setFolders(buildBundleFolderListValues(buildBundleFolders(objectLinkedHashMap)));
+
                 if (objectLinkedHashMap.get(DOCUMENTS) != null) {
                     List<Map<String, Object>> documentsFromResponse = (List<Map<String, Object>>) objectLinkedHashMap.get(DOCUMENTS);
                     bundle.setDocuments(buildBundleDocumentListValues(getDocuments(documentsFromResponse)));
                 }
+
                 bundleList.add(bundle);
+
             }));
 
         return bundleList;
@@ -192,24 +195,28 @@ public class BundlingService {
         return folders;
     }
 
-    private Bundle buildBundle(LinkedHashMap<String, Object> objectLinkedHashMap) {
+    private Bundle buildBundle(LinkedHashMap<String, Object> objectLinkedHashMap, Long caseNumber) {
+
+        Document stitchedDocument = getStitchedDocument(objectLinkedHashMap, caseNumber);
+        String stitchingFailureMessage = MapUtils.getString(objectLinkedHashMap, STITCHING_FAILURE_MESSAGE, "");
+
         return Bundle.builder()
             .stitchStatus(NEW)
             .description(MapUtils.getString(objectLinkedHashMap, DESCRIPTION, ""))
             .id(MapUtils.getString(objectLinkedHashMap, ID, ""))
             .dateAndTime(LocalDateTime.now(clock))
             .title(MapUtils.getString(objectLinkedHashMap, TITLE, ""))
-            .stitchedDocument(getStitchedDocument(objectLinkedHashMap))
+            .stitchedDocument(stitchedDocument)
             .paginationStyle(BundlePaginationStyle.valueOf(
                 MapUtils.getObject(objectLinkedHashMap, PAGINATION_STYLE, BundlePaginationStyle.off).toString()))
             .pageNumberFormat(PageNumberFormat.valueOf(
                 MapUtils.getObject(objectLinkedHashMap, PAGE_NUMBER_FORMAT, PageNumberFormat.numberOfPages).toString()))
-            .stitchingFailureMessage(MapUtils.getString(objectLinkedHashMap, STITCHING_FAILURE_MESSAGE, ""))
+            .stitchingFailureMessage(stitchingFailureMessage)
             .stitchStatus(MapUtils.getString(objectLinkedHashMap, STITCHING_STATUS, ""))
             .build();
     }
 
-    private Document getStitchedDocument(LinkedHashMap<String, Object> objectLinkedHashMap) {
+    private Document getStitchedDocument(LinkedHashMap<String, Object> objectLinkedHashMap, Long caseNumber) {
         if (ObjectUtils.isEmpty(objectLinkedHashMap.get(STITCHED_DOCUMENT))) {
             return null;
         }

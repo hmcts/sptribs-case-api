@@ -25,7 +25,7 @@ public class CaseworkerChangeSecurityClassificationFT extends FunctionalTestSuit
     public void shouldTriggerSuccessfulResponseIfSubmitCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_SUBMITTED);
 
-        final Response response = triggerCallback(caseData, EventConstants.CHANGE_SECURITY_CLASS, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, EventConstants.CHANGE_SECURITY_CLASS, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
