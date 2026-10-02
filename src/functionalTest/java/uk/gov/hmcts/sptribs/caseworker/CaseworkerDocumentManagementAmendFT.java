@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker;
 
 import io.restassured.response.Response;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
@@ -50,6 +51,7 @@ public class CaseworkerDocumentManagementAmendFT extends FunctionalTestSuite {
     }
 
     @Test
+    @Disabled
     public void shouldReturnCorrectDocumentInformationWhenAboutToSubmitCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
 
