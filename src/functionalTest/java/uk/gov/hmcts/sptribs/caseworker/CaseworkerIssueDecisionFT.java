@@ -2,6 +2,9 @@ package uk.gov.hmcts.sptribs.caseworker;
 
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
@@ -135,6 +138,43 @@ public class CaseworkerIssueDecisionFT extends FunctionalTestSuite {
         assertThat(firstDocumentEntity.getDocumentUrl()).isNotNull();
         assertThat(firstDocumentEntity.getDocumentFilename()).isNotNull();
         assertThat(firstDocumentEntity.getDocumentBinaryUrl()).isNotNull();
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "CIC3 - Rule 27, Rule 27",
+        "CIC11 - Strike Out Decision Notice, Strike Out"
+    })
+    public void shouldCloseCaseWhenIssuingClosingDecisionTemplate(String template, String outcome) throws Exception {
+        final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
+        caseData.put("caseIssueDecisionIssueDecisionTemplate", template);
+        caseData.put("caseIssueDecisionDecisionOutcome", outcome);
+
+        final Response response = triggerCallback(caseData, CASEWORKER_ISSUE_DECISION, ABOUT_TO_SUBMIT_URL, false);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString()).inPath(STATE).isString().isEqualTo("CaseClosed");
+        assertThatJson(response.asString()).inPath(DECISION_DATE).isString().isEqualTo(LocalDate.now().toString());
+
+        long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
+        assertThat(caseDocumentsFTDataManager.getDocumentEntities(testCaseRef)).hasSize(1);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"Rule 27", "Withdrawn", "Strike Out"})
+    public void shouldCloseCaseWhenIssuingUploadedClosingDecision(String outcome) throws Exception {
+        final Map<String, Object> caseData = caseData(UPLOAD_DOCUMENT_CALLBACK_REQUEST);
+        caseData.put("caseIssueDecisionDecisionNotice", "Upload from your computer");
+        caseData.put("caseIssueDecisionDecisionOutcome", outcome);
+
+        final Response response = triggerCallback(caseData, CASEWORKER_ISSUE_DECISION, ABOUT_TO_SUBMIT_URL, false);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString()).inPath(STATE).isString().isEqualTo("CaseClosed");
+        assertThatJson(response.asString()).inPath(DECISION_DATE).isString().isEqualTo(LocalDate.now().toString());
+
+        long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
+        assertThat(caseDocumentsFTDataManager.getDocumentEntities(testCaseRef)).hasSize(1);
     }
 
     @Test
