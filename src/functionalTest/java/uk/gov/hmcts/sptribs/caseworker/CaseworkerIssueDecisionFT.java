@@ -3,7 +3,6 @@ package uk.gov.hmcts.sptribs.caseworker;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
@@ -141,14 +140,13 @@ public class CaseworkerIssueDecisionFT extends FunctionalTestSuite {
     }
 
     @ParameterizedTest
-    @CsvSource({
-        "CIC3 - Rule 27, Rule 27",
-        "CIC11 - Strike Out Decision Notice, Strike Out"
+    @ValueSource(strings = {
+        "CIC3 - Rule 27",
+        "CIC11 - Strike Out Decision Notice"
     })
-    public void shouldCloseCaseWhenIssuingClosingDecisionTemplate(String template, String outcome) throws Exception {
+    public void shouldCloseCaseWhenIssuingClosingDecisionTemplate(String template) throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
         caseData.put("caseIssueDecisionIssueDecisionTemplate", template);
-        caseData.put("caseIssueDecisionDecisionOutcome", outcome);
 
         final Response response = triggerCallback(caseData, CASEWORKER_ISSUE_DECISION, ABOUT_TO_SUBMIT_URL, false);
 
@@ -161,16 +159,19 @@ public class CaseworkerIssueDecisionFT extends FunctionalTestSuite {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"Rule 27", "Withdrawn", "Strike Out"})
-    public void shouldCloseCaseWhenIssuingUploadedClosingDecision(String outcome) throws Exception {
+    @ValueSource(strings = {
+        "CIC3 - Rule 27",
+        "CIC11 - Strike Out Decision Notice"
+    })
+    public void shouldKeepCaseManagementWhenIssuingUploadedDecision(String template) throws Exception {
         final Map<String, Object> caseData = caseData(UPLOAD_DOCUMENT_CALLBACK_REQUEST);
         caseData.put("caseIssueDecisionDecisionNotice", "Upload from your computer");
-        caseData.put("caseIssueDecisionDecisionOutcome", outcome);
+        caseData.put("caseIssueDecisionIssueDecisionTemplate", template);
 
         final Response response = triggerCallback(caseData, CASEWORKER_ISSUE_DECISION, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
-        assertThatJson(response.asString()).inPath(STATE).isString().isEqualTo("CaseClosed");
+        assertThatJson(response.asString()).inPath(STATE).isString().isEqualTo("CaseManagement");
         assertThatJson(response.asString()).inPath(DECISION_DATE).isString().isEqualTo(LocalDate.now().toString());
 
         long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));

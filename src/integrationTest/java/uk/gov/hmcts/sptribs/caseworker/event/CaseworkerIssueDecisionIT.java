@@ -19,7 +19,6 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.sptribs.IntegrationTestBase;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
-import uk.gov.hmcts.sptribs.caseworker.model.DecisionOutcome;
 import uk.gov.hmcts.sptribs.caseworker.model.NoticeOption;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -237,12 +236,11 @@ public class CaseworkerIssueDecisionIT extends IntegrationTestBase {
     @ParameterizedTest
     @MethodSource("decisionStates")
     void shouldReturnStateForCompletedDecision(NoticeOption noticeOption, DecisionTemplate template,
-                                               DecisionOutcome outcome, String expectedState) throws Exception {
+                                               String expectedState) throws Exception {
         final CaseData caseData = CaseData.builder()
             .caseIssueDecision(CaseIssueDecision.builder()
                 .decisionNotice(noticeOption)
                 .issueDecisionTemplate(template)
-                .decisionOutcome(outcome)
                 .build())
             .build();
 
@@ -257,25 +255,18 @@ public class CaseworkerIssueDecisionIT extends IntegrationTestBase {
 
         assertThatJson(response).inPath("$.state").isString().isEqualTo(expectedState);
         assertThatJson(response).inPath("$.data.caseIssueDecisionDecisionDate").isString();
-        if (outcome != null) {
-            assertThatJson(response).inPath("$.data.caseIssueDecisionDecisionOutcome").isString()
-                .isEqualTo(outcome.getLabel());
-        }
     }
 
     private static Stream<Arguments> decisionStates() {
         return Stream.of(
-            Arguments.of(NoticeOption.CREATE_FROM_TEMPLATE, DecisionTemplate.RULE_27,
-                DecisionOutcome.RULE_27, "CaseClosed"),
-            Arguments.of(NoticeOption.CREATE_FROM_TEMPLATE, DecisionTemplate.STRIKE_OUT_DECISION_NOTICE,
-                DecisionOutcome.STRIKE_OUT, "CaseClosed"),
-            Arguments.of(NoticeOption.UPLOAD_FROM_COMPUTER, null, DecisionOutcome.RULE_27, "CaseClosed"),
-            Arguments.of(NoticeOption.UPLOAD_FROM_COMPUTER, null, DecisionOutcome.WITHDRAWN, "CaseClosed"),
-            Arguments.of(NoticeOption.UPLOAD_FROM_COMPUTER, null, DecisionOutcome.STRIKE_OUT, "CaseClosed"),
-            Arguments.of(NoticeOption.CREATE_FROM_TEMPLATE, DecisionTemplate.STRIKE_OUT_WARNING,
-                DecisionOutcome.OTHER, "CaseManagement"),
-            Arguments.of(NoticeOption.CREATE_FROM_TEMPLATE, DecisionTemplate.ELIGIBILITY,
-                DecisionOutcome.OTHER, "CaseManagement")
+            Arguments.of(NoticeOption.CREATE_FROM_TEMPLATE, DecisionTemplate.RULE_27, "CaseClosed"),
+            Arguments.of(NoticeOption.CREATE_FROM_TEMPLATE, DecisionTemplate.STRIKE_OUT_DECISION_NOTICE, "CaseClosed"),
+            Arguments.of(NoticeOption.CREATE_FROM_TEMPLATE, DecisionTemplate.STRIKE_OUT_WARNING, "CaseManagement"),
+            Arguments.of(NoticeOption.CREATE_FROM_TEMPLATE, DecisionTemplate.ELIGIBILITY, "CaseManagement"),
+            Arguments.of(NoticeOption.CREATE_FROM_TEMPLATE, DecisionTemplate.BLANK_DECISION_NOTICE, "CaseManagement"),
+            Arguments.of(NoticeOption.UPLOAD_FROM_COMPUTER, null, "CaseManagement"),
+            Arguments.of(NoticeOption.UPLOAD_FROM_COMPUTER, DecisionTemplate.RULE_27, "CaseManagement"),
+            Arguments.of(NoticeOption.UPLOAD_FROM_COMPUTER, DecisionTemplate.STRIKE_OUT_DECISION_NOTICE, "CaseManagement")
         );
     }
 

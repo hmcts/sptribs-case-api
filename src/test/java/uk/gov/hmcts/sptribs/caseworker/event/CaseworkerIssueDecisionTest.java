@@ -1,7 +1,5 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +20,6 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionFooter;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionSelectTemplate;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
-import uk.gov.hmcts.sptribs.caseworker.model.DecisionOutcome;
 import uk.gov.hmcts.sptribs.caseworker.model.NoticeOption;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -47,7 +44,6 @@ import uk.gov.hmcts.sptribs.notification.dispatcher.DecisionIssuedNotification;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -202,7 +198,6 @@ class CaseworkerIssueDecisionTest {
         final CaseIssueDecision decision = CaseIssueDecision.builder()
             .decisionNotice(NoticeOption.CREATE_FROM_TEMPLATE)
             .issueDecisionTemplate(DecisionTemplate.RULE_27)
-            .decisionOutcome(DecisionOutcome.RULE_27)
             .issueDecisionDraft(document)
             .build();
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
@@ -220,12 +215,10 @@ class CaseworkerIssueDecisionTest {
 
     @ParameterizedTest
     @MethodSource("decisionStates")
-    void shouldSetStateForDecisionOutcome(NoticeOption noticeOption, DecisionTemplate template,
-                                          DecisionOutcome outcome, State expectedState) {
+    void shouldSetStateForDecision(NoticeOption noticeOption, DecisionTemplate template, State expectedState) {
         final CaseIssueDecision decision = CaseIssueDecision.builder()
             .decisionNotice(noticeOption)
             .issueDecisionTemplate(template)
-            .decisionOutcome(outcome)
             .build();
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         details.setData(CaseData.builder().caseIssueDecision(decision).build());
@@ -239,61 +232,15 @@ class CaseworkerIssueDecisionTest {
 
     private static Stream<Arguments> decisionStates() {
         return Stream.of(
-            Arguments.of(NoticeOption.CREATE_FROM_TEMPLATE, DecisionTemplate.RULE_27, DecisionOutcome.RULE_27, CaseClosed),
-            Arguments.of(NoticeOption.CREATE_FROM_TEMPLATE, DecisionTemplate.RULE_27, null, CaseClosed),
-            Arguments.of(NoticeOption.CREATE_FROM_TEMPLATE, DecisionTemplate.STRIKE_OUT_DECISION_NOTICE,
-                DecisionOutcome.STRIKE_OUT, CaseClosed),
-            Arguments.of(NoticeOption.CREATE_FROM_TEMPLATE, DecisionTemplate.STRIKE_OUT_DECISION_NOTICE, null, CaseClosed),
-            Arguments.of(NoticeOption.CREATE_FROM_TEMPLATE, DecisionTemplate.BLANK_DECISION_NOTICE,
-                DecisionOutcome.WITHDRAWN, CaseClosed),
-            Arguments.of(NoticeOption.UPLOAD_FROM_COMPUTER, null, DecisionOutcome.RULE_27, CaseClosed),
-            Arguments.of(NoticeOption.UPLOAD_FROM_COMPUTER, null, DecisionOutcome.WITHDRAWN, CaseClosed),
-            Arguments.of(NoticeOption.UPLOAD_FROM_COMPUTER, null, DecisionOutcome.STRIKE_OUT, CaseClosed),
-            Arguments.of(NoticeOption.CREATE_FROM_TEMPLATE, DecisionTemplate.ELIGIBILITY, DecisionOutcome.OTHER, CaseManagement),
-            Arguments.of(NoticeOption.CREATE_FROM_TEMPLATE, DecisionTemplate.STRIKE_OUT_WARNING,
-                DecisionOutcome.OTHER, CaseManagement),
-            Arguments.of(NoticeOption.UPLOAD_FROM_COMPUTER, DecisionTemplate.RULE_27, null, CaseManagement),
-            Arguments.of(NoticeOption.UPLOAD_FROM_COMPUTER, null, DecisionOutcome.OTHER, CaseManagement)
+            Arguments.of(NoticeOption.CREATE_FROM_TEMPLATE, DecisionTemplate.RULE_27, CaseClosed),
+            Arguments.of(NoticeOption.CREATE_FROM_TEMPLATE, DecisionTemplate.STRIKE_OUT_DECISION_NOTICE, CaseClosed),
+            Arguments.of(NoticeOption.CREATE_FROM_TEMPLATE, DecisionTemplate.STRIKE_OUT_WARNING, CaseManagement),
+            Arguments.of(NoticeOption.CREATE_FROM_TEMPLATE, DecisionTemplate.ELIGIBILITY, CaseManagement),
+            Arguments.of(NoticeOption.CREATE_FROM_TEMPLATE, DecisionTemplate.BLANK_DECISION_NOTICE, CaseManagement),
+            Arguments.of(NoticeOption.UPLOAD_FROM_COMPUTER, null, CaseManagement),
+            Arguments.of(NoticeOption.UPLOAD_FROM_COMPUTER, DecisionTemplate.RULE_27, CaseManagement),
+            Arguments.of(NoticeOption.UPLOAD_FROM_COMPUTER, DecisionTemplate.STRIKE_OUT_DECISION_NOTICE, CaseManagement)
         );
-    }
-
-    @ParameterizedTest
-    @MethodSource("conflictingDecisions")
-    void shouldRejectOutcomeConflictingWithTemplate(DecisionTemplate template, DecisionOutcome outcome) {
-        final CaseIssueDecision decision = CaseIssueDecision.builder()
-            .decisionNotice(NoticeOption.CREATE_FROM_TEMPLATE)
-            .issueDecisionTemplate(template)
-            .decisionOutcome(outcome)
-            .issueDecisionDraft(Document.builder().filename("decision.pdf").build())
-            .build();
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        details.setData(CaseData.builder().caseIssueDecision(decision).build());
-
-        AboutToStartOrSubmitResponse<CaseData, State> response = issueDecision.aboutToSubmit(details, new CaseDetails<>());
-
-        assertThat(response.getErrors()).containsExactly("The decision outcome does not match the selected template");
-        assertThat(response.getState()).isNull();
-        assertThat(decision.getDecisionDate()).isNull();
-        verifyNoInteractions(documentsService);
-    }
-
-    private static Stream<Arguments> conflictingDecisions() {
-        return Stream.of(
-            Arguments.of(DecisionTemplate.RULE_27, DecisionOutcome.OTHER),
-            Arguments.of(DecisionTemplate.STRIKE_OUT_DECISION_NOTICE, DecisionOutcome.WITHDRAWN),
-            Arguments.of(DecisionTemplate.STRIKE_OUT_WARNING, DecisionOutcome.STRIKE_OUT)
-        );
-    }
-
-    @Test
-    void shouldReadAndWriteWithdrawnOutcomeInCcdCaseData() {
-        final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
-        final CaseData data = objectMapper.convertValue(
-            Map.of("caseIssueDecisionDecisionOutcome", "Withdrawn"), CaseData.class);
-
-        assertThat(data.getCaseIssueDecision().getDecisionOutcome()).isEqualTo(DecisionOutcome.WITHDRAWN);
-        assertThat(objectMapper.convertValue(data, new TypeReference<Map<String, Object>>() {}))
-            .containsEntry("caseIssueDecisionDecisionOutcome", "Withdrawn");
     }
 
     @Test
@@ -346,7 +293,6 @@ class CaseworkerIssueDecisionTest {
         final CicCase cicCase = CicCase.builder().build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
-            .caseIssueDecision(CaseIssueDecision.builder().decisionOutcome(DecisionOutcome.WITHDRAWN).build())
             .build();
         updatedCaseDetails.setData(caseData);
 
@@ -356,7 +302,6 @@ class CaseworkerIssueDecisionTest {
         //Then
         assertThat(response).isNotNull();
         assertThat(response.getData().getDecisionSignature()).isEmpty();
-        assertThat(response.getData().getCaseIssueDecision().getDecisionOutcome()).isNull();
     }
 
     @Test

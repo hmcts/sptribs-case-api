@@ -13,13 +13,11 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionMainContent;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionNotice;
-import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionOutcome;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionPreviewTemplate;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionSelectRecipients;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionSelectTemplate;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionUploadNotice;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
-import uk.gov.hmcts.sptribs.caseworker.model.DecisionOutcome;
 import uk.gov.hmcts.sptribs.caseworker.model.NoticeOption;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -67,7 +65,6 @@ public class CaseworkerIssueDecision implements CCDConfig<CaseData, State, UserR
     private static final CcdPageConfiguration issueDecisionUploadNotice = new IssueDecisionUploadNotice();
     private static final CcdPageConfiguration issueDecisionSelectRecipients = new IssueDecisionSelectRecipients();
     private static final CcdPageConfiguration issueDecisionMainContent = new IssueDecisionMainContent();
-    private static final CcdPageConfiguration issueDecisionOutcome = new IssueDecisionOutcome();
 
     private final CcdPageConfiguration issueDecisionFooter;
     private final DecisionIssuedNotification decisionIssuedNotification;
@@ -98,7 +95,6 @@ public class CaseworkerIssueDecision implements CCDConfig<CaseData, State, UserR
         issueDecisionUploadNotice.addTo(pageBuilder);
         issueDecisionFooter.addTo(pageBuilder);
         issueDecisionPreviewTemplate.addTo(pageBuilder);
-        issueDecisionOutcome.addTo(pageBuilder);
         issueDecisionSelectRecipients.addTo(pageBuilder);
 
     }
@@ -107,7 +103,6 @@ public class CaseworkerIssueDecision implements CCDConfig<CaseData, State, UserR
         final CaseData caseData = details.getData();
 
         caseData.setDecisionSignature("");
-        caseData.getCaseIssueDecision().setDecisionOutcome(null);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
@@ -122,17 +117,6 @@ public class CaseworkerIssueDecision implements CCDConfig<CaseData, State, UserR
         final Document decisionDocumentCreatedFromTemplate = decision.getIssueDecisionDraft();
 
         final List<String> errors = new ArrayList<>();
-        final DecisionTemplate template = decision.getDecisionNotice() == NoticeOption.CREATE_FROM_TEMPLATE
-            ? decision.getIssueDecisionTemplate() : null;
-        final DecisionOutcome outcome = decision.getDecisionOutcome();
-
-        if (hasConflictingOutcome(outcome, template)) {
-            errors.add("The decision outcome does not match the selected template");
-            return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-                .data(caseData)
-                .errors(errors)
-                .build();
-        }
 
         if (decisionDocument != null && decisionDocument.getDocumentLink() != null) {
             decisionDocument.getDocumentLink().setCategoryId(DocumentType.TRIBUNAL_DIRECTION.getCategory());
@@ -145,29 +129,16 @@ public class CaseworkerIssueDecision implements CCDConfig<CaseData, State, UserR
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
-            .state(isClosingDecision(outcome, template) ? CaseClosed : CaseManagement)
+            .state(isClosingDecision(decision) ? CaseClosed : CaseManagement)
             .errors(errors)
             .build();
     }
 
-    private boolean isClosingDecision(DecisionOutcome outcome, DecisionTemplate template) {
-        return outcome == DecisionOutcome.RULE_27
-            || outcome == DecisionOutcome.WITHDRAWN
-            || outcome == DecisionOutcome.STRIKE_OUT
-            || template == DecisionTemplate.RULE_27
-            || template == DecisionTemplate.STRIKE_OUT_DECISION_NOTICE;
-    }
-
-    private boolean hasConflictingOutcome(DecisionOutcome outcome, DecisionTemplate template) {
-        if (template == null) {
-            return false;
-        }
-        return switch (template) {
-            case RULE_27 -> outcome != null && outcome != DecisionOutcome.RULE_27;
-            case STRIKE_OUT_DECISION_NOTICE -> outcome != null && outcome != DecisionOutcome.STRIKE_OUT;
-            case STRIKE_OUT_WARNING -> outcome == DecisionOutcome.STRIKE_OUT;
-            default -> false;
-        };
+    private boolean isClosingDecision(CaseIssueDecision decision) {
+        return decision != null
+            && decision.getDecisionNotice() == NoticeOption.CREATE_FROM_TEMPLATE
+            && (decision.getIssueDecisionTemplate() == DecisionTemplate.RULE_27
+                || decision.getIssueDecisionTemplate() == DecisionTemplate.STRIKE_OUT_DECISION_NOTICE);
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,

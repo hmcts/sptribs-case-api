@@ -39,13 +39,6 @@ public class CaseIssueDecision {
     private DecisionTemplate issueDecisionTemplate;
 
     @CCD(
-        label = "Decision outcome",
-        hint = "Rule 27, Withdrawn and Strike Out decisions close the case when issued.",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private DecisionOutcome decisionOutcome;
-
-    @CCD(
         label = "Decision Document",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         categoryID = "TD"
