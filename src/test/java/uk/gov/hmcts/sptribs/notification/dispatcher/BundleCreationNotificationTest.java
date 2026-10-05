@@ -98,10 +98,11 @@ public class BundleCreationNotificationTest {
         }
 
         @Test
-        void shouldNotifyRespondentThatBundleIsCreated() {
+        void shouldNotifyConfiguredRespondentThatBundleIsCreated() {
             //Given
             final CaseData data = getMockCaseData();
             data.getCicCase().setRespondentEmail("testresp@outlook.com");
+            ReflectionTestUtils.setField(bundleCreatedNotification, "configuredRespondentEmail", "appeals.team@cica.gov.uk");
 
             //When
             when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
@@ -113,7 +114,7 @@ public class BundleCreationNotificationTest {
             //Then
             verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
             verify(notificationHelper).buildEmailNotificationRequest(
-                eq(data.getCicCase().getRespondentEmail()),
+                eq("appeals.team@cica.gov.uk"),
                 templateVarsCaptor.capture(),
                 eq(TemplateName.BUNDLE_CREATED_EMAIL_RESPONDENT));
             assertThat(templateVarsCaptor.getValue()).containsEntry("CicCaseRespondentFullName","Appeals team");

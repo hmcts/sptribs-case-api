@@ -101,7 +101,7 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent");
+            .isEqualTo("# Bundle created. \n## A notification has been sent to: Subject, Respondent");
     }
 
     @Test
@@ -142,7 +142,7 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
             .isString()
             .isEqualTo("""
                 # Bundle creation notification failed\s
-                ## A notification could not be sent to: Respondent\s
+                ## A notification could not be sent to: Subject\s
                 ## Please resend the notification.""");
     }
 }

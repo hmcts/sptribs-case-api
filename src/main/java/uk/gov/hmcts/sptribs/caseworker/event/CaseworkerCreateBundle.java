@@ -20,6 +20,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
+import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
@@ -184,12 +185,12 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
 
         final CaseData data = details.getData();
         final CicCase cicCase = data.getCicCase();
+        final Set<PartiesCIC> parties = cicCase.getPartiesCIC();
         final String caseNumber = data.getHyphenatedCaseRef();
         final List<String> errors = new ArrayList<>();
         final Set<NotificationParties> sentParties = new LinkedHashSet<>();
 
-        if (!CollectionUtils.isEmpty(cicCase.getSubjectCIC())
-            && cicCase.getCaseSubcategory() != CaseSubcategory.FATAL
+        if (cicCase.getCaseSubcategory() != CaseSubcategory.FATAL
             && cicCase.getCaseSubcategory() != CaseSubcategory.MINOR
             && StringUtils.hasText(cicCase.getEmail())) {
             try {
@@ -207,7 +208,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
             errors.add(RESPONDENT.getLabel());
         }
 
-        if (!CollectionUtils.isEmpty(cicCase.getRepresentativeCIC())
+        if (parties != null && parties.contains(PartiesCIC.REPRESENTATIVE)
             && StringUtils.hasText(cicCase.getRepresentativeEmailAddress())) {
             try {
                 bundleCreatedNotification.sendToRepresentative(data, caseNumber);
@@ -217,7 +218,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
             }
         }
 
-        if (!CollectionUtils.isEmpty(cicCase.getApplicantCIC())
+        if (parties != null && parties.contains(PartiesCIC.APPLICANT)
             && StringUtils.hasText(cicCase.getApplicantEmailAddress())) {
             try {
                 bundleCreatedNotification.sendToApplicant(data, caseNumber);

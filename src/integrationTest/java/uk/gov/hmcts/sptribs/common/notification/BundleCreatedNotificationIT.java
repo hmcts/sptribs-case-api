@@ -145,7 +145,7 @@ public class BundleCreatedNotificationIT {
         }
 
         @Test
-        void shouldSendEmailToRespondent() {
+        void shouldSendEmailToConfiguredRespondentInsteadOfStoredAddress() {
             final CaseData data = CaseData.builder()
                 .cicCase(CicCase.builder()
                     .contactPreferenceType(EMAIL)
@@ -165,7 +165,7 @@ public class BundleCreatedNotificationIT {
             NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
             assertThat(notificationRequest.getDestinationAddress())
-                .isEqualTo("respondent@email.com");
+                .isEqualTo("appeals.team@cica.gov.uk");
             assertThat(notificationRequest.getTemplate())
                 .isEqualTo(BUNDLE_CREATED_EMAIL_RESPONDENT);
             assertThat(notificationRequest.getTemplateVars())
@@ -178,7 +178,7 @@ public class BundleCreatedNotificationIT {
         }
 
         @Test
-        void shouldSendEmailToRespondentWithFallbackWhenRespondentEmailIsNull() {
+        void shouldSendEmailToRespondentWhenStoredAddressIsNull() {
             final CaseData data = CaseData.builder()
                 .cicCase(CicCase.builder()
                     .respondentName("Respondent Name")
@@ -210,7 +210,7 @@ public class BundleCreatedNotificationIT {
         }
 
         @Test
-        void shouldSendEmailToRespondentWithFallbackWhenRespondentEmailIsBlank() {
+        void shouldSendEmailToRespondentWhenStoredAddressIsBlank() {
             final CaseData data = CaseData.builder()
                 .cicCase(CicCase.builder()
                     .respondentName("Respondent Name")

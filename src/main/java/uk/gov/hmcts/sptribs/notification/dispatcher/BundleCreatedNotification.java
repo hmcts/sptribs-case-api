@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
@@ -35,7 +34,7 @@ public class BundleCreatedNotification implements PartiesNotification {
     private boolean citizenDashboardEnabled;
 
     @Value("${uk.gov.notify.email.templateVars.respondentEmail}")
-    private String defaultRespondentEmail;
+    private String configuredRespondentEmail;
 
     @Autowired
     public BundleCreatedNotification(NotificationServiceCIC notificationService, NotificationHelper notificationHelper) {
@@ -97,13 +96,9 @@ public class BundleCreatedNotification implements PartiesNotification {
         templateVarsRespondent.put(CommonConstants.CIC_CASE_RESPONDENT_NAME, cicCase.getRespondentName());
         addDashboardLink(templateVarsRespondent);
 
-        final String respondentEmail = StringUtils.hasText(cicCase.getRespondentEmail())
-            ? cicCase.getRespondentEmail()
-            : defaultRespondentEmail;
-
         final NotificationResponse notificationResponse = sendEmailNotification(
             templateVarsRespondent,
-            respondentEmail,
+            configuredRespondentEmail,
             BUNDLE_CREATED_EMAIL_RESPONDENT,
             caseNumber
         );

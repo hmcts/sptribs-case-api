@@ -25,6 +25,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
+import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
@@ -332,7 +333,7 @@ class CaseworkerCreateBundleTest {
         cicCase.setApplicantDocumentsUploaded(cicDocuments);
         caseData.setCicCase(cicCase);
         caseData.setHyphenatedCaseRef("1234-5678-3456");
-        cicCase.setRepresentativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE));
+        cicCase.setPartiesCIC(Set.of(PartiesCIC.REPRESENTATIVE));
         cicCase.setRepresentativeEmailAddress("rep@email.com");
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -366,7 +367,7 @@ class CaseworkerCreateBundleTest {
         cicCase.setApplicantDocumentsUploaded(cicDocuments);
         caseData.setCicCase(cicCase);
         caseData.setHyphenatedCaseRef("1234-5678-3456");
-        cicCase.setApplicantCIC(Set.of(ApplicantCIC.APPLICANT_CIC));
+        cicCase.setPartiesCIC(Set.of(PartiesCIC.APPLICANT));
         cicCase.setApplicantEmailAddress("app@email.com");
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -399,7 +400,7 @@ class CaseworkerCreateBundleTest {
         final CicCase cicCase = CicCase.builder().build();
         cicCase.setApplicantDocumentsUploaded(cicDocuments);
         caseData.setCicCase(cicCase);
-        cicCase.setRepresentativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE));
+        cicCase.setPartiesCIC(Set.of(PartiesCIC.REPRESENTATIVE));
         cicCase.setRepresentativeEmailAddress("rep@email.com");
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -1225,7 +1226,10 @@ class CaseworkerCreateBundleTest {
         cicCase.setApplicantDocumentsUploaded(cicDocuments);
         caseData.setCicCase(cicCase);
         caseData.setHyphenatedCaseRef("1234-5678-3456");
-        cicCase.setRepresentativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE));
+        cicCase.setPartiesCIC(Set.of(PartiesCIC.SUBJECT, PartiesCIC.REPRESENTATIVE, PartiesCIC.APPLICANT));
+        cicCase.setEmail("subject@email.com");
+        cicCase.setRepresentativeEmailAddress("rep@email.com");
+        cicCase.setApplicantEmailAddress("app@email.com");
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setState(CaseClosed);
@@ -1273,10 +1277,9 @@ class CaseworkerCreateBundleTest {
     }
 
     @Test
-    void shouldNotifySubjectWhenSelectedAndCaseSubcategoryIsNotFatalOrMinor() {
+    void shouldNotifySubjectWhenCaseSubcategoryIsNotFatalOrMinor() {
         final CaseData caseData = caseData();
         final CicCase cicCase = CicCase.builder()
-            .subjectCIC(Set.of(SubjectCIC.SUBJECT))
             .caseSubcategory(CaseSubcategory.OTHER)
             .email("subject@email.com")
             .build();
@@ -1327,7 +1330,7 @@ class CaseworkerCreateBundleTest {
     }
 
     @Test
-    void shouldNotNotifySubjectWhenSubjectCicIsNotSelected() {
+    void shouldNotifySubjectWhenRecipientSelectionIsEmpty() {
         final CaseData caseData = caseData();
         final CicCase cicCase = CicCase.builder()
             .subjectCIC(null)
@@ -1338,19 +1341,18 @@ class CaseworkerCreateBundleTest {
 
         SubmittedCallbackResponse response = submitBundle(caseData);
 
-        verify(bundleCreatedNotification, never()).sendToSubject(any(CaseData.class), any());
+        verify(bundleCreatedNotification).sendToSubject(caseData, "1234-5678-3456");
         verify(bundleCreatedNotification).sendToRespondent(caseData, "1234-5678-3456");
         assertThat(response.getConfirmationHeader())
-            .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent");
+            .isEqualTo("# Bundle created. \n## A notification has been sent to: Subject, Respondent");
     }
 
     @Test
-    void shouldNotifyBothApplicantAndRepresentativeWhenBothAreSelected() {
+    void shouldNotifyBothApplicantAndRepresentativeWhenPresentEvenWithoutRecipientSelections() {
         final CaseData caseData = caseData();
         final CicCase cicCase = CicCase.builder()
-            .representativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .partiesCIC(Set.of(PartiesCIC.SUBJECT, PartiesCIC.APPLICANT, PartiesCIC.REPRESENTATIVE))
             .representativeEmailAddress("rep@email.com")
-            .applicantCIC(Set.of(ApplicantCIC.APPLICANT_CIC))
             .applicantEmailAddress("app@email.com")
             .build();
         caseData.setCicCase(cicCase);
@@ -1365,9 +1367,10 @@ class CaseworkerCreateBundleTest {
     }
 
     @Test
-    void shouldNotNotifyApplicantWhenApplicantCicIsNotSelectedEvenWithEmail() {
+    void shouldNotifyApplicantWhenPresentEvenIfRecipientSelectionIsEmpty() {
         final CaseData caseData = caseData();
         final CicCase cicCase = CicCase.builder()
+            .partiesCIC(Set.of(PartiesCIC.APPLICANT))
             .applicantCIC(null)
             .applicantEmailAddress("app@email.com")
             .build();
@@ -1375,7 +1378,28 @@ class CaseworkerCreateBundleTest {
 
         SubmittedCallbackResponse response = submitBundle(caseData);
 
+        verify(bundleCreatedNotification).sendToApplicant(caseData, "1234-5678-3456");
+        verify(bundleCreatedNotification).sendToRespondent(caseData, "1234-5678-3456");
+        assertThat(response.getConfirmationHeader())
+            .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent, Applicant");
+    }
+
+    @Test
+    void shouldNotNotifyApplicantOrRepresentativeWhenNotCaseParties() {
+        final CaseData caseData = caseData();
+        final CicCase cicCase = CicCase.builder()
+            .partiesCIC(Set.of(PartiesCIC.SUBJECT))
+            .applicantCIC(Set.of(ApplicantCIC.APPLICANT_CIC))
+            .applicantEmailAddress("app@email.com")
+            .representativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .representativeEmailAddress("rep@email.com")
+            .build();
+        caseData.setCicCase(cicCase);
+
+        SubmittedCallbackResponse response = submitBundle(caseData);
+
         verify(bundleCreatedNotification, never()).sendToApplicant(any(), any());
+        verify(bundleCreatedNotification, never()).sendToRepresentative(any(CaseData.class), any());
         verify(bundleCreatedNotification).sendToRespondent(caseData, "1234-5678-3456");
         assertThat(response.getConfirmationHeader())
             .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent");
@@ -1385,11 +1409,9 @@ class CaseworkerCreateBundleTest {
     void shouldNotSendNotificationWhenSubjectApplicantOrRepresentativeEmailIsMissingOrBlank() {
         final CaseData caseData = caseData();
         final CicCase cicCase = CicCase.builder()
-            .subjectCIC(Set.of(SubjectCIC.SUBJECT))
+            .partiesCIC(Set.of(PartiesCIC.SUBJECT, PartiesCIC.REPRESENTATIVE, PartiesCIC.APPLICANT))
             .email("   ")
-            .representativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .representativeEmailAddress(null)
-            .applicantCIC(Set.of(ApplicantCIC.APPLICANT_CIC))
             .applicantEmailAddress("")
             .build();
         caseData.setCicCase(cicCase);
@@ -1408,7 +1430,6 @@ class CaseworkerCreateBundleTest {
     void shouldNotifySubjectWithPostContactPreferenceIfEmailIsPresent() {
         final CaseData caseData = caseData();
         final CicCase cicCase = CicCase.builder()
-            .subjectCIC(Set.of(SubjectCIC.SUBJECT))
             .contactPreferenceType(ContactPreferenceType.POST)
             .email("subject@email.com")
             .build();
@@ -1425,9 +1446,8 @@ class CaseworkerCreateBundleTest {
     void shouldContinueSendingWhenOneSendThrowsAndIncludeSubjectInFailureMessage() {
         final CaseData caseData = caseData();
         final CicCase cicCase = CicCase.builder()
-            .subjectCIC(Set.of(SubjectCIC.SUBJECT))
             .email("subject@email.com")
-            .representativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .partiesCIC(Set.of(PartiesCIC.REPRESENTATIVE))
             .representativeEmailAddress("rep@email.com")
             .build();
         caseData.setCicCase(cicCase);
