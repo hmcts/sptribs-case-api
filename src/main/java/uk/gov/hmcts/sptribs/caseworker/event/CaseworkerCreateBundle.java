@@ -245,12 +245,6 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
                 .build();
         }
 
-        if (isEmpty(sentParties)) {
-            return SubmittedCallbackResponse.builder()
-                .confirmationHeader("# Bundle created.")
-                .build();
-        }
-
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Bundle created. %n## %s",
                 generateSimpleMessage(sentParties)))
