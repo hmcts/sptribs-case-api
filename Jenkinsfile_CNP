@@ -1,6 +1,6 @@
 #!groovy
 
-//@Library("Infrastructure@2.8.0")
+//@Library("Infrastructure@2.11.2")
 @Library("Infrastucture@highleveldatasetupstaging")
 
 import uk.gov.hmcts.contino.AppPipelineConfig
