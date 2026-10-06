@@ -531,7 +531,7 @@ public abstract class FunctionalTestSuite {
         String assignedPlaceholder = "";
 
         String documentTypeName = getDocumentTypeFromCaseDocumentTypeId(caseDocumentTypeId);
-        ClassPathResource testFileResource = new ClassPathResource("data/sample_file.pdf");
+        ClassPathResource testFileResource = new ClassPathResource("data/sample_file_test.pdf");
         String filename = testFileResource.getFilename().split("\\.")[0] + "_" + UUID.randomUUID() + ".pdf";
         if (caseDocumentTypeId.equals("4")) {
             testFileResource = DRAFT_ORDER_FILE;
