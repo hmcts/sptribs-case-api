@@ -2,6 +2,8 @@ package uk.gov.hmcts.sptribs.caseworker.util;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
@@ -164,31 +166,18 @@ public class MessageUtilTest {
             .isEqualTo("A notification has been sent to: Subject, Applicant, Respondent, Representative, Tribunal");
     }
 
-    @Test
-    void shouldHandleDocumentExceptionWithFilename() {
-        final Document doc = Document.builder().filename("test.pdf").build();
+    @ParameterizedTest
+    @CsvSource(value = {
+        "test.pdf, test.pdf",
+        "NULL, Error saving document with no filename",
+        "'', Error saving document with no filename"
+    }, nullValues = "NULL")
+    void shouldHandleDocumentException(String filename, String expectedMessage) {
+        final Document doc = Document.builder().filename(filename).build();
 
         String result = MessageUtil.handleDocumentException(doc, "Failed to save");
 
-        assertThat(result).contains("test.pdf");
-    }
-
-    @Test
-    void shouldHandleDocumentExceptionWithoutFilename() {
-        final Document doc = Document.builder().filename(null).build();
-
-        String result = MessageUtil.handleDocumentException(doc, "Failed to save");
-
-        assertThat(result).contains("Error saving document with no filename");
-    }
-
-    @Test
-    void shouldHandleDocumentExceptionWithEmptyFilename() {
-        final Document doc = Document.builder().filename("").build();
-
-        String result = MessageUtil.handleDocumentException(doc, "Failed to save");
-
-        assertThat(result).contains("Error saving document with no filename");
+        assertThat(result).contains(expectedMessage);
     }
 
     @Test
