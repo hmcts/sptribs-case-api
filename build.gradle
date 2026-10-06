@@ -3,8 +3,12 @@ import uk.gov.hmcts.rse.CftlibExec
 
 buildscript {
   repositories {
-    mavenLocal()
-    mavenCentral()
+    def pipelineEnvironments = ['preview', 'aat', 'prod', 'demo', 'perftest', 'ithc']
+
+    if (!(System.getenv('ENVIRONMENT') in pipelineEnvironments)) {
+      mavenLocal()
+      mavenCentral()
+    }
     maven {
       name = "AzureArtifacts"
       url = uri('https://pkgs.dev.azure.com/hmcts/Artifacts/_packaging/hmcts-lib/maven/v1')
