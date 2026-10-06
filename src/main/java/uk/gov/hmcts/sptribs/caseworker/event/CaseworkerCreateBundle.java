@@ -197,6 +197,8 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
                 bundleCreatedNotification.sendToSubject(data, caseNumber);
                 sentParties.add(SUBJECT);
             } catch (Exception notificationException) {
+                log.error("Failed to send bundle created notification to Subject for case {}: {}",
+                    caseNumber, notificationException.getMessage());
                 errors.add(SUBJECT.getLabel());
             }
         }
@@ -205,6 +207,8 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
             bundleCreatedNotification.sendToRespondent(data, caseNumber);
             sentParties.add(RESPONDENT);
         } catch (Exception notificationException) {
+            log.error("Failed to send bundle created notification to Respondent for case {}: {}",
+                caseNumber, notificationException.getMessage());
             errors.add(RESPONDENT.getLabel());
         }
 
@@ -214,6 +218,8 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
                 bundleCreatedNotification.sendToRepresentative(data, caseNumber);
                 sentParties.add(REPRESENTATIVE);
             } catch (Exception notificationException) {
+                log.error("Failed to send bundle created notification to Representative for case {}: {}",
+                    caseNumber, notificationException.getMessage());
                 errors.add(REPRESENTATIVE.getLabel());
             }
         }
@@ -224,6 +230,8 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
                 bundleCreatedNotification.sendToApplicant(data, caseNumber);
                 sentParties.add(APPLICANT);
             } catch (Exception notificationException) {
+                log.error("Failed to send bundle created notification to Applicant for case {}: {}",
+                    caseNumber, notificationException.getMessage());
                 errors.add(APPLICANT.getLabel());
             }
         }
