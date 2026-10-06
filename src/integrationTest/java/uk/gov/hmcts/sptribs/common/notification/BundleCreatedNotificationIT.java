@@ -3,6 +3,8 @@ package uk.gov.hmcts.sptribs.common.notification;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,20 +14,32 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
+import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.dispatcher.BundleCreatedNotification;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.util.Map;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType.EMAIL;
+import static uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType.POST;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.APPLICANT;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.REPRESENTATIVE;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.RESPONDENT;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.SUBJECT;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_APPLICANT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_NUMBER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_REPRESENTATIVE_NAME;
@@ -233,6 +247,85 @@ public class BundleCreatedNotificationIT {
             assertThat(notificationRequest.getTemplate())
                 .isEqualTo(BUNDLE_CREATED_EMAIL_RESPONDENT);
             assertThat(data.getCicCase().getResNotificationResponse()).isEqualTo(expectedResponse);
+        }
+
+        @Test
+        void shouldDispatchToEveryEligiblePartyAndUseConfiguredCicaInbox() {
+            CaseData data = CaseData.builder().cicCase(CicCase.builder()
+                .contactPreferenceType(POST)
+                .caseSubcategory(CaseSubcategory.OTHER)
+                .fullName("Subject")
+                .email("subject@example.com")
+                .respondentEmail(" ")
+                .respondentName("Respondent")
+                .partiesCIC(Set.of(PartiesCIC.REPRESENTATIVE, PartiesCIC.APPLICANT))
+                .representativeFullName("Representative")
+                .representativeEmailAddress("representative@example.com")
+                .applicantFullName("Applicant")
+                .applicantEmailAddress("applicant@example.com")
+                .build()).build();
+
+            BundleCreatedNotification.DispatchResult result = bundleCreatedNotification.dispatch(data, TEST_CASE_ID.toString());
+
+            assertThat(result.sentParties()).containsExactlyInAnyOrder(SUBJECT, RESPONDENT, REPRESENTATIVE, APPLICANT);
+            assertThat(result.failedParties()).isEmpty();
+            ArgumentCaptor<NotificationRequest> requests = ArgumentCaptor.forClass(NotificationRequest.class);
+            verify(notificationServiceCIC, times(4)).sendEmail(requests.capture(), eq(TEST_CASE_ID.toString()), isNull());
+            assertThat(requests.getAllValues()).extracting(NotificationRequest::getDestinationAddress)
+                .containsExactly("subject@example.com", "appeals.team@cica.gov.uk",
+                    "representative@example.com", "applicant@example.com");
+        }
+
+        @ParameterizedTest
+        @EnumSource(value = CaseSubcategory.class, names = {"FATAL", "MINOR"})
+        void shouldSuppressSubjectForFatalAndMinorCases(CaseSubcategory subcategory) {
+            CaseData data = CaseData.builder().cicCase(CicCase.builder()
+                .caseSubcategory(subcategory).email("subject@example.com").build()).build();
+
+            BundleCreatedNotification.DispatchResult result = bundleCreatedNotification.dispatch(data, TEST_CASE_ID.toString());
+
+            assertThat(result.sentParties()).containsExactly(RESPONDENT);
+            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), isNull());
+            assertThat(notificationRequestCaptor.getValue().getDestinationAddress()).isEqualTo("appeals.team@cica.gov.uk");
+        }
+
+        @Test
+        void shouldSkipMissingAndUnselectedPartyAddressesButStillNotifyCica() {
+            CaseData data = CaseData.builder().cicCase(CicCase.builder()
+                .email(" ")
+                .partiesCIC(Set.of(PartiesCIC.APPLICANT))
+                .representativeEmailAddress("representative@example.com")
+                .applicantEmailAddress("")
+                .build()).build();
+
+            BundleCreatedNotification.DispatchResult result = bundleCreatedNotification.dispatch(data, TEST_CASE_ID.toString());
+
+            assertThat(result.sentParties()).containsExactly(RESPONDENT);
+            assertThat(result.failedParties()).isEmpty();
+            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), isNull());
+            assertThat(notificationRequestCaptor.getValue().getDestinationAddress()).isEqualTo("appeals.team@cica.gov.uk");
+        }
+
+        @Test
+        void shouldContinueSendingAndReportEachFailedPartyWithoutUsingOldResponses() {
+            CaseData data = CaseData.builder().cicCase(CicCase.builder()
+                .email("subject@example.com")
+                .subjectNotifyList(NotificationResponse.builder().build())
+                .respondentEmail(null)
+                .partiesCIC(Set.of(PartiesCIC.REPRESENTATIVE, PartiesCIC.APPLICANT))
+                .representativeEmailAddress("representative@example.com")
+                .applicantEmailAddress("applicant@example.com")
+                .build()).build();
+            doThrow(new IllegalStateException("Notification failed"))
+                .when(notificationServiceCIC).sendEmail(argThat(request -> request != null
+                    && Set.of("subject@example.com", "representative@example.com")
+                        .contains(request.getDestinationAddress())), eq(TEST_CASE_ID.toString()), isNull());
+
+            BundleCreatedNotification.DispatchResult result = bundleCreatedNotification.dispatch(data, TEST_CASE_ID.toString());
+
+            assertThat(result.sentParties()).containsExactlyInAnyOrder(RESPONDENT, APPLICANT);
+            assertThat(result.failedParties()).containsExactly(SUBJECT, REPRESENTATIVE);
+            verify(notificationServiceCIC, times(4)).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), isNull());
         }
     }
 

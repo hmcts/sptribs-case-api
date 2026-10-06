@@ -2,8 +2,12 @@ package uk.gov.hmcts.sptribs.caseworker;
 
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.DisabledIf;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
+import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
 import java.util.ArrayList;
@@ -19,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CREATE_BUNDLE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.testutil.CaseDataUtil.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
@@ -94,6 +99,8 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
     @DisabledIf(expression = "${feature.citizen-dashboard.enabled:false}", loadContext = true)
     public void shouldHaveSubmittedCallbackEndpointWhenCitizenDashboardDisabled() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
+        caseData.remove("cicCaseEmail");
+        caseData.put("cicCaseRespondentEmail", "");
 
         final Response response = triggerCallback(caseData, CREATE_BUNDLE, SUBMITTED_URL, false);
 
@@ -101,12 +108,15 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .isEqualTo("# Bundle created. \n## A notification has been sent to: Subject, Respondent");
+            .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent");
     }
 
     @Test
     public void shouldHaveSimpleMessageForCaseClosed() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
+        caseData.put("cicCasePartiesCIC", List.of("SubjectCIC", "RepresentativeCIC", "ApplicantCIC"));
+        caseData.put("cicCaseRepresentativeEmailAddress", "representative@example.com");
+        caseData.put("cicCaseApplicantEmailAddress", "applicant@example.com");
 
         final Response response = triggerCallback(caseData, CREATE_BUNDLE, SUBMITTED_URL, CaseClosed);
 
@@ -114,12 +124,15 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Bundle created.");
+            .isEqualTo("# Bundle created.");
     }
 
     @Test
-    public void shouldBeSuccessfulWhenSubmittedCallbackIsInvoked() throws Exception {
+    public void shouldNotifyCicaWhenNoPartiesHaveStoredEmails() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
+        caseData.remove("cicCaseEmail");
+        caseData.put("cicCaseRespondentEmail", "");
+        caseData.put("cicCasePartiesCIC", List.of("SubjectCIC", "RepresentativeCIC", "ApplicantCIC"));
 
         final Response response = triggerCallback(caseData, CREATE_BUNDLE, SUBMITTED_URL, false);
 
@@ -127,12 +140,48 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Bundle created. \n## A notification has been sent to");
+            .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = {"CaseManagement", "AwaitingHearing", "ReadyToList"})
+    public void shouldNotifyCicaInNonClosedStatesWhenPartiesHaveNoStoredEmail(State state) throws Exception {
+        final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
+        caseData.put("cicCaseEmail", " ");
+        caseData.put("cicCaseRespondentEmail", "");
+        caseData.put("cicCasePartiesCIC", List.of("SubjectCIC", "RepresentativeCIC", "ApplicantCIC"));
+        caseData.put("cicCaseRepresentativeEmailAddress", "");
+        caseData.remove("cicCaseApplicantEmailAddress");
+
+        final Response response = triggerCallback(caseData, CREATE_BUNDLE, SUBMITTED_URL, state);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .inPath(CONFIRMATION_HEADER)
+            .isString()
+            .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = CaseSubcategory.class, names = {"FATAL", "MINOR"})
+    public void shouldNotNotifySubjectForFatalOrMinorCase(CaseSubcategory subcategory) throws Exception {
+        final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
+        caseData.put("cicCaseCaseSubcategory", subcategory.getLabel());
+        caseData.put("cicCaseRespondentEmail", "");
+
+        final Response response = triggerCallback(caseData, CREATE_BUNDLE, SUBMITTED_URL, CaseManagement);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .inPath(CONFIRMATION_HEADER)
+            .isString()
+            .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent");
     }
 
     @Test
-    public void shouldReturnFailureMessageWhenEmailCouldNotSendWhenSubmittedCallbackIsInvoked() throws Exception {
+    public void shouldReportFailedSubjectSendWhenSubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(SUBMITTED_FAILURE_REQUEST);
+        caseData.put("cicCaseRespondentEmail", "");
 
         final Response response = triggerCallback(caseData, CREATE_BUNDLE, SUBMITTED_URL, false);
 

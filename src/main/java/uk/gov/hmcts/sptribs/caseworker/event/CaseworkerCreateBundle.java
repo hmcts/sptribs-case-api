@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
@@ -17,10 +16,7 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
-import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
@@ -41,7 +37,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -50,16 +45,11 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
-import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.extractDocumentsFromListValues;
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.getAllCaseDocuments;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CREATE_BUNDLE;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessage;
-import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.APPLICANT;
-import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.REPRESENTATIVE;
-import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.RESPONDENT;
-import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.SUBJECT;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -183,71 +173,27 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
                 .build();
         }
 
-        final CaseData data = details.getData();
-        final CicCase cicCase = data.getCicCase();
-        final Set<PartiesCIC> parties = cicCase.getPartiesCIC();
-        final String caseNumber = data.getHyphenatedCaseRef();
-        final List<String> errors = new ArrayList<>();
-        final Set<NotificationParties> sentParties = new LinkedHashSet<>();
+        BundleCreatedNotification.DispatchResult result = bundleCreatedNotification.dispatch(
+            details.getData(), details.getData().getHyphenatedCaseRef());
 
-        if (cicCase.getCaseSubcategory() != CaseSubcategory.FATAL
-            && cicCase.getCaseSubcategory() != CaseSubcategory.MINOR
-            && StringUtils.hasText(cicCase.getEmail())) {
-            try {
-                bundleCreatedNotification.sendToSubject(data, caseNumber);
-                sentParties.add(SUBJECT);
-            } catch (Exception notificationException) {
-                log.error("Failed to send bundle created notification to Subject for case {}: {}",
-                    caseNumber, notificationException.getMessage());
-                errors.add(SUBJECT.getLabel());
-            }
-        }
-
-        try {
-            bundleCreatedNotification.sendToRespondent(data, caseNumber);
-            sentParties.add(RESPONDENT);
-        } catch (Exception notificationException) {
-            log.error("Failed to send bundle created notification to Respondent for case {}: {}",
-                caseNumber, notificationException.getMessage());
-            errors.add(RESPONDENT.getLabel());
-        }
-
-        if (parties != null && parties.contains(PartiesCIC.REPRESENTATIVE)
-            && StringUtils.hasText(cicCase.getRepresentativeEmailAddress())) {
-            try {
-                bundleCreatedNotification.sendToRepresentative(data, caseNumber);
-                sentParties.add(REPRESENTATIVE);
-            } catch (Exception notificationException) {
-                log.error("Failed to send bundle created notification to Representative for case {}: {}",
-                    caseNumber, notificationException.getMessage());
-                errors.add(REPRESENTATIVE.getLabel());
-            }
-        }
-
-        if (parties != null && parties.contains(PartiesCIC.APPLICANT)
-            && StringUtils.hasText(cicCase.getApplicantEmailAddress())) {
-            try {
-                bundleCreatedNotification.sendToApplicant(data, caseNumber);
-                sentParties.add(APPLICANT);
-            } catch (Exception notificationException) {
-                log.error("Failed to send bundle created notification to Applicant for case {}: {}",
-                    caseNumber, notificationException.getMessage());
-                errors.add(APPLICANT.getLabel());
-            }
-        }
-
-        if (!isEmpty(errors)) {
+        if (!result.failedParties().isEmpty()) {
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(
                     format("# Bundle creation notification failed %n## %s %n## Please resend the notification.",
-                        generateSimpleErrorMessage(errors))
+                        generateSimpleErrorMessage(result.failedParties().stream().map(NotificationParties::getLabel).toList()))
                 )
+                .build();
+        }
+
+        if (result.sentParties().isEmpty()) {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader("# Bundle created.")
                 .build();
         }
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Bundle created. %n## %s",
-                generateSimpleMessage(sentParties)))
+                generateSimpleMessage(result.sentParties())))
             .build();
     }
 
