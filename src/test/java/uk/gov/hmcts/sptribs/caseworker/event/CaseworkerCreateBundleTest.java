@@ -1488,6 +1488,30 @@ class CaseworkerCreateBundleTest {
             .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent");
     }
 
+    @Test
+    void shouldContinueSendingWhenApplicantSendThrowsAndIncludeApplicantInFailureMessage() {
+        final CaseData caseData = caseData();
+        final CicCase cicCase = CicCase.builder()
+            .partiesCIC(Set.of(PartiesCIC.APPLICANT))
+            .applicantEmailAddress("app@email.com")
+            .build();
+        caseData.setCicCase(cicCase);
+
+        doThrow(new RuntimeException("Applicant Send Failed"))
+            .when(bundleCreatedNotification).sendToApplicant(any(CaseData.class), any());
+
+        SubmittedCallbackResponse response = submitBundle(caseData);
+
+        verify(bundleCreatedNotification).sendToRespondent(caseData, "1234-5678-3456");
+        verify(bundleCreatedNotification).sendToApplicant(caseData, "1234-5678-3456");
+
+        assertThat(response.getConfirmationHeader())
+            .isEqualTo("""
+                # Bundle creation notification failed\s
+                ## A notification could not be sent to: Applicant\s
+                ## Please resend the notification.""");
+    }
+
     private SubmittedCallbackResponse submitBundle(CaseData caseData) {
         return submitBundle(caseData, State.CaseManagement);
     }
