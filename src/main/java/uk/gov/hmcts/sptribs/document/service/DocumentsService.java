@@ -22,15 +22,18 @@ import uk.gov.hmcts.sptribs.document.model.DocumentDashboardModel;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.getAllCaseDocuments;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
 
 @RequiredArgsConstructor
 @Service
@@ -41,21 +44,78 @@ public class DocumentsService {
     private final CaseDocumentTypesCache caseDocumentTypesCache;
 
     public void buildAndSaveNewDocumentEntity(Document document, Long caseReferenceNumber,
-                                              DocumentType documentType, CaseDocumentType caseDocumentType) {
+                                               DocumentType documentType, CaseDocumentType caseDocumentType) {
         try {
-
-            documentsRepository.save(DocumentEntity.builder()
-                .caseReferenceNumber(caseReferenceNumber)
-                .documentUrl(document.getUrl())
-                .documentFilename(document.getFilename())
-                .documentBinaryUrl(document.getBinaryUrl())
-                .documentTypeName(documentType != null ? documentType.name() : null)
-                .caseDocumentTypeId(caseDocumentTypesCache.getId(caseDocumentType))
-                .build());
-
+            int inserted = documentsRepository.insertIgnoreDuplicate(
+                caseReferenceNumber,
+                document.getUrl(),
+                document.getFilename(),
+                document.getBinaryUrl(),
+                documentType != null ? documentType.name() : null,
+                caseDocumentTypesCache.getId(caseDocumentType),
+                OffsetDateTime.now());
+            if (inserted == 0) {
+                log.info("Document with binary URL {} already exists in the database.", document.getBinaryUrl());
+            }
         } catch (DataAccessException e) {
             throw new DocumentSaveException("Error saving document entity to database", e);
         }
+    }
+
+    public List<String> saveDocuments(Long caseReferenceNumber,
+                                      List<ListValue<CaseworkerCICDocument>> documents,
+                                      CaseDocumentType caseDocumentType) {
+        List<String> errors = new ArrayList<>();
+        if (documents == null) {
+            return errors;
+        }
+
+        for (ListValue<CaseworkerCICDocument> document : documents) {
+            try {
+                buildAndSaveNewDocumentEntity(
+                    document.getValue().getDocumentLink(),
+                    caseReferenceNumber,
+                    document.getValue().getDocumentCategory(),
+                    caseDocumentType
+                );
+            } catch (RuntimeException e) {
+                errors.add(handleDocumentException(document.getValue().getDocumentLink(), e.getMessage()));
+            }
+        }
+
+        return errors;
+    }
+
+    @Transactional
+    public List<String> updateDocumentCategories(List<ListValue<CaseworkerCICDocument>> documents) {
+        List<String> errors = new ArrayList<>();
+        for (ListValue<CaseworkerCICDocument> document : documents) {
+            try {
+                DocumentType documentType = document.getValue().getDocumentCategory();
+                setNewDocumentTypeName(
+                    document.getValue().getDocumentLink().getBinaryUrl(),
+                    documentType != null ? documentType.name() : null
+                );
+            } catch (RuntimeException e) {
+                errors.add(handleDocumentException(document.getValue().getDocumentLink(), e.getMessage()));
+            }
+        }
+
+        return errors;
+    }
+
+    @Transactional
+    public List<String> removeDocuments(List<ListValue<CaseworkerCICDocument>> documents) {
+        List<String> errors = new ArrayList<>();
+        for (ListValue<CaseworkerCICDocument> document : documents) {
+            try {
+                removeEntryFromDocumentTableByBinaryURL(document.getValue().getDocumentLink().getBinaryUrl());
+            } catch (RuntimeException e) {
+                errors.add(handleDocumentException(document.getValue().getDocumentLink(), e.getMessage()));
+            }
+        }
+
+        return errors;
     }
 
     public List<Long> getDocumentsViaSentByContactParties(CaseData caseData, final Map<String, String> uploadedDocuments) {
@@ -119,9 +179,11 @@ public class DocumentsService {
 
         try {
             Long orderDocumentTypeId = caseDocumentTypesCache.getId(CaseDocumentType.ORDER);
-            documentsRepository.updateCaseDocumentTypeIdByDocumentBinaryUrl(documentBinaryUrl, orderDocumentTypeId);
-            log.info("Draft order updated to non draft case document type successfully for url: {}", documentBinaryUrl);
-
+            if (documentsRepository.updateCaseDocumentTypeIdByDocumentBinaryUrl(documentBinaryUrl, orderDocumentTypeId) == 0) {
+                throw new DataAccessException("No document found with binary URL: " + documentBinaryUrl) {};
+            } else {
+                log.info("Draft order updated document to non draft case document type successfully for url: {}", documentBinaryUrl);
+            }
         } catch (DataAccessException e) {
             throw new DocumentUpdateException("Error updating case document type from draft order to order", e);
         }
@@ -162,6 +224,35 @@ public class DocumentsService {
             .latestCaseBundleDocument(latestBundle.orElse(null))
             .orderAndDecisionDocuments(orderDecisionDocuments)
             .build();
+    }
+
+    public List<DocumentEntity> getAudioVideoDocuments(Long caseReferenceNumber) {
+        if (caseReferenceNumber == null) {
+            return List.of();
+        }
+
+        try {
+            return documentsRepository.findByCaseReferenceNumberOrderBySavedAtAsc(caseReferenceNumber)
+                .stream()
+                .filter(this::isAudioVideo)
+                .toList();
+        } catch (DataAccessException e) {
+            throw new DocumentLookupException("Error getting audio video documents by case reference", e);
+        }
+    }
+
+    private boolean isAudioVideo(DocumentEntity document) {
+        if (document == null
+            || StringUtils.isBlank(document.getDocumentFilename())
+            || StringUtils.isBlank(document.getDocumentBinaryUrl())) {
+            return false;
+        }
+
+        String extension = StringUtils.substringAfterLast(
+            document.getDocumentFilename(),
+            "."
+        ).toLowerCase(Locale.ROOT);
+        return "mp3".equals(extension) || "mp4".equals(extension);
     }
 
     @Transactional

@@ -15,6 +15,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.document.DocumentFileTypes;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 
 import java.util.ArrayList;
@@ -68,7 +69,10 @@ public class HearingRecordingUploadPage implements CcdPageConfiguration {
                     || ObjectUtils.isEmpty(documentListValue.getValue().getDocumentLink())) {
                     errors.add("Please attach the document");
                 } else {
-                    if (!documentListValue.getValue().isDocumentValid("mp3")) {
+                    if (!DocumentFileTypes.isValid(
+                        documentListValue.getValue().getDocumentLink().getFilename(),
+                        DocumentFileTypes.HEARING_RECORDING_EXTENSIONS
+                    )) {
                         errors.add("Please attach a mp3 document");
                     }
                     if (StringUtils.isEmpty(documentListValue.getValue().getDocumentEmailContent())) {
