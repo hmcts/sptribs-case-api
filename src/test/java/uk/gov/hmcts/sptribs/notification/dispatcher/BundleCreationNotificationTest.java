@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
@@ -119,6 +120,32 @@ public class BundleCreationNotificationTest {
                 eq(TemplateName.BUNDLE_CREATED_EMAIL_RESPONDENT));
             assertThat(templateVarsCaptor.getValue()).containsEntry("CicCaseRespondentFullName","Appeals team");
         }
+
+        @Test
+        void shouldNotifySubjectThatBundleIsCreated() {
+            //Given
+            final CaseData data = getMockCaseData();
+            data.getCicCase().setEmail("testsubject@outlook.com");
+            data.getCicCase().setFullName("Subject FullName");
+
+            //When
+            when(notificationService.sendEmail(any(), any(), any()))
+                .thenReturn(NotificationResponse.builder().build());
+            when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+                .thenReturn(NotificationRequest.builder().build());
+            when(notificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
+
+            bundleCreatedNotification.sendToSubject(data, TEST_CASE_ID.toString());
+
+            //Then
+            verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
+            verify(notificationHelper).buildEmailNotificationRequest(
+                eq("testsubject@outlook.com"),
+                templateVarsCaptor.capture(),
+                eq(TemplateName.BUNDLE_CREATED_EMAIL_CITIZEN));
+            assertThat(templateVarsCaptor.getValue()).containsEntry("CicCaseSubjectFullName", "Subject FullName");
+            assertThat(data.getCicCase().getSubjectNotifyList()).isNotNull();
+        }
     }
 
     @Nested
@@ -154,6 +181,83 @@ public class BundleCreationNotificationTest {
                 .containsEntry(DASHBOARD_KEY, "https://frontend.url/dashboard");
         }
 
+        @Test
+        void shouldNotifySubjectThatBundleIsCreated() {
+            //Given
+            final CaseData data = getMockCaseData();
+            data.getCicCase().setEmail("testsubject@outlook.com");
+            data.getCicCase().setFullName("Subject FullName");
+
+            //When
+            when(notificationService.sendEmail(any(), any(), any()))
+                .thenReturn(NotificationResponse.builder().build());
+            when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+                .thenReturn(NotificationRequest.builder().build());
+            when(notificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
+
+            bundleCreatedNotification.sendToSubject(data, TEST_CASE_ID.toString());
+
+            //Then
+            verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
+            verify(notificationHelper).buildEmailNotificationRequest(
+                eq("testsubject@outlook.com"),
+                templateVarsCaptor.capture(),
+                eq(TemplateName.BUNDLE_CREATED_EMAIL_CITIZEN));
+            assertThat(templateVarsCaptor.getValue())
+                .containsEntry("CicCaseSubjectFullName", "Subject FullName")
+                .containsEntry(DASHBOARD_KEY, "https://frontend.url/dashboard");
+            assertThat(data.getCicCase().getSubjectNotifyList()).isNotNull();
+        }
+
+        @Test
+        void shouldNotifyRepresentativeThatBundleIsCreated() {
+            //Given
+            final CaseData data = getMockCaseData();
+            data.getCicCase().setRepresentativeEmailAddress("testrepr@outlook.com");
+            data.getCicCase().setRepresentativeFullName("Rep LastName");
+
+            //When
+            when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+                .thenReturn(NotificationRequest.builder().build());
+            when(notificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
+
+            bundleCreatedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
+
+            //Then
+            verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
+            verify(notificationHelper).buildEmailNotificationRequest(
+                eq(data.getCicCase().getRepresentativeEmailAddress()),
+                templateVarsCaptor.capture(),
+                eq(TemplateName.BUNDLE_CREATED_EMAIL_CITIZEN));
+            assertThat(templateVarsCaptor.getValue())
+                .containsEntry("CicCaseRepresentativeFullName", "Rep LastName")
+                .containsEntry(DASHBOARD_KEY, "https://frontend.url/dashboard");
+        }
+
+        @Test
+        void shouldNotifyConfiguredRespondentThatBundleIsCreated() {
+            //Given
+            final CaseData data = getMockCaseData();
+            data.getCicCase().setRespondentEmail("testresp@outlook.com");
+            ReflectionTestUtils.setField(bundleCreatedNotification, "configuredRespondentEmail", "appeals.team@cica.gov.uk");
+
+            //When
+            when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+                .thenReturn(NotificationRequest.builder().build());
+            when(notificationHelper.getRespondentCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
+
+            bundleCreatedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
+
+            //Then
+            verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
+            verify(notificationHelper).buildEmailNotificationRequest(
+                eq("appeals.team@cica.gov.uk"),
+                templateVarsCaptor.capture(),
+                eq(TemplateName.BUNDLE_CREATED_EMAIL_RESPONDENT));
+            assertThat(templateVarsCaptor.getValue())
+                .containsEntry("CicCaseRespondentFullName", "Appeals team")
+                .containsEntry(DASHBOARD_KEY, "https://frontend.url/dashboard");
+        }
     }
 
     private CaseData getMockCaseData() {
