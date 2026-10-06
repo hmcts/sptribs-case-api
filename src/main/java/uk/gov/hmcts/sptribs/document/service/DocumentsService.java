@@ -22,6 +22,7 @@ import uk.gov.hmcts.sptribs.document.model.DocumentDashboardModel;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -32,6 +33,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.getAllCaseDocuments;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
 
 @RequiredArgsConstructor
 @Service
@@ -42,25 +44,78 @@ public class DocumentsService {
     private final CaseDocumentTypesCache caseDocumentTypesCache;
 
     public void buildAndSaveNewDocumentEntity(Document document, Long caseReferenceNumber,
-                                              DocumentType documentType, CaseDocumentType caseDocumentType) {
+                                               DocumentType documentType, CaseDocumentType caseDocumentType) {
         try {
-            String documentId =
-                StringUtils.substringAfterLast(document.getBinaryUrl().replace("/binary", ""), "/");
-
-            if (documentsRepository.findByDocumentIdUuid(documentId).isPresent()) {
-                log.info("Document with ID {} already exists in the database.", documentId);
+            int inserted = documentsRepository.insertIgnoreDuplicate(
+                caseReferenceNumber,
+                document.getUrl(),
+                document.getFilename(),
+                document.getBinaryUrl(),
+                documentType != null ? documentType.name() : null,
+                caseDocumentTypesCache.getId(caseDocumentType),
+                OffsetDateTime.now());
+            if (inserted == 0) {
+                log.info("Document with binary URL {} already exists in the database.", document.getBinaryUrl());
             }
-            documentsRepository.save(DocumentEntity.builder()
-                .caseReferenceNumber(caseReferenceNumber)
-                .documentUrl(document.getUrl())
-                .documentFilename(document.getFilename())
-                .documentBinaryUrl(document.getBinaryUrl())
-                .documentTypeName(documentType != null ? documentType.name() : null)
-                .caseDocumentTypeId(caseDocumentTypesCache.getId(caseDocumentType))
-                .build());
         } catch (DataAccessException e) {
             throw new DocumentSaveException("Error saving document entity to database", e);
         }
+    }
+
+    public List<String> saveDocuments(Long caseReferenceNumber,
+                                      List<ListValue<CaseworkerCICDocument>> documents,
+                                      CaseDocumentType caseDocumentType) {
+        List<String> errors = new ArrayList<>();
+        if (documents == null) {
+            return errors;
+        }
+
+        for (ListValue<CaseworkerCICDocument> document : documents) {
+            try {
+                buildAndSaveNewDocumentEntity(
+                    document.getValue().getDocumentLink(),
+                    caseReferenceNumber,
+                    document.getValue().getDocumentCategory(),
+                    caseDocumentType
+                );
+            } catch (RuntimeException e) {
+                errors.add(handleDocumentException(document.getValue().getDocumentLink(), e.getMessage()));
+            }
+        }
+
+        return errors;
+    }
+
+    @Transactional
+    public List<String> updateDocumentCategories(List<ListValue<CaseworkerCICDocument>> documents) {
+        List<String> errors = new ArrayList<>();
+        for (ListValue<CaseworkerCICDocument> document : documents) {
+            try {
+                DocumentType documentType = document.getValue().getDocumentCategory();
+                setNewDocumentTypeName(
+                    document.getValue().getDocumentLink().getBinaryUrl(),
+                    documentType != null ? documentType.name() : null
+                );
+            } catch (RuntimeException e) {
+                errors.add(handleDocumentException(document.getValue().getDocumentLink(), e.getMessage()));
+            }
+        }
+
+        return errors;
+    }
+
+    @Transactional
+    public List<String> removeDocuments(List<ListValue<CaseworkerCICDocument>> documents) {
+        List<String> errors = new ArrayList<>();
+        for (ListValue<CaseworkerCICDocument> document : documents) {
+            try {
+                removeEntryFromDocumentTableByBinaryURL(document.getValue().getDocumentLink().getBinaryUrl());
+            } catch (RuntimeException e) {
+                errors.add(handleDocumentException(document.getValue().getDocumentLink(), e.getMessage()));
+            }
+        }
+
+        return errors;
     }
 
     public List<Long> getDocumentsViaSentByContactParties(CaseData caseData, final Map<String, String> uploadedDocuments) {
