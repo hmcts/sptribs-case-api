@@ -22,12 +22,19 @@ import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
@@ -44,6 +51,9 @@ class CaseworkerEditDraftOrderTest {
 
     @Mock
     private OrderService orderService;
+
+    @Mock
+    private DocumentsService documentsService;
 
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
@@ -74,13 +84,61 @@ class CaseworkerEditDraftOrderTest {
     @Test
     void shouldSuccessfullySaveDraftOrder() {
         //Given
-        final CaseData caseData = caseData();
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> updatedCaseDetails = draftOrderDetails();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
 
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerEditDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
+        assertThat(response).isNotNull();
+        DraftOrderCIC updatedDraftOrder = response.getData()
+            .getCicCase().getDraftOrderCICList().getFirst().getValue();
+        assertThat(updatedDraftOrder.getDraftOrderContentCIC().getOrderTemplate()).isEqualTo(OrderTemplate.CIC6_GENERAL_DIRECTIONS);
+        assertThat(updatedDraftOrder.getTemplateGeneratedDocument()).isNotNull();
+        verify(documentsService).buildAndSaveNewDocumentEntity(
+            updatedDraftOrder.getTemplateGeneratedDocument(),
+            TEST_CASE_ID,
+            DocumentType.TRIBUNAL_DIRECTION,
+            CaseDocumentType.DRAFT_ORDER
+        );
+        verify(documentsService).removeEntryFromDocumentTableByBinaryURL("previous-document-binary-url");
+
+        SubmittedCallbackResponse draftCreatedResponse = caseworkerEditDraftOrder.submitted(updatedCaseDetails, beforeDetails);
+        //  Then
+        assertThat(draftCreatedResponse).isNotNull();
+    }
+
+    @Test
+    void shouldReturnAnErrorWhenSavingDraftOrderFails() {
+        //Given
+        final CaseDetails<CaseData, State> updatedCaseDetails = draftOrderDetails();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        doThrow(new RuntimeException("database unavailable"))
+            .when(documentsService)
+            .buildAndSaveNewDocumentEntity(
+                any(Document.class),
+                eq(TEST_CASE_ID),
+                eq(DocumentType.TRIBUNAL_DIRECTION),
+                eq(CaseDocumentType.DRAFT_ORDER)
+            );
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerEditDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        //Then
+        assertThat(response.getErrors()).containsExactly(
+            "Error saving document with filename: draft--user--01-01-2023 11:11:11.pdf"
+        );
+    }
+
+    private CaseDetails<CaseData, State> draftOrderDetails() {
+        final CaseData caseData = caseData();
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+
+        details.setData(caseData);
+        details.setId(TEST_CASE_ID);
+        details.setCreatedDate(LOCAL_DATE_TIME);
         caseData.setDraftOrderContentCIC(DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build());
         DynamicListElement element = DynamicListElement.builder().code(UUID.randomUUID())
             .label(OrderTemplate.CIC6_GENERAL_DIRECTIONS.getLabel() + "--01-01-2023 11:11:11").build();
@@ -93,24 +151,19 @@ class CaseworkerEditDraftOrderTest {
                 .templateGeneratedDocument(Document.builder().filename("draft--user--01-01-2023 11:11:11.pdf")
                     .build())
                 .draftOrderContentCIC(DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build()).build()
-
         ).build());
         caseData.getCicCase().setDraftOrderCICList(cicList);
-        caseData.getCicCase().setOrderTemplateIssued(Document.builder().filename("draft--user--01-01-2023 11:11:11.pdf").build());
+        caseData.getCicCase().setOrderTemplateIssued(Document.builder()
+            .filename("draft--user--01-01-2023 11:11:11.pdf")
+            .binaryUrl("new-document-binary-url")
+            .build());
+        caseData.getCicCase().getDraftOrderCICList().getFirst().getValue().setTemplateGeneratedDocument(
+            Document.builder()
+                .filename("draft--user--01-01-2023 11:11:11.pdf")
+                .binaryUrl("previous-document-binary-url")
+                .build());
 
-        //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
-            caseworkerEditDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        assertThat(response).isNotNull();
-        DraftOrderCIC updatedDraftOrder = response.getData()
-            .getCicCase().getDraftOrderCICList().getFirst().getValue();
-        assertThat(updatedDraftOrder.getDraftOrderContentCIC().getOrderTemplate()).isEqualTo(OrderTemplate.CIC6_GENERAL_DIRECTIONS);
-        assertThat(updatedDraftOrder.getTemplateGeneratedDocument()).isNotNull();
-
-        SubmittedCallbackResponse draftCreatedResponse = caseworkerEditDraftOrder.submitted(updatedCaseDetails, beforeDetails);
-        //  Then
-        assertThat(draftCreatedResponse).isNotNull();
+        return details;
     }
 
 }
-

@@ -10,9 +10,9 @@ import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
+import uk.gov.hmcts.sptribs.document.DocumentFileTypes;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.isValidDocument;
 
 @Data
 @NoArgsConstructor
@@ -42,9 +42,6 @@ public class CICDocument {
 
     @JsonIgnore
     public boolean isDocumentValid() {
-        return isValidDocument(
-            this.documentLink.getFilename(),
-            "pdf,csv,txt,rtf,xlsx,docx,doc,xls,tif,tiff,bmp,jpg,jpeg,png,mp3,m4a,mp4"
-        );
+        return DocumentFileTypes.isValid(this.documentLink.getFilename(), DocumentFileTypes.CASEWORKER_UPLOAD_EXTENSIONS);
     }
 }
