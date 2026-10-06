@@ -115,7 +115,7 @@ public class SystemCreateTestCaseTest {
         links.self = documentLink;
         links.binary = binaryDocumentLink;
         expectedCdamUploadedDocument.setLinks(links);
-        expectedCdamUploadedDocument.setOriginalDocumentName("sample_file_test.pdf");
+        expectedCdamUploadedDocument.setOriginalDocumentName("Get_Started_With_Smallpdf.pdf");
 
         final List<Document> expectedDocuments = new ArrayList<>();
         expectedDocuments.add(expectedCdamUploadedDocument);

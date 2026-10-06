@@ -66,7 +66,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private static final String ENVIRONMENT_AAT = "aat";
     private static final String TEST_CREATE = "create-test-case";
     private static final String TEST_CASE_DATA_FILE = "classpath:data/st_cic_test_case.json";
-    private static final ClassPathResource SAMPLE_PDF_FILE_RESOURCE =  new ClassPathResource("data/sample_file_test.pdf");
+    private static final ClassPathResource SAMPLE_PDF_FILE_RESOURCE =  new ClassPathResource("data/Get_Started_With_Smallpdf.pdf");
 
     private final ObjectMapper objectMapper;
     private final CcdSupplementaryDataService ccdSupplementaryDataService;
@@ -208,7 +208,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             final String jurisdiction = appsConfig.getApps().getFirst().getJurisdiction();
             try {
                 final InMemoryMultipartFile inMemoryMultipartFile =
-                    new InMemoryMultipartFile("sample_file_test.pdf", SAMPLE_PDF_FILE_RESOURCE.getContentAsByteArray());
+                    new InMemoryMultipartFile("Get_Started_With_Smallpdf.pdf", SAMPLE_PDF_FILE_RESOURCE.getContentAsByteArray());
 
                 final DocumentUploadRequest documentUploadRequest =
                     new DocumentUploadRequest(Classification.RESTRICTED.toString(),

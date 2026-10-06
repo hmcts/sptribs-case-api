@@ -73,7 +73,7 @@ public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole
     public static final String SYSTEM_CREATE_TEST_CASE = "system-create-test-case";
     private final DocumentsService documentsService;
     private static final String TEST_CASE_DATA_FILE = "classpath:data/st_cic_test_case.json";
-    private static final ClassPathResource SAMPLE_PDF_FILE_RESOURCE =  new ClassPathResource("data/sample_file_test.pdf");
+    private static final ClassPathResource SAMPLE_PDF_FILE_RESOURCE =  new ClassPathResource("data/Get_Started_With_Smallpdf.pdf");
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.ENGLISH);
 
 
@@ -200,7 +200,7 @@ public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole
             final String jurisdiction = appsConfig.getApps().getFirst().getJurisdiction();
             try {
                 final InMemoryMultipartFile inMemoryMultipartFile =
-                    new InMemoryMultipartFile("sample_file_test.pdf", SAMPLE_PDF_FILE_RESOURCE.getContentAsByteArray());
+                    new InMemoryMultipartFile("Get_Started_With_Smallpdf.pdf", SAMPLE_PDF_FILE_RESOURCE.getContentAsByteArray());
 
                 final DocumentUploadRequest documentUploadRequest =
                     new DocumentUploadRequest(Classification.RESTRICTED.toString(),
