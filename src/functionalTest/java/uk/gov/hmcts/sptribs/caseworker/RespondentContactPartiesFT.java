@@ -122,11 +122,16 @@ public class RespondentContactPartiesFT extends FunctionalTestSuite {
     public void shouldNotReturnAnyErrorsInSelectDocumentMidEventCallback() throws Exception {
         final Map<String, Object> caseData = caseData(CONTACT_PARTIES_SELECT_DOCUMENT_MID_EVENT_REQUEST);
 
-        String documentId = "a17fa26b-6e91-48ba-841e-8ab75c772463";
+        String caseworkerDocumentId = "a17fa26b-6e91-48ba-841e-8ab75c772463";
+        String applicantDocumentId = "0469dc01-a90f-400a-9ce9-39e0b74f1a58";
 
-        UploadResponse uploadResponse = uploadTestDocumentIfMissing(documentId, DRAFT_ORDER_FILE);
-        String resolvedDocumentId = resolveDocumentId(documentId, uploadResponse);
-        updateDocumentSelectionWithDocumentId(caseData, resolvedDocumentId);
+        UploadResponse caseworkerUpload = uploadTestDocumentIfMissing(caseworkerDocumentId, DRAFT_ORDER_FILE);
+        String resolvedCaseworkerId = resolveDocumentId(caseworkerDocumentId, caseworkerUpload);
+        updateDocumentSelectionWithDocumentId(caseData, caseworkerDocumentId, resolvedCaseworkerId);
+
+        UploadResponse applicantUpload = uploadTestDocumentIfMissing(applicantDocumentId, DRAFT_ORDER_FILE);
+        String resolvedApplicantId = resolveDocumentId(applicantDocumentId, applicantUpload);
+        updateDocumentSelectionWithDocumentId(caseData, applicantDocumentId, resolvedApplicantId);
 
         final Response response = triggerCallback(
             caseData,
@@ -140,6 +145,14 @@ public class RespondentContactPartiesFT extends FunctionalTestSuite {
             .inPath(ERRORS)
             .isArray()
             .isEmpty();
+        assertThatJson(response.asString())
+            .inPath("$.data.contactPartiesDocumentsD01.documentLink.document_url")
+            .isEqualTo("http://manage-case.demo.platform.hmcts.net/documents/" + resolvedCaseworkerId);
+        assertThatJson(response.asString())
+            .inPath("$.data.contactPartiesDocumentsD02.documentLink.document_url")
+            .isEqualTo("http://manage-case.demo.platform.hmcts.net/documents/" + resolvedApplicantId);
+        assertThat(response.jsonPath().getList("data.contactPartiesDocumentsActiveDocumentSlots", String.class))
+            .containsExactly("D01", "D02");
     }
 
     @Test
@@ -150,7 +163,7 @@ public class RespondentContactPartiesFT extends FunctionalTestSuite {
 
         UploadResponse docUploadResponse = uploadTestDocumentIfMissing(documentId, DRAFT_ORDER_FILE);
         String resolvedDocumentId = resolveDocumentId(documentId, docUploadResponse);
-        updateDocumentSelectionWithDocumentId(caseData, resolvedDocumentId);
+        updateDocumentSelectionWithDocumentId(caseData, "null", resolvedDocumentId);
 
         final Response response = triggerCallback(
             caseData,
@@ -284,7 +297,7 @@ public class RespondentContactPartiesFT extends FunctionalTestSuite {
     }
 
     @SuppressWarnings("unchecked")
-    private void updateDocumentSelectionWithDocumentId(Map<String, Object> caseData, String documentId) {
+    private void updateDocumentSelectionWithDocumentId(Map<String, Object> caseData, String originalDocumentId, String documentId) {
         if (caseData == null || StringUtils.isBlank(documentId)) {
             return;
         }
@@ -294,11 +307,26 @@ public class RespondentContactPartiesFT extends FunctionalTestSuite {
             return;
         }
 
-        replaceDocumentId((List<Map<String, Object>>) documentList.get("value"), documentId);
-        replaceDocumentId((List<Map<String, Object>>) documentList.get("list_items"), documentId);
+        replaceDocumentId((List<Map<String, Object>>) documentList.get("value"), originalDocumentId, documentId);
+        replaceDocumentId((List<Map<String, Object>>) documentList.get("list_items"), originalDocumentId, documentId);
+
+        for (String caseDocumentField : List.of("allCaseworkerCICDocument", "cicCaseApplicantDocumentsUploaded")) {
+            List<Map<String, Object>> caseDocuments = (List<Map<String, Object>>) caseData.get(caseDocumentField);
+            if (caseDocuments != null) {
+                for (Map<String, Object> caseDocument : caseDocuments) {
+                    Map<String, Object> value = (Map<String, Object>) caseDocument.get("value");
+                    Map<String, Object> link = (Map<String, Object>) value.get("documentLink");
+                    for (String urlField : List.of("document_url", "document_binary_url")) {
+                        if (link.get(urlField) instanceof String url) {
+                            link.put(urlField, withDocumentId(url, originalDocumentId, documentId));
+                        }
+                    }
+                }
+            }
+        }
     }
 
-    private void replaceDocumentId(List<Map<String, Object>> elements, String documentId) {
+    private void replaceDocumentId(List<Map<String, Object>> elements, String originalDocumentId, String documentId) {
         if (elements == null) {
             return;
         }
@@ -306,11 +334,12 @@ public class RespondentContactPartiesFT extends FunctionalTestSuite {
         for (Map<String, Object> element : elements) {
             Object labelObj = element.get("label");
             if (labelObj instanceof String label) {
-                String updatedLabel = label
-                    .replace("/null/", "/" + documentId + "/")
-                    .replace("/null)", "/" + documentId + ")");
-                element.put("label", updatedLabel);
+                element.put("label", withDocumentId(label, originalDocumentId, documentId));
             }
         }
+    }
+
+    private String withDocumentId(String value, String originalDocumentId, String documentId) {
+        return value.replace("/" + originalDocumentId, "/" + documentId);
     }
 }
