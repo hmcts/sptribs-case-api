@@ -6,8 +6,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.DisabledIf;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
 import java.util.ArrayList;
@@ -153,7 +157,7 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
         caseData.put("cicCaseRepresentativeEmailAddress", "");
         caseData.remove("cicCaseApplicantEmailAddress");
 
-        final Response response = triggerCallback(caseData, CREATE_BUNDLE, SUBMITTED_URL, state);
+        final Response response = triggerBundleSubmittedCallback(caseData, state);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -169,7 +173,7 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
         caseData.put("cicCaseCaseSubcategory", subcategory.getLabel());
         caseData.put("cicCaseRespondentEmail", "");
 
-        final Response response = triggerCallback(caseData, CREATE_BUNDLE, SUBMITTED_URL, CaseManagement);
+        final Response response = triggerBundleSubmittedCallback(caseData, CaseManagement);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -193,5 +197,23 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
                 # Bundle creation notification failed\s
                 ## A notification could not be sent to: Subject\s
                 ## Please resend the notification.""");
+    }
+
+    private Response triggerBundleSubmittedCallback(Map<String, Object> caseData, State state) {
+        long caseId = createCaseInCcd(false).getId();
+        caseData.put("hyphenatedCaseRef", CaseData.builder().build().formatCaseRef(caseId));
+
+        CaseDetails details = CaseDetails.builder()
+            .id(caseId)
+            .data(caseData)
+            .state(state.getName())
+            .caseTypeId(CcdServiceCode.ST_CIC.getCaseType().getCaseTypeName())
+            .build();
+
+        return triggerCallback(CallbackRequest.builder()
+            .eventId(CREATE_BUNDLE)
+            .caseDetailsBefore(details)
+            .caseDetails(details)
+            .build(), SUBMITTED_URL);
     }
 }
