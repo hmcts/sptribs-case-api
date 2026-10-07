@@ -29,7 +29,7 @@ public class ContactPartiesDocuments {
 
     @CCD(typeOverride = MultiSelectList, typeParameterOverride = "Slot",
         retainHiddenValue = true, access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private Set<Slot> act;
+    private Set<Slot> activeDocumentSlots;
 
     @CCD(label = "Document 1", access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private CaseworkerCICDocument d01;

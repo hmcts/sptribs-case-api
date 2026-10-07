@@ -14,6 +14,7 @@ public final class ErrorConstants {
     public static final String EMPTY_DATE_MODEL = "Please select an option from the list before continuing";
     public static final String FAILED_SAVING_DOCUMENT_TO_DATABASE = "Error saving document with filename: ";
     public static final String FAILED_SAVING_DOCUMENT_WITH_NO_FILENAME_TO_DATABASE = "Error saving document with no filename";
+    public static final String SELECTED_DOCUMENT_UNAVAILABLE = "Unable to review selected documents. Please select the documents again";
 
     private ErrorConstants() {
 

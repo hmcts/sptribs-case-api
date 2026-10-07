@@ -37,23 +37,53 @@ class ContactPartiesReviewUtilTest {
         CaseData data = CaseData.builder()
             .cicCase(CicCase.builder().reinstateDocuments(documents).build())
             .contactPartiesDocuments(ContactPartiesDocuments.builder()
-                .documentList(DynamicMultiSelectList.builder().value(selection).build()).build())
+                .documentList(DynamicMultiSelectList.builder().value(selection).listItems(selection).build()).build())
             .build();
 
-        ContactPartiesReviewUtil.setReviewDocuments(data);
+        assertThat(ContactPartiesReviewUtil.setReviewDocuments(data)).isTrue();
 
-        assertThat(data.getContactPartiesDocuments().getAct()).containsExactlyInAnyOrder(Slot.values());
+        assertThat(data.getContactPartiesDocuments().getActiveDocumentSlots()).containsExactlyInAnyOrder(Slot.values());
         assertThat(data.getContactPartiesDocuments().getD01()).isEqualTo(documents.getFirst().getValue());
         assertThat(data.getContactPartiesDocuments().getD10()).isEqualTo(documents.get(9).getValue());
 
         data.getContactPartiesDocuments().getDocumentList().setValue(List.of());
-        ContactPartiesReviewUtil.setReviewDocuments(data);
+        assertThat(ContactPartiesReviewUtil.setReviewDocuments(data)).isTrue();
 
-        assertThat(data.getContactPartiesDocuments().getAct()).isEmpty();
+        assertThat(data.getContactPartiesDocuments().getActiveDocumentSlots()).isEmpty();
         assertThat(data.getContactPartiesDocuments().getD01()).isNull();
         assertThat(data.getContactPartiesDocuments().getD10()).isNull();
 
         ContactPartiesReviewUtil.clearReviewDocuments(data.getContactPartiesDocuments());
-        assertThat(data.getContactPartiesDocuments().getAct()).isNull();
+        assertThat(data.getContactPartiesDocuments().getActiveDocumentSlots()).isNull();
+    }
+
+    @Test
+    void duplicateFileDoesNotDisplaceTheTenthSelectedDocument() {
+        String sharedUrl = "https://example.test/documents/" + UUID.randomUUID();
+        List<ListValue<CaseworkerCICDocument>> documents = IntStream.rangeClosed(0, 10)
+            .mapToObj(index -> {
+                String url = index < 2 ? sharedUrl : "https://example.test/documents/" + UUID.randomUUID();
+                CaseworkerCICDocument document = CaseworkerCICDocument.builder()
+                    .documentLink(Document.builder().filename("document" + index + ".pdf").url(url).build())
+                    .build();
+                return new ListValue<>(UUID.randomUUID().toString(), document);
+            }).toList();
+        List<DynamicListElement> options = IntStream.rangeClosed(0, 10)
+            .mapToObj(index -> DynamicListElement.builder().code(UUID.randomUUID()).build())
+            .toList();
+        DynamicMultiSelectList list = DynamicMultiSelectList.builder()
+            .listItems(options)
+            .value(options.subList(1, 11))
+            .build();
+        CaseData data = CaseData.builder()
+            .cicCase(CicCase.builder().reinstateDocuments(documents).build())
+            .contactPartiesDocuments(ContactPartiesDocuments.builder().documentList(list).build())
+            .build();
+
+        assertThat(ContactPartiesReviewUtil.setReviewDocuments(data)).isTrue();
+
+        assertThat(data.getContactPartiesDocuments().getActiveDocumentSlots()).containsExactlyInAnyOrder(Slot.values());
+        assertThat(data.getContactPartiesDocuments().getD01()).isEqualTo(documents.get(1).getValue());
+        assertThat(data.getContactPartiesDocuments().getD10()).isEqualTo(documents.get(10).getValue());
     }
 }

@@ -43,15 +43,19 @@ public final class ContactPartiesReviewUtil {
         return String.join("\n", parties);
     }
 
-    public static void setReviewDocuments(CaseData data) {
-        List<ListValue<CaseworkerCICDocument>> documents = getSelectedContactPartiesDocuments(data);
+    public static boolean setReviewDocuments(CaseData data) {
         ContactPartiesDocuments reviewDocuments = data.getContactPartiesDocuments();
+        List<ListValue<CaseworkerCICDocument>> documents = getSelectedContactPartiesDocuments(data).orElse(null);
+        if (documents == null) {
+            clearReviewDocuments(reviewDocuments);
+            return false;
+        }
         Set<Slot> populatedSlots = EnumSet.noneOf(Slot.class);
         Slot[] slots = Slot.values();
         for (int index = 0; index < Math.min(documents.size(), slots.length); index++) {
             populatedSlots.add(slots[index]);
         }
-        reviewDocuments.setAct(populatedSlots);
+        reviewDocuments.setActiveDocumentSlots(populatedSlots);
         reviewDocuments.setD01(documentAt(documents, 0));
         reviewDocuments.setD02(documentAt(documents, 1));
         reviewDocuments.setD03(documentAt(documents, 2));
@@ -62,10 +66,14 @@ public final class ContactPartiesReviewUtil {
         reviewDocuments.setD08(documentAt(documents, 7));
         reviewDocuments.setD09(documentAt(documents, 8));
         reviewDocuments.setD10(documentAt(documents, 9));
+        return true;
     }
 
     public static void clearReviewDocuments(ContactPartiesDocuments documents) {
-        documents.setAct(null);
+        if (documents == null) {
+            return;
+        }
+        documents.setActiveDocumentSlots(null);
         documents.setD01(null);
         documents.setD02(null);
         documents.setD03(null);

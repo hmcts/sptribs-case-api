@@ -139,11 +139,11 @@ class CaseworkerContactPartiesTest {
             .map(field -> field.build())
             .filter(field -> field.getId().matches("contactPartiesDocumentsD\\d{2}")))
             .allSatisfy(field -> assertThat(field.getShowCondition())
-                .isEqualTo("contactPartiesDocumentsActCONTAINS \""
+                .isEqualTo("contactPartiesDocumentsActiveDocumentSlotsCONTAINS \""
                     + field.getId().substring("contactPartiesDocuments".length()) + "\""));
         assertThat(event.getFields().getFields().stream()
             .map(field -> field.build())
-            .filter(field -> "contactPartiesDocumentsAct".equals(field.getId())))
+            .filter(field -> "contactPartiesDocumentsActiveDocumentSlots".equals(field.getId())))
             .singleElement()
             .satisfies(field -> {
                 assertThat(field.getPage()).isEqualTo("contactPartiesSelectDocument");
@@ -156,7 +156,7 @@ class CaseworkerContactPartiesTest {
             .satisfies(field -> {
                 assertThat(field.getContext()).isEqualTo(DisplayContext.ReadOnly);
                 assertThat(field.getPage()).isEqualTo("contactPartiesReview");
-                assertThat(field.getShowCondition()).isEqualTo("contactPartiesDocumentsActCONTAINS \"D01\"");
+                assertThat(field.getShowCondition()).isEqualTo("contactPartiesDocumentsActiveDocumentSlotsCONTAINS \"D01\"");
                 assertThat(field.getDisplayContextParameter()).isNull();
             });
     }
@@ -263,7 +263,8 @@ class CaseworkerContactPartiesTest {
         DynamicListElement secondSelection = DynamicListElement.builder().code(secondId)
             .label("[second.pdf](https://example.test/documents/" + secondId + "/binary)").build();
         caseData.getContactPartiesDocuments().setDocumentList(DynamicMultiSelectList.builder()
-            .value(List.of(firstSelection, secondSelection)).build());
+            .value(List.of(firstSelection, secondSelection))
+            .listItems(List.of(firstSelection, secondSelection)).build());
         CaseDetails<CaseData, State> details = new CaseDetails<>();
         details.setData(caseData);
 
@@ -588,6 +589,31 @@ class CaseworkerContactPartiesTest {
         assertThat(caseData.getContactPartiesDocuments().getD10()).isNull();
         assertThat(caseData.getContactPartiesDocuments().getReviewSelectedParties()).isNull();
         assertThat(caseData.getContactPartiesDocuments().getReviewMessage()).isNull();
+    }
+
+    @Test
+    void shouldSendMessageWithoutAttachmentsWhenSelectionIsNull() {
+        CaseData caseData = caseData();
+        caseData.setCicCase(CicCase.builder().notifyPartySubject(Set.of(SubjectCIC.SUBJECT)).build());
+        DynamicMultiSelectList documentList = DynamicMultiSelectList.builder().build();
+        caseData.getContactPartiesDocuments().setDocumentList(documentList);
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(caseData);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerContactParties.aboutToSubmit(details, details);
+
+        assertThat(response.getEventMetadata().getSummary()).isEqualTo("0 Selected documents sent");
+        assertThat(documentList.getValue()).isEmpty();
+
+        Map<String, String> emptyDocuments = new NotificationHelper().buildDocumentList(documentList, 10);
+        when(notificationHelper.buildDocumentList(documentList, 10)).thenReturn(emptyDocuments);
+        when(contactPartiesNotification.sendToSubject(caseData, caseData.getHyphenatedCaseRef(), emptyDocuments))
+            .thenReturn("correspondence-id");
+
+        SubmittedCallbackResponse submitted = caseWorkerContactParties.submitted(details, details);
+
+        assertThat(submitted.getConfirmationHeader()).contains("# Message sent");
+        verify(contactPartiesNotification).sendToSubject(caseData, caseData.getHyphenatedCaseRef(), emptyDocuments);
     }
 
 }

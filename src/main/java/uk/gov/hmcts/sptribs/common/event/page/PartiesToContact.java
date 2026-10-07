@@ -18,6 +18,7 @@ import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.ContactPartiesReviewUtil.caseworkerSelectedParties;
 import static uk.gov.hmcts.sptribs.caseworker.util.ContactPartiesReviewUtil.setReviewDocuments;
 import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.MINOR_FATAL_SUBJECT_ERROR_MESSAGE;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECTED_DOCUMENT_UNAVAILABLE;
 import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAST_ONE_CONTACT_PARTY;
 
 @Slf4j
@@ -69,7 +70,9 @@ public class PartiesToContact implements CcdPageConfiguration {
             }
         }
 
-        setReviewDocuments(data);
+        if (!setReviewDocuments(data)) {
+            errors.add(SELECTED_DOCUMENT_UNAVAILABLE);
+        }
         data.getContactPartiesDocuments().setReviewSelectedParties(cicCase == null ? null : caseworkerSelectedParties(cicCase));
         data.getContactPartiesDocuments().setReviewMessage(cicCase == null ? null : cicCase.getNotifyPartyMessage());
 

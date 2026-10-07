@@ -582,6 +582,17 @@ public class NotificationHelperTest {
             .containsEntry("DocumentAvailable2", NO);
     }
 
+    @Test
+    void shouldMarkAllAttachmentsUnavailableWhenDocumentListIsMissing() {
+        Map<String, String> result = notificationHelper.buildDocumentList(null, 10);
+
+        assertThat(result).hasSize(20);
+        for (int index = 1; index <= 10; index++) {
+            assertThat(result).containsEntry("CaseDocument" + index, EMPTY_PLACEHOLDER)
+                .containsEntry("DocumentAvailable" + index, NO);
+        }
+    }
+
     private DynamicList getDynamicList() {
         final DynamicListElement listItem = DynamicListElement
             .builder()

@@ -10,8 +10,8 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.ContactPartiesReview;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ContactPartiesSelectDocument;
-import uk.gov.hmcts.sptribs.caseworker.event.page.RespondentContactPartiesReview;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RespondentPartiesToContact;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
@@ -60,7 +60,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class RespondentContactParties implements CCDConfig<CaseData, State, UserRole> {
 
     private static final CcdPageConfiguration resPartiesToContact = new RespondentPartiesToContact();
-    private static final CcdPageConfiguration contactPartiesReview = new RespondentContactPartiesReview();
+    private static final CcdPageConfiguration contactPartiesReview = new ContactPartiesReview();
 
 
     @Value("${case_document_am.url}")
@@ -124,6 +124,7 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
+        DocumentListUtil.normaliseContactPartiesDocumentList(details.getData());
         clearReviewDocuments(details.getData().getContactPartiesDocuments());
         details.getData().getContactPartiesDocuments().setReviewSelectedParties(null);
         details.getData().getContactPartiesDocuments().setReviewMessage(null);

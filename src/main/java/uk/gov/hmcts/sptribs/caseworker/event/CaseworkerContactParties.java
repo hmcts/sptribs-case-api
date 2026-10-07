@@ -15,7 +15,7 @@ import uk.gov.hmcts.ccd.sdk.api.EventMetadata;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.event.page.CaseworkerContactPartiesReview;
+import uk.gov.hmcts.sptribs.caseworker.event.page.ContactPartiesReview;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ContactPartiesSelectDocument;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
@@ -72,7 +72,7 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
     private String baseUrl;
 
     private static final CcdPageConfiguration partiesToContact = new PartiesToContact();
-    private static final CcdPageConfiguration contactPartiesReview = new CaseworkerContactPartiesReview();
+    private static final CcdPageConfiguration contactPartiesReview = new ContactPartiesReview();
     private final ContactPartiesSelectDocument contactPartiesSelectDocument;
 
     private final ContactPartiesNotification contactPartiesNotification;
@@ -140,6 +140,7 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         final CaseData caseData = details.getData();
+        DocumentListUtil.normaliseContactPartiesDocumentList(caseData);
 
         clearReviewDocuments(caseData.getContactPartiesDocuments());
         caseData.getContactPartiesDocuments().setReviewSelectedParties(null);

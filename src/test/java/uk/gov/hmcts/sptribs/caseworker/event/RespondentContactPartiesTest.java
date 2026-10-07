@@ -116,7 +116,7 @@ class RespondentContactPartiesTest {
             .map(field -> field.build())
             .filter(field -> field.getId().matches("contactPartiesDocumentsD\\d{2}")))
             .allSatisfy(field -> assertThat(field.getShowCondition())
-                .isEqualTo("contactPartiesDocumentsActCONTAINS \""
+                .isEqualTo("contactPartiesDocumentsActiveDocumentSlotsCONTAINS \""
                     + field.getId().substring("contactPartiesDocuments".length()) + "\""));
         assertThat(event.getFields().getFields().stream()
             .map(field -> field.build())
@@ -125,7 +125,7 @@ class RespondentContactPartiesTest {
             .satisfies(field -> {
                 assertThat(field.getContext()).isEqualTo(DisplayContext.ReadOnly);
                 assertThat(field.getPage()).isEqualTo("contactPartiesReview");
-                assertThat(field.getShowCondition()).isEqualTo("contactPartiesDocumentsActCONTAINS \"D01\"");
+                assertThat(field.getShowCondition()).isEqualTo("contactPartiesDocumentsActiveDocumentSlotsCONTAINS \"D01\"");
                 assertThat(field.getDisplayContextParameter()).isNull();
             });
     }
@@ -204,7 +204,7 @@ class RespondentContactPartiesTest {
         DynamicListElement selection = DynamicListElement.builder().code(documentId)
             .label("[selected.pdf](https://example.test/documents/" + documentId + "/binary)").build();
         caseData.getContactPartiesDocuments().setDocumentList(DynamicMultiSelectList.builder()
-            .value(List.of(selection)).build());
+            .value(List.of(selection)).listItems(List.of(selection)).build());
         CaseDetails<CaseData, State> details = new CaseDetails<>();
         details.setData(caseData);
 
@@ -405,6 +405,32 @@ class RespondentContactPartiesTest {
         assertThat(caseData.getContactPartiesDocuments().getD01()).isNull();
         assertThat(caseData.getContactPartiesDocuments().getReviewSelectedParties()).isNull();
         assertThat(caseData.getContactPartiesDocuments().getReviewMessage()).isNull();
+    }
+
+    @Test
+    void shouldSendMessageWithoutAttachmentsWhenDocumentListIsMissing() {
+        CaseData caseData = caseData();
+        caseData.setCicCase(CicCase.builder().build());
+        caseData.getContactParties().setTribunal(Set.of(TribunalCIC.TRIBUNAL));
+        caseData.getContactPartiesDocuments().setDocumentList(null);
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(caseData);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = respondentContactParties.aboutToSubmit(details, details);
+
+        assertThat(response.getData()).isSameAs(caseData);
+        DynamicMultiSelectList documentList = caseData.getContactPartiesDocuments().getDocumentList();
+        assertThat(documentList.getValue()).isEmpty();
+
+        Map<String, String> emptyDocuments = new NotificationHelper().buildDocumentList(documentList, 10);
+        when(notificationHelper.buildDocumentList(documentList, 10)).thenReturn(emptyDocuments);
+        when(contactPartiesNotification.sendToTribunal(caseData, caseData.getHyphenatedCaseRef(), emptyDocuments))
+            .thenReturn("correspondence-id");
+
+        SubmittedCallbackResponse submitted = respondentContactParties.submitted(details, details);
+
+        assertThat(submitted.getConfirmationHeader()).contains("# Message sent");
+        verify(contactPartiesNotification).sendToTribunal(caseData, caseData.getHyphenatedCaseRef(), emptyDocuments);
     }
 
 }

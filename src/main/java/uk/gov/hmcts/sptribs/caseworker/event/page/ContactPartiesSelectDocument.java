@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.ContactPartiesReviewUtil.setReviewDocuments;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECTED_DOCUMENT_UNAVAILABLE;
 
 @Component
 @Slf4j
@@ -51,7 +52,7 @@ public class ContactPartiesSelectDocument implements CcdPageConfiguration {
                 "Note: Gov.Notify only supports sending documents in the formats of PDF, CSV, txt, rtf, MS Word Document "
                     + "file and MS Excel File. Your file must be smaller than 2MB")
             .complex(CaseData::getContactPartiesDocuments)
-            .readonly(ContactPartiesDocuments::getAct, "[STATE]=\"ALWAYS_HIDE\"")
+            .readonly(ContactPartiesDocuments::getActiveDocumentSlots, "[STATE]=\"ALWAYS_HIDE\"")
             .optionalNoSummary(ContactPartiesDocuments::getDocumentList, null, "Selected documents")
             .done();
     }
@@ -70,8 +71,8 @@ public class ContactPartiesSelectDocument implements CcdPageConfiguration {
             validateDocumentFileSizes(list.getValue(), errors);
         }
 
-        if (errors.isEmpty() && data.getCicCase() != null) {
-            setReviewDocuments(data);
+        if (errors.isEmpty() && data.getCicCase() != null && !setReviewDocuments(data)) {
+            errors.add(SELECTED_DOCUMENT_UNAVAILABLE);
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()

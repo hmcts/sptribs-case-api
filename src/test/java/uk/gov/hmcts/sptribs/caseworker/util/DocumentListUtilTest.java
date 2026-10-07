@@ -30,6 +30,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -159,11 +160,13 @@ public class DocumentListUtilTest {
         ListValue<CaseworkerCICDocument> unselectedListValue = new ListValue<>();
         unselectedListValue.setValue(unselectedDocument);
 
-        DynamicMultiSelectList documentList = DynamicMultiSelectList.builder()
-            .value(List.of(DynamicListElement.builder()
+        DynamicListElement selectedOption = DynamicListElement.builder()
                 .label("[selected.pdf Linked documents](http://case-api/documents/" + documentId + "/binary)")
                 .code(UUID.randomUUID())
-                .build()))
+                .build();
+        DynamicMultiSelectList documentList = DynamicMultiSelectList.builder()
+            .value(List.of(selectedOption))
+            .listItems(List.of(selectedOption, DynamicListElement.builder().code(UUID.randomUUID()).build()))
             .build();
         CaseData caseData = CaseData.builder().build();
         caseData.setCicCase(CicCase.builder()
@@ -173,10 +176,57 @@ public class DocumentListUtilTest {
             .documentList(documentList)
             .build());
 
-        List<ListValue<CaseworkerCICDocument>> result =
+        Optional<List<ListValue<CaseworkerCICDocument>>> result =
             DocumentListUtil.getSelectedContactPartiesDocuments(caseData);
 
-        assertThat(result).extracting(ListValue::getValue).containsExactly(selectedDocument);
+        assertThat(result).isPresent();
+        assertThat(result.orElseThrow()).extracting(ListValue::getValue).containsExactly(selectedDocument);
+    }
+
+    @Test
+    void shouldResolveOnlySelectedOptionsWhenDocumentsShareAFileUrl() {
+        String url = "http://document-store/documents/" + UUID.randomUUID();
+        CaseworkerCICDocument first = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().url(url).filename("shared.pdf").build())
+            .build();
+        CaseworkerCICDocument second = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.APPLICATION_FORM)
+            .documentLink(Document.builder().url(url).filename("shared.pdf").build())
+            .build();
+        CaseData caseData = CaseData.builder()
+            .cicCase(CicCase.builder().applicantDocumentsUploaded(List.of(listValue(second))).build())
+            .allDocManagement(DocumentManagement.builder().caseworkerCICDocument(List.of(listValue(first))).build())
+            .build();
+        DynamicMultiSelectList list = DocumentListUtil.prepareContactPartiesDocumentList(caseData, "http://case-api");
+        caseData.setContactPartiesDocuments(ContactPartiesDocuments.builder().documentList(list).build());
+
+        list.setValue(List.of(list.getListItems().get(1)));
+
+        assertThat(DocumentListUtil.getSelectedContactPartiesDocuments(caseData).orElseThrow())
+            .extracting(ListValue::getValue).containsExactly(second);
+
+        list.setValue(List.of(list.getListItems().get(1), list.getListItems().getFirst()));
+
+        assertThat(DocumentListUtil.getSelectedContactPartiesDocuments(caseData).orElseThrow())
+            .extracting(ListValue::getValue).containsExactly(second, first);
+    }
+
+    @Test
+    void shouldRejectSelectionWhoseCodeIsNotInTheOriginalOptions() {
+        CaseworkerCICDocument document = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().url("http://document-store/documents/" + UUID.randomUUID())
+                .filename("document.pdf").build())
+            .build();
+        CaseData caseData = CaseData.builder()
+            .cicCase(CicCase.builder().reinstateDocuments(List.of(listValue(document))).build())
+            .build();
+        DynamicMultiSelectList list = DocumentListUtil.prepareContactPartiesDocumentList(caseData, "http://case-api");
+        list.setValue(List.of(DynamicListElement.builder().code(UUID.randomUUID()).build()));
+        caseData.setContactPartiesDocuments(ContactPartiesDocuments.builder().documentList(list).build());
+
+        assertThat(DocumentListUtil.getSelectedContactPartiesDocuments(caseData)).isEmpty();
     }
 
     @Test
@@ -186,12 +236,12 @@ public class DocumentListUtilTest {
             .contactPartiesDocuments(ContactPartiesDocuments.builder().build())
             .build();
 
-        assertThat(DocumentListUtil.getSelectedContactPartiesDocuments(caseData)).isEmpty();
+        assertThat(DocumentListUtil.getSelectedContactPartiesDocuments(caseData).orElseThrow()).isEmpty();
 
         caseData.getContactPartiesDocuments().setDocumentList(
             DynamicMultiSelectList.builder().value(List.of()).build());
 
-        assertThat(DocumentListUtil.getSelectedContactPartiesDocuments(caseData)).isEmpty();
+        assertThat(DocumentListUtil.getSelectedContactPartiesDocuments(caseData).orElseThrow()).isEmpty();
     }
 
     @Test
@@ -215,6 +265,7 @@ public class DocumentListUtilTest {
                         .label("[selected.mp3 Linked documents](http://case-api/documents/" + documentId + "/binary)")
                         .code(UUID.randomUUID())
                         .build()))
+                    .listItems(List.of())
                     .build())
                 .build())
             .build();
