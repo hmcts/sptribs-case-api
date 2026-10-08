@@ -358,6 +358,25 @@ class ContactPartiesSelectDocumentTest {
     }
 
     @Test
+    void midEventRejectsMissingCaseDetails() {
+        ReflectionTestUtils.setField(contactPartiesSelectDocument, "citizenDashboardEnabled", true);
+        DynamicListElement selection = DynamicListElement.builder().code(UUID.randomUUID()).build();
+        CaseData data = CaseData.builder()
+            .cicCase(null)
+            .contactPartiesDocuments(ContactPartiesDocuments.builder()
+                .documentList(DynamicMultiSelectList.builder().value(List.of(selection)).listItems(List.of(selection)).build())
+                .build())
+            .build();
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(data);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = contactPartiesSelectDocument.midEvent(details, details);
+
+        assertThat(response.getErrors()).containsExactly(CONTACT_PARTIES_NOTIFICATION_FAILED);
+        assertThat(data.getContactPartiesDocuments().getD01()).isNull();
+    }
+
+    @Test
     void midEventPreparesTheSelectedDocumentForTheReview() {
         ReflectionTestUtils.setField(contactPartiesSelectDocument, "citizenDashboardEnabled", true);
 

@@ -63,21 +63,25 @@ public class RespondentPartiesToContact implements CcdPageConfiguration {
         final ContactParties contactParties = data.getContactParties();
         final List<String> errors = new ArrayList<>();
 
-        if (contactParties != null) {
-            if (CollectionUtils.isEmpty(contactParties.getRepresentativeContactParties())
-                && CollectionUtils.isEmpty(contactParties.getSubjectContactParties())
-                && CollectionUtils.isEmpty(contactParties.getApplicantContactParties())
-                && CollectionUtils.isEmpty(contactParties.getTribunal())) {
-                errors.add(SELECT_AT_LEAST_ONE_CONTACT_PARTY);
-            } else if ((cicCase.getCaseSubcategory() == CaseSubcategory.FATAL
-                || cicCase.getCaseSubcategory() == CaseSubcategory.MINOR)
-                && !CollectionUtils.isEmpty(contactParties.getSubjectContactParties())) {
-                errors.add(MINOR_FATAL_SUBJECT_ERROR_MESSAGE);
-            }
-        }
-
-        if (!setReviewDocuments(data)) {
+        if (cicCase == null) {
             errors.add(CONTACT_PARTIES_NOTIFICATION_FAILED);
+        } else {
+            if (contactParties != null) {
+                if (CollectionUtils.isEmpty(contactParties.getRepresentativeContactParties())
+                    && CollectionUtils.isEmpty(contactParties.getSubjectContactParties())
+                    && CollectionUtils.isEmpty(contactParties.getApplicantContactParties())
+                    && CollectionUtils.isEmpty(contactParties.getTribunal())) {
+                    errors.add(SELECT_AT_LEAST_ONE_CONTACT_PARTY);
+                } else if ((cicCase.getCaseSubcategory() == CaseSubcategory.FATAL
+                    || cicCase.getCaseSubcategory() == CaseSubcategory.MINOR)
+                    && !CollectionUtils.isEmpty(contactParties.getSubjectContactParties())) {
+                    errors.add(MINOR_FATAL_SUBJECT_ERROR_MESSAGE);
+                }
+            }
+
+            if (errors.isEmpty() && !setReviewDocuments(data)) {
+                errors.add(CONTACT_PARTIES_NOTIFICATION_FAILED);
+            }
         }
         data.getContactPartiesDocuments().setReviewSelectedParties(cicCase == null || contactParties == null
             ? null : respondentSelectedParties(cicCase, contactParties));

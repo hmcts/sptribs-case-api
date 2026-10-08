@@ -71,7 +71,7 @@ public class PartiesToContact implements CcdPageConfiguration {
                 errors.add(MINOR_FATAL_SUBJECT_ERROR_MESSAGE);
             }
 
-            if (!setReviewDocuments(data)) {
+            if (errors.isEmpty() && !setReviewDocuments(data)) {
                 errors.add(CONTACT_PARTIES_NOTIFICATION_FAILED);
             }
         }

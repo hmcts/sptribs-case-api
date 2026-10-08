@@ -71,7 +71,7 @@ public class ContactPartiesSelectDocument implements CcdPageConfiguration {
             validateDocumentFileSizes(list.getValue(), errors);
         }
 
-        if (errors.isEmpty() && data.getCicCase() != null && !setReviewDocuments(data)) {
+        if (errors.isEmpty() && (data.getCicCase() == null || !setReviewDocuments(data))) {
             errors.add(CONTACT_PARTIES_NOTIFICATION_FAILED);
         }
 

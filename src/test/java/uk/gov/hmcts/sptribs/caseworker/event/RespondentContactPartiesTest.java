@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.DisplayContext;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.ContactPartiesSelectDocument;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RespondentPartiesToContact;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
+import uk.gov.hmcts.sptribs.caseworker.model.Slot;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -47,6 +49,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.CONTACT_PARTIES_NOTIFICATION_FAILED;
 import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAST_ONE_CONTACT_PARTY;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.RESPONDENT_CONTACT_PARTIES;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
@@ -190,6 +193,24 @@ class RespondentContactPartiesTest {
         assertThat(caseData.getContactPartiesDocuments().getReviewSelectedParties())
             .isEqualTo("Subject: Test Subject\nTribunal");
         assertThat(caseData.getContactPartiesDocuments().getReviewMessage()).isEqualTo("Review message");
+    }
+
+    @Test
+    void shouldRejectMissingCaseDetailsWithoutResolvingSelectedDocuments() {
+        CaseData data = caseData();
+        data.setCicCase(null);
+        data.getContactParties().setSubjectContactParties(Set.of(SubjectCIC.SUBJECT));
+        DynamicListElement selection = DynamicListElement.builder().code(UUID.randomUUID()).build();
+        data.getContactPartiesDocuments().setDocumentList(DynamicMultiSelectList.builder()
+            .value(List.of(selection)).listItems(List.of(selection)).build());
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(data);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = respondentPartiesToContact.midEvent(details, details);
+
+        assertThat(response.getErrors()).containsExactly(CONTACT_PARTIES_NOTIFICATION_FAILED);
+        assertThat(data.getContactPartiesDocuments().getReviewSelectedParties()).isNull();
+        assertThat(data.getContactPartiesDocuments().getReviewMessage()).isNull();
     }
 
     @Test
@@ -407,6 +428,28 @@ class RespondentContactPartiesTest {
         assertThat(caseData.getContactPartiesDocuments().getD01()).isNull();
         assertThat(caseData.getContactPartiesDocuments().getReviewSelectedParties()).isNull();
         assertThat(caseData.getContactPartiesDocuments().getReviewMessage()).isNull();
+    }
+
+    @Test
+    void shouldClearPreviousReviewDocumentsWhenStartingAgain() {
+        ReflectionTestUtils.setField(respondentContactParties, "baseUrl", "https://example.test");
+        CaseData data = caseData();
+        ContactPartiesDocuments documents = data.getContactPartiesDocuments();
+        documents.setD01(CaseworkerCICDocument.builder()
+            .documentLink(Document.builder().filename("stale.pdf").build()).build());
+        documents.setActiveDocumentSlots(Set.of(Slot.D01));
+        documents.setReviewSelectedParties("Previous selection");
+        documents.setReviewMessage("Previous message");
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(data);
+
+        respondentContactParties.aboutToStart(details);
+
+        assertThat(documents.getD01()).isNull();
+        assertThat(documents.getActiveDocumentSlots()).isNull();
+        assertThat(documents.getReviewSelectedParties()).isNull();
+        assertThat(documents.getReviewMessage()).isNull();
+        assertThat(documents.getDocumentList().getValue()).isEmpty();
     }
 
     @Test
