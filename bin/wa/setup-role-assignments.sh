@@ -34,4 +34,4 @@ function send_curl_request() {
 }
 
 send_curl_request "${BASEDIR}/aat-caseworker-user-ids.json" "CASEWORKER"
-# send_curl_request "${BASEDIR}/aat-judicial-user-ids.json" "JUDICIAL"
+ send_curl_request "${BASEDIR}/aat-judicial-user-ids.json" "JUDICIAL"
