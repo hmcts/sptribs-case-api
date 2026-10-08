@@ -66,18 +66,7 @@ public class RespondentPartiesToContact implements CcdPageConfiguration {
         if (cicCase == null) {
             errors.add(CONTACT_PARTIES_NOTIFICATION_FAILED);
         } else {
-            if (contactParties != null) {
-                if (CollectionUtils.isEmpty(contactParties.getRepresentativeContactParties())
-                    && CollectionUtils.isEmpty(contactParties.getSubjectContactParties())
-                    && CollectionUtils.isEmpty(contactParties.getApplicantContactParties())
-                    && CollectionUtils.isEmpty(contactParties.getTribunal())) {
-                    errors.add(SELECT_AT_LEAST_ONE_CONTACT_PARTY);
-                } else if ((cicCase.getCaseSubcategory() == CaseSubcategory.FATAL
-                    || cicCase.getCaseSubcategory() == CaseSubcategory.MINOR)
-                    && !CollectionUtils.isEmpty(contactParties.getSubjectContactParties())) {
-                    errors.add(MINOR_FATAL_SUBJECT_ERROR_MESSAGE);
-                }
-            }
+            validateSelectedParties(cicCase, contactParties, errors);
 
             if (errors.isEmpty() && !setReviewDocuments(data)) {
                 errors.add(CONTACT_PARTIES_NOTIFICATION_FAILED);
@@ -91,5 +80,22 @@ public class RespondentPartiesToContact implements CcdPageConfiguration {
             .data(data)
             .errors(errors)
             .build();
+    }
+
+    private static void validateSelectedParties(CicCase cicCase, ContactParties contactParties, List<String> errors) {
+        if (contactParties == null) {
+            return;
+        }
+
+        if (CollectionUtils.isEmpty(contactParties.getRepresentativeContactParties())
+            && CollectionUtils.isEmpty(contactParties.getSubjectContactParties())
+            && CollectionUtils.isEmpty(contactParties.getApplicantContactParties())
+            && CollectionUtils.isEmpty(contactParties.getTribunal())) {
+            errors.add(SELECT_AT_LEAST_ONE_CONTACT_PARTY);
+        } else if ((cicCase.getCaseSubcategory() == CaseSubcategory.FATAL
+            || cicCase.getCaseSubcategory() == CaseSubcategory.MINOR)
+            && !CollectionUtils.isEmpty(contactParties.getSubjectContactParties())) {
+            errors.add(MINOR_FATAL_SUBJECT_ERROR_MESSAGE);
+        }
     }
 }
