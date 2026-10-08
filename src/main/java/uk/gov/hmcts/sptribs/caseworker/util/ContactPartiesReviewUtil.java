@@ -10,6 +10,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -52,9 +53,7 @@ public final class ContactPartiesReviewUtil {
         }
         Set<Slot> populatedSlots = EnumSet.noneOf(Slot.class);
         Slot[] slots = Slot.values();
-        for (int index = 0; index < Math.min(documents.size(), slots.length); index++) {
-            populatedSlots.add(slots[index]);
-        }
+        populatedSlots.addAll(Arrays.asList(slots).subList(0, Math.min(documents.size(), slots.length)));
         reviewDocuments.setActiveDocumentSlots(populatedSlots);
         reviewDocuments.setD01(documentAt(documents, 0));
         reviewDocuments.setD02(documentAt(documents, 1));

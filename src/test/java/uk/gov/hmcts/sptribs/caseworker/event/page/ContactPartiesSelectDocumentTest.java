@@ -71,6 +71,10 @@ class ContactPartiesSelectDocumentTest {
     @Test
     void shouldAddContactPartiesDocumentPage() {
         contactPartiesSelectDocument.addTo(pageBuilder);
+
+        ArgumentCaptor<String> pageId = ArgumentCaptor.forClass(String.class);
+        verify(pageBuilder).page(pageId.capture(), any());
+        assertThat(pageId.getValue()).isEqualTo("contactPartiesSelectDocument");
     }
 
     @Nested

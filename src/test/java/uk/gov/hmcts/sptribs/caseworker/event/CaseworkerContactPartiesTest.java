@@ -10,6 +10,8 @@ import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.DisplayContext;
 import uk.gov.hmcts.ccd.sdk.api.Event;
+import uk.gov.hmcts.ccd.sdk.api.Field;
+import uk.gov.hmcts.ccd.sdk.api.Field.FieldBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
@@ -123,26 +125,26 @@ class CaseworkerContactPartiesTest {
         assertThat(event.isShowSummary()).isFalse();
         assertThat(event.getFields().getPageLabels()).containsEntry("contactPartiesReview", "Check your answers");
         assertThat(event.getFields().getFields().stream()
-            .map(field -> field.build())
+            .map(FieldBuilder::build)
             .filter(field -> "contactPartiesReview".equals(field.getPage()))
-            .map(field -> field.getId()))
+            .map(Field::getId))
             .containsExactly("contactPartiesDocumentsD01", "contactPartiesDocumentsD02", "contactPartiesDocumentsD03",
                 "contactPartiesDocumentsD04", "contactPartiesDocumentsD05", "contactPartiesDocumentsD06",
                 "contactPartiesDocumentsD07", "contactPartiesDocumentsD08", "contactPartiesDocumentsD09",
                 "contactPartiesDocumentsD10",
                 "contactPartiesDocumentsReviewSelectedParties", "contactPartiesDocumentsReviewMessage");
         assertThat(event.getFields().getFields().stream()
-            .map(field -> field.build())
+            .map(FieldBuilder::build)
             .filter(field -> "contactPartiesReview".equals(field.getPage())))
             .allSatisfy(field -> assertThat(field.getContext()).isEqualTo(DisplayContext.ReadOnly));
         assertThat(event.getFields().getFields().stream()
-            .map(field -> field.build())
+            .map(FieldBuilder::build)
             .filter(field -> field.getId().matches("contactPartiesDocumentsD\\d{2}")))
             .allSatisfy(field -> assertThat(field.getShowCondition())
                 .isEqualTo("contactPartiesDocumentsActiveDocumentSlotsCONTAINS \""
                     + field.getId().substring("contactPartiesDocuments".length()) + "\""));
         assertThat(event.getFields().getFields().stream()
-            .map(field -> field.build())
+            .map(FieldBuilder::build)
             .filter(field -> "contactPartiesDocumentsActiveDocumentSlots".equals(field.getId())))
             .singleElement()
             .satisfies(field -> {
@@ -150,7 +152,7 @@ class CaseworkerContactPartiesTest {
                 assertThat(field.getShowCondition()).isEqualTo("[STATE]=\"ALWAYS_HIDE\"");
             });
         assertThat(event.getFields().getFields().stream()
-            .map(field -> field.build())
+            .map(FieldBuilder::build)
             .filter(field -> "contactPartiesDocumentsD01".equals(field.getId())))
             .singleElement()
             .satisfies(field -> {
