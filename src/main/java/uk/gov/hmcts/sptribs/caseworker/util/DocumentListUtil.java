@@ -216,14 +216,15 @@ public final class DocumentListUtil {
         }
 
         List<CaseworkerCICDocument> availableDocuments = getContactPartiesAllowedDocuments(data);
-        List<DynamicListElement> options = documentList.getListItems();
-        if (CollectionUtils.isEmpty(options) || options.size() != availableDocuments.size()) {
+        List<DynamicListElement> selectableDocumentOptions = documentList.getListItems();
+        if (CollectionUtils.isEmpty(selectableDocumentOptions)
+            || selectableDocumentOptions.size() != availableDocuments.size()) {
             return Optional.empty();
         }
 
         Map<UUID, Integer> optionIndices = new HashMap<>();
-        for (int index = 0; index < options.size(); index++) {
-            DynamicListElement option = options.get(index);
+        for (int index = 0; index < selectableDocumentOptions.size(); index++) {
+            DynamicListElement option = selectableDocumentOptions.get(index);
             if (option == null || option.getCode() == null || optionIndices.putIfAbsent(option.getCode(), index) != null) {
                 return Optional.empty();
             }
@@ -241,7 +242,7 @@ public final class DocumentListUtil {
         return Optional.of(buildListValues(selectedDocuments));
     }
 
-    public static void normaliseContactPartiesDocumentList(CaseData data) {
+    public static void initialiseMissingContactPartiesDocumentSelection(CaseData data) {
         DynamicMultiSelectList documentList = data.getContactPartiesDocuments().getDocumentList();
         if (documentList == null) {
             data.getContactPartiesDocuments().setDocumentList(DynamicMultiSelectList.builder()

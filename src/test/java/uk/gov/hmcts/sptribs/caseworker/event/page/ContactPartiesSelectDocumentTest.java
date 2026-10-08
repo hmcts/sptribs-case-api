@@ -43,7 +43,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECTED_DOCUMENT_UNAVAILABLE;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.CONTACT_PARTIES_NOTIFICATION_FAILED;
 
 @ExtendWith(MockitoExtension.class)
 class ContactPartiesSelectDocumentTest {
@@ -412,7 +412,7 @@ class ContactPartiesSelectDocumentTest {
 
         AboutToStartOrSubmitResponse<CaseData, State> response = contactPartiesSelectDocument.midEvent(details, details);
 
-        assertThat(response.getErrors()).containsExactly(SELECTED_DOCUMENT_UNAVAILABLE);
+        assertThat(response.getErrors()).containsExactly(CONTACT_PARTIES_NOTIFICATION_FAILED);
         assertThat(data.getContactPartiesDocuments().getD01()).isNull();
     }
 

@@ -18,8 +18,8 @@ import java.util.List;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.ContactPartiesReviewUtil.respondentSelectedParties;
 import static uk.gov.hmcts.sptribs.caseworker.util.ContactPartiesReviewUtil.setReviewDocuments;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.CONTACT_PARTIES_NOTIFICATION_FAILED;
 import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.MINOR_FATAL_SUBJECT_ERROR_MESSAGE;
-import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECTED_DOCUMENT_UNAVAILABLE;
 import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAST_ONE_CONTACT_PARTY;
 
 @Slf4j
@@ -77,7 +77,7 @@ public class RespondentPartiesToContact implements CcdPageConfiguration {
         }
 
         if (!setReviewDocuments(data)) {
-            errors.add(SELECTED_DOCUMENT_UNAVAILABLE);
+            errors.add(CONTACT_PARTIES_NOTIFICATION_FAILED);
         }
         data.getContactPartiesDocuments().setReviewSelectedParties(cicCase == null || contactParties == null
             ? null : respondentSelectedParties(cicCase, contactParties));

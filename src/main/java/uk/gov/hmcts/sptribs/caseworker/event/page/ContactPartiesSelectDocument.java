@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.ContactPartiesReviewUtil.setReviewDocuments;
-import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECTED_DOCUMENT_UNAVAILABLE;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.CONTACT_PARTIES_NOTIFICATION_FAILED;
 
 @Component
 @Slf4j
@@ -72,7 +72,7 @@ public class ContactPartiesSelectDocument implements CcdPageConfiguration {
         }
 
         if (errors.isEmpty() && data.getCicCase() != null && !setReviewDocuments(data)) {
-            errors.add(SELECTED_DOCUMENT_UNAVAILABLE);
+            errors.add(CONTACT_PARTIES_NOTIFICATION_FAILED);
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()

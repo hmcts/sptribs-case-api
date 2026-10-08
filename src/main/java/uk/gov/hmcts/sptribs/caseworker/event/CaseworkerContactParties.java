@@ -140,7 +140,7 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         final CaseData caseData = details.getData();
-        DocumentListUtil.normaliseContactPartiesDocumentList(caseData);
+        DocumentListUtil.initialiseMissingContactPartiesDocumentSelection(caseData);
 
         clearReviewDocuments(caseData.getContactPartiesDocuments());
         caseData.getContactPartiesDocuments().setReviewSelectedParties(null);

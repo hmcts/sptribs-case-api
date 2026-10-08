@@ -124,7 +124,7 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
-        DocumentListUtil.normaliseContactPartiesDocumentList(details.getData());
+        DocumentListUtil.initialiseMissingContactPartiesDocumentSelection(details.getData());
         clearReviewDocuments(details.getData().getContactPartiesDocuments());
         details.getData().getContactPartiesDocuments().setReviewSelectedParties(null);
         details.getData().getContactPartiesDocuments().setReviewMessage(null);

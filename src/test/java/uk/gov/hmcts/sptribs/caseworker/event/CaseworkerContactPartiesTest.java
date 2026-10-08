@@ -51,6 +51,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.CONTACT_PARTIES_NOTIFICATION_FAILED;
 import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAST_ONE_CONTACT_PARTY;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
@@ -241,6 +242,26 @@ class CaseworkerContactPartiesTest {
         assertThat(caseData.getContactPartiesDocuments().getReviewSelectedParties())
             .isEqualTo("Subject: " + TEST_FIRST_NAME + "\nRepresentative: " + TEST_SOLICITOR_NAME);
         assertThat(caseData.getContactPartiesDocuments().getReviewMessage()).isEqualTo("Review message");
+    }
+
+    @Test
+    void shouldRejectMissingCaseDetailsWithoutResolvingSelectedDocuments() {
+        CaseData caseData = caseData();
+        caseData.setCicCase(null);
+        ContactPartiesDocuments documents = caseData.getContactPartiesDocuments();
+        documents.setDocumentList(DynamicMultiSelectList.builder()
+            .value(List.of(DynamicListElement.builder().code(UUID.randomUUID()).build()))
+            .build());
+        documents.setReviewSelectedParties("Previous selection");
+        documents.setReviewMessage("Previous message");
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(caseData);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = partiesToContact.midEvent(details, details);
+
+        assertThat(response.getErrors()).containsExactly(CONTACT_PARTIES_NOTIFICATION_FAILED);
+        assertThat(documents.getReviewSelectedParties()).isNull();
+        assertThat(documents.getReviewMessage()).isNull();
     }
 
     @Test
