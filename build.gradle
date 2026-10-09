@@ -404,7 +404,7 @@ dependencies {
   testImplementation group: 'org.mockito', name: 'mockito-inline', version: '5.2.0'
   testImplementation group: 'io.github.openfeign', name: 'feign-jackson', version: '13.8'
   testImplementation group: 'io.rest-assured', name: 'rest-assured'
-  testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '3.0.6'
+  testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '3.0.8'
   testImplementation group: 'com.microsoft.playwright', name: 'playwright', version: '1.58.0'
   testImplementation group: 'org.camunda.bpm.dmn', name: 'camunda-engine-dmn', version: "${versions.camunda}"
   testImplementation group: 'org.camunda.bpm', name: 'camunda-engine-plugin-spin', version: "${versions.camunda}"
