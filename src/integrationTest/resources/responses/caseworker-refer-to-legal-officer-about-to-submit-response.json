@@ -15,7 +15,6 @@
     "hearingList": [],
     "closedDayCount": "",
     "referToLegalOfficerReferralDate": "${json-unit.any-string}",
-    "firstHearingDate": "",
     "dataVersion": 0,
     "cicCaseSelectedDocument": {}
   }

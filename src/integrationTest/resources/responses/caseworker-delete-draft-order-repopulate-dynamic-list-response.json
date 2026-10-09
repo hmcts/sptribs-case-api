@@ -37,7 +37,6 @@
     "stayIsCaseStayed" : "No",
     "hearingList" : [ ],
     "closedDayCount" : "",
-    "firstHearingDate" : "",
     "dataVersion" : 0,
     "cicCaseSelectedDocument" : { }
   }

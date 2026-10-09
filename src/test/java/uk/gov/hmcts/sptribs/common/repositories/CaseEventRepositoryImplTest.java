@@ -609,4 +609,42 @@ class CaseEventRepositoryImplTest {
             assertThat(result.getPrecedingEventData()).isNull();
         }
     }
+
+    @Nested
+    class GetListOfCasesWithFirstHearingDateAsString {
+
+        @Test
+        void shouldReturnListOfCaseReferences() {
+            when(namedParameterJdbcTemplate.query(
+                anyString(), anyMap(), ArgumentMatchers.<RowMapper<Long>>any()))
+                .thenReturn(List.of(111L, 222L));
+
+            List<Long> results = caseEventRepository.getListOfCasesWithFirstHearingDateAsString();
+
+            assertThat(results).hasSize(2).containsExactly(111L, 222L);
+        }
+
+        @Test
+        void shouldReturnEmptyListAndLogWhenNoCasesFound() {
+            when(namedParameterJdbcTemplate.query(
+                anyString(), anyMap(), ArgumentMatchers.<RowMapper<Long>>any()))
+                .thenReturn(List.of());
+
+            List<Long> results = caseEventRepository.getListOfCasesWithFirstHearingDateAsString();
+
+            assertThat(results).isEmpty();
+        }
+
+        @Test
+        void shouldThrowCaseEventRepositoryExceptionOnDataAccessException() {
+            when(namedParameterJdbcTemplate.query(
+                anyString(), anyMap(), ArgumentMatchers.<RowMapper<Long>>any()))
+                .thenThrow(new DataAccessResourceFailureException("DB error"));
+
+            assertThatThrownBy(() -> caseEventRepository.getListOfCasesWithFirstHearingDateAsString())
+                .isInstanceOf(CaseEventRepositoryException.class)
+                .hasMessageContaining("Failed to retrieve cases with stale firstHearingDate values")
+                .hasCauseInstanceOf(DataAccessResourceFailureException.class);
+        }
+    }
 }
