@@ -18,6 +18,7 @@ public class CaseworkerRecordListingTest extends XuiTest {
         Login login = new Login(page);
         login.signInWithCaseworker();
 
+
         Case newCase = new Case(page);
         newCase.createCase();
         newCase.buildCase();
