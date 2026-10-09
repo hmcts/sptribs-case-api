@@ -28,6 +28,8 @@ import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
+import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 import uk.gov.hmcts.sptribs.testutil.TestConstants;
 
@@ -332,7 +334,17 @@ public class CaseworkerIssueFinalDecisionIT extends IntegrationTestBase {
             .contains("# Final decision notice issued \n"
                 + "## A notification has been sent to: Subject, Respondent, Representative, Applicant");
 
-        verify(notificationServiceCIC, times(4)).sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
+        verify(notificationServiceCIC, times(4))
+            .sendEmail(any(NotificationRequest.class), anyList(), eq(TEST_CASE_ID_HYPHENATED), any(Party.class));
+
+        verify(notificationServiceCIC, times(1))
+            .sendEmail(any(NotificationRequest.class), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.REPRESENTATIVE));
+        verify(notificationServiceCIC, times(1))
+            .sendEmail(any(NotificationRequest.class), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.APPLICANT));
+        verify(notificationServiceCIC, times(1))
+            .sendEmail(any(NotificationRequest.class), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.RESPONDENT));
+        verify(notificationServiceCIC, times(1))
+            .sendEmail(any(NotificationRequest.class), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.SUBJECT));
         verifyNoMoreInteractions(notificationServiceCIC);
     }
 

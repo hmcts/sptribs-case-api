@@ -28,6 +28,7 @@ import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 
 import java.time.LocalDate;
@@ -103,7 +104,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
 
             //Then
             verify(notificationService).sendEmail(any(NotificationRequest.class), selectedDocumentsCaptor.capture(),
-                eq(TEST_CASE_ID.toString()), eq(null));
+                eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT));
             verify(notificationHelper).buildEmailNotificationRequest(
                 data.getCicCase().getEmail(),
                 true,
@@ -143,7 +144,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
 
             //Then
             verify(notificationService).sendEmail(any(NotificationRequest.class), selectedDocumentsCaptor.capture(),
-                eq(TEST_CASE_ID.toString()), eq(null));
+                eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT));
             verify(notificationHelper).buildEmailNotificationRequest(
                 data.getCicCase().getEmail(),
                 true,
@@ -173,7 +174,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
             finalDecisionIssuedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
             //Then
-            verify(notificationService).sendLetter(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
+            verify(notificationService).sendLetter(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT));
             verify(notificationHelper).buildLetterNotificationRequest(
                 new HashMap<>(),
                 TemplateName.FINAL_DECISION_ISSUED_POST);
@@ -207,7 +208,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
             String guidanceDocumentUuid = DocumentUtil.getUuid(guidanceDocument);
             //Then
             verify(notificationService).sendEmail(any(NotificationRequest.class), selectedDocumentsCaptor.capture(),
-                eq(TEST_CASE_ID.toString()), eq(null));
+                eq(TEST_CASE_ID.toString()), eq(Party.RESPONDENT));
             verify(notificationHelper).buildEmailNotificationRequest(
                 data.getCicCase().getRespondentEmail(),
                 true,
@@ -245,7 +246,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
 
             //Then
             verify(notificationService).sendEmail(any(NotificationRequest.class), selectedDocumentsCaptor.capture(),
-                eq(TEST_CASE_ID.toString()), eq(null));
+                eq(TEST_CASE_ID.toString()), eq(Party.RESPONDENT));
             verify(notificationHelper).buildEmailNotificationRequest(
                 data.getCicCase().getRespondentEmail(),
                 true,
@@ -289,7 +290,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
             String guidanceDocumentUuid = DocumentUtil.getUuid(guidanceDocument);
             //Then
             verify(notificationService).sendEmail(any(NotificationRequest.class), selectedDocumentsCaptor.capture(),
-                eq(TEST_CASE_ID.toString()), eq(null));
+                eq(TEST_CASE_ID.toString()), eq(Party.REPRESENTATIVE));
             verify(notificationHelper).buildEmailNotificationRequest(
                 data.getCicCase().getRepresentativeEmailAddress(),
                 true,
@@ -332,7 +333,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
 
             //Then
             verify(notificationService).sendEmail(any(NotificationRequest.class), selectedDocumentsCaptor.capture(),
-                eq(TEST_CASE_ID.toString()), eq(null));
+                eq(TEST_CASE_ID.toString()), eq(Party.REPRESENTATIVE));
             verify(notificationHelper).buildEmailNotificationRequest(
                 data.getCicCase().getRepresentativeEmailAddress(),
                 true,
@@ -363,7 +364,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
             finalDecisionIssuedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
             //Then
-            verify(notificationService).sendLetter(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
+            verify(notificationService).sendLetter(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.REPRESENTATIVE));
             verify(notificationHelper).buildLetterNotificationRequest(
                 new HashMap<>(),
                 TemplateName.FINAL_DECISION_ISSUED_POST);
@@ -403,7 +404,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
             String guidanceDocumentUuid = DocumentUtil.getUuid(guidanceDocument);
             //Then
             verify(notificationService).sendEmail(any(NotificationRequest.class), selectedDocumentsCaptor.capture(),
-                eq(TEST_CASE_ID.toString()), eq(null));
+                eq(TEST_CASE_ID.toString()), eq(Party.APPLICANT));
             verify(notificationHelper).buildEmailNotificationRequest(
                 data.getCicCase().getApplicantEmailAddress(),
                 true,
@@ -435,7 +436,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
             finalDecisionIssuedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
             //Then
-            verify(notificationService).sendLetter(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
+            verify(notificationService).sendLetter(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.APPLICANT));
             verify(notificationHelper).buildLetterNotificationRequest(
                 new HashMap<>(),
                 TemplateName.FINAL_DECISION_ISSUED_POST);
@@ -482,7 +483,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
             String guidanceDocumentUuid = DocumentUtil.getUuid(guidanceDocument);
             //Then
             verify(notificationService).sendEmail(any(NotificationRequest.class), selectedDocumentsCaptor.capture(),
-                eq(TEST_CASE_ID.toString()), eq(null));
+                eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT));
             verify(notificationHelper).buildEmailNotificationRequest(
                 eq(data.getCicCase().getEmail()),
                 eq(true),
