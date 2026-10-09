@@ -16,6 +16,9 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
+import static uk.gov.hmcts.sptribs.caseworker.util.ContactPartiesReviewUtil.respondentSelectedParties;
+import static uk.gov.hmcts.sptribs.caseworker.util.ContactPartiesReviewUtil.setReviewDocuments;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.CONTACT_PARTIES_NOTIFICATION_FAILED;
 import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.MINOR_FATAL_SUBJECT_ERROR_MESSAGE;
 import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAST_ONE_CONTACT_PARTY;
 
@@ -60,22 +63,39 @@ public class RespondentPartiesToContact implements CcdPageConfiguration {
         final ContactParties contactParties = data.getContactParties();
         final List<String> errors = new ArrayList<>();
 
-        if (contactParties != null) {
-            if (CollectionUtils.isEmpty(contactParties.getRepresentativeContactParties())
-                && CollectionUtils.isEmpty(contactParties.getSubjectContactParties())
-                && CollectionUtils.isEmpty(contactParties.getApplicantContactParties())
-                && CollectionUtils.isEmpty(contactParties.getTribunal())) {
-                errors.add(SELECT_AT_LEAST_ONE_CONTACT_PARTY);
-            } else if ((cicCase.getCaseSubcategory() == CaseSubcategory.FATAL
-                || cicCase.getCaseSubcategory() == CaseSubcategory.MINOR)
-                && !CollectionUtils.isEmpty(contactParties.getSubjectContactParties())) {
-                errors.add(MINOR_FATAL_SUBJECT_ERROR_MESSAGE);
+        if (cicCase == null) {
+            errors.add(CONTACT_PARTIES_NOTIFICATION_FAILED);
+        } else {
+            validateSelectedParties(cicCase, contactParties, errors);
+
+            if (errors.isEmpty() && !setReviewDocuments(data)) {
+                errors.add(CONTACT_PARTIES_NOTIFICATION_FAILED);
             }
         }
+        data.getContactPartiesDocuments().setReviewSelectedParties(cicCase == null || contactParties == null
+            ? null : respondentSelectedParties(cicCase, contactParties));
+        data.getContactPartiesDocuments().setReviewMessage(cicCase == null ? null : cicCase.getNotifyPartyMessage());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .errors(errors)
             .build();
+    }
+
+    private static void validateSelectedParties(CicCase cicCase, ContactParties contactParties, List<String> errors) {
+        if (contactParties == null) {
+            return;
+        }
+
+        if (CollectionUtils.isEmpty(contactParties.getRepresentativeContactParties())
+            && CollectionUtils.isEmpty(contactParties.getSubjectContactParties())
+            && CollectionUtils.isEmpty(contactParties.getApplicantContactParties())
+            && CollectionUtils.isEmpty(contactParties.getTribunal())) {
+            errors.add(SELECT_AT_LEAST_ONE_CONTACT_PARTY);
+        } else if ((cicCase.getCaseSubcategory() == CaseSubcategory.FATAL
+            || cicCase.getCaseSubcategory() == CaseSubcategory.MINOR)
+            && !CollectionUtils.isEmpty(contactParties.getSubjectContactParties())) {
+            errors.add(MINOR_FATAL_SUBJECT_ERROR_MESSAGE);
+        }
     }
 }

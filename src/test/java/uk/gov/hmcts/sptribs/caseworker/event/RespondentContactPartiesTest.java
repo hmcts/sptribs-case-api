@@ -5,16 +5,24 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
+import uk.gov.hmcts.ccd.sdk.api.DisplayContext;
 import uk.gov.hmcts.ccd.sdk.api.Event;
+import uk.gov.hmcts.ccd.sdk.api.Field;
+import uk.gov.hmcts.ccd.sdk.api.Field.FieldBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ContactPartiesSelectDocument;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RespondentPartiesToContact;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
+import uk.gov.hmcts.sptribs.caseworker.model.Slot;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -25,6 +33,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.TribunalCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.service.ContactPartiesService;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
 
@@ -32,12 +42,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.CONTACT_PARTIES_NOTIFICATION_FAILED;
 import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAST_ONE_CONTACT_PARTY;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.RESPONDENT_CONTACT_PARTIES;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
@@ -84,6 +96,46 @@ class RespondentContactPartiesTest {
     }
 
     @Test
+    void shouldShowOnlyDocumentsPartiesAndMessageOnReviewPage() {
+        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+
+        respondentContactParties.configure(configBuilder);
+
+        Event<CaseData, UserRole, State> event = getEventsFrom(configBuilder).get(RESPONDENT_CONTACT_PARTIES);
+        assertThat(event.isShowSummary()).isFalse();
+        assertThat(event.getFields().getPageLabels()).containsEntry("contactPartiesReview", "Check your answers");
+        assertThat(event.getFields().getFields().stream()
+            .map(FieldBuilder::build)
+            .filter(field -> "contactPartiesReview".equals(field.getPage()))
+            .map(Field::getId))
+            .containsExactly("contactPartiesDocumentsD01", "contactPartiesDocumentsD02", "contactPartiesDocumentsD03",
+                "contactPartiesDocumentsD04", "contactPartiesDocumentsD05", "contactPartiesDocumentsD06",
+                "contactPartiesDocumentsD07", "contactPartiesDocumentsD08", "contactPartiesDocumentsD09",
+                "contactPartiesDocumentsD10",
+                "contactPartiesDocumentsReviewSelectedParties", "contactPartiesDocumentsReviewMessage");
+        assertThat(event.getFields().getFields().stream()
+            .map(FieldBuilder::build)
+            .filter(field -> "contactPartiesReview".equals(field.getPage())))
+            .allSatisfy(field -> assertThat(field.getContext()).isEqualTo(DisplayContext.ReadOnly));
+        assertThat(event.getFields().getFields().stream()
+            .map(FieldBuilder::build)
+            .filter(field -> field.getId().matches("contactPartiesDocumentsD\\d{2}")))
+            .allSatisfy(field -> assertThat(field.getShowCondition())
+                .isEqualTo("contactPartiesDocumentsActiveDocumentSlotsCONTAINS \""
+                    + field.getId().substring("contactPartiesDocuments".length()) + "\""));
+        assertThat(event.getFields().getFields().stream()
+            .map(FieldBuilder::build)
+            .filter(field -> "contactPartiesDocumentsD01".equals(field.getId())))
+            .singleElement()
+            .satisfies(field -> {
+                assertThat(field.getContext()).isEqualTo(DisplayContext.ReadOnly);
+                assertThat(field.getPage()).isEqualTo("contactPartiesReview");
+                assertThat(field.getShowCondition()).isEqualTo("contactPartiesDocumentsActiveDocumentSlotsCONTAINS \"D01\"");
+                assertThat(field.getDisplayContextParameter()).isNull();
+            });
+    }
+
+    @Test
     void shouldSuccessfullySaveResContactParties() {
         //Given
         final CaseData caseData = caseData();
@@ -116,7 +168,12 @@ class RespondentContactPartiesTest {
     void shouldSuccessfullyMoveToNextPage() {
         //Given
         final CaseData caseData = caseData();
-        CicCase cicCase = CicCase.builder().contactPartiesCIC(Set.of(ContactPartiesCIC.SUBJECTTOCONTACT)).build();
+        CicCase cicCase = CicCase.builder()
+            .contactPartiesCIC(Set.of(ContactPartiesCIC.SUBJECTTOCONTACT))
+            .fullName("Test Subject")
+            .notifyPartyMessage("Review message")
+            .build();
+        caseData.getContactParties().setSubjectContactParties(Set.of(SubjectCIC.SUBJECT));
         caseData.getContactParties().setTribunal(Set.of(TribunalCIC.TRIBUNAL));
         caseData.setCicCase(cicCase);
 
@@ -132,6 +189,51 @@ class RespondentContactPartiesTest {
 
         //Then
         assertThat(response).isNotNull();
+        assertThat(response.getErrors()).isEmpty();
+        assertThat(caseData.getContactPartiesDocuments().getReviewSelectedParties())
+            .isEqualTo("Subject: Test Subject\nTribunal");
+        assertThat(caseData.getContactPartiesDocuments().getReviewMessage()).isEqualTo("Review message");
+    }
+
+    @Test
+    void shouldRejectMissingCaseDetailsWithoutResolvingSelectedDocuments() {
+        CaseData data = caseData();
+        data.setCicCase(null);
+        data.getContactParties().setSubjectContactParties(Set.of(SubjectCIC.SUBJECT));
+        DynamicListElement selection = DynamicListElement.builder().code(UUID.randomUUID()).build();
+        data.getContactPartiesDocuments().setDocumentList(DynamicMultiSelectList.builder()
+            .value(List.of(selection)).listItems(List.of(selection)).build());
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(data);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = respondentPartiesToContact.midEvent(details, details);
+
+        assertThat(response.getErrors()).containsExactly(CONTACT_PARTIES_NOTIFICATION_FAILED);
+        assertThat(data.getContactPartiesDocuments().getReviewSelectedParties()).isNull();
+        assertThat(data.getContactPartiesDocuments().getReviewMessage()).isNull();
+    }
+
+    @Test
+    void shouldShowSelectedDocumentLinkOnRespondentReview() {
+        CaseData caseData = caseData();
+        UUID documentId = UUID.randomUUID();
+        Document document = Document.builder()
+            .url("https://example.test/documents/" + documentId).filename("selected.pdf").build();
+        ListValue<CaseworkerCICDocument> documentValue = new ListValue<>();
+        documentValue.setValue(CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS).documentLink(document).build());
+        caseData.getCicCase().setReinstateDocuments(List.of(documentValue));
+        caseData.getContactParties().setTribunal(Set.of(TribunalCIC.TRIBUNAL));
+        DynamicListElement selection = DynamicListElement.builder().code(documentId)
+            .label("[selected.pdf](https://example.test/documents/" + documentId + "/binary)").build();
+        caseData.getContactPartiesDocuments().setDocumentList(DynamicMultiSelectList.builder()
+            .value(List.of(selection)).listItems(List.of(selection)).build());
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(caseData);
+
+        assertThat(respondentPartiesToContact.midEvent(details, details).getErrors()).isEmpty();
+        assertThat(caseData.getContactPartiesDocuments().getD01()).isEqualTo(documentValue.getValue());
+        assertThat(caseData.getContactPartiesDocuments().getD02()).isNull();
     }
 
     @Test
@@ -305,6 +407,75 @@ class RespondentContactPartiesTest {
         //Then
         assertThat(response).isNotNull();
         assertThat(response.getErrors()).isEmpty();
+    }
+
+    @Test
+    void shouldClearPreviewDocumentsBeforeSubmit() {
+        final CaseData caseData = caseData();
+        caseData.getContactPartiesDocuments().setD01(CaseworkerCICDocument.builder()
+            .documentLink(Document.builder().filename("selected.pdf").build()).build());
+        caseData.getContactPartiesDocuments().setReviewSelectedParties("Tribunal");
+        caseData.getContactPartiesDocuments().setReviewMessage("Review message");
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(caseData);
+        details.setState(State.Draft);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            respondentContactParties.aboutToSubmit(details, details);
+
+        assertThat(response.getData()).isSameAs(caseData);
+        assertThat(response.getState()).isEqualTo(State.Draft);
+        assertThat(caseData.getContactPartiesDocuments().getD01()).isNull();
+        assertThat(caseData.getContactPartiesDocuments().getReviewSelectedParties()).isNull();
+        assertThat(caseData.getContactPartiesDocuments().getReviewMessage()).isNull();
+    }
+
+    @Test
+    void shouldClearPreviousReviewDocumentsWhenStartingAgain() {
+        ReflectionTestUtils.setField(respondentContactParties, "baseUrl", "https://example.test");
+        CaseData data = caseData();
+        ContactPartiesDocuments documents = data.getContactPartiesDocuments();
+        documents.setD01(CaseworkerCICDocument.builder()
+            .documentLink(Document.builder().filename("stale.pdf").build()).build());
+        documents.setActiveDocumentSlots(Set.of(Slot.D01));
+        documents.setReviewSelectedParties("Previous selection");
+        documents.setReviewMessage("Previous message");
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(data);
+
+        respondentContactParties.aboutToStart(details);
+
+        assertThat(documents.getD01()).isNull();
+        assertThat(documents.getActiveDocumentSlots()).isNull();
+        assertThat(documents.getReviewSelectedParties()).isNull();
+        assertThat(documents.getReviewMessage()).isNull();
+        assertThat(documents.getDocumentList().getValue()).isEmpty();
+    }
+
+    @Test
+    void shouldSendMessageWithoutAttachmentsWhenDocumentListIsMissing() {
+        CaseData caseData = caseData();
+        caseData.setCicCase(CicCase.builder().build());
+        caseData.getContactParties().setTribunal(Set.of(TribunalCIC.TRIBUNAL));
+        caseData.getContactPartiesDocuments().setDocumentList(null);
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(caseData);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = respondentContactParties.aboutToSubmit(details, details);
+
+        assertThat(response.getData()).isSameAs(caseData);
+        DynamicMultiSelectList documentList = caseData.getContactPartiesDocuments().getDocumentList();
+        assertThat(documentList.getValue()).isEmpty();
+
+        Map<String, String> emptyDocuments = new NotificationHelper().buildDocumentList(documentList, 10);
+        when(notificationHelper.buildDocumentList(documentList, 10)).thenReturn(emptyDocuments);
+        when(contactPartiesNotification.sendToTribunal(caseData, caseData.getHyphenatedCaseRef(), emptyDocuments))
+            .thenReturn("correspondence-id");
+
+        SubmittedCallbackResponse submitted = respondentContactParties.submitted(details, details);
+
+        assertThat(submitted.getConfirmationHeader()).contains("# Message sent");
+        verify(contactPartiesNotification).sendToTribunal(caseData, caseData.getHyphenatedCaseRef(), emptyDocuments);
     }
 
 }

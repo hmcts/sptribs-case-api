@@ -194,16 +194,12 @@ public final class DocumentListUtil {
     }
 
     public static DynamicMultiSelectList prepareContactPartiesDocumentList(final CaseData data, String baseUrl) {
-        List<CaseworkerCICDocument> docList = prepareList(data);
+        List<CaseworkerCICDocument> docList = getContactPartiesAllowedDocuments(data);
 
         String apiUrl = baseUrl.replaceAll("/$", "") + "/" + DOCUMENT_BINARY_PATH;
         List<DynamicListElement> dynamicListElements = new ArrayList<>();
         for (CaseworkerCICDocument doc : docList) {
-            String fileName = doc.getDocumentLink().getFilename();
-            String fileExtension = StringUtils.substringAfterLast(fileName, ".");
-            if (ContactPartiesAllowedFileTypes.isFileTypeValid(fileExtension)) {
-                createDocumentList(apiUrl, dynamicListElements, doc);
-            }
+            createDocumentList(apiUrl, dynamicListElements, doc);
         }
 
         return DynamicMultiSelectList
@@ -211,6 +207,50 @@ public final class DocumentListUtil {
             .listItems(dynamicListElements)
             .value(new ArrayList<>())
             .build();
+    }
+
+    public static Optional<List<ListValue<CaseworkerCICDocument>>> getSelectedContactPartiesDocuments(final CaseData data) {
+        DynamicMultiSelectList documentList = data.getContactPartiesDocuments().getDocumentList();
+        if (documentList == null || CollectionUtils.isEmpty(documentList.getValue())) {
+            return Optional.of(List.of());
+        }
+
+        List<CaseworkerCICDocument> availableDocuments = getContactPartiesAllowedDocuments(data);
+        List<DynamicListElement> selectableDocumentOptions = documentList.getListItems();
+        if (CollectionUtils.isEmpty(selectableDocumentOptions)
+            || selectableDocumentOptions.size() != availableDocuments.size()) {
+            return Optional.empty();
+        }
+
+        Map<UUID, Integer> optionIndices = new HashMap<>();
+        for (int index = 0; index < selectableDocumentOptions.size(); index++) {
+            DynamicListElement option = selectableDocumentOptions.get(index);
+            if (option == null || option.getCode() == null || optionIndices.putIfAbsent(option.getCode(), index) != null) {
+                return Optional.empty();
+            }
+        }
+
+        List<CaseworkerCICDocument> selectedDocuments = new ArrayList<>();
+        for (DynamicListElement selection : documentList.getValue()) {
+            Integer index = selection == null ? null : optionIndices.get(selection.getCode());
+            if (index == null) {
+                return Optional.empty();
+            }
+            selectedDocuments.add(availableDocuments.get(index));
+        }
+
+        return Optional.of(buildListValues(selectedDocuments));
+    }
+
+    public static void initialiseMissingContactPartiesDocumentSelection(CaseData data) {
+        DynamicMultiSelectList documentList = data.getContactPartiesDocuments().getDocumentList();
+        if (documentList == null) {
+            data.getContactPartiesDocuments().setDocumentList(DynamicMultiSelectList.builder()
+                .value(new ArrayList<>())
+                .build());
+        } else if (documentList.getValue() == null) {
+            documentList.setValue(new ArrayList<>());
+        }
     }
 
     public static List<ListValue<CaseworkerCICDocument>> addToExistingDocumentList(
@@ -231,6 +271,18 @@ public final class DocumentListUtil {
             + " " + doc.getDocumentCategory().getLabel()
             + "](" + url + ")").code(UUID.randomUUID()).build();
         dynamicListElements.add(element);
+    }
+
+    private static boolean isContactPartiesFileTypeAllowed(CaseworkerCICDocument document) {
+        String fileName = document.getDocumentLink().getFilename();
+        String fileExtension = StringUtils.substringAfterLast(fileName, ".");
+        return ContactPartiesAllowedFileTypes.isFileTypeValid(fileExtension);
+    }
+
+    private static List<CaseworkerCICDocument> getContactPartiesAllowedDocuments(CaseData data) {
+        return prepareList(data).stream()
+            .filter(DocumentListUtil::isContactPartiesFileTypeAllowed)
+            .toList();
     }
 
 

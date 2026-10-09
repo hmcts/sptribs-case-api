@@ -2,6 +2,9 @@ package uk.gov.hmcts.sptribs.caseworker;
 
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
@@ -9,6 +12,8 @@ import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Stream;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
@@ -47,37 +52,60 @@ public class CaseworkerContactPartiesFT extends FunctionalTestSuite {
             .isEqualTo(json(expectedResponse(ABOUT_TO_START_RESPONSE)));
     }
 
-    @Test
-    public void shouldSendNotificationsInSubmittedCallback() throws Exception {
-
-        //add a test here when our document gets updated!
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("recipientSelections")
+    public void shouldSendNotificationsInSubmittedCallback(String scenario, Set<Party> selectedParties,
+                                                            String expectedRecipients) throws Exception {
         final Map<String, Object> caseData = caseData(SUBMITTED_REQUEST);
+        caseData.put("cicCaseNotifyPartySubject", selectedParties.contains(Party.SUBJECT) ? List.of("SubjectCIC") : List.of());
+        caseData.put("cicCaseNotifyPartyApplicant", selectedParties.contains(Party.APPLICANT) ? List.of("ApplicantCIC") : List.of());
+        caseData.put("cicCaseNotifyPartyRepresentative",
+            selectedParties.contains(Party.REPRESENTATIVE) ? List.of("RepresentativeCIC") : List.of());
 
-        final Response response = triggerCallback(caseData, CASEWORKER_CONTACT_PARTIES, SUBMITTED_URL, true);
+        final Response response = triggerCallback(caseData, CASEWORKER_CONTACT_PARTIES, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
-            .isEqualTo("# Message sent \\n## A notification has been sent to: Subject");
+            .isEqualTo("# Message sent \\n## A notification has been sent to: " + expectedRecipients);
 
         long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
 
         List<CorrespondenceEntity> correspondenceEntities = caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef);
-        assertThat(correspondenceEntities).hasSize(1);
+        assertThat(correspondenceEntities).hasSize(selectedParties.size());
+        assertThat(correspondenceEntities.stream().map(CorrespondenceEntity::getReceivingParty).toList())
+            .containsExactlyInAnyOrderElementsOf(selectedParties);
 
-        CorrespondenceEntity firstCorrespondenceEntity = correspondenceEntities.getFirst();
+        Map<Party, String> emailAddresses = Map.of(
+            Party.SUBJECT, "test@email.com",
+            Party.APPLICANT, "AutoTestApplicant@mail.com",
+            Party.REPRESENTATIVE, "AutoTestRepresentative@mail.com");
 
-        assertThat(firstCorrespondenceEntity.getId()).isNotNull();
-        assertThat(firstCorrespondenceEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
-            .toString().replace("-", "")));
-        assertThat(firstCorrespondenceEntity.getEventType()).startsWith("CONTACT_PARTIES_EMAIL");
-        assertThat(firstCorrespondenceEntity.getSentOn()).isNotNull();
-        assertThat(firstCorrespondenceEntity.getSentFrom()).isNotNull();
-        assertThat(firstCorrespondenceEntity.getSentTo()).isNotNull();
-        assertThat(firstCorrespondenceEntity.getCorrespondenceType()).isEqualTo("Email");
-        assertThat(firstCorrespondenceEntity.getDocumentUrl()).isNotNull();
-        assertThat(firstCorrespondenceEntity.getDocumentFilename()).isNotNull();
-        assertThat(firstCorrespondenceEntity.getDocumentBinaryUrl()).isNotNull();
-        assertThat(firstCorrespondenceEntity.getReceivingParty()).isEqualTo(Party.SUBJECT);
+        for (CorrespondenceEntity correspondence : correspondenceEntities) {
+            assertThat(correspondence.getId()).isNotNull();
+            assertThat(correspondence.getCaseReferenceNumber()).isEqualTo(testCaseRef);
+            assertThat(correspondence.getEventType()).startsWith("CONTACT_PARTIES_EMAIL");
+            assertThat(correspondence.getSentOn()).isNotNull();
+            assertThat(correspondence.getSentFrom()).isNotNull();
+            assertThat(correspondence.getSentTo()).isEqualTo(emailAddresses.get(correspondence.getReceivingParty()));
+            assertThat(correspondence.getCorrespondenceType()).isEqualTo("Email");
+            assertThat(correspondence.getDocumentUrl()).isNotNull();
+            assertThat(correspondence.getDocumentFilename()).isNotNull();
+            assertThat(correspondence.getDocumentBinaryUrl()).isNotNull();
+            assertThat(correspondenceDocumentFTDataManager.getCorrespondenceDocuments(correspondence.getId())).isEmpty();
+        }
+    }
+
+    private static Stream<Arguments> recipientSelections() {
+        return Stream.of(
+            Arguments.of("subject", Set.of(Party.SUBJECT), "Subject"),
+            Arguments.of("applicant", Set.of(Party.APPLICANT), "Applicant"),
+            Arguments.of("representative", Set.of(Party.REPRESENTATIVE), "Representative"),
+            Arguments.of("subject and applicant", Set.of(Party.SUBJECT, Party.APPLICANT), "Subject, Applicant"),
+            Arguments.of("subject and representative", Set.of(Party.SUBJECT, Party.REPRESENTATIVE), "Subject, Representative"),
+            Arguments.of("applicant and representative", Set.of(Party.APPLICANT, Party.REPRESENTATIVE), "Representative, Applicant"),
+            Arguments.of("all three", Set.of(Party.SUBJECT, Party.APPLICANT, Party.REPRESENTATIVE),
+                "Subject, Representative, Applicant")
+        );
     }
 }

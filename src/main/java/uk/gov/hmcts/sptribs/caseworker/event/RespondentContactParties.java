@@ -10,6 +10,7 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.ContactPartiesReview;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ContactPartiesSelectDocument;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RespondentPartiesToContact;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
@@ -30,6 +31,7 @@ import java.util.Map;
 
 import static java.lang.String.format;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
+import static uk.gov.hmcts.sptribs.caseworker.util.ContactPartiesReviewUtil.clearReviewDocuments;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.RESPONDENT_CONTACT_PARTIES;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
@@ -58,6 +60,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class RespondentContactParties implements CCDConfig<CaseData, State, UserRole> {
 
     private static final CcdPageConfiguration resPartiesToContact = new RespondentPartiesToContact();
+    private static final CcdPageConfiguration contactPartiesReview = new ContactPartiesReview();
 
 
     @Value("${case_document_am.url}")
@@ -85,8 +88,10 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
                     CaseClosed,
                     CaseStayed)
                 .name("Case: CICA Contact parties")
-                .showSummary()
+                .showSummary(false)
+                .endButtonLabel("Confirm and send")
                 .aboutToStartCallback(this::aboutToStart)
+                .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER, ST_CIC_RESPONDENT)
                 .grantHistoryOnly(
@@ -99,6 +104,7 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
         );
         contactPartiesSelectDocument.addTo(pageBuilder);
         resPartiesToContact.addTo(pageBuilder);
+        contactPartiesReview.addTo(pageBuilder);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
@@ -106,10 +112,25 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
         caseData.setContactParties(new ContactParties());
         DynamicMultiSelectList documentList = DocumentListUtil.prepareContactPartiesDocumentList(caseData, baseUrl);
         caseData.getContactPartiesDocuments().setDocumentList(documentList);
+        clearReviewDocuments(caseData.getContactPartiesDocuments());
+        caseData.getContactPartiesDocuments().setReviewSelectedParties(null);
+        caseData.getContactPartiesDocuments().setReviewMessage(null);
         caseData.getCicCase().setNotifyPartyMessage("");
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
+            .build();
+    }
+
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
+                                                                       CaseDetails<CaseData, State> beforeDetails) {
+        DocumentListUtil.initialiseMissingContactPartiesDocumentSelection(details.getData());
+        clearReviewDocuments(details.getData().getContactPartiesDocuments());
+        details.getData().getContactPartiesDocuments().setReviewSelectedParties(null);
+        details.getData().getContactPartiesDocuments().setReviewMessage(null);
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(details.getData())
+            .state(details.getState())
             .build();
     }
 
@@ -162,4 +183,3 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
 
     }
 }
-
