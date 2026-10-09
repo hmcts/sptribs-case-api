@@ -6,7 +6,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
@@ -18,11 +17,10 @@ import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
-import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
-import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
@@ -54,8 +52,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -121,22 +117,7 @@ class CaseworkerCreateBundleTest {
     }
 
     @Test
-    void shouldNotAddSubmittedIfCitizenDashboardIsDisabled() {
-        ReflectionTestUtils.setField(caseworkerCreateBundle, "citizenDashboardEnabled", false);
-
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
-
-        caseworkerCreateBundle.configure(configBuilder);
-
-        assertThat(getEventsFrom(configBuilder).values())
-            .extracting(Event::getSubmittedCallback)
-            .containsOnlyNulls();
-    }
-
-    @Test
-    void shouldAddSubmittedIfCitizenDashboardIsEnabled() {
-        ReflectionTestUtils.setField(caseworkerCreateBundle, "citizenDashboardEnabled", true);
-
+    void shouldAddSubmittedCallbackUnconditionally() {
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         caseworkerCreateBundle.configure(configBuilder);
@@ -332,100 +313,6 @@ class CaseworkerCreateBundleTest {
         )).isInstanceOf(RuntimeException.class).hasMessage("unexpected");
 
         verify(bundlingService, never()).createBundle(any(BundleCallback.class), eq(TEST_CASE_ID));
-    }
-
-    @Test
-    void shouldSuccessfullySendNotificationToRepresentative() {
-
-        final CaseData caseData = caseData();
-        final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList();
-        final CicCase cicCase = CicCase.builder().build();
-        cicCase.setApplicantDocumentsUploaded(cicDocuments);
-        caseData.setCicCase(cicCase);
-        caseData.setHyphenatedCaseRef("1234-5678-3456");
-        cicCase.setRepresentativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE));
-
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-
-        doAnswer(invocation -> {
-            cicCase.setResNotificationResponse(NotificationResponse.builder().build());
-            return null;
-        }).when(bundleCreatedNotification).sendToRespondent(any(), any());
-
-        doAnswer(invocation -> {
-            cicCase.setRepNotificationResponse(NotificationResponse.builder().build());
-            return null;
-        }).when(bundleCreatedNotification).sendToRepresentative((CaseData) any(), any());
-
-        SubmittedCallbackResponse createBundleSubmittedResponse =
-            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
-
-        assertThat(createBundleSubmittedResponse.getConfirmationHeader())
-            .isEqualTo("# Bundle created. \n## A notification has been sent to: Representative, Respondent");
-    }
-
-    @Test
-    void shouldSuccessfullySendNotificationToApplicant() {
-
-        final CaseData caseData = caseData();
-        final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList();
-        final CicCase cicCase = CicCase.builder().build();
-        cicCase.setApplicantDocumentsUploaded(cicDocuments);
-        caseData.setCicCase(cicCase);
-        caseData.setHyphenatedCaseRef("1234-5678-3456");
-        cicCase.setApplicantCIC(Set.of(ApplicantCIC.APPLICANT_CIC));
-
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-
-        doAnswer(invocation -> {
-            cicCase.setResNotificationResponse(NotificationResponse.builder().build());
-            return null;
-        }).when(bundleCreatedNotification).sendToRespondent(any(), any());
-
-        doAnswer(invocation -> {
-            cicCase.setAppNotificationResponse(NotificationResponse.builder().build());
-            return null;
-        }).when(bundleCreatedNotification).sendToApplicant(any(), any());
-
-        SubmittedCallbackResponse createBundleSubmittedResponse =
-            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
-
-        assertThat(createBundleSubmittedResponse.getConfirmationHeader())
-            .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent, Applicant");
-    }
-
-    @Test
-    void shouldReturnFailedToSendNotificationOnError() {
-
-        final CaseData caseData = caseData();
-        final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList();
-        final CicCase cicCase = CicCase.builder().build();
-        cicCase.setApplicantDocumentsUploaded(cicDocuments);
-        caseData.setCicCase(cicCase);
-        cicCase.setRepresentativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE));
-
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-
-        doThrow(new RuntimeException("Notification Failed")).when(bundleCreatedNotification).sendToRespondent(any(), any());
-        doThrow(new RuntimeException("Notification Failed")).when(bundleCreatedNotification).sendToRepresentative((CaseData) any(), any());
-
-        SubmittedCallbackResponse createBundleSubmittedResponse =
-            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
-
-        assertThat(createBundleSubmittedResponse.getConfirmationHeader())
-            .isEqualTo("""
-                # Bundle creation notification failed\s
-                ## A notification could not be sent to: Respondent, Representative\s
-                ## Please resend the notification.""");
     }
 
     @Test
@@ -1223,24 +1110,60 @@ class CaseworkerCreateBundleTest {
     @Test
     void shouldNotNotifyIfCaseClosed() {
         final CaseData caseData = caseData();
-        final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList();
-        final CicCase cicCase = CicCase.builder().build();
-        cicCase.setApplicantDocumentsUploaded(cicDocuments);
-        caseData.setCicCase(cicCase);
-        caseData.setHyphenatedCaseRef("1234-5678-3456");
-        cicCase.setRepresentativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE));
-
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        updatedCaseDetails.setState(CaseClosed);
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-
-        SubmittedCallbackResponse createBundleSubmittedResponse =
-            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
-
-        assertThat(createBundleSubmittedResponse.getConfirmationHeader())
-            .isEqualTo("# Bundle created.");
+        assertThat(submitBundle(caseData, CaseClosed).getConfirmationHeader()).isEqualTo("# Bundle created.");
         verifyNoInteractions(bundleCreatedNotification);
+    }
+
+    @Test
+    void shouldShowOnlyRecipientsSentInThisCallback() {
+        CaseData caseData = caseData();
+        caseData.setCicCase(CicCase.builder().build());
+        caseData.getCicCase().setSubjectNotifyList(NotificationResponse.builder().build());
+        when(bundleCreatedNotification.dispatch(caseData, "1234-5678-3456"))
+            .thenReturn(new BundleCreatedNotification.DispatchResult(
+                Set.of(NotificationParties.RESPONDENT, NotificationParties.APPLICANT), List.of()));
+
+        SubmittedCallbackResponse response = submitBundle(caseData);
+
+        assertThat(response.getConfirmationHeader())
+            .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent, Applicant");
+        verify(bundleCreatedNotification).dispatch(caseData, "1234-5678-3456");
+    }
+
+    @Test
+    void shouldConfirmBundleWhenNoNotificationWasSent() {
+        CaseData caseData = caseData();
+        when(bundleCreatedNotification.dispatch(caseData, "1234-5678-3456"))
+            .thenReturn(new BundleCreatedNotification.DispatchResult(Set.of(), List.of()));
+
+        assertThat(submitBundle(caseData).getConfirmationHeader()).isEqualTo("# Bundle created.");
+    }
+
+    @Test
+    void shouldReportFailedRecipients() {
+        CaseData caseData = caseData();
+        when(bundleCreatedNotification.dispatch(caseData, "1234-5678-3456"))
+            .thenReturn(new BundleCreatedNotification.DispatchResult(Set.of(NotificationParties.APPLICANT),
+                List.of(NotificationParties.SUBJECT, NotificationParties.REPRESENTATIVE)));
+
+        assertThat(submitBundle(caseData).getConfirmationHeader()).isEqualTo("""
+            # Bundle creation notification failed\s
+            ## A notification could not be sent to: Subject, Representative\s
+            ## Please resend the notification.""");
+    }
+
+    private SubmittedCallbackResponse submitBundle(CaseData caseData) {
+        return submitBundle(caseData, State.CaseManagement);
+    }
+
+    private SubmittedCallbackResponse submitBundle(CaseData caseData, State state) {
+        caseData.setHyphenatedCaseRef("1234-5678-3456");
+
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setState(state);
+        details.setData(caseData);
+        details.setId(TEST_CASE_ID);
+
+        return caseworkerCreateBundle.submitted(details, CaseDetails.<CaseData, State>builder().build());
     }
 }

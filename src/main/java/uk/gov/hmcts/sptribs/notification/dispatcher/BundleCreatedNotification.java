@@ -4,17 +4,29 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
+import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.APPLICANT;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.REPRESENTATIVE;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.RESPONDENT;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.SUBJECT;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DASHBOARD_KEY;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.BUNDLE_CREATED_EMAIL_CITIZEN;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.BUNDLE_CREATED_EMAIL_RESPONDENT;
@@ -33,10 +45,72 @@ public class BundleCreatedNotification implements PartiesNotification {
     @Value("${feature.citizen-dashboard.enabled}")
     private boolean citizenDashboardEnabled;
 
+    @Value("${uk.gov.notify.email.templateVars.respondentEmail}")
+    private String configuredRespondentEmail;
+
     @Autowired
     public BundleCreatedNotification(NotificationServiceCIC notificationService, NotificationHelper notificationHelper) {
         this.notificationService = notificationService;
         this.notificationHelper = notificationHelper;
+    }
+
+    public DispatchResult dispatch(CaseData caseData, String caseNumber) {
+        CicCase cicCase = caseData.getCicCase();
+        Set<PartiesCIC> parties = cicCase.getPartiesCIC();
+        Set<NotificationParties> sentParties = new HashSet<>();
+        List<NotificationParties> failedParties = new ArrayList<>();
+
+        if (cicCase.getCaseSubcategory() != CaseSubcategory.FATAL
+            && cicCase.getCaseSubcategory() != CaseSubcategory.MINOR
+            && StringUtils.hasText(cicCase.getEmail())) {
+            attemptSend(() -> sendToSubject(caseData, caseNumber), SUBJECT, caseNumber, sentParties, failedParties);
+        }
+
+        attemptSend(() -> sendToRespondent(caseData, caseNumber), RESPONDENT, caseNumber, sentParties, failedParties);
+
+        if (parties != null && parties.contains(PartiesCIC.REPRESENTATIVE)
+            && StringUtils.hasText(cicCase.getRepresentativeEmailAddress())) {
+            attemptSend(() -> sendToRepresentative(caseData, caseNumber), REPRESENTATIVE, caseNumber, sentParties, failedParties);
+        }
+
+        if (parties != null && parties.contains(PartiesCIC.APPLICANT)
+            && StringUtils.hasText(cicCase.getApplicantEmailAddress())) {
+            attemptSend(() -> sendToApplicant(caseData, caseNumber), APPLICANT, caseNumber, sentParties, failedParties);
+        }
+
+        return new DispatchResult(Set.copyOf(sentParties), List.copyOf(failedParties));
+    }
+
+    private void attemptSend(Runnable send, NotificationParties party, String caseNumber,
+                             Set<NotificationParties> sentParties, List<NotificationParties> failedParties) {
+        try {
+            send.run();
+            sentParties.add(party);
+        } catch (Exception notificationException) {
+            log.error("Failed to send bundle created notification to {} for case {}",
+                party.getLabel(), caseNumber, notificationException);
+            failedParties.add(party);
+        }
+    }
+
+    public record DispatchResult(Set<NotificationParties> sentParties, List<NotificationParties> failedParties) {
+    }
+
+    @Override
+    public void sendToSubject(final CaseData caseData, final String caseNumber) {
+        final CicCase cicCase = caseData.getCicCase();
+        final Map<String, Object> templateVarsSubject = notificationHelper.getSubjectCommonVars(caseNumber, caseData);
+        templateVarsSubject.put(CommonConstants.CIC_CASE_SUBJECT_NAME, cicCase.getFullName());
+        addDashboardLink(templateVarsSubject);
+
+        final NotificationResponse notificationResponse = sendEmailNotification(
+            templateVarsSubject,
+            cicCase.getEmail(),
+            BUNDLE_CREATED_EMAIL_CITIZEN,
+            caseNumber
+        );
+
+        cicCase.setSubjectNotifyList(notificationResponse);
     }
 
     @Override
@@ -76,10 +150,12 @@ public class BundleCreatedNotification implements PartiesNotification {
         templateVarsRespondent.put(CommonConstants.CIC_CASE_RESPONDENT_NAME, cicCase.getRespondentName());
         addDashboardLink(templateVarsRespondent);
 
-        final NotificationResponse notificationResponse;
-
-        notificationResponse = sendEmailNotification(templateVarsRespondent,
-            cicCase.getRespondentEmail(), BUNDLE_CREATED_EMAIL_RESPONDENT, caseNumber);
+        final NotificationResponse notificationResponse = sendEmailNotification(
+            templateVarsRespondent,
+            configuredRespondentEmail,
+            BUNDLE_CREATED_EMAIL_RESPONDENT,
+            caseNumber
+        );
 
         cicCase.setResNotificationResponse(notificationResponse);
     }

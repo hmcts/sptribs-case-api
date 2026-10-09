@@ -125,20 +125,4 @@ public final class MessageUtil {
             return FAILED_SAVING_DOCUMENT_WITH_NO_FILENAME_TO_DATABASE;
         }
     }
-
-    public static String generateSimpleMessageBundleCreation(final CicCase cicCase) {
-        final StringBuilder message = new StringBuilder(100);
-        message.append("A notification has been sent to: ");
-
-        if (cicCase.getRepNotificationResponse() != null) {
-            message.append(REPRESENTATIVE + COMMA_SPACE);
-        }
-        if (cicCase.getResNotificationResponse() != null) {
-            message.append(RESPONDENT + COMMA_SPACE);
-        }
-        if (cicCase.getAppNotificationResponse() != null) {
-            message.append(APPLICANT + COMMA_SPACE);
-        }
-        return message.substring(0, message.length() - 2);
-    }
 }
