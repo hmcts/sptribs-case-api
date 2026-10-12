@@ -274,6 +274,53 @@ public class DocumentListUtilTest {
     }
 
     @Test
+    void shouldRetainSupportedDocumentsWhenUnsupportedFileTypesArePresent() {
+        CaseworkerCICDocument pdfDocument = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder()
+                .url("http://document-store/documents/" + UUID.randomUUID())
+                .filename("selected.pdf")
+                .build())
+            .build();
+        CaseworkerCICDocument mp3Document = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder()
+                .url("http://document-store/documents/" + UUID.randomUUID())
+                .filename("excluded.mp3")
+                .build())
+            .build();
+        CaseworkerCICDocument docxDocument = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder()
+                .url("http://document-store/documents/" + UUID.randomUUID())
+                .filename("selected.docx")
+                .build())
+            .build();
+        CaseworkerCICDocument mp4Document = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder()
+                .url("http://document-store/documents/" + UUID.randomUUID())
+                .filename("excluded.mp4")
+                .build())
+            .build();
+        CaseData caseData = CaseData.builder()
+            .cicCase(CicCase.builder().applicantDocumentsUploaded(List.of(
+                listValue(pdfDocument), listValue(mp3Document), listValue(docxDocument), listValue(mp4Document)))
+                .build())
+            .build();
+        DynamicMultiSelectList documentList =
+            DocumentListUtil.prepareContactPartiesDocumentList(caseData, "http://case-api");
+        caseData.setContactPartiesDocuments(ContactPartiesDocuments.builder().documentList(documentList).build());
+        documentList.setValue(documentList.getListItems());
+
+        assertThat(documentList.getListItems()).extracting(DynamicListElement::getLabel)
+            .hasSize(2)
+            .allSatisfy(label -> assertThat(label).doesNotContain("excluded"));
+        assertThat(DocumentListUtil.getSelectedContactPartiesDocuments(caseData).orElseThrow())
+            .extracting(ListValue::getValue).containsExactly(pdfDocument, docxDocument);
+    }
+
+    @Test
     void shouldFormatDocUrlsCorrectlyForContactPartiesDocList() {
         //Given
         String baseUrl = "http://mocked-url.com/";
