@@ -129,8 +129,8 @@ public class RespondentContactPartiesFT extends FunctionalTestSuite {
         String resolvedCaseworkerId = resolveDocumentId(caseworkerDocumentId, caseworkerUpload);
         updateDocumentSelectionWithDocumentId(caseData, caseworkerDocumentId, resolvedCaseworkerId);
 
-        UploadResponse applicantUpload = uploadTestDocumentIfMissing(applicantDocumentId, DRAFT_ORDER_FILE);
-        String resolvedApplicantId = resolveDocumentId(applicantDocumentId, applicantUpload);
+        UploadResponse resolvedApplicantDocumentId = uploadTestDocumentIfMissing(applicantDocumentId, DRAFT_ORDER_FILE);
+        String resolvedApplicantId = resolveDocumentId(applicantDocumentId, resolvedApplicantDocumentId);
         updateDocumentSelectionWithDocumentId(caseData, applicantDocumentId, resolvedApplicantId);
 
         final Response response = triggerCallback(
