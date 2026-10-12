@@ -6,6 +6,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.context.SpringBootTest;
+import uk.gov.hmcts.sptribs.common.repositories.model.CorrespondenceDocumentEntity;
 import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
@@ -92,7 +93,9 @@ public class CaseworkerContactPartiesFT extends FunctionalTestSuite {
             assertThat(correspondence.getDocumentUrl()).isNotNull();
             assertThat(correspondence.getDocumentFilename()).isNotNull();
             assertThat(correspondence.getDocumentBinaryUrl()).isNotNull();
-            assertThat(correspondenceDocumentFTDataManager.getCorrespondenceDocuments(correspondence.getId())).isEmpty();
+            List<CorrespondenceDocumentEntity> selectedCaseDocumentLinks =
+                correspondenceDocumentFTDataManager.getCorrespondenceDocuments(correspondence.getId());
+            assertThat(selectedCaseDocumentLinks).isEmpty();
         }
     }
 
