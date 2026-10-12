@@ -125,8 +125,8 @@ public class RespondentContactPartiesFT extends FunctionalTestSuite {
         String caseworkerDocumentId = "a17fa26b-6e91-48ba-841e-8ab75c772463";
         String applicantDocumentId = "0469dc01-a90f-400a-9ce9-39e0b74f1a58";
 
-        UploadResponse caseworkerUpload = uploadTestDocumentIfMissing(caseworkerDocumentId, DRAFT_ORDER_FILE);
-        String resolvedCaseworkerId = resolveDocumentId(caseworkerDocumentId, caseworkerUpload);
+        UploadResponse resolvedCaseworkerDocumentId = uploadTestDocumentIfMissing(caseworkerDocumentId, DRAFT_ORDER_FILE);
+        String resolvedCaseworkerId = resolveDocumentId(caseworkerDocumentId, resolvedCaseworkerDocumentId);
         updateDocumentSelectionWithDocumentId(caseData, caseworkerDocumentId, resolvedCaseworkerId);
 
         UploadResponse resolvedApplicantDocumentId = uploadTestDocumentIfMissing(applicantDocumentId, DRAFT_ORDER_FILE);
