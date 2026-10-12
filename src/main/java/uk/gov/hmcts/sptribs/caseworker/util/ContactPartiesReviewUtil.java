@@ -86,7 +86,7 @@ public final class ContactPartiesReviewUtil {
     }
 
     private static CaseworkerCICDocument documentAt(List<ListValue<CaseworkerCICDocument>> documents, int index) {
-        return documents == null || documents.size() <= index ? null : documents.get(index).getValue();
+        return documents.size() <= index ? null : documents.get(index).getValue();
     }
 
     private static void addParty(List<String> parties, boolean isSelected, String role, String name) {

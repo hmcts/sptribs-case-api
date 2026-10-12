@@ -64,8 +64,7 @@ public final class DocumentListUtil {
 
         addDocsToMapIfNotNull(docTypeAndDocMap, CaseDocumentType.HEARING_RECORD,
             getHearingSummaryDocuments(data).stream()
-                .filter(document -> document != null
-                    && document.getDocumentLink() != null
+                .filter(document -> document.getDocumentLink() != null
                     && DocumentFileTypes.isAudioOrVideo(document.getDocumentLink().getFilename()))
                 .toList());
         addDocsToMapIfNotNull(docTypeAndDocMap, ORDER, getOrderDocuments(data.getCicCase()));
@@ -91,7 +90,7 @@ public final class DocumentListUtil {
     private static void addDocsToMapIfNotNull(Map<CaseDocumentType, List<CaseworkerCICDocument>> docTypeAndDocMap,
                                               CaseDocumentType caseDocumentType,
                                               List<CaseworkerCICDocument> documentList) {
-        if (documentList != null && !documentList.isEmpty()) {
+        if (!documentList.isEmpty()) {
             docTypeAndDocMap.put(caseDocumentType, documentList);
         }
     }

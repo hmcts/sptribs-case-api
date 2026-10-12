@@ -16,8 +16,14 @@ import java.util.UUID;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 class ContactPartiesReviewUtilTest {
+
+    @Test
+    void clearingMissingReviewDocumentsDoesNothing() {
+        assertThatCode(() -> ContactPartiesReviewUtil.clearReviewDocuments(null)).doesNotThrowAnyException();
+    }
 
     @Test
     void showsAllTenSelectedDocumentsAndClearsThemWhenSelectionIsEmpty() {

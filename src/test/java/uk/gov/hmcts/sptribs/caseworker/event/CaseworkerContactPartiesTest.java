@@ -2,6 +2,8 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -22,6 +24,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.ContactPartiesSelectDocument;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
@@ -52,6 +55,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.CONTACT_PARTIES_NOTIFICATION_FAILED;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.MINOR_FATAL_SUBJECT_ERROR_MESSAGE;
 import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAST_ONE_CONTACT_PARTY;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
@@ -262,6 +266,77 @@ class CaseworkerContactPartiesTest {
         assertThat(response.getErrors()).containsExactly(CONTACT_PARTIES_NOTIFICATION_FAILED);
         assertThat(documents.getReviewSelectedParties()).isNull();
         assertThat(documents.getReviewMessage()).isNull();
+    }
+
+    @Test
+    void shouldAllowEachNonSubjectRecipientOnItsOwn() {
+        CaseData data = caseData();
+        CicCase cicCase = data.getCicCase();
+        cicCase.setRepresentativeFullName("Test Representative");
+        cicCase.setApplicantFullName("Test Applicant");
+        cicCase.setRespondentName("Test Respondent");
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(data);
+
+        cicCase.setCaseSubcategory(CaseSubcategory.FATAL);
+        cicCase.setNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE));
+        assertThat(partiesToContact.midEvent(details, details).getErrors()).isEmpty();
+        assertThat(data.getContactPartiesDocuments().getReviewSelectedParties())
+            .isEqualTo("Representative: Test Representative");
+
+        cicCase.setCaseSubcategory(CaseSubcategory.MINOR);
+        cicCase.setNotifyPartyRepresentative(null);
+        cicCase.setNotifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC));
+        assertThat(partiesToContact.midEvent(details, details).getErrors()).isEmpty();
+        assertThat(data.getContactPartiesDocuments().getReviewSelectedParties())
+            .isEqualTo("Applicant: Test Applicant");
+
+        cicCase.setCaseSubcategory(CaseSubcategory.OTHER);
+        cicCase.setNotifyPartyApplicant(null);
+        cicCase.setNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT));
+        assertThat(partiesToContact.midEvent(details, details).getErrors()).isEmpty();
+        assertThat(data.getContactPartiesDocuments().getReviewSelectedParties())
+            .isEqualTo("Respondent: Test Respondent");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = CaseSubcategory.class, names = {"FATAL", "MINOR"})
+    void shouldRejectContactingSubjectForFatalOrMinorCases(CaseSubcategory subcategory) {
+        CaseData data = caseData();
+        data.getCicCase().setCaseSubcategory(subcategory);
+        data.getCicCase().setNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(data);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = partiesToContact.midEvent(details, details);
+
+        assertThat(response.getErrors()).containsExactly(MINOR_FATAL_SUBJECT_ERROR_MESSAGE);
+    }
+
+    @Test
+    void shouldRejectUnknownSelectedDocumentOption() {
+        CaseData data = caseData();
+        data.getCicCase().setNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE));
+        CaseworkerCICDocument availableDocument = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().url("https://example.test/documents/" + UUID.randomUUID())
+                .filename("available.pdf").build())
+            .build();
+        data.getCicCase().setReinstateDocuments(List.of(new ListValue<>("document-1", availableDocument)));
+        DynamicListElement availableOption = DynamicListElement.builder().code(UUID.randomUUID()).build();
+        DynamicListElement unknownSelection = DynamicListElement.builder().code(UUID.randomUUID()).build();
+        ContactPartiesDocuments documents = data.getContactPartiesDocuments();
+        documents.setDocumentList(DynamicMultiSelectList.builder()
+            .listItems(List.of(availableOption)).value(List.of(unknownSelection)).build());
+        documents.setD01(availableDocument);
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(data);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = partiesToContact.midEvent(details, details);
+
+        assertThat(response.getErrors()).containsExactly(CONTACT_PARTIES_NOTIFICATION_FAILED);
+        assertThat(documents.getD01()).isNull();
+        assertThat(documents.getReviewSelectedParties()).isEqualTo("Representative");
     }
 
     @Test

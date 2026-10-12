@@ -230,6 +230,48 @@ public class DocumentListUtilTest {
     }
 
     @Test
+    void shouldRejectMissingAndDuplicateContactPartiesOptions() {
+        CaseworkerCICDocument firstDocument = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().url("http://document-store/documents/" + UUID.randomUUID())
+                .filename("first.pdf").build())
+            .build();
+        CaseworkerCICDocument secondDocument = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().url("http://document-store/documents/" + UUID.randomUUID())
+                .filename("second.pdf").build())
+            .build();
+        CaseData caseData = CaseData.builder()
+            .cicCase(CicCase.builder().reinstateDocuments(List.of(listValue(firstDocument), listValue(secondDocument))).build())
+            .build();
+        DynamicMultiSelectList list = DocumentListUtil.prepareContactPartiesDocumentList(caseData, "http://case-api");
+        caseData.setContactPartiesDocuments(ContactPartiesDocuments.builder().documentList(list).build());
+        DynamicListElement firstOption = list.getListItems().get(0);
+        final DynamicListElement secondOption = list.getListItems().get(1);
+        list.setValue(List.of(firstOption));
+
+        list.setListItems(List.of(firstOption));
+        assertThat(DocumentListUtil.getSelectedContactPartiesDocuments(caseData)).isEmpty();
+
+        List<DynamicListElement> options = new ArrayList<>(List.of(firstOption, secondOption));
+        options.set(1, null);
+        list.setListItems(options);
+        assertThat(DocumentListUtil.getSelectedContactPartiesDocuments(caseData)).isEmpty();
+
+        options.set(1, DynamicListElement.builder().build());
+        assertThat(DocumentListUtil.getSelectedContactPartiesDocuments(caseData)).isEmpty();
+
+        options.set(1, DynamicListElement.builder().code(firstOption.getCode()).build());
+        assertThat(DocumentListUtil.getSelectedContactPartiesDocuments(caseData)).isEmpty();
+
+        options.set(1, secondOption);
+        List<DynamicListElement> selection = new ArrayList<>();
+        selection.add(null);
+        list.setValue(selection);
+        assertThat(DocumentListUtil.getSelectedContactPartiesDocuments(caseData)).isEmpty();
+    }
+
+    @Test
     void shouldReturnEmptyPreviewWhenNoDocumentsAreSelected() {
         CaseData caseData = CaseData.builder()
             .cicCase(CicCase.builder().build())
@@ -642,6 +684,67 @@ public class DocumentListUtilTest {
     }
 
     @Test
+    void shouldIgnoreHearingRecordWithoutDocumentLinkDuringMigrationMapping() {
+        CaseworkerCICDocument missingLink = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .build();
+        CaseworkerCICDocument recording = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().filename("hearing.mp3").build())
+            .build();
+        Listing hearing = Listing.builder()
+            .summary(HearingSummary.builder().recFile(List.of(listValue(missingLink), listValue(recording))).build())
+            .build();
+        CaseData caseData = CaseData.builder().hearingList(List.of(new ListValue<>("hearing-1", hearing))).build();
+
+        assertThat(DocumentListUtil.prepareDocTypeAndDocMap(caseData).get(CaseDocumentType.HEARING_RECORD))
+            .containsExactly(recording);
+    }
+
+    @Test
+    void shouldIgnoreEmptyDocumentManagementAndCloseCaseCollections() {
+        CaseData caseData = CaseData.builder()
+            .cicCase(CicCase.builder().build())
+            .allDocManagement(DocumentManagement.builder().caseworkerCICDocument(List.of()).build())
+            .closeCase(CloseCase.builder().documents(List.of()).build())
+            .build();
+
+        assertThat(DocumentListUtil.getAllCaseDocuments(caseData)).isEmpty();
+        assertThat(DocumentListUtil.prepareDocTypeAndDocMap(caseData))
+            .doesNotContainKey(CaseDocumentType.DOCUMENT_MANAGEMENT);
+
+        caseData.setAllDocManagement(null);
+        caseData.setCloseCase(null);
+        assertThat(DocumentListUtil.getAllCaseDocuments(caseData)).isEmpty();
+    }
+
+    @Test
+    void shouldKeepValidRecordingsWhenHearingEntriesAreIncomplete() {
+        CaseworkerCICDocument recording = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().filename("hearing.mp3").build())
+            .build();
+        List<ListValue<CaseworkerCICDocument>> recordings = new ArrayList<>();
+        recordings.add(null);
+        recordings.add(new ListValue<>("missing-recording", null));
+        recordings.add(listValue(recording));
+        List<ListValue<Listing>> hearings = new ArrayList<>();
+        hearings.add(null);
+        hearings.add(new ListValue<>("missing-hearing", null));
+        hearings.add(new ListValue<>("missing-summary", Listing.builder().summary(null).build()));
+        hearings.add(new ListValue<>("missing-recordings", Listing.builder()
+            .summary(HearingSummary.builder().build()).build()));
+        hearings.add(new ListValue<>("empty-recordings", Listing.builder()
+            .summary(HearingSummary.builder().recFile(List.of()).build()).build()));
+        hearings.add(new ListValue<>("valid-hearing", Listing.builder()
+            .summary(HearingSummary.builder().recFile(recordings).build()).build()));
+        CaseData caseData = CaseData.builder().cicCase(CicCase.builder().build()).hearingList(hearings).build();
+
+        assertThat(DocumentListUtil.getAllCaseDocuments(caseData))
+            .extracting(ListValue::getValue).containsExactly(recording);
+    }
+
+    @Test
     void shouldIncludeCloseAndReinstateDocumentsInDocumentManagementMigrationMapping() {
         CaseworkerCICDocument documentManagementDocument = CaseworkerCICDocument.builder()
             .documentCategory(DocumentType.LINKED_DOCS)
@@ -1049,6 +1152,29 @@ public class DocumentListUtilTest {
         DynamicMultiSelectList dynamicMultiSelectList = DynamicMultiSelectList.builder().build();
         List<String> documentIds = DocumentListUtil.extractDocumentIds(dynamicMultiSelectList.getListItems());
         assertThat(documentIds).isEmpty();
+    }
+
+    @Test
+    void shouldReturnNoSelectedDocumentsWhenDynamicListIsMissing() {
+        CaseData caseData = CaseData.builder().build();
+
+        assertThat(DocumentListUtil.getSelectedDocumentsFromDynamicList(caseData, null)).isEmpty();
+        assertThat(DocumentListUtil.getSelectedDocumentsFromDynamicList(caseData,
+            DynamicMultiSelectList.builder().value(List.of()).build())).isEmpty();
+    }
+
+    @Test
+    void shouldSkipMalformedDocumentLabelsAndKeepValidIds() {
+        List<DynamicListElement> elements = new ArrayList<>();
+        elements.add(null);
+        elements.add(DynamicListElement.builder().build());
+        elements.add(DynamicListElement.builder().label("Document without a URL").build());
+        elements.add(DynamicListElement.builder().label("[Document](missing closing bracket").build());
+        elements.add(DynamicListElement.builder().label("[Document](https://example.test/documents/)").build());
+        elements.add(DynamicListElement.builder().label("[Valid](https://example.test/documents/document-id/binary)").build());
+
+        assertThat(DocumentListUtil.extractDocumentIds(List.of())).isEmpty();
+        assertThat(DocumentListUtil.extractDocumentIds(elements)).containsExactly("document-id");
     }
 
 

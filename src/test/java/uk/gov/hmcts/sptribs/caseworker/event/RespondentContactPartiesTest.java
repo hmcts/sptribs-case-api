@@ -2,6 +2,8 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -25,6 +27,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.caseworker.model.Slot;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
@@ -50,6 +53,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.CONTACT_PARTIES_NOTIFICATION_FAILED;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.MINOR_FATAL_SUBJECT_ERROR_MESSAGE;
 import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAST_ONE_CONTACT_PARTY;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.RESPONDENT_CONTACT_PARTIES;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
@@ -211,6 +215,90 @@ class RespondentContactPartiesTest {
         assertThat(response.getErrors()).containsExactly(CONTACT_PARTIES_NOTIFICATION_FAILED);
         assertThat(data.getContactPartiesDocuments().getReviewSelectedParties()).isNull();
         assertThat(data.getContactPartiesDocuments().getReviewMessage()).isNull();
+    }
+
+    @Test
+    void shouldNotShowSelectedPartiesWhenContactPartiesAreMissing() {
+        CaseData data = caseData();
+        data.setContactParties(null);
+        data.getCicCase().setNotifyPartyMessage("Review message");
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(data);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = respondentPartiesToContact.midEvent(details, details);
+
+        assertThat(response.getData()).isSameAs(data);
+        assertThat(data.getContactPartiesDocuments().getReviewSelectedParties()).isNull();
+        assertThat(data.getContactPartiesDocuments().getReviewMessage()).isEqualTo("Review message");
+    }
+
+    @Test
+    void shouldRejectSelectedDocumentThatIsNoLongerAvailable() {
+        CaseData data = caseData();
+        data.getContactParties().setTribunal(Set.of(TribunalCIC.TRIBUNAL));
+        data.getCicCase().setReinstateDocuments(List.of(new ListValue<>("document-1", CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().url("https://example.test/documents/" + UUID.randomUUID())
+                .filename("available.pdf").build())
+            .build())));
+        DynamicListElement availableOption = DynamicListElement.builder().code(UUID.randomUUID()).build();
+        DynamicListElement unknownSelection = DynamicListElement.builder().code(UUID.randomUUID()).build();
+        data.getContactPartiesDocuments().setDocumentList(DynamicMultiSelectList.builder()
+            .listItems(List.of(availableOption)).value(List.of(unknownSelection)).build());
+        data.getContactPartiesDocuments().setD01(CaseworkerCICDocument.builder().build());
+        data.getContactPartiesDocuments().setActiveDocumentSlots(Set.of(Slot.D01));
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(data);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = respondentPartiesToContact.midEvent(details, details);
+
+        assertThat(response.getErrors()).containsExactly(CONTACT_PARTIES_NOTIFICATION_FAILED);
+        assertThat(data.getContactPartiesDocuments().getD01()).isNull();
+        assertThat(data.getContactPartiesDocuments().getActiveDocumentSlots()).isNull();
+        assertThat(data.getContactPartiesDocuments().getReviewSelectedParties()).isEqualTo("Tribunal");
+    }
+
+    @Test
+    void shouldAllowContactingOnlyTheApplicant() {
+        CaseData data = caseData();
+        data.getCicCase().setApplicantFullName("Test Applicant");
+        data.getContactParties().setApplicantContactParties(Set.of(ApplicantCIC.APPLICANT_CIC));
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(data);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = respondentPartiesToContact.midEvent(details, details);
+
+        assertThat(response.getErrors()).isEmpty();
+        assertThat(data.getContactPartiesDocuments().getReviewSelectedParties())
+            .isEqualTo("Applicant: Test Applicant");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = CaseSubcategory.class, names = {"FATAL", "MINOR"})
+    void shouldRejectContactingSubjectForFatalOrMinorCases(CaseSubcategory subcategory) {
+        CaseData data = caseData();
+        data.getCicCase().setCaseSubcategory(subcategory);
+        data.getContactParties().setSubjectContactParties(Set.of(SubjectCIC.SUBJECT));
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(data);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = respondentPartiesToContact.midEvent(details, details);
+
+        assertThat(response.getErrors()).containsExactly(MINOR_FATAL_SUBJECT_ERROR_MESSAGE);
+    }
+
+    @Test
+    void shouldAllowContactingTribunalForMinorCaseWithoutSubject() {
+        CaseData data = caseData();
+        data.getCicCase().setCaseSubcategory(CaseSubcategory.MINOR);
+        data.getContactParties().setTribunal(Set.of(TribunalCIC.TRIBUNAL));
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(data);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = respondentPartiesToContact.midEvent(details, details);
+
+        assertThat(response.getErrors()).isEmpty();
+        assertThat(data.getContactPartiesDocuments().getReviewSelectedParties()).isEqualTo("Tribunal");
     }
 
     @Test
