@@ -14,6 +14,8 @@ public final class ErrorConstants {
     public static final String EMPTY_DATE_MODEL = "Please select an option from the list before continuing";
     public static final String FAILED_SAVING_DOCUMENT_TO_DATABASE = "Error saving document with filename: ";
     public static final String FAILED_SAVING_DOCUMENT_WITH_NO_FILENAME_TO_DATABASE = "Error saving document with no filename";
+    public static final String CONTACT_PARTIES_NOTIFICATION_FAILED
+        = "Contact Parties notification failed. Please resend the notification";
 
     private ErrorConstants() {
 
