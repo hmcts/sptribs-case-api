@@ -106,7 +106,7 @@ public class CaseworkerEditDraftOrderIT extends IntegrationTestBase {
             .build();
 
         DraftOrderContentCIC draftOrderContentCIC = DraftOrderContentCIC.builder()
-            .orderTemplate(OrderTemplate.CIC3_RULE_27)
+            .orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS)
             .build();
 
         caseData.setDraftOrderContentCIC(draftOrderContentCIC);
@@ -212,7 +212,7 @@ public class CaseworkerEditDraftOrderIT extends IntegrationTestBase {
             .build();
 
         DraftOrderContentCIC draftOrderContentCIC = DraftOrderContentCIC.builder()
-            .orderTemplate(OrderTemplate.CIC3_RULE_27)
+            .orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS)
             .build();
 
         DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()

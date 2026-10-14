@@ -54,7 +54,7 @@ class DraftRemoveListUtilTest {
             .build();
 
         final DraftOrderContentCIC content = DraftOrderContentCIC.builder()
-            .orderTemplate(OrderTemplate.CIC3_RULE_27)
+            .orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS)
             .mainContent("test")
             .orderSignature("test")
             .build();

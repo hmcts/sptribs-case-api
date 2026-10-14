@@ -56,7 +56,7 @@ import static java.lang.String.format;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
-import static uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate.CIC3_RULE_27;
+import static uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate.CIC6_GENERAL_DIRECTIONS;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Draft;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
@@ -260,7 +260,7 @@ public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole
         Document generalOrderDocument = caseDataDocumentService.renderDocument(
             previewDraftOrderTemplateContent.apply(caseData, caseId),
             caseId,
-            CIC3_RULE_27.getId(),
+            CIC6_GENERAL_DIRECTIONS.getId(),
             LanguagePreference.ENGLISH,
             filename,
             request
