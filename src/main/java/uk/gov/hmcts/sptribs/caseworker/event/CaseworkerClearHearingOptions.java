@@ -47,6 +47,7 @@ public class CaseworkerClearHearingOptions implements CCDConfig<CaseData, State,
         listing.setVenueNotListedOption(null);
         listing.setRoomAtVenue(null);
         listing.setAddlInstr(null);
+        listing.setHearingType(null);
         listing.setHearingFormat(null);
         listing.setShortNotice(null);
 
