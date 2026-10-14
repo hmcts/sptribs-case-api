@@ -7,11 +7,8 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import static java.time.format.DateTimeFormatter.ofPattern;
-import static java.util.Locale.UK;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class CaseDataTest {
@@ -25,7 +22,6 @@ class CaseDataTest {
 
     @Test
     void shouldGetHearingDate() {
-        final DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
         final LocalDate now = LocalDate.now();
         final Listing listing = Listing.builder().hearingStatus(HearingState.Listed).date(now).build();
         final ListValue<Listing> listingListValue = new ListValue<>();
@@ -34,9 +30,9 @@ class CaseDataTest {
             .hearingList(List.of(listingListValue))
             .build();
 
-        final String result = caseData.getFirstHearingDate();
+        final LocalDate result = caseData.getFirstHearingDate();
 
-        assertThat(result).isEqualTo(dateFormatter.format(now));
+        assertThat(result).isEqualTo(now);
     }
 
     @Test
