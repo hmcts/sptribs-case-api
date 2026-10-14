@@ -220,8 +220,10 @@ withPipeline(type, product, component) {
   }
 
   before('highleveldatasetup') {
-    builder.gradle('generateCCDConfig --rerun-tasks')
-    generateDefinitions()
+    if (params.environment != 'aat') {
+      builder.gradle('generateCCDConfig --rerun-tasks')
+      generateDefinitions()
+    }
   }
 
   before('highleveldatasetup:aat') {
