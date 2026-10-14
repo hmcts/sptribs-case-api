@@ -138,7 +138,7 @@ public class CaseworkerIssueDecision implements CCDConfig<CaseData, State, UserR
         return decision != null
             && decision.getDecisionNotice() == NoticeOption.CREATE_FROM_TEMPLATE
             && (decision.getIssueDecisionTemplate() == DecisionTemplate.RULE_27
-                || decision.getIssueDecisionTemplate() == DecisionTemplate.STRIKE_OUT_DECISION_NOTICE);
+                || decision.getIssueDecisionTemplate() == DecisionTemplate.STRIKE_OUT_APPEAL);
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,

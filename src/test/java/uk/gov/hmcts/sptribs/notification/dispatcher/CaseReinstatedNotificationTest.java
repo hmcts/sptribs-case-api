@@ -49,7 +49,7 @@ class CaseReinstatedNotificationTest {
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setEmail("testsubject@outlook.com");
-        data.getCicCase().setReinstateReason(ReinstateReason.REQUEST_FOLLOWING_A_STRIKE_OUT_DECISION);
+        data.getCicCase().setReinstateReason(ReinstateReason.REQUEST_FOLLOWING_A_STRIKE_OUT_APPEAL);
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
@@ -189,7 +189,7 @@ class CaseReinstatedNotificationTest {
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
         data.getCicCase().setApplicantAddress(AddressGlobalUK.builder().build());
-        data.getCicCase().setReinstateReason(ReinstateReason.REQUEST_FOLLOWING_A_STRIKE_OUT_DECISION);
+        data.getCicCase().setReinstateReason(ReinstateReason.REQUEST_FOLLOWING_A_STRIKE_OUT_APPEAL);
 
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))

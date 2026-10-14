@@ -12,8 +12,8 @@ public enum ReinstateReason implements HasLabel {
     @JsonProperty("requestFollowingAWithdrawalDecision")
     REQUEST_FOLLOWING_A_WITHDRAWAL_DECISION("Request following a withdrawal decision", "Request following a withdrawal decision"),
 
-    @JsonProperty("RequestFollowingAStrikeOutDecision")
-    REQUEST_FOLLOWING_A_STRIKE_OUT_DECISION("Request following a strike out decision", "Request following a strike out decision"),
+    @JsonProperty("RequestFollowingAStrikeOutAppeal")
+    REQUEST_FOLLOWING_A_STRIKE_OUT_APPEAL("Request following a strike out appeal", "Request following a strike out appeal"),
 
     @JsonProperty("caseHadBeenClosedInError")
     CASE_HAD_BEEN_CLOSED_IN_ERROR("Case had been closed in error", "Case had been closed in error"),
