@@ -63,7 +63,7 @@
           "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/${UUID1}/binary",
           "category_id": "TD"
         },
-        "orderContentOrderTemplate": "CIC3_Rule_27"
+        "orderContentOrderTemplate": "CIC6_General_Directions"
       }
     }
   ],

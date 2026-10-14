@@ -1,5 +1,5 @@
 {
-  "orderContentOrderTemplate": "CIC3_Rule_27",
+  "orderContentOrderTemplate": "CIC6_General_Directions",
   "orderContentMainContent": "Order Main Content",
   "orderContentOrderSignature": "Order Signatory",
   "cicCaseOrderTemplateIssued": {
@@ -26,7 +26,7 @@
           "document_binary_url": "http://dm-store.service.core-compute.internal/documents/5d76ff31-8547-4702-b2c8-34c43a53d220/binary",
           "category_id": "TD"
         },
-        "orderContentOrderTemplate": "CIC3_Rule_27",
+        "orderContentOrderTemplate": "CIC6_General_Directions",
         "orderContentMainContent": "Order Main Content",
         "orderContentOrderSignature": "Order Signatory"
       }
