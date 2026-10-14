@@ -200,7 +200,7 @@ checkstyle {
 }
 
 pmd {
-  toolVersion = "7.21.0"
+  toolVersion = "7.28.0"
   sourceSets = [sourceSets.main]
   reportsDir = file("$project.buildDir/reports/pmd")
   // https://github.com/pmd/pmd/issues/876
