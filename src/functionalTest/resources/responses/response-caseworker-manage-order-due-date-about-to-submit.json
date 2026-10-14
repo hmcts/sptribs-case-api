@@ -6,16 +6,16 @@
     "cicCaseOrderDynamicList": {
       "value": {
         "code": "962aaa12-af98-4cfa-86b2-46e4f0ec241d",
-        "label": "1-CIC3_RULE_27"
+        "label": "1-CIC6_General_Directions"
       },
       "list_items": [
         {
           "code": "962aaa12-af98-4cfa-86b2-46e4f0ec241d",
-          "label": "1-CIC3_RULE_27"
+          "label": "1-CIC6_General_Directions"
         }
       ],
       "valueCode": "962aaa12-af98-4cfa-86b2-46e4f0ec241d",
-      "valueLabel": "1-CIC3_RULE_27"
+      "valueLabel": "1-CIC6_General_Directions"
     },
     "orderDueDates": [],
     "cicCaseOrderList": [

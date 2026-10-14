@@ -32,7 +32,7 @@
           "categoryId": "TD"
         },
         "draftOrderContentCIC": {
-          "orderTemplate": "CIC3_RULE_27",
+          "orderTemplate": "CIC6_General_Directions",
           "mainContent": "test",
           "orderSignature": "test"
         }
