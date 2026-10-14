@@ -1,5 +1,6 @@
 #!groovy
 
+//@Library("Infrastructure@2.11.2")
 @Library("Infrastructure@highleveldatasetupstaging")
 
 import uk.gov.hmcts.contino.AppPipelineConfig
@@ -218,8 +219,7 @@ withPipeline(type, product, component) {
     ]
   }
 
-  //  before('highleveldatasetup') {
-  before('highleveldatasetup:staging') {
+  before('highleveldatasetup') {
     builder.gradle('generateCCDConfig --rerun-tasks')
     generateDefinitions()
   }
