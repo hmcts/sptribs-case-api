@@ -165,7 +165,7 @@ public class CaseworkerCreateAndSendOrderIT {
             .build();
 
         DraftOrderContentCIC draftOrderContentCIC = DraftOrderContentCIC.builder()
-            .orderTemplate(OrderTemplate.CIC3_RULE_27)
+            .orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS)
             .mainContent("Main order content sample")
             .orderSignature("Supreme Judge Fudge")
             .build();
@@ -226,7 +226,7 @@ public class CaseworkerCreateAndSendOrderIT {
             .build();
 
         DraftOrderContentCIC draftOrderContentCIC = DraftOrderContentCIC.builder()
-            .orderTemplate(OrderTemplate.CIC3_RULE_27)
+            .orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS)
             .mainContent("Main order content sample")
             .orderSignature("Supreme Judge Fudge")
             .build();
