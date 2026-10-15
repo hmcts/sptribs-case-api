@@ -43,12 +43,12 @@
   "cicCaseDraftOrderDynamicList": {
     "value": {
       "code": "cb58659c-e90e-41c9-ab49-f3e3bd7523c0",
-      "label": "CIC3 - Rule 27--26-04-2024 10:09:12"
+      "label": "CIC6 - General Directions--26-04-2024 10:09:12"
     },
     "list_items": [
       {
         "code": "cb58659c-e90e-41c9-ab49-f3e3bd7523c0",
-        "label": "CIC3 - Rule 27--26-04-2024 10:09:12"
+        "label": "CIC6 - General Directions--26-04-2024 10:09:12"
       }
     ]
   },
@@ -59,7 +59,7 @@
       "value": {
         "templateGeneratedDocument": {
           "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/${UUID1}",
-          "document_filename": "Draft: test.pdf--CIC3 - Rule 27--26-04-2024 10:09:12.pdf",
+          "document_filename": "Draft: test.pdf--CIC6 - General Directions--26-04-2024 10:09:12.pdf",
           "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/${UUID1}/binary",
           "category_id": "TD"
         },

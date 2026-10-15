@@ -89,7 +89,7 @@ public class CaseworkerEditDraftOrderIT extends IntegrationTestBase {
         final CaseData caseData = caseData();
 
         final DynamicListElement listItem = DynamicListElement.builder()
-            .label("CIC3 - Rule 27--09-05-2024 09:04:04.pdf--draft.pdf")
+            .label("CIC6 - General Directions--09-05-2024 09:04:04.pdf--draft.pdf")
             .code(UUID.randomUUID())
             .build();
 
