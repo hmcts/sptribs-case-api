@@ -160,7 +160,7 @@ public class CaseworkerIssueDecisionFT extends FunctionalTestSuite {
 
     @ParameterizedTest
     @ValueSource(strings = {
-        "CIC6 - General Directions",
+        "CIC3 - Rule 27",
         "CIC11 - Strike Out Decision Notice"
     })
     public void shouldKeepCaseManagementWhenIssuingUploadedDecision(String template) throws Exception {
