@@ -169,13 +169,13 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
                 caseFinalDecisionIssuedNotification.sendToSubject(details.getData(), caseNumber);
             }
 
-            messageLine2.append("Respondent, ");
-            caseFinalDecisionIssuedNotification.sendToRespondent(details.getData(), caseNumber);
-
             if (data.getCicCase().getPartiesCIC().contains(PartiesCIC.REPRESENTATIVE)) {
                 messageLine2.append("Representative, ");
                 caseFinalDecisionIssuedNotification.sendToRepresentative(details.getData(), caseNumber);
             }
+
+            messageLine2.append("Respondent, ");
+            caseFinalDecisionIssuedNotification.sendToRespondent(details.getData(), caseNumber);
 
             if (data.getCicCase().getPartiesCIC().contains(PartiesCIC.APPLICANT)) {
                 messageLine2.append("Applicant, ");

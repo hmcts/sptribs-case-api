@@ -334,7 +334,7 @@ public class CaseworkerIssueFinalDecisionIT extends IntegrationTestBase {
             .inPath(CONFIRMATION_HEADER)
             .isString()
             .contains("# Final decision notice issued \n"
-                + "## A notification has been sent to: Subject, Respondent, Representative, Applicant");
+                + "## A notification has been sent to: Subject, Representative, Respondent, Applicant");
 
         verify(notificationServiceCIC).sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.SUBJECT));
         verify(notificationServiceCIC).sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.RESPONDENT));

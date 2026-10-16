@@ -152,7 +152,7 @@ class CaseworkerIssueFinalDecisionTest {
         //Then
         assertThat(response.getConfirmationHeader())
             .contains("# Final decision notice issued \n"
-                + "## A notification has been sent to: Subject, Respondent, Representative, Applicant");
+                + "## A notification has been sent to: Subject, Representative, Respondent, Applicant");
     }
 
     @Test
@@ -175,7 +175,7 @@ class CaseworkerIssueFinalDecisionTest {
         //Then
         assertThat(responseWithoutApplicant.getConfirmationHeader())
             .isEqualTo("# Final decision notice issued \n"
-                + "## A notification has been sent to: Subject, Respondent, Representative");
+                + "## A notification has been sent to: Subject, Representative, Respondent");
 
         cicCase.setPartiesCIC(Set.of(PartiesCIC.SUBJECT, PartiesCIC.APPLICANT));
 
@@ -208,7 +208,7 @@ class CaseworkerIssueFinalDecisionTest {
         //Then
         assertThat(responseWithFatalSubcategory.getConfirmationHeader())
             .isEqualTo("# Final decision notice issued \n"
-                + "## A notification has been sent to: Respondent, Representative, Applicant");
+                + "## A notification has been sent to: Representative, Respondent, Applicant");
 
         cicCase.setCaseSubcategory(CaseSubcategory.MINOR);
         //When
@@ -217,7 +217,7 @@ class CaseworkerIssueFinalDecisionTest {
         //Then
         assertThat(responseWithMinorSubcategory.getConfirmationHeader())
             .isEqualTo("# Final decision notice issued \n"
-                + "## A notification has been sent to: Respondent, Representative, Applicant");
+                + "## A notification has been sent to: Representative, Respondent, Applicant");
     }
 
     @Test
