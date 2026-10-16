@@ -43,7 +43,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_AMEND_
 
 
 @ExtendWith(MockitoExtension.class)
-class CaseWorkerManageOrderDueDatesTest {
+class CaseworkerManageOrderDueDatesTest {
 
     @Mock
     private OrderService orderService;
@@ -55,12 +55,12 @@ class CaseWorkerManageOrderDueDatesTest {
         ZoneId.systemDefault()
     );
 
-    private CaseWorkerManageOrderDueDate caseWorkerManageOrderDueDate;
+    private CaseworkerManageOrderDueDate caseWorkerManageOrderDueDate;
 
     @BeforeEach
     void setUp() {
         caseWorkerManageOrderDueDate =
-            new CaseWorkerManageOrderDueDate(orderService, fixedClock);
+            new CaseworkerManageOrderDueDate(orderService, fixedClock);
     }
 
 
