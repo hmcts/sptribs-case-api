@@ -288,6 +288,13 @@ public class DocumentListUtilTest {
     }
 
     @Test
+    void shouldReturnEmptyContactPartiesSelectionWhenDetailsAreMissing() {
+        CaseData caseData = CaseData.builder().contactPartiesDocuments(null).build();
+
+        assertThat(DocumentListUtil.getSelectedContactPartiesDocuments(caseData).orElseThrow()).isEmpty();
+    }
+
+    @Test
     void shouldResolveSelectedCaseIssueDocumentsForReview() {
         String documentId = UUID.randomUUID().toString();
         CaseworkerCICDocument selectedDocument = CaseworkerCICDocument.builder()
@@ -359,6 +366,43 @@ public class DocumentListUtilTest {
         caseData.getCaseIssue().setDocumentList(DynamicMultiSelectList.builder().value(null).build());
         DocumentListUtil.initialiseMissingCaseIssueDocumentSelection(caseData);
         assertThat(caseData.getCaseIssue().getDocumentList().getValue()).isEmpty();
+    }
+
+    @Test
+    void shouldInitialiseNullValueOnExistingCaseIssueDocumentList() {
+        DynamicMultiSelectList list = DynamicMultiSelectList.builder().value(null).build();
+        CaseData caseData = CaseData.builder().caseIssue(CaseIssue.builder().documentList(list).build()).build();
+
+        DocumentListUtil.initialiseMissingCaseIssueDocumentSelection(caseData);
+
+        assertThat(caseData.getCaseIssue().getDocumentList()).isSameAs(list);
+        assertThat(list.getValue()).isEmpty();
+    }
+
+    @Test
+    void shouldPreserveExistingCaseIssueDocumentSelection() {
+        DynamicListElement selection = DynamicListElement.builder().code(UUID.randomUUID()).build();
+        DynamicMultiSelectList list = DynamicMultiSelectList.builder().value(List.of(selection)).build();
+        CaseData caseData = CaseData.builder().caseIssue(CaseIssue.builder().documentList(list).build()).build();
+
+        DocumentListUtil.initialiseMissingCaseIssueDocumentSelection(caseData);
+
+        assertThat(caseData.getCaseIssue().getDocumentList()).isSameAs(list);
+        assertThat(list.getValue()).containsExactly(selection);
+    }
+
+    @Test
+    void shouldFindCaseDocumentByBinaryUrlId() {
+        String id = UUID.randomUUID().toString();
+        CaseworkerCICDocument document = CaseworkerCICDocument.builder()
+            .documentLink(Document.builder().binaryUrl("https://example.test/documents/" + id + "/binary").build())
+            .build();
+        CaseData caseData = CaseData.builder()
+            .cicCase(CicCase.builder().applicantDocumentsUploaded(List.of(listValue(document))).build())
+            .build();
+
+        assertThat(DocumentListUtil.getCaseDocumentById(id, caseData)).contains(document);
+        assertThat(DocumentListUtil.getCaseDocumentById("unknown-id", caseData)).isEmpty();
     }
 
     @Test

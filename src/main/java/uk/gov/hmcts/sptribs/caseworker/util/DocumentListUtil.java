@@ -172,27 +172,17 @@ public final class DocumentListUtil {
     }
 
     public static DynamicMultiSelectList prepareDocumentList(final CaseData data, String baseUrl) {
-        List<CaseworkerCICDocument> docList = prepareList(data);
-
-        String apiUrl = baseUrl.replaceAll("/$", "") + "/" + DOCUMENT_BINARY_PATH;
-        List<DynamicListElement> dynamicListElements = new ArrayList<>();
-        for (CaseworkerCICDocument doc : docList) {
-            createDocumentList(apiUrl, dynamicListElements, doc);
-        }
-
-        return DynamicMultiSelectList
-            .builder()
-            .listItems(dynamicListElements)
-            .value(new ArrayList<>())
-            .build();
+        return buildDocumentList(prepareList(data), baseUrl);
     }
 
     public static DynamicMultiSelectList prepareContactPartiesDocumentList(final CaseData data, String baseUrl) {
-        List<CaseworkerCICDocument> docList = getContactPartiesAllowedDocuments(data);
+        return buildDocumentList(getContactPartiesAllowedDocuments(data), baseUrl);
+    }
 
+    private static DynamicMultiSelectList buildDocumentList(List<CaseworkerCICDocument> documents, String baseUrl) {
         String apiUrl = baseUrl.replaceAll("/$", "") + "/" + DOCUMENT_BINARY_PATH;
         List<DynamicListElement> dynamicListElements = new ArrayList<>();
-        for (CaseworkerCICDocument doc : docList) {
+        for (CaseworkerCICDocument doc : documents) {
             createDocumentList(apiUrl, dynamicListElements, doc);
         }
 

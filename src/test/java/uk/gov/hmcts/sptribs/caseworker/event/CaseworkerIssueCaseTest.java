@@ -49,6 +49,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC.APPLICANT_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC.REPRESENTATIVE;
@@ -260,6 +261,22 @@ class CaseworkerIssueCaseTest {
     }
 
     @Test
+    void shouldNotNotifyPartiesWhenNoneWereSelected() {
+        CaseData caseData = caseData();
+        caseData.getCicCase().setNotifyPartySubject(null);
+        caseData.getCicCase().setNotifyPartyApplicant(Set.of());
+        caseData.getCicCase().setNotifyPartyRepresentative(null);
+        caseData.getCicCase().setNotifyPartyRespondent(Set.of());
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(caseData);
+
+        SubmittedCallbackResponse response = caseworkerIssueCase.submitted(details, details);
+
+        assertThat(response.getConfirmationHeader()).contains("This case has now been issued.");
+        verifyNoInteractions(caseIssuedNotification);
+    }
+
+    @Test
     void shouldSendErrorOnTooManyDocuments() {
         final CaseData caseData = caseData();
         final CicCase cicCase = CicCase.builder()
@@ -448,6 +465,21 @@ class CaseworkerIssueCaseTest {
         caseworkerIssueCase.aboutToSubmit(details, details);
 
         verify(bankHolidayService, times(1)).getScottishBankHolidays(bankHolidayUrl);
+    }
+
+    @Test
+    void shouldMoveDueDateWhenCalculatedDateIsABankHoliday() {
+        LocalDate calculatedDueDate = LocalDate.now().plusDays(42);
+        CaseData caseData = CaseData.builder().cicCase(CicCase.builder().build()).build();
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(caseData);
+        when(bankHolidayService.getScottishBankHolidays(bankHolidayUrl))
+            .thenReturn(getBankHolidayResponseWithDates(List.of(calculatedDueDate)));
+
+        caseworkerIssueCase.aboutToSubmit(details, details);
+
+        assertThat(caseData.getCicCase().getRespondentBundleDueDate())
+            .isEqualTo(caseworkerIssueCase.getNextWorkingDay(calculatedDueDate, Set.of(calculatedDueDate)));
     }
 
     private BankHolidayResponse getBankHolidayResponse() {

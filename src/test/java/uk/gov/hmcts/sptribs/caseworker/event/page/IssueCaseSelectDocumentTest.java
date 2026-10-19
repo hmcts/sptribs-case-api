@@ -152,6 +152,17 @@ class IssueCaseSelectDocumentTest {
     }
 
     @Test
+    void midEventReturnsErrorWhenCaseIssueIsMissing() {
+        CaseData caseData = CaseData.builder().caseIssue(null).build();
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(caseData);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = issueCaseSelectDocument.midEvent(details, details);
+
+        assertThat(response.getErrors()).containsExactly("Select at least one document");
+    }
+
+    @Test
     void midEventReturnsErrorWhenNoDocumentsSelected() {
         when(dynamicMultiSelectList.getValue()).thenReturn(Collections.emptyList());
 

@@ -371,6 +371,21 @@ class ContactPartiesSelectDocumentTest {
     }
 
     @Test
+    void midEventAcceptsMissingDocumentListWithoutRetrievingDocuments() {
+        CaseData data = CaseData.builder()
+            .cicCase(CicCase.builder().build())
+            .contactPartiesDocuments(ContactPartiesDocuments.builder().documentList(null).build())
+            .build();
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(data);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = contactPartiesSelectDocument.midEvent(details, details);
+
+        assertThat(response.getErrors()).isEmpty();
+        verifyNoInteractions(caseDocumentClientApi);
+    }
+
+    @Test
     void midEventRejectsMissingCaseDetails() {
         ReflectionTestUtils.setField(contactPartiesSelectDocument, "citizenDashboardEnabled", true);
         DynamicListElement selection = DynamicListElement.builder().code(UUID.randomUUID()).build();

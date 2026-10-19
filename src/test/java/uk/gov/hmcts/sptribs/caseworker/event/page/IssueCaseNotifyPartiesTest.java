@@ -152,6 +152,38 @@ class IssueCaseNotifyPartiesTest {
     }
 
     @Test
+    void midEventAllowsMinorCaseWhenOnlyRepresentativeIsSelected() {
+        CicCase cicCase = CicCase.builder()
+            .caseSubcategory(CaseSubcategory.MINOR)
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .representativeFullName("Representative")
+            .build();
+        CaseData caseData = CaseData.builder().cicCase(cicCase).caseIssue(new CaseIssue()).build();
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(caseData);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = issueCaseNotifyParties.midEvent(details, details);
+
+        assertThat(response.getErrors()).isEmpty();
+        assertThat(caseData.getCaseIssue().getReviewSelectedParties()).isEqualTo("Representative: Representative");
+    }
+
+    @Test
+    void midEventReturnsRecipientErrorWhenCaseIssueIsMissing() {
+        CaseData data = CaseData.builder()
+            .cicCase(CicCase.builder().build())
+            .caseIssue(null)
+            .build();
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(data);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = issueCaseNotifyParties.midEvent(details, details);
+
+        assertThat(response.getErrors()).containsExactly(SELECT_AT_LEAST_ONE_ERROR_MESSAGE);
+        assertThat(data.getCaseIssue()).isNull();
+    }
+
+    @Test
     void validateCheckNullRepresentativeRespondedIsCalledOnce() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder()

@@ -131,9 +131,7 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
 
         DocumentListUtil.initialiseMissingCaseIssueDocumentSelection(caseData);
         clearReviewDocuments(caseData.getCaseIssue());
-        if (caseData.getCaseIssue() != null) {
-            caseData.getCaseIssue().setReviewSelectedParties(null);
-        }
+        caseData.getCaseIssue().setReviewSelectedParties(null);
 
         Set<LocalDate> bankHolidays = bankHolidayService
             .getScottishBankHolidays(bankHolidayUrl)

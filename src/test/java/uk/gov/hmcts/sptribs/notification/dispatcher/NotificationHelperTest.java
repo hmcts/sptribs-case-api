@@ -602,9 +602,10 @@ public class NotificationHelperTest {
     void shouldRejectMoreDocumentsThanTheNotificationTemplateCanContain() {
         CaseworkerCICDocument document = CaseworkerCICDocument.builder()
             .documentLink(Document.builder().url("https://example.test/documents/first-id").build()).build();
+        List<CaseworkerCICDocument> documents = List.of(document, document);
 
         assertThrows(IllegalArgumentException.class, () ->
-            notificationHelper.buildDocumentListFromDocuments(List.of(document, document), 1));
+            notificationHelper.buildDocumentListFromDocuments(documents, 1));
     }
 
     private DynamicList getDynamicList() {
