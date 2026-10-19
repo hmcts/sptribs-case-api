@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -79,8 +78,7 @@ class ContactPartiesSelectDocumentTest {
 
     @Nested
     class RequireStubbing {
-        @BeforeEach
-        void setUp() {
+        void stubAuth() {
             systemUser = mock(CICUser.class);
             when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(systemUser);
             when(systemUser.getAuthToken()).thenReturn(SYSTEM_AUTH);
@@ -89,6 +87,7 @@ class ContactPartiesSelectDocumentTest {
 
         @Test
         void midEventIsSuccessful() {
+            stubAuth();
             final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
             ContactPartiesDocuments contactPartiesDocuments = new ContactPartiesDocuments();
             List<ListValue<CaseworkerCICDocument>> documents = IntStream.range(0, 10)
@@ -147,6 +146,7 @@ class ContactPartiesSelectDocumentTest {
 
         @Test
         void midEventReturnsErrorWhenDocumentSizeExceedsLimit() {
+            stubAuth();
             final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
             UUID documentId = UUID.randomUUID();
             String label = "[Large Document](http://example/documents/" + documentId + ")";
@@ -168,17 +168,19 @@ class ContactPartiesSelectDocumentTest {
                 .thenReturn(ResponseEntity.ok(oversizedDocument));
 
             final CaseData caseData = CaseData.builder()
+                .cicCase(CicCase.builder().reinstateDocuments(List.of(
+                    documentValue("Large Document.pdf", "http://example/documents/" + documentId))).build())
                 .contactPartiesDocuments(contactPartiesDocuments)
                 .build();
             caseDetails.setData(caseData);
 
             final AboutToStartOrSubmitResponse<CaseData, State> response = contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
-            String displayName = label.substring(label.indexOf('[') + 1, label.indexOf(']'));
-            assertThat(response.getErrors()).containsExactly("Unable to proceed because " + displayName + " is larger than 2MB");
+            assertThat(response.getErrors()).containsExactly("Unable to proceed because Large Document.pdf is larger than 2MB");
         }
 
         @Test
         void midEventDoesNotReturnErrorWhenDocumentSizeWithinLimit() {
+            stubAuth();
             final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
             UUID documentId = UUID.randomUUID();
             String label = "[Small Document](http://example/documents/" + documentId + ")";
@@ -211,7 +213,8 @@ class ContactPartiesSelectDocumentTest {
         }
 
         @Test
-        void midEventUsesDocumentIdFromLabelWithBinarySuffix() {
+        void midEventUsesSelectedDocumentIdWhenLabelHasBinarySuffix() {
+            stubAuth();
             final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
             UUID documentId = UUID.randomUUID();
             String label = "[Binary Document](http://example/documents/" + documentId + "/binary)";
@@ -233,6 +236,8 @@ class ContactPartiesSelectDocumentTest {
                 .thenReturn(ResponseEntity.ok(withinLimitDocument));
 
             final CaseData caseData = CaseData.builder()
+                .cicCase(CicCase.builder().reinstateDocuments(List.of(
+                    documentValue("binary.pdf", "http://example/documents/" + documentId))).build())
                 .contactPartiesDocuments(contactPartiesDocuments)
                 .build();
             caseDetails.setData(caseData);
@@ -245,7 +250,8 @@ class ContactPartiesSelectDocumentTest {
         }
 
         @Test
-        void midEventUsesDocumentIdFromLabelWithoutBinarySuffix() {
+        void midEventUsesSelectedDocumentIdWhenLabelHasNoBinarySuffix() {
+            stubAuth();
             final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
             UUID documentId = UUID.randomUUID();
             String label = "[Plain Document](http://example/documents/" + documentId + ")";
@@ -267,6 +273,8 @@ class ContactPartiesSelectDocumentTest {
                 .thenReturn(ResponseEntity.ok(withinLimitDocument));
 
             final CaseData caseData = CaseData.builder()
+                .cicCase(CicCase.builder().reinstateDocuments(List.of(
+                    documentValue("plain.pdf", "http://example/documents/" + documentId))).build())
                 .contactPartiesDocuments(contactPartiesDocuments)
                 .build();
             caseDetails.setData(caseData);
@@ -280,6 +288,7 @@ class ContactPartiesSelectDocumentTest {
 
         @Test
         void midEventTreatsMissingDocumentBodyAsOversized() {
+            stubAuth();
             final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
             UUID documentId = UUID.randomUUID();
             String label = "[Unknown Document](http://example/documents/" + documentId + ")";
@@ -299,17 +308,19 @@ class ContactPartiesSelectDocumentTest {
                 .thenReturn(ResponseEntity.status(HttpStatus.OK).build());
 
             final CaseData caseData = CaseData.builder()
+                .cicCase(CicCase.builder().reinstateDocuments(List.of(
+                    documentValue("Unknown Document.pdf", "http://example/documents/" + documentId))).build())
                 .contactPartiesDocuments(contactPartiesDocuments)
                 .build();
             caseDetails.setData(caseData);
 
             final AboutToStartOrSubmitResponse<CaseData, State> response = contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
-            String displayName = label.substring(label.indexOf('[') + 1, label.indexOf(']'));
-            assertThat(response.getErrors()).containsExactly("Unable to proceed because " + displayName + " is larger than 2MB");
+            assertThat(response.getErrors()).containsExactly("Unable to proceed because Unknown Document.pdf is larger than 2MB");
         }
 
         @Test
         void midEventThrowsExceptionWhenDocumentRetrievalFails() {
+            stubAuth();
             final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
             UUID documentId = UUID.randomUUID();
 
@@ -328,6 +339,8 @@ class ContactPartiesSelectDocumentTest {
                 .thenReturn(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
 
             final CaseData caseData = CaseData.builder()
+                .cicCase(CicCase.builder().reinstateDocuments(List.of(
+                    documentValue("missing.pdf", "http://example/documents/" + documentId))).build())
                 .contactPartiesDocuments(contactPartiesDocuments)
                 .build();
             caseDetails.setData(caseData);

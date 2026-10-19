@@ -8,6 +8,7 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
@@ -284,6 +285,80 @@ public class DocumentListUtilTest {
             DynamicMultiSelectList.builder().value(List.of()).build());
 
         assertThat(DocumentListUtil.getSelectedContactPartiesDocuments(caseData).orElseThrow()).isEmpty();
+    }
+
+    @Test
+    void shouldResolveSelectedCaseIssueDocumentsForReview() {
+        String documentId = UUID.randomUUID().toString();
+        CaseworkerCICDocument selectedDocument = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder()
+                .url("http://document-store/documents/" + documentId)
+                .binaryUrl("http://document-store/documents/" + documentId + "/binary")
+                .filename("selected.pdf")
+                .build())
+            .build();
+        CaseworkerCICDocument unselectedDocument = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder()
+                .url("http://document-store/documents/" + UUID.randomUUID())
+                .filename("not-selected.docx")
+                .build())
+            .build();
+
+        ListValue<CaseworkerCICDocument> selectedListValue = new ListValue<>();
+        selectedListValue.setValue(selectedDocument);
+        ListValue<CaseworkerCICDocument> unselectedListValue = new ListValue<>();
+        unselectedListValue.setValue(unselectedDocument);
+
+        DynamicListElement selectedOption = DynamicListElement.builder()
+            .label("[selected.pdf Linked documents](http://case-api/documents/" + documentId + "/binary)")
+            .code(UUID.randomUUID())
+            .build();
+        DynamicMultiSelectList documentList = DynamicMultiSelectList.builder()
+            .value(List.of(selectedOption))
+            .listItems(List.of(selectedOption, DynamicListElement.builder().code(UUID.randomUUID()).build()))
+            .build();
+        CaseData caseData = CaseData.builder().build();
+        caseData.setCicCase(CicCase.builder()
+            .applicantDocumentsUploaded(List.of(selectedListValue, unselectedListValue))
+            .build());
+        caseData.setCaseIssue(CaseIssue.builder()
+            .documentList(documentList)
+            .build());
+
+        Optional<List<ListValue<CaseworkerCICDocument>>> result =
+            DocumentListUtil.getSelectedCaseIssueDocuments(caseData);
+
+        assertThat(result).isPresent();
+        assertThat(result.orElseThrow()).extracting(ListValue::getValue).containsExactly(selectedDocument);
+    }
+
+    @Test
+    void shouldReturnEmptyWhenCaseIssueHasNoSelectionOrIsNull() {
+        CaseData caseData = CaseData.builder()
+            .caseIssue(null)
+            .build();
+        assertThat(DocumentListUtil.getSelectedCaseIssueDocuments(caseData).orElseThrow()).isEmpty();
+
+        caseData.setCaseIssue(CaseIssue.builder().build());
+        assertThat(DocumentListUtil.getSelectedCaseIssueDocuments(caseData).orElseThrow()).isEmpty();
+
+        caseData.getCaseIssue().setDocumentList(DynamicMultiSelectList.builder().value(List.of()).build());
+        assertThat(DocumentListUtil.getSelectedCaseIssueDocuments(caseData).orElseThrow()).isEmpty();
+    }
+
+    @Test
+    void shouldInitialiseMissingCaseIssueDocumentSelection() {
+        CaseData caseData = CaseData.builder().caseIssue(null).build();
+        DocumentListUtil.initialiseMissingCaseIssueDocumentSelection(caseData);
+        assertThat(caseData.getCaseIssue()).isNotNull();
+        assertThat(caseData.getCaseIssue().getDocumentList()).isNotNull();
+        assertThat(caseData.getCaseIssue().getDocumentList().getValue()).isEmpty();
+
+        caseData.getCaseIssue().setDocumentList(DynamicMultiSelectList.builder().value(null).build());
+        DocumentListUtil.initialiseMissingCaseIssueDocumentSelection(caseData);
+        assertThat(caseData.getCaseIssue().getDocumentList().getValue()).isEmpty();
     }
 
     @Test

@@ -12,7 +12,9 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.bankholidays.service.BankHolidayService;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueCaseNotifyParties;
+import uk.gov.hmcts.sptribs.caseworker.event.page.IssueCaseReview;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueCaseSelectDocument;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -31,6 +33,7 @@ import java.util.Set;
 import static java.lang.String.format;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_CASE;
+import static uk.gov.hmcts.sptribs.caseworker.util.IssueCaseReviewUtil.clearReviewDocuments;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessage;
 import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.APPLICANT;
@@ -66,6 +69,7 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
 
     private static final CcdPageConfiguration issueCaseNotifyParties = new IssueCaseNotifyParties();
     private static final CcdPageConfiguration issueCaseSelectDocument = new IssueCaseSelectDocument();
+    private static final CcdPageConfiguration issueCaseReview = new IssueCaseReview();
 
     public CaseworkerIssueCase(
             CaseIssuedNotification caseIssuedNotification,
@@ -87,7 +91,8 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
                 .forStates(CaseManagement)
                 .name("Case: Issue to respondent")
                 .description("Case: Issue to respondent")
-                .showSummary()
+                .showSummary(false)
+                .endButtonLabel("Confirm and send")
                 .aboutToStartCallback(this::aboutToStart)
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::submitted)
@@ -100,13 +105,19 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
         PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         issueCaseSelectDocument.addTo(pageBuilder);
         issueCaseNotifyParties.addTo(pageBuilder);
+        issueCaseReview.addTo(pageBuilder);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         final CaseData caseData = details.getData();
 
         DynamicMultiSelectList documentList = DocumentListUtil.prepareDocumentList(caseData, baseUrl);
+        if (caseData.getCaseIssue() == null) {
+            caseData.setCaseIssue(new CaseIssue());
+        }
         caseData.getCaseIssue().setDocumentList(documentList);
+        clearReviewDocuments(caseData.getCaseIssue());
+        caseData.getCaseIssue().setReviewSelectedParties(null);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
@@ -117,6 +128,12 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
                                                                        final CaseDetails<CaseData, State> beforeDetails) {
         final CaseData caseData = details.getData();
         final CicCase cicCase = caseData.getCicCase();
+
+        DocumentListUtil.initialiseMissingCaseIssueDocumentSelection(caseData);
+        clearReviewDocuments(caseData.getCaseIssue());
+        if (caseData.getCaseIssue() != null) {
+            caseData.getCaseIssue().setReviewSelectedParties(null);
+        }
 
         Set<LocalDate> bankHolidays = bankHolidayService
             .getScottishBankHolidays(bankHolidayUrl)

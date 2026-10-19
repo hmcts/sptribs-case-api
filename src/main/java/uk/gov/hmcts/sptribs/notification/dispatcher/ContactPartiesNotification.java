@@ -193,10 +193,9 @@ public class ContactPartiesNotification implements PartiesNotification {
                                                                      TemplateName emailTemplateName,
                                                                      String caseReferenceNumber,
                                                                      Party receivingParty) {
-        Map<String, String> uploadedDocuments = notificationHelper.buildDocumentList(caseData.getContactPartiesDocuments()
-            .getDocumentList(), DOC_ATTACH_LIMIT);
-        List<CaseworkerCICDocument> selectedDocuments = DocumentListUtil.getSelectedDocumentsFromDynamicList(caseData,
-            caseData.getContactPartiesDocuments().getDocumentList());
+        List<CaseworkerCICDocument> selectedDocuments = DocumentListUtil.requireSelectedContactPartiesDocuments(caseData);
+        Map<String, String> uploadedDocuments = notificationHelper
+            .buildDocumentListFromDocuments(selectedDocuments, DOC_ATTACH_LIMIT);
 
         final NotificationRequest request = notificationHelper.buildEmailNotificationRequest(toEmail,
             true,

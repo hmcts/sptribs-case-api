@@ -16,6 +16,8 @@ public final class ErrorConstants {
     public static final String FAILED_SAVING_DOCUMENT_WITH_NO_FILENAME_TO_DATABASE = "Error saving document with no filename";
     public static final String CONTACT_PARTIES_NOTIFICATION_FAILED
         = "Contact Parties notification failed. Please resend the notification";
+    public static final String ISSUE_CASE_NOTIFICATION_FAILED
+        = "Issue case notification failed. Please resend the notification";
 
     private ErrorConstants() {
 

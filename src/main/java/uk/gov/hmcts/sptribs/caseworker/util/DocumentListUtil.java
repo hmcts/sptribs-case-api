@@ -173,16 +173,11 @@ public final class DocumentListUtil {
 
     public static DynamicMultiSelectList prepareDocumentList(final CaseData data, String baseUrl) {
         List<CaseworkerCICDocument> docList = prepareList(data);
+
         String apiUrl = baseUrl.replaceAll("/$", "") + "/" + DOCUMENT_BINARY_PATH;
         List<DynamicListElement> dynamicListElements = new ArrayList<>();
         for (CaseworkerCICDocument doc : docList) {
-            String documentId = StringUtils.substringAfterLast(doc.getDocumentLink().getUrl(),
-                "/");
-            String url = String.format(apiUrl, documentId);
-            DynamicListElement element = DynamicListElement.builder().label("[" + doc.getDocumentLink().getFilename()
-                + " " + doc.getDocumentCategory().getLabel()
-                + "](" + url + ")").code(UUID.randomUUID()).build();
-            dynamicListElements.add(element);
+            createDocumentList(apiUrl, dynamicListElements, doc);
         }
 
         return DynamicMultiSelectList
@@ -209,12 +204,42 @@ public final class DocumentListUtil {
     }
 
     public static Optional<List<ListValue<CaseworkerCICDocument>>> getSelectedContactPartiesDocuments(final CaseData data) {
+        if (data.getContactPartiesDocuments() == null) {
+            return Optional.of(List.of());
+        }
         DynamicMultiSelectList documentList = data.getContactPartiesDocuments().getDocumentList();
+        List<CaseworkerCICDocument> availableDocuments = getContactPartiesAllowedDocuments(data);
+        return getSelectedDocuments(documentList, availableDocuments);
+    }
+
+    public static List<CaseworkerCICDocument> requireSelectedContactPartiesDocuments(final CaseData data) {
+        return getSelectedContactPartiesDocuments(data)
+            .orElseThrow(() -> new IllegalStateException("Invalid contact-parties document selection"))
+            .stream().map(ListValue::getValue).toList();
+    }
+
+    public static Optional<List<ListValue<CaseworkerCICDocument>>> getSelectedCaseIssueDocuments(final CaseData data) {
+        if (data.getCaseIssue() == null) {
+            return Optional.of(List.of());
+        }
+        DynamicMultiSelectList documentList = data.getCaseIssue().getDocumentList();
+        List<CaseworkerCICDocument> availableDocuments = prepareList(data);
+        return getSelectedDocuments(documentList, availableDocuments);
+    }
+
+    public static List<CaseworkerCICDocument> requireSelectedCaseIssueDocuments(final CaseData data) {
+        return getSelectedCaseIssueDocuments(data)
+            .orElseThrow(() -> new IllegalStateException("Invalid issue-case document selection"))
+            .stream().map(ListValue::getValue).toList();
+    }
+
+    private static Optional<List<ListValue<CaseworkerCICDocument>>> getSelectedDocuments(
+            DynamicMultiSelectList documentList,
+            List<CaseworkerCICDocument> availableDocuments) {
         if (documentList == null || CollectionUtils.isEmpty(documentList.getValue())) {
             return Optional.of(List.of());
         }
 
-        List<CaseworkerCICDocument> availableDocuments = getContactPartiesAllowedDocuments(data);
         List<DynamicListElement> selectableDocumentOptions = documentList.getListItems();
         if (CollectionUtils.isEmpty(selectableDocumentOptions)
             || selectableDocumentOptions.size() != availableDocuments.size()) {
@@ -245,6 +270,20 @@ public final class DocumentListUtil {
         DynamicMultiSelectList documentList = data.getContactPartiesDocuments().getDocumentList();
         if (documentList == null) {
             data.getContactPartiesDocuments().setDocumentList(DynamicMultiSelectList.builder()
+                .value(new ArrayList<>())
+                .build());
+        } else if (documentList.getValue() == null) {
+            documentList.setValue(new ArrayList<>());
+        }
+    }
+
+    public static void initialiseMissingCaseIssueDocumentSelection(CaseData data) {
+        if (data.getCaseIssue() == null) {
+            data.setCaseIssue(new uk.gov.hmcts.sptribs.caseworker.model.CaseIssue());
+        }
+        DynamicMultiSelectList documentList = data.getCaseIssue().getDocumentList();
+        if (documentList == null) {
+            data.getCaseIssue().setDocumentList(DynamicMultiSelectList.builder()
                 .value(new ArrayList<>())
                 .build());
         } else if (documentList.getValue() == null) {

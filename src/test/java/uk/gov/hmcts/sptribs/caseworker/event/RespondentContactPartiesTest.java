@@ -48,6 +48,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -60,6 +62,7 @@ import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigB
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.addAvailableContactPartiesDocument;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.buildDynamicMultiSelectDocumentList;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getDocumentUploadMap;
@@ -395,6 +398,8 @@ class RespondentContactPartiesTest {
         caseData.setContactParties(contactParties);
         caseData.setContactPartiesDocuments(contactPartiesDocuments);
         caseData.setHyphenatedCaseRef(String.valueOf(TEST_CASE_ID));
+        caseData.setCicCase(CicCase.builder().build());
+        addAvailableContactPartiesDocument(caseData);
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
@@ -404,7 +409,8 @@ class RespondentContactPartiesTest {
         final int docAttachLimit = 10;
         Map<String, String> emailDocs = getDocumentUploadMap();
 
-        when(notificationHelper.buildDocumentList(documentList, docAttachLimit)).thenReturn(emailDocs);
+        when(notificationHelper.buildDocumentListFromDocuments(any(), eq(docAttachLimit)))
+            .thenReturn(emailDocs);
         when(contactPartiesNotification.sendToSubject(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID1");
         when(contactPartiesNotification.sendToRepresentative(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID2");
         when(contactPartiesNotification.sendToApplicant(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID3");
@@ -446,6 +452,8 @@ class RespondentContactPartiesTest {
 
         final CaseData caseData = caseData();
         caseData.setContactPartiesDocuments(contactPartiesDocuments);
+        caseData.setCicCase(CicCase.builder().build());
+        addAvailableContactPartiesDocument(caseData);
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
@@ -455,7 +463,8 @@ class RespondentContactPartiesTest {
         final int docAttachLimit = 10;
         Map<String, String> emailDocs = getDocumentUploadMap();
 
-        when(notificationHelper.buildDocumentList(documentList, docAttachLimit)).thenReturn(emailDocs);
+        when(notificationHelper.buildDocumentListFromDocuments(any(), eq(docAttachLimit)))
+            .thenReturn(emailDocs);
 
         //When
         SubmittedCallbackResponse response =
@@ -555,8 +564,8 @@ class RespondentContactPartiesTest {
         DynamicMultiSelectList documentList = caseData.getContactPartiesDocuments().getDocumentList();
         assertThat(documentList.getValue()).isEmpty();
 
-        Map<String, String> emptyDocuments = new NotificationHelper().buildDocumentList(documentList, 10);
-        when(notificationHelper.buildDocumentList(documentList, 10)).thenReturn(emptyDocuments);
+        Map<String, String> emptyDocuments = new NotificationHelper().buildDocumentListFromDocuments(List.of(), 10);
+        when(notificationHelper.buildDocumentListFromDocuments(List.of(), 10)).thenReturn(emptyDocuments);
         when(contactPartiesNotification.sendToTribunal(caseData, caseData.getHyphenatedCaseRef(), emptyDocuments))
             .thenReturn("correspondence-id");
 

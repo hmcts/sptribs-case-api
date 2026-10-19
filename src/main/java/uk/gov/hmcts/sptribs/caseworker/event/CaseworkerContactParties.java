@@ -190,7 +190,8 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
     private void sendContactPartiesNotification(CaseDetails<CaseData, State> details, CicCase cicCase, String caseNumber) {
 
         final Map<String, String> uploadedDocuments = notificationHelper
-            .buildDocumentList(details.getData().getContactPartiesDocuments().getDocumentList(), DOC_ATTACH_LIMIT);
+            .buildDocumentListFromDocuments(DocumentListUtil.requireSelectedContactPartiesDocuments(details.getData()),
+                DOC_ATTACH_LIMIT);
 
         List<String> correspondenceIds = new ArrayList<>();
 

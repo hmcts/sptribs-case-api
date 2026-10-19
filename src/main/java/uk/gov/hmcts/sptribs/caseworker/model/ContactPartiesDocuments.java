@@ -25,7 +25,7 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Builder(toBuilder = true)
 @JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ContactPartiesDocuments {
+public class ContactPartiesDocuments implements ReviewDocumentSlots {
 
     @CCD(typeOverride = MultiSelectList, typeParameterOverride = "Slot",
         retainHiddenValue = true, access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})

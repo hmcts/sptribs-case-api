@@ -8,6 +8,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
@@ -580,6 +582,29 @@ public class NotificationHelperTest {
             .containsEntry("CaseDocument2", EMPTY_PLACEHOLDER)
             .containsEntry("DocumentAvailable1", NO)
             .containsEntry("DocumentAvailable2", NO);
+    }
+
+    @Test
+    void shouldBuildTemplateDocumentIdsFromResolvedDocumentsInSelectionOrder() {
+        CaseworkerCICDocument second = CaseworkerCICDocument.builder()
+            .documentLink(Document.builder().url("https://example.test/documents/second-id").build()).build();
+        CaseworkerCICDocument first = CaseworkerCICDocument.builder()
+            .documentLink(Document.builder().url("https://example.test/documents/first-id").build()).build();
+
+        Map<String, String> result = notificationHelper.buildDocumentListFromDocuments(List.of(second, first), 3);
+
+        assertThat(result).containsExactlyInAnyOrderEntriesOf(Map.of(
+            "CaseDocument1", "second-id", "CaseDocument2", "first-id", "CaseDocument3", EMPTY_PLACEHOLDER,
+            "DocumentAvailable1", YES, "DocumentAvailable2", YES, "DocumentAvailable3", NO));
+    }
+
+    @Test
+    void shouldRejectMoreDocumentsThanTheNotificationTemplateCanContain() {
+        CaseworkerCICDocument document = CaseworkerCICDocument.builder()
+            .documentLink(Document.builder().url("https://example.test/documents/first-id").build()).build();
+
+        assertThrows(IllegalArgumentException.class, () ->
+            notificationHelper.buildDocumentListFromDocuments(List.of(document, document), 1));
     }
 
     private DynamicList getDynamicList() {

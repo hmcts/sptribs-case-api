@@ -48,6 +48,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -67,6 +68,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_FIRST_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.addAvailableContactPartiesDocument;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.buildDynamicMultiSelectDocumentList;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getDocumentUploadMap;
@@ -431,6 +433,7 @@ class CaseworkerContactPartiesTest {
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
         caseData.setCicCase(cicCase);
+        addAvailableContactPartiesDocument(caseData);
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
@@ -441,7 +444,7 @@ class CaseworkerContactPartiesTest {
         final int docAttachLimit = 10;
         Map<String, String> emailDocs = getDocumentUploadMap();
 
-        when(notificationHelper.buildDocumentList(documentList, docAttachLimit)).thenReturn(emailDocs);
+        when(notificationHelper.buildDocumentListFromDocuments(any(), eq(docAttachLimit))).thenReturn(emailDocs);
         when(contactPartiesNotification.sendToSubject(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID1");
         when(contactPartiesNotification.sendToRepresentative(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID2");
         when(contactPartiesNotification.sendToApplicant(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID3");
@@ -488,6 +491,7 @@ class CaseworkerContactPartiesTest {
             .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
             .build();
         caseData.setCicCase(cicCase);
+        addAvailableContactPartiesDocument(caseData);
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
@@ -498,7 +502,7 @@ class CaseworkerContactPartiesTest {
         final int docAttachLimit = 10;
         Map<String, String> emailDocs = getDocumentUploadMap();
 
-        when(notificationHelper.buildDocumentList(documentList, docAttachLimit)).thenReturn(emailDocs);
+        when(notificationHelper.buildDocumentListFromDocuments(any(), eq(docAttachLimit))).thenReturn(emailDocs);
         when(contactPartiesNotification.sendToRepresentative(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID2");
         when(contactPartiesNotification.sendToApplicant(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID3");
         when(contactPartiesNotification.sendToRespondent(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID4");
@@ -538,6 +542,7 @@ class CaseworkerContactPartiesTest {
             .representativeAddress(SOLICITOR_ADDRESS)
             .build();
         caseData.setCicCase(cicCase);
+        addAvailableContactPartiesDocument(caseData);
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
@@ -548,7 +553,7 @@ class CaseworkerContactPartiesTest {
         final int docAttachLimit = 10;
         Map<String, String> emailDocs = getDocumentUploadMap();
 
-        when(notificationHelper.buildDocumentList(documentList, docAttachLimit)).thenReturn(emailDocs);
+        when(notificationHelper.buildDocumentListFromDocuments(any(), eq(docAttachLimit))).thenReturn(emailDocs);
 
         //when
         SubmittedCallbackResponse contactPartiesResponse = caseWorkerContactParties.submitted(updatedCaseDetails, beforeDetails);
@@ -703,8 +708,8 @@ class CaseworkerContactPartiesTest {
         assertThat(response.getEventMetadata().getSummary()).isEqualTo("0 Selected documents sent");
         assertThat(documentList.getValue()).isEmpty();
 
-        Map<String, String> emptyDocuments = new NotificationHelper().buildDocumentList(documentList, 10);
-        when(notificationHelper.buildDocumentList(documentList, 10)).thenReturn(emptyDocuments);
+        Map<String, String> emptyDocuments = new NotificationHelper().buildDocumentListFromDocuments(List.of(), 10);
+        when(notificationHelper.buildDocumentListFromDocuments(List.of(), 10)).thenReturn(emptyDocuments);
         when(contactPartiesNotification.sendToSubject(caseData, caseData.getHyphenatedCaseRef(), emptyDocuments))
             .thenReturn("correspondence-id");
 

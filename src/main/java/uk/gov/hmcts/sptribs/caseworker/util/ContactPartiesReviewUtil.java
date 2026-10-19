@@ -1,19 +1,13 @@
 package uk.gov.hmcts.sptribs.caseworker.util;
 
 import org.apache.commons.lang3.StringUtils;
-import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
-import uk.gov.hmcts.sptribs.caseworker.model.Slot;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
 
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.getSelectedContactPartiesDocuments;
@@ -45,48 +39,11 @@ public final class ContactPartiesReviewUtil {
     }
 
     public static boolean setReviewDocuments(CaseData data) {
-        ContactPartiesDocuments reviewDocuments = data.getContactPartiesDocuments();
-        List<ListValue<CaseworkerCICDocument>> documents = getSelectedContactPartiesDocuments(data).orElse(null);
-        if (documents == null) {
-            clearReviewDocuments(reviewDocuments);
-            return false;
-        }
-        Set<Slot> populatedSlots = EnumSet.noneOf(Slot.class);
-        Slot[] slots = Slot.values();
-        populatedSlots.addAll(Arrays.asList(slots).subList(0, Math.min(documents.size(), slots.length)));
-        reviewDocuments.setActiveDocumentSlots(populatedSlots);
-        reviewDocuments.setD01(documentAt(documents, 0));
-        reviewDocuments.setD02(documentAt(documents, 1));
-        reviewDocuments.setD03(documentAt(documents, 2));
-        reviewDocuments.setD04(documentAt(documents, 3));
-        reviewDocuments.setD05(documentAt(documents, 4));
-        reviewDocuments.setD06(documentAt(documents, 5));
-        reviewDocuments.setD07(documentAt(documents, 6));
-        reviewDocuments.setD08(documentAt(documents, 7));
-        reviewDocuments.setD09(documentAt(documents, 8));
-        reviewDocuments.setD10(documentAt(documents, 9));
-        return true;
+        return ReviewDocumentsUtil.setReviewDocuments(data.getContactPartiesDocuments(), getSelectedContactPartiesDocuments(data));
     }
 
     public static void clearReviewDocuments(ContactPartiesDocuments documents) {
-        if (documents == null) {
-            return;
-        }
-        documents.setActiveDocumentSlots(null);
-        documents.setD01(null);
-        documents.setD02(null);
-        documents.setD03(null);
-        documents.setD04(null);
-        documents.setD05(null);
-        documents.setD06(null);
-        documents.setD07(null);
-        documents.setD08(null);
-        documents.setD09(null);
-        documents.setD10(null);
-    }
-
-    private static CaseworkerCICDocument documentAt(List<ListValue<CaseworkerCICDocument>> documents, int index) {
-        return documents.size() <= index ? null : documents.get(index).getValue();
+        ReviewDocumentsUtil.clearReviewDocuments(documents);
     }
 
     private static void addParty(List<String> parties, boolean isSelected, String role, String name) {

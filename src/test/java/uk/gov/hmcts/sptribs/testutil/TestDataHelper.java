@@ -796,6 +796,16 @@ public class TestDataHelper {
         return documentList;
     }
 
+    public static void addAvailableContactPartiesDocument(CaseData data) {
+        CaseworkerCICDocument document = CaseworkerCICDocument.builder()
+            .documentLink(Document.builder()
+                .url("http://exui.net/documents/5e32a0d2-9b37-4548-b007-b9b2eb580d0a")
+                .filename("Document 1.pdf")
+                .build())
+            .build();
+        data.getCicCase().setApplicantDocumentsUploaded(List.of(new ListValue<>("1", document)));
+    }
+
     public static Map<String, String> getDocumentUploadMap() {
         return Map.of(
             "CaseDocument1", "5e32a0d2-9b37-4548-b007-b9b2eb580d0a",

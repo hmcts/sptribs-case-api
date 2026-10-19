@@ -262,7 +262,10 @@ public class CaseIssuedNotificationTest {
 
 
         DynamicMultiSelectList dynamicMultiSelectList = DocumentListUtil.prepareDocumentList(data, "test.url");
-        dynamicMultiSelectList.setValue(dynamicMultiSelectList.getListItems());
+        dynamicMultiSelectList.setValue(List.of(uk.gov.hmcts.ccd.sdk.type.DynamicListElement.builder()
+            .code(dynamicMultiSelectList.getListItems().getFirst().getCode())
+            .label("[another.pdf](test.url/documents/other-document-id/binary)")
+            .build()));
         DocumentListUtil.getAllCaseDocuments(data);
         final CaseIssue caseIssue = CaseIssue.builder()
             .documentList(dynamicMultiSelectList)
@@ -278,7 +281,7 @@ public class CaseIssuedNotificationTest {
                 + TODAY_FORMATTED);
 
         //When
-        when(notificationHelper.buildDocumentList(caseIssue.getDocumentList(), 5))
+        when(notificationHelper.buildDocumentListFromDocuments(List.of(cicDocument), 5))
             .thenReturn(getDocumentUploadMap());
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
@@ -339,7 +342,7 @@ public class CaseIssuedNotificationTest {
                 + ". Do not issue to the Subject/Applicant/Representative until we notify you the appeal has been admitted.");
 
         //When
-        when(notificationHelper.buildDocumentList(caseIssue.getDocumentList(), 5))
+        when(notificationHelper.buildDocumentListFromDocuments(List.of(cicDocument), 5))
             .thenReturn(getDocumentUploadMap());
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
