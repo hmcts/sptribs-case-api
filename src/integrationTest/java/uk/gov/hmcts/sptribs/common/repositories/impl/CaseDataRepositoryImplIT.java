@@ -50,6 +50,19 @@ class CaseDataRepositoryImplIT extends IntegrationTestBase {
     }
 
     @Test
+    void givenCCDReference_thenShouldFindCaseByEmailIgnoringCaseSensitivity() {
+        caseDataITManager.addCaseData(123L,"Submitted", """
+                {
+                  "cicCaseEmail": "test@example.com"
+                }
+            """);
+
+        var result = repository.findCase("123", "Test@Example.com");
+
+        assertThat(result).isPresent();
+    }
+
+    @Test
     void givenCCDReference_thenShouldFindCaseBySearchPartiesEmail() {
         caseDataITManager.addCaseData(123L,"Submitted", """
                 {
