@@ -248,9 +248,9 @@ public class CaseIssuedNotificationTest {
 
         assertThat(data.getCicCase().getIsCaseInTime()).isEqualTo(YesOrNo.YES);
         verify(notificationHelper).buildEmailNotificationRequest(
-            eq(data.getCicCase().getAlternativeRespondentEmail()),
-            eq(expectedVars),
-            eq(TemplateName.CASE_ISSUED_RESPONDENT_EMAIL));
+            data.getCicCase().getAlternativeRespondentEmail(),
+            expectedVars,
+            TemplateName.CASE_ISSUED_RESPONDENT_EMAIL);
     }
 
     @Test
