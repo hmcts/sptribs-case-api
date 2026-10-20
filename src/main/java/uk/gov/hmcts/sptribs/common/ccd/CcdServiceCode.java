@@ -19,10 +19,13 @@ public enum CcdServiceCode {
     ST_CIC("ST_CIC", "BBA2", "CRIMINAL_INJURIES_COMPENSATION", CcdCaseType.CIC,
         CcdJurisdiction.CRIMINAL_INJURIES_COMPENSATION, "Special Tribunals: Criminal Injuries Compensation"),
 
-    // SEND stays in the ST_CIC jurisdiction. A jurisdiction of its own would need its own
-    // CCD roles, an XUI_JURISDICTIONS entry and an IDAM profile row per user.
+    // SEND and WPAF1 stay in the ST_CIC jurisdiction. A jurisdiction of their own would need
+    // its own CCD roles, an XUI_JURISDICTIONS entry and an IDAM profile row per user.
     ST_SEND35("ST_SEND35", "StSend35", "SEND35", CcdCaseType.SEND35,
-        CcdJurisdiction.CRIMINAL_INJURIES_COMPENSATION, "Special Tribunals: Special Educational Needs and Disability");
+        CcdJurisdiction.CRIMINAL_INJURIES_COMPENSATION, "Special Tribunals: Special Educational Needs and Disability"),
+
+    ST_WPAF1("ST_WPAF1", "StWpaf1", "WPAF1", CcdCaseType.WPAF1,
+        CcdJurisdiction.CRIMINAL_INJURIES_COMPENSATION, "Special Tribunals: War Pensions and Armed Forces Compensation");
 
     private final String ccdServiceAcronym;
     @JsonValue
