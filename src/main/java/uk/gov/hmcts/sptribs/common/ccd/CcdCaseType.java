@@ -11,7 +11,9 @@ public enum CcdCaseType {
 
     CIC("CIC", "CriminalInjuriesCompensation", "Criminal Injuries Compensation"),
 
-    SEND35("StSend35", "StSend35", "Appeal a decision about an education, health and care (EHC) plan");
+    SEND35("StSend35", "StSend35", "Appeal a decision about an education, health and care (EHC) plan"),
+
+    WPAF1("StWpaf1", "StWpaf1", "Appeal a War Pension or Armed Forces Compensation Scheme decision");
 
     private final String caseTypeAcronym;
     @JsonValue
