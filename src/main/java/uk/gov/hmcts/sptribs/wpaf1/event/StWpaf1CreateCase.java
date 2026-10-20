@@ -111,7 +111,7 @@ public class StWpaf1CreateCase implements CCDConfig<StWpaf1CaseData, StWpaf1Stat
                     .mandatory(StWpaf1Decision::getScheme)
                     .mandatory(StWpaf1Decision::getDecisionLetterDate)
                     .mandatory(StWpaf1Decision::getAppealAbout)
-                    .optional(StWpaf1Decision::getAppealAboutOther)
+                    .optional(StWpaf1Decision::getAppealAboutOther, "dsnAppealAboutCONTAINS \"other\"")
                     .done()
             .page("reasonsPage")
                 .pageLabel("Section 5 — Reasons for appealing")

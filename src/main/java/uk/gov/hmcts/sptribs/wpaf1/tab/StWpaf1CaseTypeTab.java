@@ -92,7 +92,7 @@ public class StWpaf1CaseTypeTab implements CCDConfig<StWpaf1CaseData, StWpaf1Sta
             .field("dsnScheme")
             .field("dsnDecisionLetterDate")
             .field("dsnAppealAbout")
-            .field("dsnAppealAboutOther");
+            .field("dsnAppealAboutOther", "dsnAppealAboutCONTAINS \"other\"");
     }
 
     private void buildReasonsTab(final ConfigBuilder<StWpaf1CaseData, StWpaf1State, UserRole> configBuilder) {
