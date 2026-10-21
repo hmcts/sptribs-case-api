@@ -38,6 +38,22 @@ public class SystemRemoveFirstHearingDateTask implements Runnable {
 
     @Override
     public void run() {
+        validateConfiguration();
+
+        // The executor bean is only available when the SDK's system identity is configured.
+        final SystemEventExecutor executor = systemEventExecutor.getObject();
+        final Long selectedReference = selectedReference();
+        final MigrationResult result = selectedReference == null
+            ? migrateAllCases(executor) : migrateSelectedCase(selectedReference, executor);
+        final long remaining = countRemaining(selectedReference);
+        log.info("First hearing date removal: {} succeeded, {} failed, {} remaining",
+            result.succeeded(), result.failed(), remaining);
+        if (result.failed() > 0 || remaining > 0) {
+            throw new IllegalStateException("First hearing date removal incomplete; check failed cases and retry");
+        }
+    }
+
+    private void validateConfiguration() {
         if (!enabled) {
             throw new IllegalStateException("First hearing date removal is disabled");
         }
@@ -47,47 +63,59 @@ public class SystemRemoveFirstHearingDateTask implements Runnable {
         if (batchPauseMs < 0) {
             throw new IllegalArgumentException("First hearing date removal batch pause must not be negative");
         }
+    }
 
-        // The executor bean is only available when the SDK's system identity is configured.
-        final SystemEventExecutor executor = systemEventExecutor.getObject();
-        int succeeded = 0;
-        int failed = 0;
+    private Long selectedReference() {
+        return caseReference == null || caseReference.isBlank() ? null : Long.parseLong(caseReference.trim());
+    }
 
-        if (caseReference != null && !caseReference.isBlank()) {
-            final long reference = Long.parseLong(caseReference.trim());
-            if (repository.hasFirstHearingDate(reference)) {
-                if (clearAndVerify(reference, executor)) {
-                    succeeded++;
-                } else {
-                    failed++;
+    private MigrationResult migrateSelectedCase(long reference, SystemEventExecutor executor) {
+        if (!repository.hasFirstHearingDate(reference)) {
+            return new MigrationResult(0, 0);
+        }
+        return migrateReferences(List.of(reference), executor);
+    }
+
+    private MigrationResult migrateAllCases(SystemEventExecutor executor) {
+        MigrationResult result = new MigrationResult(0, 0);
+        long afterReference = 0;
+        List<Long> references;
+        do {
+            references = repository.findNextBatch(afterReference, batchSize);
+            result = result.plus(migrateReferences(references, executor));
+            if (!references.isEmpty()) {
+                afterReference = references.getLast();
+                if (references.size() == batchSize) {
+                    pauseBetweenBatches();
                 }
             }
-        } else {
-            long afterReference = 0;
-            List<Long> references;
-            do {
-                references = repository.findNextBatch(afterReference, batchSize);
-                for (Long reference : references) {
-                    if (clearAndVerify(reference, executor)) {
-                        succeeded++;
-                    } else {
-                        failed++;
-                    }
-                }
-                if (!references.isEmpty()) {
-                    afterReference = references.getLast();
-                    if (references.size() == batchSize) {
-                        pauseBetweenBatches();
-                    }
-                }
-            } while (!references.isEmpty());
-        }
+        } while (!references.isEmpty());
+        return result;
+    }
 
-        final long remaining = caseReference == null || caseReference.isBlank()
-            ? repository.countRemaining() : (repository.hasFirstHearingDate(Long.parseLong(caseReference.trim())) ? 1 : 0);
-        log.info("First hearing date removal: {} succeeded, {} failed, {} remaining", succeeded, failed, remaining);
-        if (failed > 0 || remaining > 0) {
-            throw new IllegalStateException("First hearing date removal incomplete; check failed cases and retry");
+    private MigrationResult migrateReferences(List<Long> references, SystemEventExecutor executor) {
+        int succeeded = 0;
+        int failed = 0;
+        for (Long reference : references) {
+            if (clearAndVerify(reference, executor)) {
+                succeeded++;
+            } else {
+                failed++;
+            }
+        }
+        return new MigrationResult(succeeded, failed);
+    }
+
+    private long countRemaining(Long selectedReference) {
+        if (selectedReference == null) {
+            return repository.countRemaining();
+        }
+        return repository.hasFirstHearingDate(selectedReference) ? 1 : 0;
+    }
+
+    private record MigrationResult(int succeeded, int failed) {
+        private MigrationResult plus(MigrationResult other) {
+            return new MigrationResult(succeeded + other.succeeded, failed + other.failed);
         }
     }
 

@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -84,7 +85,7 @@ class SystemRemoveFirstHearingDateTaskTest {
     void shouldOnlyMigrateSelectedCaseWhenConfigured() {
         enableTask();
         executeActions();
-        ReflectionTestUtils.setField(task, "caseReference", "12345");
+        ReflectionTestUtils.setField(task, "caseReference", " 12345 ");
         when(repository.hasFirstHearingDate(12345L)).thenReturn(true, false, false);
         when(repository.removeFirstHearingDate(12345L)).thenReturn(true);
 
@@ -106,6 +107,28 @@ class SystemRemoveFirstHearingDateTaskTest {
     }
 
     @Test
+    void shouldProcessAllCasesWhenReferenceIsNull() {
+        enableTask();
+        ReflectionTestUtils.setField(task, "caseReference", null);
+
+        task.run();
+
+        verify(repository).findNextBatch(0, 2);
+        verify(repository).countRemaining();
+    }
+
+    @Test
+    void shouldProcessAllCasesWhenReferenceIsBlank() {
+        enableTask();
+        ReflectionTestUtils.setField(task, "caseReference", "  ");
+
+        task.run();
+
+        verify(repository).findNextBatch(0, 2);
+        verify(repository).countRemaining();
+    }
+
+    @Test
     void shouldRejectInvalidBatchSizeBeforeAccessingExecutor() {
         ReflectionTestUtils.setField(task, "enabled", true);
         ReflectionTestUtils.setField(task, "batchSize", 0);
@@ -113,6 +136,43 @@ class SystemRemoveFirstHearingDateTaskTest {
         assertThatThrownBy(task::run).isInstanceOf(IllegalArgumentException.class);
 
         verifyNoInteractions(systemEventExecutor, executor, repository);
+    }
+
+    @Test
+    void shouldRejectNegativeBatchPauseBeforeAccessingExecutor() {
+        ReflectionTestUtils.setField(task, "enabled", true);
+        ReflectionTestUtils.setField(task, "batchPauseMs", -1L);
+
+        assertThatThrownBy(task::run).isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("First hearing date removal batch pause must not be negative");
+
+        verifyNoInteractions(systemEventExecutor, executor, repository);
+    }
+
+    @Test
+    void shouldFailWhenSelectedCaseStillHasFirstHearingDate() {
+        enableTask();
+        executeActions();
+        ReflectionTestUtils.setField(task, "caseReference", "12345");
+        when(repository.hasFirstHearingDate(12345L)).thenReturn(true);
+        when(repository.removeFirstHearingDate(12345L)).thenReturn(true);
+
+        assertThatThrownBy(task::run).isInstanceOf(IllegalStateException.class)
+            .hasMessageContaining("removal incomplete");
+
+        verify(repository).removeFirstHearingDate(12345L);
+    }
+
+    @Test
+    void shouldFailWhenSelectedCaseGainsFirstHearingDateAfterSelection() {
+        enableTask();
+        ReflectionTestUtils.setField(task, "caseReference", "12345");
+        when(repository.hasFirstHearingDate(12345L)).thenReturn(false, true);
+
+        assertThatThrownBy(task::run).isInstanceOf(IllegalStateException.class)
+            .hasMessageContaining("removal incomplete");
+
+        verifyNoInteractions(executor);
     }
 
     @Test
@@ -129,6 +189,32 @@ class SystemRemoveFirstHearingDateTaskTest {
     }
 
     @Test
+    void shouldFailWhenCasesRemainEvenIfEveryProcessedCaseSucceeded() {
+        enableTask();
+        when(repository.countRemaining()).thenReturn(1L);
+
+        assertThatThrownBy(task::run).isInstanceOf(IllegalStateException.class)
+            .hasMessageContaining("removal incomplete");
+    }
+
+    @Test
+    void shouldFailWhenCaseTypeDoesNotMatch() {
+        enableTask();
+        when(repository.findNextBatch(0, 2)).thenReturn(List.of(10L));
+        when(repository.findNextBatch(10, 2)).thenReturn(List.of());
+        doAnswer(invocation -> {
+            SystemEventAction action = invocation.getArgument(2);
+            action.execute(new SystemEventExecutionContext(10L, invocation.getArgument(1), "OtherCaseType", "Submitted"));
+            return new SystemEventExecutionResult(42L, EXECUTED);
+        }).when(executor).execute(anyLong(), any(UUID.class), any());
+
+        assertThatThrownBy(task::run).isInstanceOf(IllegalStateException.class)
+            .hasMessageContaining("removal incomplete");
+
+        verify(repository, never()).removeFirstHearingDate(anyLong());
+    }
+
+    @Test
     void shouldSkipCaseClearedSinceSelectionWithoutCreatingAnEvent() {
         enableTask();
         executeActions();
@@ -139,6 +225,20 @@ class SystemRemoveFirstHearingDateTaskTest {
 
         verify(repository).removeFirstHearingDate(10L);
         verify(repository).hasFirstHearingDate(10L);
+    }
+
+    @Test
+    void shouldFailWhenCaseIsStillPresentAfterConcurrentRemoval() {
+        enableTask();
+        executeActions();
+        when(repository.findNextBatch(0, 2)).thenReturn(List.of(10L));
+        when(repository.findNextBatch(10, 2)).thenReturn(List.of());
+        when(repository.hasFirstHearingDate(10L)).thenReturn(true);
+
+        assertThatThrownBy(task::run).isInstanceOf(IllegalStateException.class)
+            .hasMessageContaining("removal incomplete");
+
+        verify(repository).removeFirstHearingDate(10L);
     }
 
     @Test
@@ -170,6 +270,23 @@ class SystemRemoveFirstHearingDateTaskTest {
     }
 
     @Test
+    void shouldRestoreInterruptStatusAndStopBetweenBatches() {
+        enableTask();
+        when(repository.findNextBatch(0, 2)).thenReturn(List.of(10L, 20L));
+
+        Thread.currentThread().interrupt();
+        try {
+            assertThatThrownBy(task::run).isInstanceOf(IllegalStateException.class)
+                .hasMessage("First hearing date removal interrupted")
+                .hasCauseInstanceOf(InterruptedException.class);
+        } finally {
+            assertThat(Thread.interrupted()).isTrue();
+        }
+
+        verify(repository, never()).findNextBatch(20, 2);
+    }
+
+    @Test
     void shouldUseStableAndDistinctIdempotencyKeys() {
         enableTask();
         executeActions();
@@ -180,7 +297,7 @@ class SystemRemoveFirstHearingDateTaskTest {
         task.run();
 
         var keys = org.mockito.ArgumentCaptor.forClass(UUID.class);
-        verify(executor, org.mockito.Mockito.times(2)).execute(anyLong(), keys.capture(), any());
+        verify(executor, times(2)).execute(anyLong(), keys.capture(), any());
         assertThat(keys.getAllValues()).doesNotHaveDuplicates();
     }
 

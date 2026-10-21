@@ -14,6 +14,9 @@ import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_JURISDICTION
 @RequiredArgsConstructor
 public class FirstHearingDateMigrationRepository {
 
+    private static final String CASE_TYPE = "caseType";
+    private static final String JURISDICTION = "jurisdiction";
+    private static final String REFERENCE = "reference";
     private static final String CASE_FILTER = "c.case_type_id = :caseType AND c.jurisdiction = :jurisdiction "
         + "AND jsonb_exists(c.data, 'firstHearingDate')";
 
@@ -23,16 +26,16 @@ public class FirstHearingDateMigrationRepository {
         return jdbcTemplate.query(
             "SELECT c.reference FROM ccd.case_data c WHERE " + CASE_FILTER
                 + " AND c.reference > :afterReference ORDER BY c.reference LIMIT :batchSize",
-            Map.of("caseType", ST_CIC_CASE_TYPE, "jurisdiction", ST_CIC_JURISDICTION,
+            Map.of(CASE_TYPE, ST_CIC_CASE_TYPE, JURISDICTION, ST_CIC_JURISDICTION,
                 "afterReference", afterReference, "batchSize", batchSize),
-            (resultSet, rowNumber) -> resultSet.getLong("reference"));
+            (resultSet, rowNumber) -> resultSet.getLong(REFERENCE));
     }
 
     public boolean hasFirstHearingDate(long reference) {
         final Long count = jdbcTemplate.queryForObject(
             "SELECT COUNT(*) FROM ccd.case_data c WHERE " + CASE_FILTER + " AND c.reference = :reference",
-            Map.of("caseType", ST_CIC_CASE_TYPE, "jurisdiction", ST_CIC_JURISDICTION,
-                "reference", reference), Long.class);
+            Map.of(CASE_TYPE, ST_CIC_CASE_TYPE, JURISDICTION, ST_CIC_JURISDICTION,
+                REFERENCE, reference), Long.class);
         return count != null && count > 0;
     }
 
@@ -41,14 +44,14 @@ public class FirstHearingDateMigrationRepository {
         return jdbcTemplate.update(
             "UPDATE ccd.case_data c SET data = c.data - 'firstHearingDate', version = c.version + 1 "
                 + "WHERE " + CASE_FILTER + " AND c.reference = :reference",
-            Map.of("caseType", ST_CIC_CASE_TYPE, "jurisdiction", ST_CIC_JURISDICTION,
-                "reference", reference)) == 1;
+            Map.of(CASE_TYPE, ST_CIC_CASE_TYPE, JURISDICTION, ST_CIC_JURISDICTION,
+                REFERENCE, reference)) == 1;
     }
 
     public long countRemaining() {
         final Long count = jdbcTemplate.queryForObject(
             "SELECT COUNT(*) FROM ccd.case_data c WHERE " + CASE_FILTER,
-            Map.of("caseType", ST_CIC_CASE_TYPE, "jurisdiction", ST_CIC_JURISDICTION), Long.class);
+            Map.of(CASE_TYPE, ST_CIC_CASE_TYPE, JURISDICTION, ST_CIC_JURISDICTION), Long.class);
         return count == null ? 0 : count;
     }
 }
