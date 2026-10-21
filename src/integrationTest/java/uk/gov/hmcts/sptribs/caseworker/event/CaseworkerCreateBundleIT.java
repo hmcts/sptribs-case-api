@@ -7,6 +7,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -24,7 +26,10 @@ import uk.gov.hmcts.sptribs.cdam.model.Document.DocumentLink;
 import uk.gov.hmcts.sptribs.cdam.model.Document.Links;
 import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundleResponse;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundlingClient;
@@ -36,6 +41,8 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
+import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
@@ -50,6 +57,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -59,9 +67,13 @@ import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -69,10 +81,14 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CREATE_BUNDLE;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.BUNDLE_CREATED_EMAIL_CITIZEN;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.BUNDLE_CREATED_EMAIL_RESPONDENT;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_HYPHENATED;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCICDocumentList;
@@ -118,6 +134,9 @@ public class CaseworkerCreateBundleIT {
     @MockitoBean
     private DocumentsService documentsService;
 
+    @MockitoBean
+    private NotificationServiceCIC notificationServiceCIC;
+
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().findAndRegisterModules();
     private static final TypeReference<HashMap<String, Object>> TYPE_REFERENCE = new TypeReference<>() {
     };
@@ -143,6 +162,139 @@ public class CaseworkerCreateBundleIT {
     void setClock() {
         when(clock.instant()).thenReturn(instant);
         when(clock.getZone()).thenReturn(zoneId);
+    }
+
+    @Test
+    void shouldNotNotifyAnyoneWhenCreatingBundleForClosedCase() throws Exception {
+        String response = submittedResponse(notificationCaseData(), State.CaseClosed);
+
+        assertThatJson(response).inPath("$.confirmation_header").isEqualTo("# Bundle created.");
+        verifyNoInteractions(notificationServiceCIC);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = {"CaseManagement", "AwaitingHearing", "ReadyToList"})
+    void shouldNotifyEligiblePartiesInNonClosedStates(State state) throws Exception {
+        String response = submittedResponse(notificationCaseData(), state);
+
+        assertThat(confirmationHeader(response))
+            .isEqualTo("# Bundle created. \n## A notification has been sent to: Subject, Respondent, Representative, Applicant");
+
+        ArgumentCaptor<NotificationRequest> requests = ArgumentCaptor.forClass(NotificationRequest.class);
+        verify(notificationServiceCIC, times(4)).sendEmail(requests.capture(), eq(TEST_CASE_ID_HYPHENATED), isNull());
+        assertThat(requests.getAllValues())
+            .extracting(NotificationRequest::getTemplate)
+            .containsExactly(BUNDLE_CREATED_EMAIL_CITIZEN, BUNDLE_CREATED_EMAIL_RESPONDENT,
+                BUNDLE_CREATED_EMAIL_CITIZEN, BUNDLE_CREATED_EMAIL_CITIZEN);
+        assertThat(requests.getAllValues())
+            .extracting(NotificationRequest::getDestinationAddress)
+            .containsExactly("subject@example.com", "appeals.team@cica.gov.uk",
+                "representative@example.com", "applicant@example.com");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = CaseSubcategory.class, names = {"FATAL", "MINOR"})
+    void shouldNotNotifySubjectForFatalOrMinorCase(CaseSubcategory subcategory) throws Exception {
+        CaseData caseData = notificationCaseData();
+        caseData.getCicCase().setCaseSubcategory(subcategory);
+
+        String response = submittedResponse(caseData, State.CaseManagement);
+
+        assertThat(confirmationHeader(response))
+            .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent, Representative, Applicant");
+        ArgumentCaptor<NotificationRequest> requests = ArgumentCaptor.forClass(NotificationRequest.class);
+        verify(notificationServiceCIC, times(3)).sendEmail(requests.capture(), eq(TEST_CASE_ID_HYPHENATED), isNull());
+        assertThat(requests.getAllValues())
+            .extracting(NotificationRequest::getDestinationAddress)
+            .containsExactly("appeals.team@cica.gov.uk", "representative@example.com", "applicant@example.com");
+    }
+
+    @Test
+    void shouldNotifyCicaWhenAllStoredEmailAddressesAreMissing() throws Exception {
+        CaseData caseData = notificationCaseData();
+        caseData.getCicCase().setEmail(null);
+        caseData.getCicCase().setRespondentEmail(" ");
+        caseData.getCicCase().setRepresentativeEmailAddress("");
+        caseData.getCicCase().setApplicantEmailAddress(null);
+
+        String response = submittedResponse(caseData, State.ReadyToList);
+
+        assertThat(confirmationHeader(response))
+            .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent");
+        ArgumentCaptor<NotificationRequest> requests = ArgumentCaptor.forClass(NotificationRequest.class);
+        verify(notificationServiceCIC).sendEmail(requests.capture(), eq(TEST_CASE_ID_HYPHENATED), isNull());
+        assertThat(requests.getValue().getDestinationAddress()).isEqualTo("appeals.team@cica.gov.uk");
+    }
+
+    @Test
+    void shouldNotifyRemainingPartiesWhenSomeEmailAddressesAreMissing() throws Exception {
+        CaseData caseData = notificationCaseData();
+        caseData.getCicCase().setEmail("");
+        caseData.getCicCase().setRepresentativeEmailAddress(null);
+
+        String response = submittedResponse(caseData, State.AwaitingHearing);
+
+        assertThat(confirmationHeader(response))
+            .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent, Applicant");
+        ArgumentCaptor<NotificationRequest> requests = ArgumentCaptor.forClass(NotificationRequest.class);
+        verify(notificationServiceCIC, times(2)).sendEmail(requests.capture(), eq(TEST_CASE_ID_HYPHENATED), isNull());
+        assertThat(requests.getAllValues())
+            .extracting(NotificationRequest::getDestinationAddress)
+            .containsExactly("appeals.team@cica.gov.uk", "applicant@example.com");
+    }
+
+    @Test
+    void shouldNotifyRespondentWhenCaseUsesDefaultRespondentEmail() throws Exception {
+        CaseData caseData = notificationCaseData();
+        caseData.setCicCase(CicCase.builder()
+            .caseSubcategory(CaseSubcategory.FATAL)
+            .partiesCIC(Set.of())
+            .build());
+
+        String response = submittedResponse(caseData, State.CaseManagement);
+
+        assertThat(confirmationHeader(response))
+            .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent");
+        ArgumentCaptor<NotificationRequest> requests = ArgumentCaptor.forClass(NotificationRequest.class);
+        verify(notificationServiceCIC).sendEmail(requests.capture(), eq(TEST_CASE_ID_HYPHENATED), isNull());
+        assertThat(requests.getValue().getDestinationAddress()).isEqualTo("appeals.team@cica.gov.uk");
+    }
+
+    @Test
+    void shouldNotNotifyApplicantOrRepresentativeWhenTheyAreNotCaseParties() throws Exception {
+        CaseData caseData = notificationCaseData();
+        caseData.getCicCase().setPartiesCIC(Set.of(PartiesCIC.SUBJECT));
+
+        String response = submittedResponse(caseData, State.CaseManagement);
+
+        assertThat(confirmationHeader(response))
+            .isEqualTo("# Bundle created. \n## A notification has been sent to: Subject, Respondent");
+        ArgumentCaptor<NotificationRequest> requests = ArgumentCaptor.forClass(NotificationRequest.class);
+        verify(notificationServiceCIC, times(2)).sendEmail(requests.capture(), eq(TEST_CASE_ID_HYPHENATED), isNull());
+        assertThat(requests.getAllValues())
+            .extracting(NotificationRequest::getDestinationAddress)
+            .containsExactly("subject@example.com", "appeals.team@cica.gov.uk");
+    }
+
+    @Test
+    void shouldContinueNotifyingOtherPartiesWhenSomeSendsFail() throws Exception {
+        doThrow(new IllegalStateException("Notification failed"))
+            .when(notificationServiceCIC).sendEmail(argThat(request -> request != null
+                && Set.of("subject@example.com", "representative@example.com")
+                    .contains(request.getDestinationAddress())), eq(TEST_CASE_ID_HYPHENATED), isNull());
+
+        String response = submittedResponse(notificationCaseData(), State.CaseManagement);
+
+        assertThat(confirmationHeader(response)).isEqualTo("""
+            # Bundle creation notification failed\s
+            ## A notification could not be sent to: Subject, Representative\s
+            ## Please resend the notification.""");
+        ArgumentCaptor<NotificationRequest> requests = ArgumentCaptor.forClass(NotificationRequest.class);
+        verify(notificationServiceCIC, times(4)).sendEmail(requests.capture(), eq(TEST_CASE_ID_HYPHENATED), isNull());
+        assertThat(requests.getAllValues())
+            .extracting(NotificationRequest::getDestinationAddress)
+            .containsExactly("subject@example.com", "appeals.team@cica.gov.uk",
+                "representative@example.com", "applicant@example.com");
     }
 
     @Test
@@ -663,6 +815,41 @@ public class CaseworkerCreateBundleIT {
         List<HashMap<String, Object>> bundleIdsAndTimestamps =
             (List<HashMap<String, Object>>) data.get("caseBundleIdsAndTimestamps");
         assertThat(bundleIdsAndTimestamps).hasSize(1);
+    }
+
+    private String confirmationHeader(String response) throws Exception {
+        return objectMapper.readTree(response).path("confirmation_header").asText();
+    }
+
+    private String submittedResponse(CaseData caseData, State state) throws Exception {
+        return mockMvc.perform(post(SUBMITTED_URL)
+                .contentType(APPLICATION_JSON)
+                .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .content(objectMapper.writeValueAsString(callbackRequest(caseData, CREATE_BUNDLE, state.getName())))
+                .accept(APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    }
+
+    private CaseData notificationCaseData() {
+        CaseData caseData = caseData();
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        caseData.setCicCase(CicCase.builder()
+            .caseSubcategory(CaseSubcategory.OTHER)
+            .fullName("Subject")
+            .email("subject@example.com")
+            .respondentEmail("respondent@example.com")
+            .respondentName("Respondent")
+            .partiesCIC(Set.of(PartiesCIC.SUBJECT, PartiesCIC.REPRESENTATIVE, PartiesCIC.APPLICANT))
+            .representativeFullName("Representative")
+            .representativeEmailAddress("representative@example.com")
+            .applicantFullName("Applicant")
+            .applicantEmailAddress("applicant@example.com")
+            .build());
+        return caseData;
     }
 
     private void populateCaseDocuments(final CaseData caseData) {
