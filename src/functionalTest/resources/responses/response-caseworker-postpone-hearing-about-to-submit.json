@@ -35,7 +35,6 @@
     "hearingList": [],
     "closedDayCount": "",
     "currentEvent": "",
-    "firstHearingDate": "",
     "dataVersion": 0
   },
   "state": "CaseManagement"

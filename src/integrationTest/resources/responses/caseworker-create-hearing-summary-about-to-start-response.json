@@ -130,7 +130,6 @@
         }
       }
     ],
-    "currentEvent": "create-hearing-summary",
-    "firstHearingDate": "14 Aug 2024"
+    "currentEvent": "create-hearing-summary"
   }
 }

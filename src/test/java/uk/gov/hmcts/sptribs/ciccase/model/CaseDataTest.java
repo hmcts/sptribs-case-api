@@ -7,11 +7,8 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import static java.time.format.DateTimeFormatter.ofPattern;
-import static java.util.Locale.UK;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class CaseDataTest {
@@ -21,22 +18,6 @@ class CaseDataTest {
         final CaseData caseData = CaseData.builder().build();
 
         assertThat(caseData.getCicCase().getApplicantFullName()).isNull();
-    }
-
-    @Test
-    void shouldGetHearingDate() {
-        final DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
-        final LocalDate now = LocalDate.now();
-        final Listing listing = Listing.builder().hearingStatus(HearingState.Listed).date(now).build();
-        final ListValue<Listing> listingListValue = new ListValue<>();
-        listingListValue.setValue(listing);
-        final CaseData caseData = CaseData.builder()
-            .hearingList(List.of(listingListValue))
-            .build();
-
-        final String result = caseData.getFirstHearingDate();
-
-        assertThat(result).isEqualTo(dateFormatter.format(now));
     }
 
     @Test
@@ -74,6 +55,18 @@ class CaseDataTest {
         //Then
         assertThat(result).isNotNull();
         assertThat(result.getDate()).isEqualTo(now);
+    }
+
+    @Test
+    void shouldIgnoreLegacyFirstHearingDateInCaseData() throws Exception {
+        final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
+        final CaseData caseData = objectMapper.readValue("""
+            {"firstHearingDate": "05 Feb 2024"}
+            """, CaseData.class);
+
+        final JsonNode json = objectMapper.valueToTree(caseData);
+
+        assertThat(json.has("firstHearingDate")).isFalse();
     }
 
     @Test
