@@ -36,6 +36,15 @@ public class FirstHearingDateMigrationRepository {
         return count != null && count > 0;
     }
 
+    /** Called only inside a SystemEventExecutor action, after it locks the case. */
+    public boolean removeFirstHearingDate(long reference) {
+        return jdbcTemplate.update(
+            "UPDATE ccd.case_data c SET data = c.data - 'firstHearingDate', version = c.version + 1 "
+                + "WHERE " + CASE_FILTER + " AND c.reference = :reference",
+            Map.of("caseType", ST_CIC_CASE_TYPE, "jurisdiction", ST_CIC_JURISDICTION,
+                "reference", reference)) == 1;
+    }
+
     public long countRemaining() {
         final Long count = jdbcTemplate.queryForObject(
             "SELECT COUNT(*) FROM ccd.case_data c WHERE " + CASE_FILTER,

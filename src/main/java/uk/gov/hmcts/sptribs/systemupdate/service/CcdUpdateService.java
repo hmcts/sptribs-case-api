@@ -15,7 +15,6 @@ import static java.lang.String.format;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_CASE_TYPE;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_JURISDICTION;
-import static uk.gov.hmcts.sptribs.systemupdate.event.SystemMigrateCase.SYSTEM_MIGRATE_CASE;
 
 @Service
 @Slf4j
@@ -23,8 +22,6 @@ public class CcdUpdateService {
 
     static final String SPTRIBS_CASE_SUBMISSION_EVENT_SUMMARY = "spTribs case submission event";
     static final String SPTRIBS_CASE_SUBMISSION_EVENT_DESCRIPTION = "Submitting Sptribs Case Event";
-    static final String FIRST_HEARING_DATE_REMOVAL_SUMMARY = "Remove first hearing date";
-    static final String FIRST_HEARING_DATE_REMOVAL_DESCRIPTION = "Clear retired firstHearingDate field";
 
 
     private final CoreCaseDataApi coreCaseDataApi;
@@ -146,29 +143,6 @@ public class CcdUpdateService {
             throw new CcdManagementException(message, e);
         }
     }
-
-    public void clearFirstHearingDate(final Long caseId, final CICUser user, final String serviceAuth) {
-        final String caseReference = caseId.toString();
-        final String userId = user.getUserInfo().getUid();
-        final String authorization = user.getAuthToken();
-
-        try {
-            final StartEventResponse startEventResponse = coreCaseDataApi.startEventForCaseWorker(
-                authorization, serviceAuth, userId, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE,
-                caseReference, SYSTEM_MIGRATE_CASE);
-            final CaseDataContent content = ccdCaseDataContentProvider.createContentClearingFirstHearingDate(
-                startEventResponse, FIRST_HEARING_DATE_REMOVAL_SUMMARY, FIRST_HEARING_DATE_REMOVAL_DESCRIPTION);
-
-            coreCaseDataApi.submitEventForCaseWorker(
-                authorization, serviceAuth, userId, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE,
-                caseReference, true, content);
-        } catch (final FeignException e) {
-            final String message = format("Could not clear firstHearingDate for case ID: %s", caseId);
-            log.error(message, e);
-            throw new CcdManagementException(message, e);
-        }
-    }
-
 
     private void startAndSubmitEventForCaseworkers(final String eventId,
                                                    final String serviceAuth,

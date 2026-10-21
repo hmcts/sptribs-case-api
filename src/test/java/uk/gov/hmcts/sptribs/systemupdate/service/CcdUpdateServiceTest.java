@@ -29,9 +29,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_CASE_TYPE;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_JURISDICTION;
-import static uk.gov.hmcts.sptribs.systemupdate.event.SystemMigrateCase.SYSTEM_MIGRATE_CASE;
-import static uk.gov.hmcts.sptribs.systemupdate.service.CcdUpdateService.FIRST_HEARING_DATE_REMOVAL_DESCRIPTION;
-import static uk.gov.hmcts.sptribs.systemupdate.service.CcdUpdateService.FIRST_HEARING_DATE_REMOVAL_SUMMARY;
 import static uk.gov.hmcts.sptribs.systemupdate.service.CcdUpdateService.SPTRIBS_CASE_SUBMISSION_EVENT_DESCRIPTION;
 import static uk.gov.hmcts.sptribs.systemupdate.service.CcdUpdateService.SPTRIBS_CASE_SUBMISSION_EVENT_SUMMARY;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
@@ -184,25 +181,6 @@ class CcdUpdateServiceTest {
             caseDataContent);
 
         verifyNoMoreInteractions(coreCaseDataApi);
-    }
-
-    @Test
-    void shouldClearFirstHearingDateThroughSystemMigrateCaseEvent() {
-        final CICUser user = systemUpdateUser();
-        final StartEventResponse response = getStartEventResponse();
-        when(coreCaseDataApi.startEventForCaseWorker(
-            SYSTEM_UPDATE_AUTH_TOKEN, SERVICE_AUTHORIZATION, SYSTEM_USER_USER_ID,
-            ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, TEST_CASE_ID.toString(), SYSTEM_MIGRATE_CASE))
-            .thenReturn(response);
-        when(ccdCaseDataContentProvider.createContentClearingFirstHearingDate(
-            response, FIRST_HEARING_DATE_REMOVAL_SUMMARY, FIRST_HEARING_DATE_REMOVAL_DESCRIPTION))
-            .thenReturn(caseDataContent);
-
-        ccdUpdateService.clearFirstHearingDate(TEST_CASE_ID, user, SERVICE_AUTHORIZATION);
-
-        verify(coreCaseDataApi).submitEventForCaseWorker(
-            SYSTEM_UPDATE_AUTH_TOKEN, SERVICE_AUTHORIZATION, SYSTEM_USER_USER_ID,
-            ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, TEST_CASE_ID.toString(), true, caseDataContent);
     }
 
     private StartEventResponse getStartEventResponse() {

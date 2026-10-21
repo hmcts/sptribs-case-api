@@ -6,43 +6,44 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.test.util.ReflectionTestUtils;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.idam.client.models.UserInfo;
-import uk.gov.hmcts.sptribs.idam.CICUser;
-import uk.gov.hmcts.sptribs.idam.IdamService;
-import uk.gov.hmcts.sptribs.systemupdate.service.CcdUpdateService;
+import uk.gov.hmcts.ccd.sdk.SystemEventAction;
+import uk.gov.hmcts.ccd.sdk.SystemEventExecutionContext;
+import uk.gov.hmcts.ccd.sdk.SystemEventExecutionResult;
+import uk.gov.hmcts.ccd.sdk.SystemEventExecutor;
 import uk.gov.hmcts.sptribs.systemupdate.service.FirstHearingDateMigrationRepository;
 
 import java.util.List;
+import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.ccd.sdk.SystemEventExecutionResult.Outcome.EXECUTED;
+import static uk.gov.hmcts.ccd.sdk.SystemEventExecutionResult.Outcome.REPLAYED;
 
 @ExtendWith(MockitoExtension.class)
 class SystemRemoveFirstHearingDateTaskTest {
 
     @Mock
-    private AuthTokenGenerator authTokenGenerator;
-
-    @Mock
-    private IdamService idamService;
-
-    @Mock
     private FirstHearingDateMigrationRepository repository;
 
     @Mock
-    private CcdUpdateService ccdUpdateService;
+    private ObjectProvider<SystemEventExecutor> systemEventExecutor;
+
+    @Mock
+    private SystemEventExecutor executor;
 
     @InjectMocks
     private SystemRemoveFirstHearingDateTask task;
-
-    private final CICUser user = new CICUser("test-token", UserInfo.builder().uid("test-user").build());
 
     @BeforeEach
     void setUp() {
@@ -55,37 +56,41 @@ class SystemRemoveFirstHearingDateTaskTest {
     void shouldFailClosedWhenDisabled() {
         assertThatThrownBy(task::run).isInstanceOf(IllegalStateException.class);
 
-        verifyNoInteractions(idamService, authTokenGenerator, repository, ccdUpdateService);
+        verifyNoInteractions(systemEventExecutor, executor, repository);
     }
 
     @Test
     void shouldMigrateInKeysetBatchesAndVerifyEveryCase() {
         enableTask();
+        executeActions();
+        when(repository.removeFirstHearingDate(anyLong())).thenReturn(true);
         when(repository.findNextBatch(0, 2)).thenReturn(List.of(10L, 20L));
         when(repository.findNextBatch(20, 2)).thenReturn(List.of(30L));
         when(repository.findNextBatch(30, 2)).thenReturn(List.of());
 
         task.run();
 
-        var updates = inOrder(ccdUpdateService);
-        updates.verify(ccdUpdateService).clearFirstHearingDate(10L, user, "service-token");
-        updates.verify(ccdUpdateService).clearFirstHearingDate(20L, user, "service-token");
-        updates.verify(ccdUpdateService).clearFirstHearingDate(30L, user, "service-token");
-        verify(repository).hasFirstHearingDate(10L);
-        verify(repository).hasFirstHearingDate(20L);
-        verify(repository).hasFirstHearingDate(30L);
+        var updates = inOrder(executor);
+        updates.verify(executor).execute(org.mockito.ArgumentMatchers.eq(10L), any(UUID.class), any());
+        updates.verify(executor).execute(org.mockito.ArgumentMatchers.eq(20L), any(UUID.class), any());
+        updates.verify(executor).execute(org.mockito.ArgumentMatchers.eq(30L), any(UUID.class), any());
+        verify(repository).removeFirstHearingDate(10L);
+        verify(repository).removeFirstHearingDate(20L);
+        verify(repository).removeFirstHearingDate(30L);
         verify(repository).countRemaining();
     }
 
     @Test
     void shouldOnlyMigrateSelectedCaseWhenConfigured() {
         enableTask();
+        executeActions();
         ReflectionTestUtils.setField(task, "caseReference", "12345");
         when(repository.hasFirstHearingDate(12345L)).thenReturn(true, false, false);
+        when(repository.removeFirstHearingDate(12345L)).thenReturn(true);
 
         task.run();
 
-        verify(ccdUpdateService).clearFirstHearingDate(12345L, user, "service-token");
+        verify(repository).removeFirstHearingDate(12345L);
         verify(repository, never()).findNextBatch(0, 2);
         verify(repository, never()).countRemaining();
     }
@@ -97,24 +102,26 @@ class SystemRemoveFirstHearingDateTaskTest {
 
         task.run();
 
-        verifyNoInteractions(ccdUpdateService);
+        verifyNoInteractions(executor);
     }
 
     @Test
-    void shouldRejectInvalidBatchSizeBeforeAccessingCcd() {
+    void shouldRejectInvalidBatchSizeBeforeAccessingExecutor() {
         ReflectionTestUtils.setField(task, "enabled", true);
         ReflectionTestUtils.setField(task, "batchSize", 0);
 
         assertThatThrownBy(task::run).isInstanceOf(IllegalArgumentException.class);
 
-        verifyNoInteractions(idamService, authTokenGenerator, repository, ccdUpdateService);
+        verifyNoInteractions(systemEventExecutor, executor, repository);
     }
 
     @Test
-    void shouldFailWhenCcdDoesNotRemoveTheField() {
+    void shouldFailWhenEventDoesNotRemoveTheField() {
         enableTask();
+        executeActions();
         when(repository.findNextBatch(0, 2)).thenReturn(List.of(10L));
         when(repository.findNextBatch(10, 2)).thenReturn(List.of());
+        when(repository.removeFirstHearingDate(10L)).thenReturn(true);
         when(repository.hasFirstHearingDate(10L)).thenReturn(true);
         when(repository.countRemaining()).thenReturn(1L);
 
@@ -122,21 +129,75 @@ class SystemRemoveFirstHearingDateTaskTest {
     }
 
     @Test
+    void shouldSkipCaseClearedSinceSelectionWithoutCreatingAnEvent() {
+        enableTask();
+        executeActions();
+        when(repository.findNextBatch(0, 2)).thenReturn(List.of(10L));
+        when(repository.findNextBatch(10, 2)).thenReturn(List.of());
+
+        task.run();
+
+        verify(repository).removeFirstHearingDate(10L);
+        verify(repository).hasFirstHearingDate(10L);
+    }
+
+    @Test
+    void shouldTreatReplayAsSuccessOnlyWhenTheKeyIsAbsent() {
+        enableTask();
+        when(repository.findNextBatch(0, 2)).thenReturn(List.of(10L));
+        when(repository.findNextBatch(10, 2)).thenReturn(List.of());
+        when(executor.execute(anyLong(), any(UUID.class), any()))
+            .thenReturn(new SystemEventExecutionResult(42L, REPLAYED));
+
+        task.run();
+
+        verify(repository, never()).removeFirstHearingDate(anyLong());
+        verify(repository).hasFirstHearingDate(10L);
+    }
+
+    @Test
     void shouldContinueAfterFailureAndFailTheRun() {
         enableTask();
+        executeActions();
         when(repository.findNextBatch(0, 2)).thenReturn(List.of(10L, 20L));
         when(repository.findNextBatch(20, 2)).thenReturn(List.of());
-        doThrow(new IllegalStateException("CCD rejected update"))
-            .when(ccdUpdateService).clearFirstHearingDate(10L, user, "service-token");
+        when(repository.removeFirstHearingDate(10L)).thenThrow(new IllegalStateException("Update failed"));
+        when(repository.removeFirstHearingDate(20L)).thenReturn(true);
 
         assertThatThrownBy(task::run).isInstanceOf(IllegalStateException.class);
 
-        verify(ccdUpdateService).clearFirstHearingDate(20L, user, "service-token");
+        verify(repository).removeFirstHearingDate(20L);
+    }
+
+    @Test
+    void shouldUseStableAndDistinctIdempotencyKeys() {
+        enableTask();
+        executeActions();
+        when(repository.findNextBatch(0, 2)).thenReturn(List.of(10L, 20L));
+        when(repository.findNextBatch(20, 2)).thenReturn(List.of());
+        when(repository.removeFirstHearingDate(anyLong())).thenReturn(true);
+
+        task.run();
+
+        var keys = org.mockito.ArgumentCaptor.forClass(UUID.class);
+        verify(executor, org.mockito.Mockito.times(2)).execute(anyLong(), keys.capture(), any());
+        assertThat(keys.getAllValues()).doesNotHaveDuplicates();
     }
 
     private void enableTask() {
         ReflectionTestUtils.setField(task, "enabled", true);
-        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(user);
-        when(authTokenGenerator.generate()).thenReturn("service-token");
+        when(systemEventExecutor.getObject()).thenReturn(executor);
+    }
+
+    private void executeActions() {
+        doAnswer(invocation -> {
+            long reference = invocation.getArgument(0);
+            UUID key = invocation.getArgument(1);
+            SystemEventAction action = invocation.getArgument(2);
+            var result = action.execute(new SystemEventExecutionContext(
+                reference, key, "CriminalInjuriesCompensation", "Submitted"));
+            assertThat(result.state()).isEmpty();
+            return new SystemEventExecutionResult(42L, EXECUTED);
+        }).when(executor).execute(anyLong(), any(UUID.class), any());
     }
 }
