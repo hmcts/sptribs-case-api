@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.systemupdate.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -89,5 +90,27 @@ class CcdCaseDataContentProviderTest {
                 c -> c.getEvent().getSummary(),
                 c -> c.getEvent().getDescription())
             .contains(START_EVENT_TOKEN, data, SYSTEM_MIGRATE_CASE, SUMMARY, DESCRIPTION);
+    }
+
+    @Test
+    void shouldSendExplicitNullForFirstHearingDateWithoutDroppingOtherCaseData() {
+        final Map<String, Object> originalData = new HashMap<>(Map.of(
+            "firstHearingDate", "05 Feb 2024", "hearingDate", "2024-02-05"));
+        final StartEventResponse response = StartEventResponse.builder()
+            .eventId(SYSTEM_MIGRATE_CASE)
+            .token(START_EVENT_TOKEN)
+            .caseDetails(CaseDetails.builder().data(originalData).build())
+            .build();
+
+        final CaseDataContent content = ccdCaseDataContentProvider.createContentClearingFirstHearingDate(
+            response, SUMMARY, DESCRIPTION);
+
+        assertThat(content.getData()).isInstanceOf(Map.class);
+        final Map<?, ?> data = (Map<?, ?>) content.getData();
+        assertThat(data.containsKey("firstHearingDate")).isTrue();
+        assertThat(data.get("hearingDate")).isEqualTo("2024-02-05");
+        assertThat(data.get("firstHearingDate")).isNull();
+        assertThat(originalData.get("firstHearingDate")).isEqualTo("05 Feb 2024");
+        assertThat(new ObjectMapper().valueToTree(content.getData()).has("firstHearingDate")).isTrue();
     }
 }

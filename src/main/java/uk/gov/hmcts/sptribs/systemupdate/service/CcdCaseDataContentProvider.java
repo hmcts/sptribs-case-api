@@ -7,8 +7,13 @@ import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.sptribs.ciccase.task.CaseTask;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Component
 public class CcdCaseDataContentProvider {
+
+    private static final String FIRST_HEARING_DATE = "firstHearingDate";
 
     private final CaseDetailsUpdater caseDetailsUpdater;
 
@@ -40,6 +45,15 @@ public class CcdCaseDataContentProvider {
             description,
             caseDetailsUpdater.updateCaseData(caseTask, startEventResponse).getData()
         );
+    }
+
+    public CaseDataContent createContentClearingFirstHearingDate(final StartEventResponse startEventResponse,
+                                                                  final String summary,
+                                                                  final String description) {
+        // Keep all CCD fields that are no longer modelled by CaseData, and explicitly clear the retired key.
+        final Map<String, Object> data = new HashMap<>(startEventResponse.getCaseDetails().getData());
+        data.put(FIRST_HEARING_DATE, null);
+        return createCaseDataContent(startEventResponse, summary, description, data);
     }
 
     private CaseDataContent createCaseDataContent(final StartEventResponse startEventResponse,
