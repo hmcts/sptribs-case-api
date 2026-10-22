@@ -173,6 +173,9 @@ public class Listing {
     private LocalDate date;
 
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private String hearingJudgeHearingId;
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private String hearingJudgeTaskId;
 
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
