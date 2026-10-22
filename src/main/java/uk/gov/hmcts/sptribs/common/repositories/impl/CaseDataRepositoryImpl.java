@@ -55,6 +55,8 @@ public class CaseDataRepositoryImpl implements CaseDataRepository {
             + "AND c.reference = :ccdReference "
             + "AND ( "
             + "  LOWER(c.data #>> '{cicCaseEmail}') = LOWER(:userEmail) "
+            + "OR LOWER(sp->'value'->>'ApplicantEmailAddress') = LOWER(:userEmail) "
+            + "OR LOWER(sp->'value'->>'RepresentativeEmailAddress') = LOWER(:userEmail) "
             + "  OR EXISTS ( "
             + "    SELECT 1 "
             + "    FROM jsonb_array_elements( "
