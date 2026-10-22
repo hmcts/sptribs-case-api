@@ -67,6 +67,11 @@ public class CaseEventRepository {
             + "ORDER BY ce.created_date ASC "
             + "LIMIT 1";
 
+    private static final String SELECT_CASES_WITH_FIRST_HEARING_STRING =
+        "SELECT DISTINCT reference FROM ccd.case_data "
+            + "AND data ->> 'firstHearingDate' !~ '^\\d{4}-\\d{2}-\\d{2}$' "
+            + "AND data ? 'firstHearingDate'";
+
     public List<CaseData> getFirstEventDataForCase(Long reference, String caseEventId) {
         try {
             return namedParameterJdbcTemplate.query(
@@ -202,5 +207,29 @@ public class CaseEventRepository {
             log.error("Failed to parse event data for case {}", caseDataId, e);
             return null;
         }
+    }
+
+    public List<Long> getListOfCasesWithFirstHearingDateAsString() {
+
+        List<Long> results;
+
+        try {
+            results = namedParameterJdbcTemplate.query(
+                SELECT_CASES_WITH_FIRST_HEARING_STRING,
+                Map.of(),
+                (rs, rowNum) -> rs.getLong(REFERENCE)
+            );
+
+        } catch (DataAccessException dataAccessException) {
+            log.error("Failed to retrieve cases with stale firstHearingDate string values", dataAccessException);
+            throw new CaseEventRepositoryException(
+                "Failed to retrieve cases with stale firstHearingDate values", dataAccessException);
+        }
+
+        if (results.isEmpty()) {
+            log.info("No cases found with stale firstHearingDate values");
+        }
+
+        return results;
     }
 }
