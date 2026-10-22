@@ -95,10 +95,8 @@ withPipeline(type, product, component) {
           ithc    : env.ITHC_SUBSCRIPTION_NAME ?: 'qa'
         ]
         withSubscription(subscriptions[env.ENVIRONMENT], product, env.ENVIRONMENT) {
-          withTeamSecrets(pipelineConf, env.ENVIRONMENT) {
-            uploadDmnDiagrams()
-            uploadBpmnDiagram()
-          }
+          uploadDmnDiagrams()
+          uploadBpmnDiagram()
         }
       }
     }
