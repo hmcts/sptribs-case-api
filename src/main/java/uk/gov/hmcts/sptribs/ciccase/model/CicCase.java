@@ -292,7 +292,8 @@ public class CicCase {
         label = "Case information recipient",
         typeOverride = MultiSelectList,
         typeParameterOverride = "SubjectCIC",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        retainHiddenValue = true
     )
     private Set<SubjectCIC> subjectCIC;
 
@@ -300,7 +301,8 @@ public class CicCase {
         label = "Case information recipient",
         typeOverride = MultiSelectList,
         typeParameterOverride = "ApplicantCIC",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        retainHiddenValue = true
     )
     private Set<ApplicantCIC> applicantCIC;
 
@@ -308,7 +310,8 @@ public class CicCase {
         label = "Case information recipient",
         typeOverride = MultiSelectList,
         typeParameterOverride = "RepresentativeCIC",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        retainHiddenValue = true
     )
     private Set<RepresentativeCIC> representativeCIC;
 
@@ -362,7 +365,8 @@ public class CicCase {
 
     @CCD(
         label = "Respondent name ",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        retainHiddenValue = true
     )
     @Builder.Default
     private String respondentName = "Appeals team";
@@ -391,7 +395,8 @@ public class CicCase {
 
     @CCD(
         label = "Subject's full name",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        retainHiddenValue = true
     )
     private String fullName;
 
@@ -411,7 +416,8 @@ public class CicCase {
     @CCD(
         label = "Subject's email address",
         typeOverride = Email,
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        retainHiddenValue = true
     )
     private String email;
 
@@ -446,7 +452,8 @@ public class CicCase {
 
     @CCD(
         label = "Linked CICA reference number",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        retainHiddenValue = true
     )
     private String cicaReferenceNumber;
 
@@ -465,13 +472,15 @@ public class CicCase {
 
     @CCD(
         label = "Applicant's full name",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        retainHiddenValue = true
     )
     private String applicantFullName;
 
     @CCD(
         label = "Applicant's address",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        retainHiddenValue = true
     )
     private AddressGlobalUK applicantAddress;
 
@@ -485,7 +494,8 @@ public class CicCase {
     @CCD(
         label = "Applicant's email address",
         typeOverride = Email,
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        retainHiddenValue = true
     )
     private String applicantEmailAddress;
 
@@ -504,7 +514,8 @@ public class CicCase {
 
     @CCD(
         label = "Representative's full name",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        retainHiddenValue = true
     )
     private String representativeFullName;
 
@@ -522,7 +533,8 @@ public class CicCase {
 
     @CCD(
         label = "Representative's Address",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        retainHiddenValue = true
     )
     private AddressGlobalUK representativeAddress;
 
@@ -536,7 +548,8 @@ public class CicCase {
     @CCD(
         label = "Representative's email address",
         typeOverride = Email,
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        retainHiddenValue = true
     )
     private String representativeEmailAddress;
 
@@ -572,7 +585,8 @@ public class CicCase {
 
     @CCD(
         label = "Has the applicant explained why they missed the deadline?",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        retainHiddenValue = true
     )
     private YesOrNo missedTheDeadLineCic;
 
