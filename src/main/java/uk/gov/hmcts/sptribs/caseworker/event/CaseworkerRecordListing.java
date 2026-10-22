@@ -18,6 +18,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.RemoteHearingInfo;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
+import uk.gov.hmcts.sptribs.caseworker.service.HearingJudgeTaskService;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -65,14 +66,17 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     private final RecordListHelper recordListHelper;
 
     private final HearingService hearingService;
+    private final HearingJudgeTaskService hearingJudgeTaskService;
 
     private final ListingCreatedNotification listingCreatedNotification;
 
     @Autowired
     public CaseworkerRecordListing(HearingService hearingService,
+                                   HearingJudgeTaskService hearingJudgeTaskService,
                                    RecordListHelper recordListHelper,
                                    ListingCreatedNotification listingCreatedNotification) {
         this.hearingService = hearingService;
+        this.hearingJudgeTaskService = hearingJudgeTaskService;
         this.recordListHelper = recordListHelper;
         this.listingCreatedNotification = listingCreatedNotification;
     }
@@ -146,6 +150,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         caseData.setCurrentEvent("");
         caseData.getListing().setHearingCreatedDate(LocalDate.now());
         caseData.getListing().setHearingStatus(Listed);
+        hearingJudgeTaskService.updateTask(caseData, caseData.getListing());
         caseData.setStitchHearingBundleTask(NO);
         caseData.setCompleteHearingOutcomeTask(NO);
         hearingService.addListing(caseData, caseData.getListing());

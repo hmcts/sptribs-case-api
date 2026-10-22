@@ -124,6 +124,21 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
     static Stream<Arguments> scenarioProvider() {
         return Stream.of(
             Arguments.of(
+                "caseworker-record-listing", "AwaitingHearing",
+                Map.of("Data", Map.of("assignHearingJudgeTaskTrigger", "hearing-1")),
+                List.of(Map.of("taskId", "assignHearingJudge", "name", "Assign Hearing Judge",
+                    "workingDaysAllowed", 1, "processCategories", "HearingJudgeAssignment",
+                    "workType", HEARING_WORK_TYPE, "roleCategory", ROLE_CATEGORY_ADMIN))
+            ),
+            Arguments.of("caseworker-record-listing", "AwaitingHearing", Map.of("Data", Map.of()), List.of()),
+            Arguments.of(
+                "system-trigger-assign-hearing-judge", "AwaitingHearing",
+                Map.of("Data", Map.of("assignHearingJudgeTaskTrigger", "hearing-2")),
+                List.of(Map.of("taskId", "assignHearingJudge", "name", "Assign Hearing Judge",
+                    "workingDaysAllowed", 1, "processCategories", "HearingJudgeAssignment",
+                    "workType", HEARING_WORK_TYPE, "roleCategory", ROLE_CATEGORY_ADMIN))
+            ),
+            Arguments.of(
                 "create-draft-order",
                 "CaseManagement",
                 Map.of("Data", Map.of("cicCaseReferralTypeForWA", "Withdrawal request")),
@@ -1419,7 +1434,7 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
         DmnDecisionTableImpl logic = (DmnDecisionTableImpl) decision.getDecisionLogic();
         assertThat(logic.getInputs().size(), is(5));
         assertThat(logic.getOutputs().size(), is(7));
-        assertThat(logic.getRules().size(), is(63));
+        assertThat(logic.getRules().size(), is(64));
     }
 
     @ParameterizedTest(name = "event id: {0} post event state: {1} additional data: {2}")

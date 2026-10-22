@@ -543,6 +543,9 @@ public class CaseData {
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private YesNo completeHearingOutcomeTask;
 
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private String assignHearingJudgeTaskTrigger;
+
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class,
         GlobalSearchAccess.class, CaseworkerRASValidationAccess.class})
     private YesNo newBundleOrderEnabled;

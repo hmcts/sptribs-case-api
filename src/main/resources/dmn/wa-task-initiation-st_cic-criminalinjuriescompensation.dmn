@@ -4,7 +4,7 @@
     <decisionTable id="DecisionTable_0jtevuc" hitPolicy="COLLECT">
       <input id="Input_1" label="Event Id" camunda:inputVariable="eventId">
         <inputExpression id="InputExpression_1" typeRef="string">
-          <text></text>
+          <text>if (eventId = "caseworker-record-listing" or eventId = "caseworker-edit-record-listing" or eventId = "system-trigger-assign-hearing-judge") and (additionalData = null or additionalData.Data = null or additionalData.Data.assignHearingJudgeTaskTrigger = null or additionalData.Data.assignHearingJudgeTaskTrigger = "") then null else eventId</text>
         </inputExpression>
       </input>
       <input id="InputClause_0gxli97" label="Post event state" biodi:width="268" camunda:inputVariable="postEventState">
@@ -2445,6 +2445,20 @@ else
         <outputEntry id="LiteralExpression_1o37djq">
           <text>"ADMIN"</text>
         </outputEntry>
+      </rule>
+      <rule id="DecisionRule_assignHearingJudge">
+        <inputEntry id="UnaryTests_assignHearingJudgeEvent"><text>"caseworker-record-listing", "caseworker-edit-record-listing", "system-trigger-assign-hearing-judge"</text></inputEntry>
+        <inputEntry id="UnaryTests_assignHearingJudgeState"><text>"AwaitingHearing"</text></inputEntry>
+        <inputEntry id="UnaryTests_assignHearingJudgeReferral"><text></text></inputEntry>
+        <inputEntry id="UnaryTests_assignHearingJudgeAdminAction"><text></text></inputEntry>
+        <inputEntry id="UnaryTests_assignHearingJudgeDueDate"><text></text></inputEntry>
+        <outputEntry id="LiteralExpression_assignHearingJudgeId"><text>"assignHearingJudge"</text></outputEntry>
+        <outputEntry id="LiteralExpression_assignHearingJudgeName"><text>"Assign Hearing Judge"</text></outputEntry>
+        <outputEntry id="LiteralExpression_assignHearingJudgeDelay"><text></text></outputEntry>
+        <outputEntry id="LiteralExpression_assignHearingJudgeDays"><text>1</text></outputEntry>
+        <outputEntry id="LiteralExpression_assignHearingJudgeCategory"><text>"HearingJudgeAssignment"</text></outputEntry>
+        <outputEntry id="LiteralExpression_assignHearingJudgeWork"><text>"hearing_work"</text></outputEntry>
+        <outputEntry id="LiteralExpression_assignHearingJudgeRole"><text>"ADMIN"</text></outputEntry>
       </rule>
     </decisionTable>
   </decision>
