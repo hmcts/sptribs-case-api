@@ -18,9 +18,11 @@ import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.sptribs.IntegrationTestBase;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
+import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
@@ -28,6 +30,7 @@ import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 import uk.gov.hmcts.sptribs.testutil.TestConstants;
 
@@ -44,7 +47,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -276,6 +278,8 @@ public class CaseworkerIssueFinalDecisionIT extends IntegrationTestBase {
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         caseData.setCicCase(
             CicCase.builder()
+                .caseSubcategory(CaseSubcategory.OTHER)
+                .partiesCIC(Set.of(PartiesCIC.SUBJECT, PartiesCIC.APPLICANT, PartiesCIC.REPRESENTATIVE))
                 .notifyPartySubject(Set.of(SUBJECT))
                 .notifyPartyRespondent(Set.of(RESPONDENT))
                 .notifyPartyRepresentative(Set.of(REPRESENTATIVE))
@@ -332,7 +336,10 @@ public class CaseworkerIssueFinalDecisionIT extends IntegrationTestBase {
             .contains("# Final decision notice issued \n"
                 + "## A notification has been sent to: Subject, Respondent, Representative, Applicant");
 
-        verify(notificationServiceCIC, times(4)).sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
+        verify(notificationServiceCIC).sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.SUBJECT));
+        verify(notificationServiceCIC).sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.RESPONDENT));
+        verify(notificationServiceCIC).sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.REPRESENTATIVE));
+        verify(notificationServiceCIC).sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.APPLICANT));
         verifyNoMoreInteractions(notificationServiceCIC);
     }
 
@@ -340,6 +347,8 @@ public class CaseworkerIssueFinalDecisionIT extends IntegrationTestBase {
     void shouldReturnErrorMessageIfNotificationsFailOnSubmitted() throws Exception {
         final CaseData caseData = CaseData.builder()
             .cicCase(CicCase.builder()
+                .caseSubcategory(CaseSubcategory.OTHER)
+                .partiesCIC(Set.of(PartiesCIC.SUBJECT, PartiesCIC.APPLICANT, PartiesCIC.REPRESENTATIVE))
                 .notifyPartySubject(Set.of(SUBJECT))
                 .notifyPartyRespondent(Set.of(RESPONDENT))
                 .notifyPartyRepresentative(Set.of(REPRESENTATIVE))
