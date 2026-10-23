@@ -41,8 +41,9 @@ public class FirstHearingDateMigrationRepository {
 
     /** Called only inside a SystemEventExecutor action, after it locks the case. */
     public boolean removeFirstHearingDate(long reference) {
+        // The executor saves the event using the version it read before this update.
         return jdbcTemplate.update(
-            "UPDATE ccd.case_data c SET data = c.data - 'firstHearingDate', version = c.version + 1 "
+            "UPDATE ccd.case_data c SET data = c.data - 'firstHearingDate' "
                 + "WHERE " + CASE_FILTER + " AND c.reference = :reference",
             Map.of(CASE_TYPE, ST_CIC_CASE_TYPE, JURISDICTION, ST_CIC_JURISDICTION,
                 REFERENCE, reference)) == 1;

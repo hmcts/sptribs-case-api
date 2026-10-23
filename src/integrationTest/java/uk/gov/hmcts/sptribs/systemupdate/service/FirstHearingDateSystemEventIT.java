@@ -47,6 +47,7 @@ class FirstHearingDateSystemEventIT extends IntegrationTestBase {
         caseDataITManager.addCaseData(CASE_REFERENCE, "Submitted", """
             {"firstHearingDate": "05 Feb 2024", "hearingDate": "2024-02-05"}
             """);
+        int initialVersion = caseVersion();
         UUID key = UUID.randomUUID();
 
         var first = executor.execute(CASE_REFERENCE, key, context -> {
@@ -65,6 +66,7 @@ class FirstHearingDateSystemEventIT extends IntegrationTestBase {
         assertThat(caseData().get("hearingDate").asText()).isEqualTo("2024-02-05");
         assertThat(caseData().has("firstHearingDate")).isFalse();
         assertThat(eventCount()).isEqualTo(1);
+        assertThat(caseVersion()).isEqualTo(initialVersion);
     }
 
     @Test
@@ -72,6 +74,7 @@ class FirstHearingDateSystemEventIT extends IntegrationTestBase {
         caseDataITManager.addCaseData(CASE_REFERENCE, "Submitted", """
             {"firstHearingDate": null, "hearingDate": "2024-02-05"}
             """);
+        int initialVersion = caseVersion();
 
         assertThatThrownBy(() -> executor.execute(CASE_REFERENCE, UUID.randomUUID(), context -> {
             assertThat(repository.removeFirstHearingDate(context.caseReference())).isTrue();
@@ -82,6 +85,13 @@ class FirstHearingDateSystemEventIT extends IntegrationTestBase {
         assertThat(caseData().get("hearingDate").asText()).isEqualTo("2024-02-05");
         assertThat(caseData().has("firstHearingDate")).isTrue();
         assertThat(eventCount()).isZero();
+        assertThat(caseVersion()).isEqualTo(initialVersion);
+    }
+
+    private int caseVersion() {
+        return jdbcTemplate.queryForObject(
+            "SELECT c.version FROM ccd.case_data c WHERE c.reference = :reference",
+            Map.of("reference", CASE_REFERENCE), Integer.class);
     }
 
     private JsonNode caseData() throws Exception {
