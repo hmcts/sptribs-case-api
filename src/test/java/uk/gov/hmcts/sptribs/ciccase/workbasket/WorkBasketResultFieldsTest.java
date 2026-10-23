@@ -52,7 +52,7 @@ class WorkBasketResultFieldsTest {
                     "Case Region",
                     null,
                     null),
-                tuple("firstHearingDate",
+                tuple("hearingDate",
                     "Hearing Date",
                     null,
                     null),
@@ -65,5 +65,9 @@ class WorkBasketResultFieldsTest {
                     null,
                     null)
             );
+        assertThat(getWorkBasketResultFields(configBuilder).getFields())
+            .filteredOn(field -> "Hearing Date".equals(field.getLabel()))
+            .extracting("id")
+            .containsExactly("hearingDate");
     }
 }

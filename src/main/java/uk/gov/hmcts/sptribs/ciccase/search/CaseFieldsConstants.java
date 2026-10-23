@@ -8,7 +8,7 @@ public final class CaseFieldsConstants {
     public static final String SUBJECT_EMAIL = "cicCaseEmail";
     public static final String SUBJECT_PHONE_NUMBER = "cicCasePhoneNumber";
 
-    public static final String HEARING_DATE = "firstHearingDate";
+    public static final String HEARING_DATE = "hearingDate";
     public static final String HEARING_LOCATION = "hearingVenueName";
     public static final String HEARING_FORMAT = "hearingFormat";
     public static final String SHORT_NOTICE = "shortNotice";
