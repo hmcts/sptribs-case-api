@@ -9,8 +9,7 @@ import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil.EMPTY_DOCUMENT;
-import static uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil.addToRemovedDocuments;
+import static uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil.*;
 
 public  final class DecisionDocumentListUtil {
 
@@ -107,7 +106,7 @@ public  final class DecisionDocumentListUtil {
             } else if (caseData.getCaseIssueFinalDecision().getDocument() != null
                 && cicDocumentListValue.getValue().getDocumentLink()
                     .equals(caseData.getCaseIssueFinalDecision().getDocument().getDocumentLink())) {
-                caseData.getCaseIssueFinalDecision().setDocument(EMPTY_DOCUMENT);
+                caseData.getCaseIssueFinalDecision().setDocument(EMPTY_ORDER_DECISION_UPLOAD_DOCUMENT);
             }
         }
     }
@@ -121,7 +120,7 @@ public  final class DecisionDocumentListUtil {
             } else if (caseData.getCaseIssueDecision().getDecisionDocument() != null
                 && cicDocumentListValue.getValue().getDocumentLink()
                     .equals(caseData.getCaseIssueDecision().getDecisionDocument().getDocumentLink())) {
-                caseData.getCaseIssueDecision().setDecisionDocument(EMPTY_DOCUMENT);
+                caseData.getCaseIssueDecision().setDecisionDocument(EMPTY_ORDER_DECISION_UPLOAD_DOCUMENT);
             }
         }
     }

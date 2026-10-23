@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil.EMPTY_DOCUMENT;
+import static uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil.EMPTY_ORDER_DECISION_UPLOAD_DOCUMENT;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 
 @ExtendWith(MockitoExtension.class)
@@ -346,6 +346,6 @@ public class DecisionDocumentListUtilTest {
         DecisionDocumentListUtil.removeDecisionDraftAndCICDocument(caseData, caseworkerCICDocumentListValue);
 
         //Then
-        assertThat(caseData.getCaseIssueDecision().getDecisionDocument()).isEqualTo(EMPTY_DOCUMENT);
+        assertThat(caseData.getCaseIssueDecision().getDecisionDocument()).isEqualTo(EMPTY_ORDER_DECISION_UPLOAD_DOCUMENT);
     }
 }

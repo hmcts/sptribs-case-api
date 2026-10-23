@@ -12,7 +12,7 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
-import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.document.model.OrderDecisionUploadCICDocument;
 
 import java.time.LocalDate;
 
@@ -53,10 +53,10 @@ public class CaseIssueFinalDecision {
 
     @CCD(
         label = "Final Decision Document",
-        typeParameterOverride = "CICDocument",
+        typeParameterOverride = "OrderDecisionUploadCICDocument",
         access = {DefaultAccess.class}
     )
-    private CICDocument document;
+    private OrderDecisionUploadCICDocument document;
 
     @CCD(
         label = "Final Decision Date",

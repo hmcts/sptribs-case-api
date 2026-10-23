@@ -11,6 +11,7 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentInfo;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.model.OrderDecisionUploadCICDocument;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -92,7 +93,20 @@ public final class DocumentUtil {
         return errors;
     }
 
-    public static List<String> validateDecisionDocumentFormat(CICDocument document) {
+    public static List<String> validateListOrderDecisionUploadCICDocumentFormat(List<ListValue<OrderDecisionUploadCICDocument>> documentList) {
+        final List<String> errors = new ArrayList<>();
+
+        if (CollectionUtils.isNotEmpty(documentList)) {
+            documentList.stream()
+                .filter(value -> value != null && !value.getValue().isDocumentValid())
+                .findFirst()
+                .ifPresent(x -> errors.add(DOCUMENT_VALIDATION_MESSAGE));
+        }
+
+        return errors;
+    }
+
+    public static List<String> validateOrderDecisionUploadCICDocumentFormat(OrderDecisionUploadCICDocument document) {
         final List<String> errors = new ArrayList<>();
         if (document != null && !document.isDocumentValid()) {
             errors.add(DOCUMENT_VALIDATION_MESSAGE);
@@ -167,6 +181,45 @@ public final class DocumentUtil {
                     ListValue<CaseworkerCICDocument> documentListValue = new ListValue<>();
                     documentListValue.setId(listValue.getId());
                     documentListValue.setValue(document);
+
+                    documentList.add(documentListValue);
+                }
+            );
+        }
+
+        return documentList;
+    }
+
+    /**
+     * Convert a {@link OrderDecisionUploadCICDocument} to a {@link CICDocument}.
+     * This is null-safe, and doesn't affect nullness of the input:
+     *   - If the input is null, the output will be null.
+     *   - Any properties of the input that are null will be null in the output.
+     */
+    public static CICDocument convertToCICDocument(OrderDecisionUploadCICDocument uploadedDocument) {
+        if (uploadedDocument == null) {
+            return null;
+        }
+        return CICDocument.builder()
+            .documentEmailContent(uploadedDocument.getDocumentEmailContent())
+            .documentLink(uploadedDocument.getDocumentLink())
+            .build();
+    }
+
+    public static List<ListValue<CICDocument>> convertToCICDocuments(
+        List<ListValue<OrderDecisionUploadCICDocument>> uploadedDocuments
+    ) {
+        if (uploadedDocuments == null) {
+            return null;
+        }
+        List<ListValue<CICDocument>> documentList = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(uploadedDocuments)) {
+            uploadedDocuments.forEach(
+                listValue -> {
+                    OrderDecisionUploadCICDocument uploadedDocument = listValue.getValue();
+                    ListValue<CICDocument> documentListValue = new ListValue<>();
+                    documentListValue.setId(listValue.getId());
+                    documentListValue.setValue(convertToCICDocument(uploadedDocument));
 
                     documentList.add(documentListValue);
                 }
@@ -267,7 +320,7 @@ public final class DocumentUtil {
         return getUuid(documentLink);
     }
 
-    public static String getDocumentUuidFromCICDocument(CICDocument cicDocument) {
+    public static String getDocumentUuidFromOrderDecisionUploadDocument(OrderDecisionUploadCICDocument cicDocument) {
         Document document = cicDocument.getDocumentLink();
         return getUuid(document);
     }

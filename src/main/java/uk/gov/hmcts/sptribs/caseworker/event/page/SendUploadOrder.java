@@ -9,11 +9,11 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.document.model.OrderDecisionUploadCICDocument;
 
 import java.util.List;
 
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateDocumentFormat;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateListOrderDecisionUploadCICDocumentFormat;
 
 public class SendUploadOrder implements CcdPageConfiguration {
 
@@ -26,6 +26,7 @@ public class SendUploadOrder implements CcdPageConfiguration {
                 .label("uploadMessage", "Upload a copy of the document you wish to be added to case file view")
                 .label("uploadLimits", """
                 The order should be:
+                 *  in PDF (.pdf) format
                  *  uploaded separately, not one large file
                  *  a maximum of 100MB in size (larger files must be split)
                  *  labelled clearly, e.g. applicant-name-decision-notice.pdf
@@ -45,8 +46,8 @@ public class SendUploadOrder implements CcdPageConfiguration {
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                   CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
-        List<ListValue<CICDocument>> uploadedDocuments = data.getCicCase().getOrderFile();
-        final List<String> errors = validateDocumentFormat(uploadedDocuments);
+        List<ListValue<OrderDecisionUploadCICDocument>> uploadedDocuments = data.getCicCase().getOrderFile();
+        final List<String> errors = validateListOrderDecisionUploadCICDocumentFormat(uploadedDocuments);
 
         data.getCicCase().setOrderTemplateIssued(data.getCicCase().getOrderFile().getFirst().getValue().getDocumentLink());
 
