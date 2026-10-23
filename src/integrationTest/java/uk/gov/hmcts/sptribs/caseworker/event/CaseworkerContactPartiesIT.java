@@ -12,7 +12,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
@@ -20,6 +19,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.sptribs.IntegrationTestBase;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
+import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -34,10 +34,8 @@ import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
@@ -194,19 +192,6 @@ public class CaseworkerContactPartiesIT extends IntegrationTestBase {
     @Test
     void shouldReturnConfirmationMessageIfNotificationsDispatchedOnSubmitted() throws Exception {
         final ContactPartiesDocuments contactPartiesDocuments = new ContactPartiesDocuments();
-        List<DynamicListElement> elements = new ArrayList<>();
-        UUID testDocumentID = UUID.randomUUID();
-        final DynamicListElement listItem = DynamicListElement
-            .builder()
-            .label("[pdf.pdf A - Application Form](http://manage-case.demo.platform.hmcts.net/documents/" + testDocumentID + "/binary)")
-            .code(UUID.randomUUID())
-            .build();
-        elements.add(listItem);
-        contactPartiesDocuments.setDocumentList(DynamicMultiSelectList
-            .builder()
-            .value(elements)
-            .listItems(elements)
-            .build());
         final CaseData caseData = caseData();
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         caseData.setCicCase(
@@ -226,8 +211,14 @@ public class CaseworkerContactPartiesIT extends IntegrationTestBase {
                 .respondentEmail("respondent@test.com")
                 .applicantFullName("Applicant Name")
                 .applicantEmailAddress("applicant@test.com")
+                .applicantDocumentsUploaded(getCaseworkerCICDocumentList("pdf.pdf"))
                 .build()
         );
+        DynamicMultiSelectList documentList = DocumentListUtil.prepareContactPartiesDocumentList(caseData,
+            "http://manage-case.demo.platform.hmcts.net");
+        assertThat(documentList.getListItems()).hasSize(1);
+        documentList.setValue(List.of(documentList.getListItems().getFirst()));
+        contactPartiesDocuments.setDocumentList(documentList);
         caseData.setContactPartiesDocuments(contactPartiesDocuments);
 
         NotificationResponse notificationResponse1 = NotificationResponse.builder().id(NOTIFICATION_RESPONSE_ID_1).build();

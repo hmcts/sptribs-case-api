@@ -14,6 +14,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.time.format.DateTimeFormatter;
@@ -200,6 +201,22 @@ public class NotificationHelper {
                 uploadedDocuments.get(CASE_DOCUMENT + count));
         }
 
+        return uploadedDocuments;
+    }
+
+    public Map<String, String> buildDocumentListFromDocuments(List<CaseworkerCICDocument> documents, int docAttachLimit) {
+        if (documents.size() > docAttachLimit) {
+            throw new IllegalArgumentException("Too many selected documents");
+        }
+        final Map<String, String> uploadedDocuments = new HashMap<>();
+        for (int index = 0; index < docAttachLimit; index++) {
+            String number = String.valueOf(index + 1);
+            boolean available = index < documents.size();
+            uploadedDocuments.put(DOC_AVAILABLE + number, available ? YES : NO);
+            uploadedDocuments.put(CASE_DOCUMENT + number, available
+                ? StringUtils.substringAfterLast(documents.get(index).getDocumentLink().getUrl(), "/")
+                : EMPTY_PLACEHOLDER);
+        }
         return uploadedDocuments;
     }
 
