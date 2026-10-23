@@ -24,7 +24,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
-import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.document.model.OrderDecisionUploadCICDocument;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
@@ -202,7 +202,7 @@ public class CaseworkerIssueFinalDecisionIT extends IntegrationTestBase {
 
     @Test
     void shouldValidateUploadedDocumentInMidEvent() throws Exception {
-        final CICDocument document = CICDocument.builder()
+        final OrderDecisionUploadCICDocument document = OrderDecisionUploadCICDocument.builder()
             .documentLink(Document.builder().url("url").binaryUrl("binary").filename("filename.pdf").build())
             .build();
 
@@ -232,7 +232,7 @@ public class CaseworkerIssueFinalDecisionIT extends IntegrationTestBase {
 
     @Test
     void shouldSetCategoryIdOnDecisionDocumentInAboutToSubmit() throws Exception {
-        final CICDocument document = CICDocument.builder()
+        final OrderDecisionUploadCICDocument document = OrderDecisionUploadCICDocument.builder()
             .documentLink(Document.builder().url("url").binaryUrl("binary").filename("filename.pdf").build())
             .build();
 
@@ -264,7 +264,7 @@ public class CaseworkerIssueFinalDecisionIT extends IntegrationTestBase {
 
     @Test
     void shouldReturnConfirmationMessageIfNotificationsDispatchedOnSubmitted() throws Exception {
-        final CICDocument cicDocument = CICDocument.builder()
+        final OrderDecisionUploadCICDocument cicDocument = OrderDecisionUploadCICDocument.builder()
             .documentLink(Document.builder().url("url").binaryUrl("binary").filename("filename.pdf").build())
             .build();
 

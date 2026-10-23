@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.times;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOCUMENT_VALIDATION_MESSAGE;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCICDocumentList;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getOrderDecisionUploadCICDocumentList;
 
 @ExtendWith(MockitoExtension.class)
 public class SendOrderUploadOrderTest {
@@ -33,7 +33,7 @@ public class SendOrderUploadOrderTest {
     void midEventReturnsErrorWithWrongDocumentType() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder()
-            .orderFile(getCICDocumentList("file.uml"))
+            .orderFile(getOrderDecisionUploadCICDocumentList("file.uml"))
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
@@ -50,7 +50,7 @@ public class SendOrderUploadOrderTest {
     void midEventReturnsNoErrorsWithUploadedDocuments() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder()
-            .orderFile(getCICDocumentList("file.pdf"))
+            .orderFile(getOrderDecisionUploadCICDocumentList("file.pdf"))
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
@@ -67,7 +67,7 @@ public class SendOrderUploadOrderTest {
     void midEventValidatesUploadedDocuments() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder()
-            .orderFile(getCICDocumentList("file.txt"))
+            .orderFile(getOrderDecisionUploadCICDocumentList("file.txt"))
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
@@ -79,7 +79,7 @@ public class SendOrderUploadOrderTest {
 
             sendOrderUploadOrder.midEvent(caseDetails, caseDetails);
 
-            mockedDocumentUtils.verify(() ->  DocumentUtil.validateDocumentFormat(anyList()), times(1));
+            mockedDocumentUtils.verify(() ->  DocumentUtil.validateOrderDecisionUploadCICDocumentFormatList(anyList()), times(1));
         }
     }
 }

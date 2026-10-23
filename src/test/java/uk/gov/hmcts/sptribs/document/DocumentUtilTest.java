@@ -16,6 +16,7 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentInfo;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.model.OrderDecisionUploadCICDocument;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -378,7 +379,7 @@ class DocumentUtilTest {
     @Test
     void shouldNotReturnErrorsWhenDecisionDocumentIsNull() {
         //When
-        List<String> errors = DocumentUtil.validateDecisionDocumentFormat(null);
+        List<String> errors = DocumentUtil.validateOrderDecisionUploadCICDocumentFormat(null);
 
         //Then
         assertThat(errors).hasSize(0);
@@ -387,10 +388,10 @@ class DocumentUtilTest {
     @Test
     void shouldNotReturnErrorsWhenDecisionDocumentIsValid() {
         //Given
-        final CICDocument document = createCICDocument(PDF_FILE);
+        final OrderDecisionUploadCICDocument document = createOrderDecisionUploadCICDocument(PDF_FILE);
 
         //When
-        List<String> errors = DocumentUtil.validateDecisionDocumentFormat(document);
+        List<String> errors = DocumentUtil.validateOrderDecisionUploadCICDocumentFormat(document);
 
         //Then
         assertThat(errors).hasSize(0);
@@ -399,10 +400,10 @@ class DocumentUtilTest {
     @Test
     void shouldReturnErrorsWhenDecisionDocumentIsInvalid() {
         //Given
-        final CICDocument document = createCICDocument(INVALID_FILE);
+        final OrderDecisionUploadCICDocument document = createOrderDecisionUploadCICDocument(INVALID_FILE);
 
         //When
-        List<String> errors = DocumentUtil.validateDecisionDocumentFormat(document);
+        List<String> errors = DocumentUtil.validateOrderDecisionUploadCICDocumentFormat(document);
 
         //Then
         assertThat(errors).hasSize(1);
@@ -724,8 +725,8 @@ class DocumentUtilTest {
         );
     }
 
-    private CICDocument createCICDocument(String fileName) {
-        return CICDocument.builder()
+    private OrderDecisionUploadCICDocument createOrderDecisionUploadCICDocument(String fileName) {
+        return OrderDecisionUploadCICDocument.builder()
             .documentLink(Document.builder().filename(fileName).build())
             .documentEmailContent(EMAIL_CONTENT)
             .build();
