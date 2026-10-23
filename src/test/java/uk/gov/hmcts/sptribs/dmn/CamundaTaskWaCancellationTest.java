@@ -67,9 +67,42 @@ class CamundaTaskWaCancellationTest extends DmnDecisionTableBaseUnitTest {
     void if_this_test_fails_needs_updating_with_your_changes() {
         //The purpose of this test is to prevent adding new rows without being tested
         DmnDecisionTableImpl logic = (DmnDecisionTableImpl) decision.getDecisionLogic();
-        assertThat(logic.getInputs().size(), is(3));
+        assertThat(logic.getInputs().size(), is(4));
         assertThat(logic.getOutputs().size(), is(4));
-        assertThat(logic.getRules().size(), is(5));
+        assertThat(logic.getRules().size(), is(6));
+    }
+
+    @Test
+    void cancelsOnlyTheHearingWhoseAttemptKeyWasPublished() {
+        VariableMap input = new VariableMapImpl();
+        input.putValue("event", "caseworker-edit-record-listing");
+        input.putValue("additionalData", Map.of("Data", Map.of("cancelHearingJudgeTaskTrigger", "hearing-one")));
+
+        assertThat(evaluateDmnTable(input).getResultList(), is(List.of(
+            Map.of("action", "Reconfigure"),
+            Map.of("action", "Cancel", "processCategories", "HearingJudgeAssignment_hearing-one")
+        )));
+    }
+
+    @Test
+    void doesNotCancelHearingJudgeTaskWithoutCancellationKey() {
+        VariableMap input = new VariableMapImpl();
+        input.putValue("event", "caseworker-edit-record-listing");
+        input.putValue("additionalData", Map.of("Data", Map.of()));
+
+        assertThat(evaluateDmnTable(input).getResultList(), is(List.of(Map.of("action", "Reconfigure"))));
+    }
+
+    @Test
+    void usesDifferentProcessCategoriesForDifferentHearingsOnTheSameCase() {
+        VariableMap input = new VariableMapImpl();
+        input.putValue("event", "caseworker-edit-record-listing");
+        input.putValue("additionalData", Map.of("Data", Map.of("cancelHearingJudgeTaskTrigger", "hearing-two")));
+
+        assertThat(evaluateDmnTable(input).getResultList(), is(List.of(
+            Map.of("action", "Reconfigure"),
+            Map.of("action", "Cancel", "processCategories", "HearingJudgeAssignment_hearing-two")
+        )));
     }
 
     @ParameterizedTest(name = "from state: {0}, event id: {1}, state: {2}")

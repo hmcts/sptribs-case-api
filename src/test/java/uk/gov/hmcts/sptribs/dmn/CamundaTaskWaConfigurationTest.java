@@ -1370,7 +1370,24 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
         DmnDecisionTableImpl logic = (DmnDecisionTableImpl) decision.getDecisionLogic();
         assertThat(logic.getInputs().size(), is(2));
         assertThat(logic.getOutputs().size(), is(3));
-        assertEquals(45, logic.getRules().size());
+        assertEquals(49, logic.getRules().size());
+    }
+
+    @Test
+    void shouldConfigureAssignHearingJudgeForAdminWithManualCompletion() {
+        VariableMap input = new VariableMapImpl();
+        input.putValue("taskType", "assignHearingJudge");
+        input.putValue("caseData", CaseDataBuilder.defaultCase().build());
+        List<Map<String, Object>> results = evaluateDmnTable(input).getResultList();
+
+        assertTrue(results.stream().anyMatch(value -> "workType".equals(value.get("name"))
+            && "hearing_work".equals(value.get("value"))));
+        assertTrue(results.stream().anyMatch(value -> "roleCategory".equals(value.get("name"))
+            && "ADMIN".equals(value.get("value"))));
+        assertTrue(results.stream().anyMatch(value -> "dueDateIntervalDays".equals(value.get("name"))
+            && "1".equals(value.get("value").toString())));
+        assertTrue(results.stream().anyMatch(value -> "description".equals(value.get("name"))
+            && value.get("value").toString().contains("manually complete")));
     }
 
     @ParameterizedTest(name = "task type: {0} case data: {1}")

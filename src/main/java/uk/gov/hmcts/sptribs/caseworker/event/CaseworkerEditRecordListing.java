@@ -21,6 +21,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.RemoteHearingInfo;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SelectHearing;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
+import uk.gov.hmcts.sptribs.caseworker.service.HearingJudgeTaskService;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -71,6 +72,9 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
 
     @Autowired
     private HearingService hearingService;
+
+    @Autowired
+    private HearingJudgeTaskService hearingJudgeTaskService;
 
     @Autowired
     private ListingUpdatedNotification listingUpdatedNotification;
@@ -159,6 +163,8 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
         recordListHelper.getNotificationParties(caseData);
         caseData.setListing(recordListHelper.checkAndUpdateVenueInformation(caseData.getListing()));
         caseData.setCurrentEvent("");
+
+        hearingJudgeTaskService.updateTask(caseData, caseData.getListing());
 
         final String hearingName = caseData.getCicCase().getHearingList().getValue().getLabel();
 
