@@ -70,12 +70,15 @@ public class IssueDecisionUploadNoticeTest {
             .build();
         caseDetails.setData(caseData);
         try (MockedStatic<DocumentUtil> mockedDocumentUtils = Mockito.mockStatic(DocumentUtil.class)) {
-            mockedDocumentUtils.when(() -> DocumentUtil.validateOrderDecisionUploadCICDocumentFormat(any(OrderDecisionUploadCICDocument.class)))
+            mockedDocumentUtils.when(() -> DocumentUtil
+                .validateOrderDecisionUploadCICDocumentFormat(any(OrderDecisionUploadCICDocument.class)))
                 .thenReturn(Collections.emptyList());
 
             issueDecisionUploadNotice.midEvent(caseDetails, caseDetails);
 
-            mockedDocumentUtils.verify(() ->  DocumentUtil.validateOrderDecisionUploadCICDocumentFormat(any(OrderDecisionUploadCICDocument.class)), times(1));
+            mockedDocumentUtils.verify(
+                () -> DocumentUtil.validateOrderDecisionUploadCICDocumentFormat(any(OrderDecisionUploadCICDocument.class)),
+                times(1));
         }
     }
 }

@@ -79,7 +79,7 @@ public class SendOrderUploadOrderTest {
 
             sendOrderUploadOrder.midEvent(caseDetails, caseDetails);
 
-            mockedDocumentUtils.verify(() ->  DocumentUtil.validateDocumentFormat(anyList()), times(1));
+            mockedDocumentUtils.verify(() ->  DocumentUtil.validateOrderDecisionUploadCICDocumentFormatList(anyList()), times(1));
         }
     }
 }

@@ -13,7 +13,7 @@ import uk.gov.hmcts.sptribs.document.model.OrderDecisionUploadCICDocument;
 
 import java.util.List;
 
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateListOrderDecisionUploadCICDocumentFormat;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateOrderDecisionUploadCICDocumentFormatList;
 
 public class SendOrderUploadOrder implements CcdPageConfiguration {
 
@@ -49,7 +49,7 @@ public class SendOrderUploadOrder implements CcdPageConfiguration {
                                                                    CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
         List<ListValue<OrderDecisionUploadCICDocument>> uploadedDocuments = data.getCicCase().getOrderFile();
-        final List<String> errors = validateListOrderDecisionUploadCICDocumentFormat(uploadedDocuments);
+        final List<String> errors = validateOrderDecisionUploadCICDocumentFormatList(uploadedDocuments);
 
         data.getCicCase().setOrderTemplateIssued(data.getCicCase().getOrderFile().getFirst().getValue().getDocumentLink());
 

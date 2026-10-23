@@ -93,7 +93,9 @@ public final class DocumentUtil {
         return errors;
     }
 
-    public static List<String> validateListOrderDecisionUploadCICDocumentFormat(List<ListValue<OrderDecisionUploadCICDocument>> documentList) {
+    public static List<String> validateOrderDecisionUploadCICDocumentFormatList(
+        List<ListValue<OrderDecisionUploadCICDocument>> documentList
+    ) {
         final List<String> errors = new ArrayList<>();
 
         if (CollectionUtils.isNotEmpty(documentList)) {

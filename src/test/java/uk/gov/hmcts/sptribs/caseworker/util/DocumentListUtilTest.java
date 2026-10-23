@@ -525,7 +525,10 @@ public class DocumentListUtilTest {
     void shouldGenerateFinalDecisionDocList() {
         //Given
         CaseIssueFinalDecision decision = CaseIssueFinalDecision.builder()
-            .document(OrderDecisionUploadCICDocument.builder().documentLink(Document.builder().filename("name").binaryUrl("d").build()).build())
+            .document(
+                OrderDecisionUploadCICDocument.builder().documentLink(
+                    Document.builder().filename("name").binaryUrl("d").build()
+                ).build())
             .build();
 
         final CaseData caseData = CaseData.builder().build();

@@ -476,15 +476,12 @@ class CaseworkerCreateAndSendOrderTest {
             .documentLink(document)
             .documentEmailContent("Some test content")
             .build();
-        CICDocument expectedCicDocument = CICDocument.builder()
-            .documentLink(document)
-            .documentEmailContent("Some test content")
-            .build();
 
 
         final CaseData caseData = CaseData.builder().build();
         CicCase cicCase1 = getCicCase(UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER, YesOrNo.NO, null, null);
-        List<ListValue<OrderDecisionUploadCICDocument>> orderFile = List.of(ListValue.<OrderDecisionUploadCICDocument>builder().value(uploadCicDocument).build());
+        List<ListValue<OrderDecisionUploadCICDocument>> orderFile = List.of(
+            ListValue.<OrderDecisionUploadCICDocument>builder().value(uploadCicDocument).build());
         cicCase1.setOrderFile(orderFile);
         caseData.setCicCase(cicCase1);
         caseData.setOrderDueDates(List.of(ListValue.<DateModel>builder().value(DATE_MODEL).build()));
@@ -512,6 +509,10 @@ class CaseworkerCreateAndSendOrderTest {
         List<ListValue<Order>> orderList = cicCase.getOrderList();
         assertThat(orderList).isNotNull().hasSize(1);
 
+        CICDocument expectedCicDocument = CICDocument.builder()
+            .documentLink(document)
+            .documentEmailContent("Some test content")
+            .build();
         List<ListValue<CICDocument>> expectedOrderFile = List.of(ListValue.<CICDocument>builder().value(expectedCicDocument).build());
         final Order expectedOrder = getExpectedOrder(null, expectedOrderFile);
         Order order = orderList.getFirst().getValue();
@@ -757,7 +758,8 @@ class CaseworkerCreateAndSendOrderTest {
 
         final CaseData caseData = CaseData.builder().build();
         CicCase cicCase = getCicCase(UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER, YesOrNo.NO, null, null);
-        List<ListValue<OrderDecisionUploadCICDocument>> orderFile = List.of(ListValue.<OrderDecisionUploadCICDocument>builder().value(cicDocument).build());
+        List<ListValue<OrderDecisionUploadCICDocument>> orderFile = List.of(
+            ListValue.<OrderDecisionUploadCICDocument>builder().value(cicDocument).build());
         cicCase.setOrderFile(orderFile);
         caseData.setCicCase(cicCase);
         caseData.setOrderDueDates(List.of(ListValue.<DateModel>builder().value(DATE_MODEL).build()));
