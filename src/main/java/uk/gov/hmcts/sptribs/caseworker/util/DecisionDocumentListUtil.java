@@ -9,7 +9,8 @@ import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil.*;
+import static uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil.EMPTY_ORDER_DECISION_UPLOAD_DOCUMENT;
+import static uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil.addToRemovedDocuments;
 
 public  final class DecisionDocumentListUtil {
 

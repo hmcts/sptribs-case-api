@@ -22,8 +22,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.document.DocumentUtil;
-import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.OrderDecisionUploadCICDocument;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
@@ -83,7 +83,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
             final UUID uuid = UUID.randomUUID();
             final Document guidanceDocument = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
             final Document decisionDocument = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
-            final CICDocument document = CICDocument.builder()
+            final OrderDecisionUploadCICDocument document = OrderDecisionUploadCICDocument.builder()
                 .documentLink(decisionDocument)
                 .documentEmailContent("content")
                 .build();
@@ -378,7 +378,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
             data.getCicCase().setApplicantEmailAddress("testapp@outlook.com");
 
             Document decisionDocument = TestDataHelper.getDocumentWithBinary("decisionDocument");
-            final CICDocument document = CICDocument.builder()
+            final OrderDecisionUploadCICDocument document = OrderDecisionUploadCICDocument.builder()
                 .documentLink(decisionDocument)
                 .documentEmailContent("content")
                 .build();
@@ -459,7 +459,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
             data.getCicCase().setEmail("testsubject@outlook.com");
 
             Document decisionDocument = TestDataHelper.getDocumentWithBinary("decisionDocument");
-            final CICDocument document = CICDocument.builder()
+            final OrderDecisionUploadCICDocument document = OrderDecisionUploadCICDocument.builder()
                 .documentLink(decisionDocument)
                 .documentEmailContent("content")
                 .build();

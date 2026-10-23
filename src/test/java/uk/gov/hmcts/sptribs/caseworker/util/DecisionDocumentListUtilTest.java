@@ -9,9 +9,9 @@ import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
-import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.model.OrderDecisionUploadCICDocument;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +49,7 @@ public class DecisionDocumentListUtilTest {
     void shouldGenerateFinalDecisionDocFromCICDocument() {
         //Given
         final Document document = Document.builder().filename("name").binaryUrl("d").build();
-        final CICDocument cicDocument = CICDocument.builder()
+        final OrderDecisionUploadCICDocument cicDocument = OrderDecisionUploadCICDocument.builder()
             .documentLink(document)
             .documentEmailContent("Test content")
             .build();
@@ -76,7 +76,7 @@ public class DecisionDocumentListUtilTest {
     void shouldGenerateDecisionDocFromCICDocument() {
         //Given
         final Document document = Document.builder().filename("name").binaryUrl("d").build();
-        final CICDocument cicDocument = CICDocument.builder()
+        final OrderDecisionUploadCICDocument cicDocument = OrderDecisionUploadCICDocument.builder()
             .documentLink(document)
             .documentEmailContent("Test content")
             .build();
@@ -165,7 +165,7 @@ public class DecisionDocumentListUtilTest {
 
         final CaseData oldData = caseData();
         final Document document = Document.builder().url("url1").binaryUrl("url1").filename("name1").build();
-        final CICDocument docOld = CICDocument.builder().documentLink(document).build();
+        final OrderDecisionUploadCICDocument docOld = OrderDecisionUploadCICDocument.builder().documentLink(document).build();
         oldData.setCaseIssueFinalDecision(CaseIssueFinalDecision.builder().document(docOld).build());
 
         final CicCase cicCaseOld = CicCase.builder().build();
@@ -220,7 +220,7 @@ public class DecisionDocumentListUtilTest {
         caseworkerCICDocumentListValue.setId("1");
         caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
 
-        final CICDocument cicDocument = CICDocument.builder().documentLink(document).build();
+        final OrderDecisionUploadCICDocument cicDocument = OrderDecisionUploadCICDocument.builder().documentLink(document).build();
         final CaseData caseData = caseData();
         caseData.getCaseIssueFinalDecision().setDocument(cicDocument);
         final CicCase cicCase = CicCase.builder()
@@ -232,7 +232,7 @@ public class DecisionDocumentListUtilTest {
         DecisionDocumentListUtil.removeFinalDecisionDraftAndCICDocument(caseData, caseworkerCICDocumentListValue);
 
         //Then
-        assertThat(caseData.getCaseIssueFinalDecision().getDocument()).isEqualTo(EMPTY_DOCUMENT);
+        assertThat(caseData.getCaseIssueFinalDecision().getDocument()).isEqualTo(EMPTY_ORDER_DECISION_UPLOAD_DOCUMENT);
     }
 
     @Test
@@ -279,7 +279,7 @@ public class DecisionDocumentListUtilTest {
 
         final CaseData oldData = caseData();
         final Document document = Document.builder().url("url1").binaryUrl("url1").filename("name1").build();
-        final CICDocument docOld = CICDocument.builder().documentLink(document).build();
+        final OrderDecisionUploadCICDocument docOld = OrderDecisionUploadCICDocument.builder().documentLink(document).build();
         oldData.setCaseIssueDecision(CaseIssueDecision.builder().decisionDocument(docOld).build());
 
         final CicCase cicCaseOld = CicCase.builder().build();
@@ -334,7 +334,7 @@ public class DecisionDocumentListUtilTest {
         caseworkerCICDocumentListValue.setId("1");
         caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
 
-        final CICDocument cicDocument = CICDocument.builder().documentLink(document).build();
+        final OrderDecisionUploadCICDocument cicDocument = OrderDecisionUploadCICDocument.builder().documentLink(document).build();
         final CaseData caseData = caseData();
         caseData.getCaseIssueDecision().setDecisionDocument(cicDocument);
         final CicCase cicCase = CicCase.builder()

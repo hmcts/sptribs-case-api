@@ -30,6 +30,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.model.OrderDecisionUploadCICDocument;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.AnonymityAppliedNotification;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
@@ -471,14 +472,19 @@ class CaseworkerCreateAndSendOrderTest {
             .url("url/documents/uuid")
             .build();
 
-        CICDocument cicDocument = CICDocument.builder()
+        OrderDecisionUploadCICDocument uploadCicDocument = OrderDecisionUploadCICDocument.builder()
+            .documentLink(document)
+            .documentEmailContent("Some test content")
+            .build();
+        CICDocument expectedCicDocument = CICDocument.builder()
             .documentLink(document)
             .documentEmailContent("Some test content")
             .build();
 
+
         final CaseData caseData = CaseData.builder().build();
         CicCase cicCase1 = getCicCase(UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER, YesOrNo.NO, null, null);
-        List<ListValue<CICDocument>> orderFile = List.of(ListValue.<CICDocument>builder().value(cicDocument).build());
+        List<ListValue<OrderDecisionUploadCICDocument>> orderFile = List.of(ListValue.<OrderDecisionUploadCICDocument>builder().value(uploadCicDocument).build());
         cicCase1.setOrderFile(orderFile);
         caseData.setCicCase(cicCase1);
         caseData.setOrderDueDates(List.of(ListValue.<DateModel>builder().value(DATE_MODEL).build()));
@@ -506,7 +512,8 @@ class CaseworkerCreateAndSendOrderTest {
         List<ListValue<Order>> orderList = cicCase.getOrderList();
         assertThat(orderList).isNotNull().hasSize(1);
 
-        final Order expectedOrder = getExpectedOrder(null, orderFile);
+        List<ListValue<CICDocument>> expectedOrderFile = List.of(ListValue.<CICDocument>builder().value(expectedCicDocument).build());
+        final Order expectedOrder = getExpectedOrder(null, expectedOrderFile);
         Order order = orderList.getFirst().getValue();
         assertThat(order).isEqualTo(expectedOrder);
         assertThat(order.getUploadedFile().getFirst().getValue().getDocumentLink().getCategoryId()).isEqualTo("TD");
@@ -743,14 +750,14 @@ class CaseworkerCreateAndSendOrderTest {
             .url("url/documents/uuid")
             .build();
 
-        CICDocument cicDocument = CICDocument.builder()
+        OrderDecisionUploadCICDocument cicDocument = OrderDecisionUploadCICDocument.builder()
             .documentLink(document)
             .documentEmailContent("Some test content")
             .build();
 
         final CaseData caseData = CaseData.builder().build();
         CicCase cicCase = getCicCase(UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER, YesOrNo.NO, null, null);
-        List<ListValue<CICDocument>> orderFile = List.of(ListValue.<CICDocument>builder().value(cicDocument).build());
+        List<ListValue<OrderDecisionUploadCICDocument>> orderFile = List.of(ListValue.<OrderDecisionUploadCICDocument>builder().value(cicDocument).build());
         cicCase.setOrderFile(orderFile);
         caseData.setCicCase(cicCase);
         caseData.setOrderDueDates(List.of(ListValue.<DateModel>builder().value(DATE_MODEL).build()));
@@ -773,7 +780,7 @@ class CaseworkerCreateAndSendOrderTest {
 
         cicDocument.getDocumentLink().setFilename(null);
         cicCase = getCicCase(UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER, YesOrNo.NO, null, null);
-        cicCase.setOrderFile(List.of(ListValue.<CICDocument>builder().value(cicDocument).build()));
+        cicCase.setOrderFile(List.of(ListValue.<OrderDecisionUploadCICDocument>builder().value(cicDocument).build()));
         caseData.setCicCase(cicCase);
         details.setData(caseData);
 
@@ -784,7 +791,7 @@ class CaseworkerCreateAndSendOrderTest {
 
         cicDocument.getDocumentLink().setFilename("");
         cicCase = getCicCase(UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER, YesOrNo.NO, null, null);
-        cicCase.setOrderFile(List.of(ListValue.<CICDocument>builder().value(cicDocument).build()));
+        cicCase.setOrderFile(List.of(ListValue.<OrderDecisionUploadCICDocument>builder().value(cicDocument).build()));
         caseData.setCicCase(cicCase);
         details.setData(caseData);
 

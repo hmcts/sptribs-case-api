@@ -11,7 +11,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.document.DocumentConstants;
-import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.document.model.OrderDecisionUploadCICDocument;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -24,7 +24,7 @@ class IssueFinalDecisionUploadTest {
     void shouldReturnErrorsInvalidDocumentUploaded() {
         //Given
 
-        final CICDocument document = CICDocument.builder()
+        final OrderDecisionUploadCICDocument document = OrderDecisionUploadCICDocument.builder()
             .documentLink(Document.builder().binaryUrl("url").url("url").filename("file.sql").build())
             .documentEmailContent("content")
             .build();
