@@ -41,7 +41,6 @@ class IssueFinalDecisionUploadTest {
         AboutToStartOrSubmitResponse<CaseData, State> response = issueFinalDecisionUpload.midEvent(caseDetails, caseDetails);
 
         //Then
-        assertThat(response.getErrors()).isEmpty();
         assertThat(response.getErrors()).contains(DocumentConstants.DOCUMENT_VALIDATION_MESSAGE);
     }
 

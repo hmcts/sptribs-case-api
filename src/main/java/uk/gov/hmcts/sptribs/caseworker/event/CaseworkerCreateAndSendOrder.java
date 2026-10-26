@@ -198,7 +198,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
 
     private void populateDraftOrder(Order.OrderBuilder orderBuilder, CaseData caseData, CicCase cicCase, List<String> errors,
                                     long caseReferenceNumber) {
-        if (!CREATE_AND_SEND_NEW_ORDER.equals(cicCase.getOrderIssuingType())) {
+        if (!CREATE_AND_SEND_NEW_ORDER.equals(cicCase.getOrderIssuingType()) || cicCase.getOrderTemplateIssued() == null) {
             return;
         }
 
@@ -225,12 +225,8 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
 
     private void populateUploadedOrder(Order.OrderBuilder orderBuilder, CicCase cicCase, List<String> errors,
                                        long caseReferenceNumber) {
-        if (!UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER.equals(cicCase.getOrderIssuingType())) {
+        if (!UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER.equals(cicCase.getOrderIssuingType()) || cicCase.getOrderFile() == null) {
             return;
-        }
-
-        if (cicCase.getOrderFile() == null) {
-            throw new IllegalArgumentException("orderFile was null, this should be impossible at the submit stage");
         }
 
         List<ListValue<CICDocument>> documents = convertToCICDocuments(cicCase.getOrderFile());
