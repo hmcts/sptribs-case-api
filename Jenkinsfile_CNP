@@ -26,59 +26,56 @@ static Map<String, Object> secret(String secretName, String envVariable) {
 def githubApi = new GithubAPI(this) as Object
 
 def secrets = [
-        's2s-${env}'      : [
-                secret('microservicekey-ccd-data', 'DATA_STORE_S2S_KEY'),
-                secret('microservicekey-ccd-definition', 'DEFINITION_STORE_S2S_KEY'),
-                secret('microservicekey-ccd-gw', 'CCD_API_GATEWAY_S2S_KEY'),
-                secret('microservicekey-ccd-admin', 'ADMIN_S2S_KEY'),
-                secret('microservicekey-ccd-data', 'CCD_DATA_STORE_S2S_SECRET'),
-                secret('microservicekey-ccd-definition', 'CCD_DEFINITION_STORE_S2S_SECRET')
-        ],
-        'ccd-${env}'      : [
-                secret('ccd-api-gateway-oauth2-client-secret', 'CCD_API_GATEWAY_OAUTH2_CLIENT_SECRET'),
-                secret('ccd-admin-web-oauth2-client-secret', 'ADMIN_WEB_IDAM_SECRET'),
-                secret('postcode-info-address-lookup-token', 'ADDRESS_LOOKUP_TOKEN'),
-                secret('idam-data-store-client-secret','IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET'),
-                secret('idam-data-store-system-user-username','IDAM_DATA_STORE_SYSTEM_USER_USERNAME'),
-                secret('idam-data-store-system-user-password','IDAM_DATA_STORE_SYSTEM_USER_PASSWORD'),
-                secret('session-keys', 'SESSION_KEYS'),
-        ],
-        'sptribs-${env}'    :[
-                secret('app-insights-instrumentation-key', 'APPINSIGHTS_INSTRUMENTATIONKEY'),
-                secret('idam-secret', 'OAUTH2_CLIENT_SECRET'),
-                secret('idam-solicitor-username', 'IDAM_SOLICITOR_USERNAME'),
-                secret('idam-solicitor-password', 'IDAM_SOLICITOR_PASSWORD'),
-                secret('caseworker-user', 'IDAM_CASEWORKER_USERNAME'),
-                secret('caseworker-password', 'IDAM_CASEWORKER_PASSWORD'),
-                secret('idam-systemupdate-username', 'IDAM_SYSTEM_UPDATE_USERNAME'),
-                secret('idam-systemupdate-password', 'IDAM_SYSTEM_UPDATE_PASSWORD'),
-                secret('wa-seniorCaseworker-username', 'IDAM_WA_SENIOR_CASEWORKER_USERNAME'),
-                secret('wa-seniorCaseworker-password', 'IDAM_WA_SENIOR_CASEWORKER_PASSWORD'),
-                secret('wa-seniorCaseworker-uid', 'WA_SENIOR_CASEWORKER_UID'),
-                secret('wa-regionalHearingCentreTeamLead-username', 'IDAM_WA_REGIONAL_HEARING_CENTRE_TEAM_LEAD_USERNAME'),
-                secret('wa-regionalHearingCentreTeamLead-password', 'IDAM_WA_REGIONAL_HEARING_CENTRE_TEAM_LEAD_PASSWORD'),
-                secret('wa-regionalHearingCentreTeamLead-uid', 'IDAM_WA_REGIONAL_HEARING_CENTRE_TEAM_LEAD_UID'),
-                secret('citizen-user', 'IDAM_CITIZEN_USERNAME'),
-                secret('citizen-password', 'IDAM_CITIZEN_PASSWORD'),
-                secret('sptribs-postgres-username-preview', 'SPTRIBS_POSTGRES_USERNAME_PREVIEW'),
-                secret('sptribs-postgres-password-preview', 'SPTRIBS_POSTGRES_PASSWORD_PREVIEW'),
-                secret('sptribs-POSTGRES-USER','POSTGRES_USERNAME_AAT'),
-                secret('sptribs-POSTGRES-PASS','POSTGRES_PASSWORD_AAT'),
-                secret('ccd-global-postgres-username-preview', 'CCD_GLOBAL_POSTGRES_USERNAME_PREVIEW'),
-                secret('ccd-global-postgres-password-preview', 'CCD_GLOBAL_POSTGRES_PASSWORD_PREVIEW'),
-                secret('ccd-data-store-db-username-preview', 'CCD_DATA_STORE_DB_USERNAME_PREVIEW'),
-                secret('ccd-data-store-db-password-preview', 'CCD_DATA_STORE_DB_PASSWORD_PREVIEW'),
-                secret('ccd-user-profile-db-username-preview', 'CCD_USER_PROFILE_DB_USERNAME_PREVIEW'),
-                secret('ccd-user-profile-db-password-preview', 'CCD_USER_PROFILE_DB_PASSWORD_PREVIEW'),
-                secret('em-spring-datasource-username-preview', 'EM_SPRING_DATASOURCE_USERNAME_PREVIEW'),
-                secret('em-spring-datasource-password-preview', 'EM_SPRING_DATASOURCE_PASSWORD_PREVIEW'),
-                secret('s2s-case-api-secret', 'S2S_SECRET'),
-                secret('ccd-importer-username', 'DEFINITION_IMPORTER_USERNAME'),
-                secret('ccd-importer-password', 'DEFINITION_IMPORTER_PASSWORD')
-        ],
-        'sptribs-prod'    :[
-          secret('s2s-case-api-secret', 'S2S_SECRET_PROD')
-        ]
+  's2s-${env}'      : [
+    secret('microservicekey-ccd-data', 'DATA_STORE_S2S_KEY'),
+    secret('microservicekey-ccd-definition', 'DEFINITION_STORE_S2S_KEY'),
+    secret('microservicekey-ccd-gw', 'CCD_API_GATEWAY_S2S_KEY'),
+    secret('microservicekey-ccd-admin', 'ADMIN_S2S_KEY'),
+    secret('microservicekey-ccd-data', 'CCD_DATA_STORE_S2S_SECRET'),
+    secret('microservicekey-ccd-definition', 'CCD_DEFINITION_STORE_S2S_SECRET')
+  ],
+  'ccd-${env}'      : [
+    secret('ccd-api-gateway-oauth2-client-secret', 'CCD_API_GATEWAY_OAUTH2_CLIENT_SECRET'),
+    secret('ccd-admin-web-oauth2-client-secret', 'ADMIN_WEB_IDAM_SECRET'),
+    secret('postcode-info-address-lookup-token', 'ADDRESS_LOOKUP_TOKEN'),
+    secret('idam-data-store-client-secret','IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET'),
+    secret('idam-data-store-system-user-username','IDAM_DATA_STORE_SYSTEM_USER_USERNAME'),
+    secret('idam-data-store-system-user-password','IDAM_DATA_STORE_SYSTEM_USER_PASSWORD'),
+    secret('session-keys', 'SESSION_KEYS'),
+  ],
+  'sptribs-${env}'    :[
+    secret('app-insights-instrumentation-key', 'APPINSIGHTS_INSTRUMENTATIONKEY'),
+    secret('idam-secret', 'OAUTH2_CLIENT_SECRET'),
+    secret('idam-solicitor-username', 'IDAM_SOLICITOR_USERNAME'),
+    secret('idam-solicitor-password', 'IDAM_SOLICITOR_PASSWORD'),
+    secret('caseworker-user', 'IDAM_CASEWORKER_USERNAME'),
+    secret('caseworker-password', 'IDAM_CASEWORKER_PASSWORD'),
+    secret('idam-systemupdate-username', 'IDAM_SYSTEM_UPDATE_USERNAME'),
+    secret('idam-systemupdate-password', 'IDAM_SYSTEM_UPDATE_PASSWORD'),
+    secret('wa-seniorCaseworker-username', 'IDAM_WA_SENIOR_CASEWORKER_USERNAME'),
+    secret('wa-seniorCaseworker-password', 'IDAM_WA_SENIOR_CASEWORKER_PASSWORD'),
+    secret('wa-seniorCaseworker-uid', 'WA_SENIOR_CASEWORKER_UID'),
+    secret('wa-regionalHearingCentreTeamLead-username', 'IDAM_WA_REGIONAL_HEARING_CENTRE_TEAM_LEAD_USERNAME'),
+    secret('wa-regionalHearingCentreTeamLead-password', 'IDAM_WA_REGIONAL_HEARING_CENTRE_TEAM_LEAD_PASSWORD'),
+    secret('wa-regionalHearingCentreTeamLead-uid', 'IDAM_WA_REGIONAL_HEARING_CENTRE_TEAM_LEAD_UID'),
+    secret('citizen-user', 'IDAM_CITIZEN_USERNAME'),
+    secret('citizen-password', 'IDAM_CITIZEN_PASSWORD'),
+    secret('sptribs-postgres-username-preview', 'SPTRIBS_POSTGRES_USERNAME_PREVIEW'),
+    secret('sptribs-postgres-password-preview', 'SPTRIBS_POSTGRES_PASSWORD_PREVIEW'),
+    secret('sptribs-POSTGRES-USER','POSTGRES_USERNAME_AAT'),
+    secret('sptribs-POSTGRES-PASS','POSTGRES_PASSWORD_AAT'),
+    secret('ccd-global-postgres-username-preview', 'CCD_GLOBAL_POSTGRES_USERNAME_PREVIEW'),
+    secret('ccd-global-postgres-password-preview', 'CCD_GLOBAL_POSTGRES_PASSWORD_PREVIEW'),
+    secret('ccd-data-store-db-username-preview', 'CCD_DATA_STORE_DB_USERNAME_PREVIEW'),
+    secret('ccd-data-store-db-password-preview', 'CCD_DATA_STORE_DB_PASSWORD_PREVIEW'),
+    secret('ccd-user-profile-db-username-preview', 'CCD_USER_PROFILE_DB_USERNAME_PREVIEW'),
+    secret('ccd-user-profile-db-password-preview', 'CCD_USER_PROFILE_DB_PASSWORD_PREVIEW'),
+    secret('em-spring-datasource-username-preview', 'EM_SPRING_DATASOURCE_USERNAME_PREVIEW'),
+    secret('em-spring-datasource-password-preview', 'EM_SPRING_DATASOURCE_PASSWORD_PREVIEW'),
+    secret('s2s-case-api-secret', 'S2S_SECRET'),
+    secret('ccd-importer-username', 'DEFINITION_IMPORTER_USERNAME'),
+    secret('ccd-importer-password', 'DEFINITION_IMPORTER_PASSWORD')
+  ]
 ]
 
 AppPipelineConfig pipelineConf = new AppPipelineConfig()
@@ -87,32 +84,31 @@ pipelineConf.vaultSecrets = secrets
 env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
 
 withPipeline(type, product, component) {
-    enableAksStagingDeployment()
-    disableLegacyDeployment()
-    loadVaultSecrets(secrets)
-    syncBranchesWithMaster(['demo', 'perftest', 'ithc'])
-    afterSuccess('checkout') {
-      def subscription = 'nonprod'
-      if (env.ENVIRONMENT == 'ithc' || env.ENVIRONMENT == 'demo' || env.ENVIRONMENT == 'perftest') {
-        def subscriptions = [
-          demo  : env.DEMO_SUBSCRIPTION_NAME ?: 'nonprod',
-          perftest: env.PERFTEST_SUBSCRIPTION_NAME ?: 'qa',
-          ithc    : env.ITHC_SUBSCRIPTION_NAME ?: 'qa'
-        ]
-        withSubscription(subscriptions[env.ENVIRONMENT], product, env.ENVIRONMENT) {
-          uploadDmnDiagrams()
-          uploadBpmnDiagram()
-        }
+  enableAksStagingDeployment()
+  disableLegacyDeployment()
+  loadVaultSecrets(secrets)
+  syncBranchesWithMaster(['demo', 'perftest', 'ithc'])
+  afterSuccess('checkout') {
+    if (env.ENVIRONMENT == 'ithc' || env.ENVIRONMENT == 'demo' || env.ENVIRONMENT == 'perftest') {
+      def subscriptions = [
+        demo  : env.DEMO_SUBSCRIPTION_NAME ?: 'nonprod',
+        perftest: env.PERFTEST_SUBSCRIPTION_NAME ?: 'qa',
+        ithc    : env.ITHC_SUBSCRIPTION_NAME ?: 'qa'
+      ]
+      withSubscription(subscriptions[env.ENVIRONMENT], product, env.ENVIRONMENT) {
+        uploadDmnDiagrams()
+        uploadBpmnDiagram()
       }
     }
-    enableSlackNotifications('#special-tribunals-builds')
-    MetricsPublisher metricsPublisher = new MetricsPublisher(this, currentBuild, product, component)
-    approvedEnvironmentRepository(params.environment, metricsPublisher) {
-      if(params.environment != 'prod') {
-        // enableHighLevelDataSetupForStaging()
-        enableHighLevelDataSetup()
-      }
+  }
+  enableSlackNotifications('#special-tribunals-builds')
+  MetricsPublisher metricsPublisher = new MetricsPublisher(this, currentBuild, product, component)
+  approvedEnvironmentRepository(params.environment, metricsPublisher) {
+    if(params.environment != 'prod') {
+      // enableHighLevelDataSetupForStaging()
+      enableHighLevelDataSetup()
     }
+  }
 
   afterAlways('test') {
     builder.gradle('jacocoTestReport')
@@ -193,7 +189,7 @@ withPipeline(type, product, component) {
   }
 
   afterAlways('functionalTest:aat') {
-  // afterAlways('functionalTest:staging') {
+    // afterAlways('functionalTest:staging') {
     publishHTML target: [
       allowMissing         : true,
       alwaysLinkToLastBuild: true,
@@ -216,7 +212,7 @@ withPipeline(type, product, component) {
   }
 
   afterAlways('smoketest:aat') {
-  // afterAlways('smoketest:staging') {
+    // afterAlways('smoketest:staging') {
     publishHTML target: [
       allowMissing         : true,
       alwaysLinkToLastBuild: true,
@@ -238,19 +234,7 @@ withPipeline(type, product, component) {
 //      generateDefinitions()
 //    }
 //  }
-
-//  before('highleveldatasetup') {
-//    if (env.ENVIRONMENT == "aat") {
-//      env.CCD_DEF_NAME="aat"
-//      builder.gradle('generateCCDConfig --rerun-tasks')
-//      generateDefinitions()
 //
-//      env.CCD_DEF_NAME="staging-aat"
-//    }
-//    builder.gradle('generateCCDConfig --rerun-tasks')
-//    generateDefinitions()
-//  }
-
 //  before('highleveldatasetup:aat') {
 //    env.ENVIRONMENT="aat"
 //    env.CASE_API_URL="http://sptribs-case-api-aat.service.core-compute-aat.internal"
@@ -292,9 +276,9 @@ withPipeline(type, product, component) {
     }
 
     def e2eLabels = githubApi.getLabelsbyPattern(env.BRANCH_NAME, "enable-e2e-tests")
-      if (e2eLabels.contains("enable-e2e-tests")) {
-        env.E2E_TESTS_ENABLED = true
-      }
+    if (e2eLabels.contains("enable-e2e-tests")) {
+      env.E2E_TESTS_ENABLED = true
+    }
 
     setCommonEnvVariables()
 
@@ -332,7 +316,7 @@ withPipeline(type, product, component) {
 //  }
 
   afterSuccess('functionalTest:aat') {
-  // afterSuccess('functionalTest:staging') {
+    // afterSuccess('functionalTest:staging') {
     env.CCD_DEF_NAME = 'prod'
     env.ENVIRONMENT = 'prod'
     env.DEPLOYMENT_ENVIRONMENT = 'prod'
@@ -421,25 +405,25 @@ withPipeline(type, product, component) {
     configureFtDatabase()
     if (env.E2E_TESTS_ENABLED == 'true') {
       stage('UI Tests') {
-      build job: 'HMCTS_j_to_z/sptribs-e2etests/master',
-            parameters: [
-                string(name: 'SPTRIBS_CASEAPI_URL', value: env.TEST_E2E_URL),
-            ],
-            wait: true,
-            propagate: true
-        }
+        build job: 'HMCTS_j_to_z/sptribs-e2etests/master',
+          parameters: [
+            string(name: 'SPTRIBS_CASEAPI_URL', value: env.TEST_E2E_URL),
+          ],
+          wait: true,
+          propagate: true
+      }
     }
   }
 }
 
 def setCommonEnvVariables() {
-    // env.IDAM_API_URL_BASE = "https://idam-web-public.staging.platform.hmcts.net"
-    // env.S2S_URL_BASE = "http://rpe-service-auth-provider-staging.service.core-compute-staging.internal"
-    // env.FEE_API_URL = "http://fees-register-api-staging.service.core-compute-staging.internal"
-     env.IDAM_API_URL_BASE = "https://idam-web-public.aat.platform.hmcts.net"
-     env.S2S_URL_BASE = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-     env.FEE_API_URL = "http://fees-register-api-aat.service.core-compute-aat.internal"
-    env.BEFTA_S2S_CLIENT_ID = "ccd_data"
+  // env.IDAM_API_URL_BASE = "https://idam-web-public.staging.platform.hmcts.net"
+  // env.S2S_URL_BASE = "http://rpe-service-auth-provider-staging.service.core-compute-staging.internal"
+  // env.FEE_API_URL = "http://fees-register-api-staging.service.core-compute-staging.internal"
+  env.IDAM_API_URL_BASE = "https://idam-web-public.aat.platform.hmcts.net"
+  env.S2S_URL_BASE = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+  env.FEE_API_URL = "http://fees-register-api-aat.service.core-compute-aat.internal"
+  env.BEFTA_S2S_CLIENT_ID = "ccd_data"
 }
 
 def configureFtDatabase() {
@@ -452,6 +436,8 @@ def configureFtDatabase() {
   }
 
   echo "Using FT DB user env for ${env.ENVIRONMENT}"
+  echo "FT DB HOST: ${env.FT_POSTGRES_HOST}"
+  echo "FT DB PORT: ${env.FT_POSTGRES_PORT}"
 }
 
 def generateDefinitions() {
@@ -467,8 +453,7 @@ def uploadDmnDiagrams() {
   dir("${WORKSPACE}/bin") {
     tenantId = "st_cic"
     product = "st_cic"
-    // sh "./wa/import-dmn-diagram.sh ${WORKSPACE} ${env.ENVIRONMENT} ${tenantId} ${product}"
-     sh "./wa/import-dmn-diagram.sh ${WORKSPACE} ${env} ${tenantId} ${product}"
+    sh "./wa/import-dmn-diagram.sh ${WORKSPACE} ${env.ENVIRONMENT} ${tenantId} ${product}"
   }
 }
 
