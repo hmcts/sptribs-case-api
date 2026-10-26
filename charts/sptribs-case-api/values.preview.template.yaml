@@ -149,7 +149,6 @@ ccd:
     java:
       disableKeyVaults: true
       environment:
-        IDAM_USER_URL: https://idam-api.aat.platform.hmcts.net
         CCD_DATA_STORE_URL: http://{{ .Release.Name }}-ccd-data-store-api
         RUN_LD_ON_STARTUP: false
         ORM_ENV: pr
