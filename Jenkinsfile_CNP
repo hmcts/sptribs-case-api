@@ -75,8 +75,11 @@ def secrets = [
                 secret('s2s-case-api-secret', 'S2S_SECRET'),
                 secret('ccd-importer-username', 'DEFINITION_IMPORTER_USERNAME'),
                 secret('ccd-importer-password', 'DEFINITION_IMPORTER_PASSWORD')
+        ],
+        'sptribs-prod'    :[
+          secret('s2s-case-api-secret', 'S2S_SECRET_PROD')
         ]
-  ]
+]
 
 AppPipelineConfig pipelineConf = new AppPipelineConfig()
 pipelineConf.vaultSecrets = secrets
@@ -89,6 +92,7 @@ withPipeline(type, product, component) {
     loadVaultSecrets(secrets)
     syncBranchesWithMaster(['demo', 'perftest', 'ithc'])
     afterSuccess('checkout') {
+      def subscription = 'nonprod'
       if (env.ENVIRONMENT == 'ithc' || env.ENVIRONMENT == 'demo' || env.ENVIRONMENT == 'perftest') {
         def subscriptions = [
           demo  : env.DEMO_SUBSCRIPTION_NAME ?: 'nonprod',
@@ -105,7 +109,7 @@ withPipeline(type, product, component) {
     MetricsPublisher metricsPublisher = new MetricsPublisher(this, currentBuild, product, component)
     approvedEnvironmentRepository(params.environment, metricsPublisher) {
       if(params.environment != 'prod') {
-        enableHighLevelDataSetupForStaging()
+        // enableHighLevelDataSetupForStaging()
         enableHighLevelDataSetup()
       }
     }
@@ -224,29 +228,46 @@ withPipeline(type, product, component) {
   }
 
   before('highleveldatasetup') {
-    if (params.environment != 'aat') {
-      builder.gradle('generateCCDConfig --rerun-tasks')
-      generateDefinitions()
-    }
-  }
-
-  before('highleveldatasetup:aat') {
-    env.ENVIRONMENT="aat"
-    env.CASE_API_URL="http://sptribs-case-api-aat.service.core-compute-aat.internal"
-    env.CCD_DEF_NAME="aat"
-    env.ELASTIC_SEARCH_ENABLED=true
-    env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
-    env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-    env.CAMUNDA_BASE_URL = "http://camunda-api-aat.service.core-compute-aat.internal"
-    env.FT_POSTGRES_HOST = "sptribs-aat-flexible-db-v15-aat.postgres.database.azure.com"
-    env.FT_POSTGRES_PORT = "5432"
-    setCommonEnvVariables()
-
-    enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
-
     builder.gradle('generateCCDConfig --rerun-tasks')
     generateDefinitions()
   }
+
+//  before('highleveldatasetup') {
+//    if (params.environment != 'aat') {
+//      builder.gradle('generateCCDConfig --rerun-tasks')
+//      generateDefinitions()
+//    }
+//  }
+
+//  before('highleveldatasetup') {
+//    if (env.ENVIRONMENT == "aat") {
+//      env.CCD_DEF_NAME="aat"
+//      builder.gradle('generateCCDConfig --rerun-tasks')
+//      generateDefinitions()
+//
+//      env.CCD_DEF_NAME="staging-aat"
+//    }
+//    builder.gradle('generateCCDConfig --rerun-tasks')
+//    generateDefinitions()
+//  }
+
+//  before('highleveldatasetup:aat') {
+//    env.ENVIRONMENT="aat"
+//    env.CASE_API_URL="http://sptribs-case-api-aat.service.core-compute-aat.internal"
+//    env.CCD_DEF_NAME="aat"
+//    env.ELASTIC_SEARCH_ENABLED=true
+//    env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
+//    env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+//    env.CAMUNDA_BASE_URL = "http://camunda-api-aat.service.core-compute-aat.internal"
+//    env.FT_POSTGRES_HOST = "sptribs-aat-flexible-db-v15-aat.postgres.database.azure.com"
+//    env.FT_POSTGRES_PORT = "5432"
+//    setCommonEnvVariables()
+//
+//    enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
+//
+//    builder.gradle('generateCCDConfig --rerun-tasks')
+//    generateDefinitions()
+//  }
 
   onPR {
     env.ENVIRONMENT="preview"
@@ -280,30 +301,15 @@ withPipeline(type, product, component) {
     enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
   }
 
-//  onMaster {
-//    env.ENVIRONMENT="aat"
-//    env.CASE_API_URL="http://sptribs-case-api-aat.service.core-compute-aat.internal"
-//    env.CCD_DEF_NAME="aat"
-//    env.ELASTIC_SEARCH_ENABLED=true
-//    env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
-//    env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-//    env.CAMUNDA_BASE_URL = "http://camunda-api-aat.service.core-compute-aat.internal"
-//    env.FT_POSTGRES_HOST = "sptribs-aat-flexible-db-v15-aat.postgres.database.azure.com"
-//    env.FT_POSTGRES_PORT = "5432"
-//    setCommonEnvVariables()
-//
-//    enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
-//  }
-
   onMaster {
-    env.ENVIRONMENT="staging"
-    env.CASE_API_URL="http://sptribs-case-api-staging.service.core-compute-staging.internal"
-    env.CCD_DEF_NAME="staging"
+    env.ENVIRONMENT="aat"
+    env.CASE_API_URL="http://sptribs-case-api-aat.service.core-compute-aat.internal"
+    env.CCD_DEF_NAME="aat"
     env.ELASTIC_SEARCH_ENABLED=true
     env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
-    env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-staging.service.core-compute-aat.internal"
-    env.CAMUNDA_BASE_URL = "http://camunda-api-staging.service.core-compute-staging.internal"
-    env.FT_POSTGRES_HOST = "sptribs-staging-flexible-db-v15-staging.postgres.database.azure.com"
+    env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+    env.CAMUNDA_BASE_URL = "http://camunda-api-aat.service.core-compute-aat.internal"
+    env.FT_POSTGRES_HOST = "sptribs-aat-flexible-db-v15-aat.postgres.database.azure.com"
     env.FT_POSTGRES_PORT = "5432"
     setCommonEnvVariables()
 
@@ -398,16 +404,12 @@ withPipeline(type, product, component) {
     env.CAMUNDA_BASE_URL = "http://camunda-api-ithc.service.core-compute-ithc.internal"
   }
 
-//  before('functionalTest:aat') {
-//    uploadDmnDiagrams()
-//    uploadBpmnDiagram()
-//  }
-//
-//  before('functionalTest:aat') {
-//    configureFtDatabase()
-//  }
+  before('functionalTest:aat') {
+    uploadDmnDiagrams()
+    uploadBpmnDiagram()
+  }
 
-  before('functionalTest:staging') {
+  before('functionalTest:aat') {
     configureFtDatabase()
   }
 
@@ -431,9 +433,12 @@ withPipeline(type, product, component) {
 }
 
 def setCommonEnvVariables() {
-    env.IDAM_API_URL_BASE = "https://idam-web-public.staging.platform.hmcts.net"
-    env.S2S_URL_BASE = "http://rpe-service-auth-provider-staging.service.core-compute-staging.internal"
-    env.FEE_API_URL = "http://fees-register-api-staging.service.core-compute-staging.internal"
+    // env.IDAM_API_URL_BASE = "https://idam-web-public.staging.platform.hmcts.net"
+    // env.S2S_URL_BASE = "http://rpe-service-auth-provider-staging.service.core-compute-staging.internal"
+    // env.FEE_API_URL = "http://fees-register-api-staging.service.core-compute-staging.internal"
+     env.IDAM_API_URL_BASE = "https://idam-web-public.aat.platform.hmcts.net"
+     env.S2S_URL_BASE = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+     env.FEE_API_URL = "http://fees-register-api-aat.service.core-compute-aat.internal"
     env.BEFTA_S2S_CLIENT_ID = "ccd_data"
 }
 
@@ -447,8 +452,6 @@ def configureFtDatabase() {
   }
 
   echo "Using FT DB user env for ${env.ENVIRONMENT}"
-  echo "FT DB HOST: ${env.FT_POSTGRES_HOST}"
-  echo "FT DB PORT: ${env.FT_POSTGRES_PORT}"
 }
 
 def generateDefinitions() {
@@ -464,7 +467,8 @@ def uploadDmnDiagrams() {
   dir("${WORKSPACE}/bin") {
     tenantId = "st_cic"
     product = "st_cic"
-    sh "./wa/import-dmn-diagram.sh ${WORKSPACE} ${env.ENVIRONMENT} ${tenantId} ${product}"
+    // sh "./wa/import-dmn-diagram.sh ${WORKSPACE} ${env.ENVIRONMENT} ${tenantId} ${product}"
+     sh "./wa/import-dmn-diagram.sh ${WORKSPACE} ${env} ${tenantId} ${product}"
   }
 }
 
