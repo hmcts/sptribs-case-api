@@ -7,8 +7,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import uk.gov.hmcts.reform.ccd.client.model.CaseResource;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
+import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseUpdateService;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaRoleService;
+import uk.gov.hmcts.sptribs.controllers.model.DssCaseDataRequest;
+import uk.gov.hmcts.sptribs.controllers.model.DssCaseUpdateRequest;
+import uk.gov.hmcts.sptribs.controllers.model.UpdateCaseResponse;
 import uk.gov.hmcts.sptribs.exception.CaseNotFoundException;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
 
@@ -18,6 +23,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CicaCaseControllerTest {
@@ -30,6 +36,9 @@ class CicaCaseControllerTest {
 
     @Mock
     private CicaRoleService cicaRoleService;
+
+    @Mock
+    private CicaCaseUpdateService cicaCaseUpdateService;
 
     @InjectMocks
     private CicaCaseController cicaCaseController;
@@ -127,5 +136,23 @@ class CicaCaseControllerTest {
         )).isInstanceOf(CaseNotFoundException.class);
 
         verifyNoInteractions(cicaRoleService);
+    }
+
+    @Test
+    void shouldReturnUpdatedCaseFromCitizenDssEvent() {
+        String ccdReference = "1234567891234567";
+        DssCaseDataRequest update = DssCaseDataRequest.builder().dssCaseDataAdditionalInformation("Update").build();
+        CaseResource updatedCase = new CaseResource();
+        updatedCase.setReference(ccdReference);
+        updatedCase.setState("CaseManagement");
+        when(cicaCaseUpdateService.updateCase(ccdReference, TEST_AUTHORIZATION, update)).thenReturn(updatedCase);
+
+        ResponseEntity<UpdateCaseResponse> response = cicaCaseController.updateCase(
+            TEST_AUTHORIZATION, TEST_SERVICE_AUTHORIZATION, ccdReference, new DssCaseUpdateRequest(update)
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(response.getBody()).isEqualTo(new UpdateCaseResponse(ccdReference, "CaseManagement"));
+        verify(cicaCaseUpdateService).updateCase(ccdReference, TEST_AUTHORIZATION, update);
     }
 }
