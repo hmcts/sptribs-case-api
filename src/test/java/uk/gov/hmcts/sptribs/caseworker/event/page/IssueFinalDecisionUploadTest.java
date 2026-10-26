@@ -2,6 +2,8 @@ package uk.gov.hmcts.sptribs.caseworker.event.page;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -20,12 +22,12 @@ class IssueFinalDecisionUploadTest {
     @InjectMocks
     private IssueFinalDecisionUpload issueFinalDecisionUpload;
 
-    @Test
-    void shouldReturnErrorsInvalidDocumentUploaded() {
+    @ParameterizedTest
+    @ValueSource(strings = {"file.uml", "file.docx"})
+    void midEventShouldReturnErrorsInvalidDocumentUploaded(String filename) {
         //Given
-
         final OrderDecisionUploadCICDocument document = OrderDecisionUploadCICDocument.builder()
-            .documentLink(Document.builder().binaryUrl("url").url("url").filename("file.sql").build())
+            .documentLink(Document.builder().binaryUrl("url").url("url").filename(filename).build())
             .documentEmailContent("content")
             .build();
         final CaseIssueFinalDecision caseIssueFinalDecision = CaseIssueFinalDecision.builder().document(document).build();
@@ -39,6 +41,28 @@ class IssueFinalDecisionUploadTest {
         AboutToStartOrSubmitResponse<CaseData, State> response = issueFinalDecisionUpload.midEvent(caseDetails, caseDetails);
 
         //Then
+        assertThat(response.getErrors()).hasSize(1);
         assertThat(response.getErrors()).contains(DocumentConstants.DOCUMENT_VALIDATION_MESSAGE);
+    }
+
+    @Test
+    void midEventShouldReturnNoErrorsPdfUpload() {
+        //Given
+        final OrderDecisionUploadCICDocument document = OrderDecisionUploadCICDocument.builder()
+            .documentLink(Document.builder().binaryUrl("url").url("url").filename("file.pdf").build())
+            .documentEmailContent("content")
+            .build();
+        final CaseIssueFinalDecision caseIssueFinalDecision = CaseIssueFinalDecision.builder().document(document).build();
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder()
+            .caseIssueFinalDecision(caseIssueFinalDecision)
+            .build();
+        caseDetails.setData(caseData);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response = issueFinalDecisionUpload.midEvent(caseDetails, caseDetails);
+
+        //Then
+        assertThat(response.getErrors()).hasSize(0);
     }
 }

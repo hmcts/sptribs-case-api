@@ -2,6 +2,8 @@ package uk.gov.hmcts.sptribs.caseworker.event.page;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -29,21 +31,22 @@ public class SendOrderUploadOrderTest {
     @InjectMocks
     private SendOrderUploadOrder sendOrderUploadOrder;
 
-    @Test
-    void midEventReturnsErrorWithWrongDocumentType() {
+    @ParameterizedTest
+    @ValueSource(strings = {"file.uml", "file.docx"})
+    void midEventReturnsErrorWithNonPdfDocumentType(String filename) {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder()
-            .orderFile(getOrderDecisionUploadCICDocumentList("file.uml"))
+            .orderFile(getOrderDecisionUploadCICDocumentList(filename))
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
             .build();
         caseDetails.setData(caseData);
-
-        final AboutToStartOrSubmitResponse<CaseData, State> response = sendOrderUploadOrder.midEvent(caseDetails, caseDetails);
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            sendOrderUploadOrder.midEvent(caseDetails, caseDetails);
 
         assertThat(response.getErrors()).hasSize(1);
-        assertTrue(response.getErrors().contains(DOCUMENT_VALIDATION_MESSAGE));
+        assertThat(response.getErrors()).contains(DOCUMENT_VALIDATION_MESSAGE);
     }
 
     @Test
@@ -74,7 +77,7 @@ public class SendOrderUploadOrderTest {
             .build();
         caseDetails.setData(caseData);
         try (MockedStatic<DocumentUtil> mockedDocumentUtils = Mockito.mockStatic(DocumentUtil.class)) {
-            mockedDocumentUtils.when(() -> DocumentUtil.validateUploadedDocuments(anyList()))
+            mockedDocumentUtils.when(() -> DocumentUtil.validateOrderDecisionUploadCICDocumentFormatList(anyList()))
                 .thenReturn(Collections.emptyList());
 
             sendOrderUploadOrder.midEvent(caseDetails, caseDetails);

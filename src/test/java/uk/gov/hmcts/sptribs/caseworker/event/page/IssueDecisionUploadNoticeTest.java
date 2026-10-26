@@ -2,6 +2,8 @@ package uk.gov.hmcts.sptribs.caseworker.event.page;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -29,14 +31,14 @@ public class IssueDecisionUploadNoticeTest {
     @InjectMocks
     private IssueDecisionUploadNotice issueDecisionUploadNotice;
 
-    private final Document invalidDocumentType = Document.builder().filename("file.jar").build();
-
     private final Document validDocumentType = Document.builder().filename("file.pdf").build();
 
-    @Test
-    void midEventReturnsErrorForInvalidDocumentType() {
+    @ParameterizedTest
+    @ValueSource(strings = {"file.uml", "file.docx"})
+    void midEventReturnsErrorForInvalidDocumentType(String filename) {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final OrderDecisionUploadCICDocument doc = OrderDecisionUploadCICDocument.builder().documentLink(invalidDocumentType).build();
+        final OrderDecisionUploadCICDocument doc = OrderDecisionUploadCICDocument.builder()
+            .documentLink(Document.builder().filename(filename).build()).build();
         final CaseData caseData = CaseData.builder()
             .caseIssueDecision(CaseIssueDecision.builder().decisionDocument(doc).build())
             .build();
