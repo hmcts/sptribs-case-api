@@ -158,12 +158,19 @@ public class CicaCaseController {
     ) {
         try {
             var updatedCase = cicaCaseUpdateService.updateCase(ccdReference, authorisation, update.data());
-            return ResponseEntity.status(CREATED)
+            ResponseEntity<UpdateCaseResponse> response = ResponseEntity.status(CREATED)
                 .body(new UpdateCaseResponse(updatedCase.getReference(), updatedCase.getState()));
+            log.info("Case update response prepared: status={}", CREATED.value());
+            return response;
         } catch (FeignException exception) {
             int status = exception.status();
+            int responseStatus = status >= 400 && status < 600 ? status : BAD_GATEWAY.value();
+            Throwable cause = exception.getCause();
+            log.warn("Case update failed: exception_type={} cause_type={} downstream_status={} response_status={}",
+                exception.getClass().getName(), cause == null ? "none" : cause.getClass().getName(),
+                status, responseStatus);
             // CCD error bodies may contain case data; return the failure status without exposing them.
-            return ResponseEntity.status(status >= 400 && status < 600 ? status : BAD_GATEWAY.value()).build();
+            return ResponseEntity.status(responseStatus).build();
         }
     }
 }

@@ -1,10 +1,16 @@
 package uk.gov.hmcts.sptribs.controllers;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
+import feign.Request;
+import feign.codec.DecodeException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.ccd.client.model.CaseResource;
@@ -16,6 +22,9 @@ import uk.gov.hmcts.sptribs.controllers.model.DssCaseUpdateRequest;
 import uk.gov.hmcts.sptribs.controllers.model.UpdateCaseResponse;
 import uk.gov.hmcts.sptribs.exception.CaseNotFoundException;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -154,5 +163,34 @@ class CicaCaseControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody()).isEqualTo(new UpdateCaseResponse(ccdReference, "CaseManagement"));
         verify(cicaCaseUpdateService).updateCase(ccdReference, TEST_AUTHORIZATION, update);
+    }
+
+    @Test
+    void shouldLogDecodeFailureAndReturnBadGatewayWhenCcdReturnedCreated() {
+        String ccdReference = "1234567891234567";
+        DssCaseDataRequest update = new DssCaseDataRequest();
+        Request request = Request.create(Request.HttpMethod.POST, "http://ccd/cases/events",
+            Map.of(), null, StandardCharsets.UTF_8);
+        when(cicaCaseUpdateService.updateCase(ccdReference, TEST_AUTHORIZATION, update))
+            .thenThrow(new DecodeException(201, "private CCD response", request,
+                new IllegalArgumentException("private case data")));
+
+        Logger logger = (Logger) LoggerFactory.getLogger(CicaCaseController.class);
+        ListAppender<ILoggingEvent> appender = new ListAppender<>();
+        appender.start();
+        logger.addAppender(appender);
+        try {
+            ResponseEntity<UpdateCaseResponse> response = cicaCaseController.updateCase(
+                TEST_AUTHORIZATION, TEST_SERVICE_AUTHORIZATION, ccdReference, new DssCaseUpdateRequest(update));
+
+            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_GATEWAY);
+            assertThat(response.getBody()).isNull();
+            assertThat(appender.list).extracting(ILoggingEvent::getFormattedMessage)
+                .containsExactly("Case update failed: exception_type=feign.codec.DecodeException "
+                    + "cause_type=java.lang.IllegalArgumentException downstream_status=201 response_status=502");
+        } finally {
+            logger.detachAppender(appender);
+            appender.stop();
+        }
     }
 }
