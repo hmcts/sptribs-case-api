@@ -8,13 +8,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
+import uk.gov.hmcts.sptribs.ciccase.service.CicaRoleService;
 import uk.gov.hmcts.sptribs.exception.CaseNotFoundException;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 @ExtendWith(MockitoExtension.class)
 class CicaCaseControllerTest {
@@ -24,6 +27,9 @@ class CicaCaseControllerTest {
 
     @Mock
     private CicaCaseService cicaCaseService;
+
+    @Mock
+    private CicaRoleService cicaRoleService;
 
     @InjectMocks
     private CicaCaseController cicaCaseController;
@@ -81,5 +87,45 @@ class CicaCaseControllerTest {
             .hasMessage("Case not found");
 
         verify(cicaCaseService).checkIfUserHasAccess(ccdReference, TEST_AUTHORIZATION);
+    }
+
+    @Test
+    void shouldAssignCreatorRoleOnlyAfterVerifyingCaseMembership() {
+        String ccdReference = "1234567891234567";
+
+        ResponseEntity<Void> response = cicaCaseController.assignCreatorRole(
+            TEST_AUTHORIZATION, TEST_SERVICE_AUTHORIZATION, ccdReference
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+        var calls = inOrder(cicaCaseService, cicaRoleService);
+        calls.verify(cicaCaseService).checkIfUserHasAccess(ccdReference, TEST_AUTHORIZATION);
+        calls.verify(cicaRoleService).assignCreatorRole(ccdReference, TEST_AUTHORIZATION);
+    }
+
+    @Test
+    void shouldNotAssignCreatorRoleWhenCitizenCannotAccessCase() {
+        String ccdReference = "1234567891234567";
+        doThrow(new UnauthorisedCaseAccessException("User is not associated with this case"))
+            .when(cicaCaseService).checkIfUserHasAccess(ccdReference, TEST_AUTHORIZATION);
+
+        assertThatThrownBy(() -> cicaCaseController.assignCreatorRole(
+            TEST_AUTHORIZATION, TEST_SERVICE_AUTHORIZATION, ccdReference
+        )).isInstanceOf(UnauthorisedCaseAccessException.class);
+
+        verifyNoInteractions(cicaRoleService);
+    }
+
+    @Test
+    void shouldNotAssignCreatorRoleWhenCaseDoesNotExist() {
+        String ccdReference = "1234567891234567";
+        doThrow(new CaseNotFoundException("Case not found"))
+            .when(cicaCaseService).checkIfUserHasAccess(ccdReference, TEST_AUTHORIZATION);
+
+        assertThatThrownBy(() -> cicaCaseController.assignCreatorRole(
+            TEST_AUTHORIZATION, TEST_SERVICE_AUTHORIZATION, ccdReference
+        )).isInstanceOf(CaseNotFoundException.class);
+
+        verifyNoInteractions(cicaRoleService);
     }
 }

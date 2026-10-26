@@ -15,10 +15,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
+import uk.gov.hmcts.sptribs.ciccase.service.CicaRoleService;
 
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUTHORIZATION;
@@ -32,6 +34,7 @@ import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUT
 public class CicaCaseController {
 
     private final CicaCaseService cicaCaseService;
+    private final CicaRoleService cicaRoleService;
 
     @GetMapping(value = "/{ccdReference}/access", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
@@ -88,8 +91,37 @@ public class CicaCaseController {
         log.info("Access check completed successfully for case: {}", ccdReference);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping(value = "/{ccdReference}/role-assignments")
+    @Operation(
+        summary = "Assign the creator role to the authenticated citizen",
+        description = "Verifies that the authenticated citizen belongs to the case before assigning their own creator role."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Creator role assigned", content = @Content),
+        @ApiResponse(responseCode = "400", description = "Invalid CCD reference", content = @Content),
+        @ApiResponse(responseCode = "403", description = "User or service cannot access the case", content = @Content),
+        @ApiResponse(responseCode = "404", description = "Case not found", content = @Content),
+        @ApiResponse(responseCode = "500", description = "Role assignment failed", content = @Content)
+    })
+    public ResponseEntity<Void> assignCreatorRole(
+        @RequestHeader(AUTHORIZATION)
+        @Parameter(description = "User's IDAM access token", required = true)
+        String authorisation,
+
+        @RequestHeader(SERVICE_AUTHORIZATION)
+        @Parameter(description = "S2S token from the frontend service", required = true)
+        String serviceAuthorisation,
+
+        @PathVariable
+        @Pattern(regexp = "^\\d{16}$", message = "CCD reference must be 16 digits long")
+        @Parameter(description = "The CCD reference number", required = true, example = "1740138704453399")
+        String ccdReference
+    ) {
+        cicaCaseService.checkIfUserHasAccess(ccdReference, authorisation);
+        cicaRoleService.assignCreatorRole(ccdReference, authorisation);
+        return ResponseEntity.noContent().build();
+    }
 }
-
-
 
 

@@ -13,6 +13,8 @@ import java.util.List;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUTHORIZATION;
@@ -56,6 +58,36 @@ public class CicaRoleAssignmentFT extends FunctionalTestSuite {
             .noneMatch(role -> CREATOR_ROLE.equals(role.getCaseRole()));
     }
 
+    @Test
+    public void shouldAssignCreatorRoleThroughRoleAssignmentsEndpoint() {
+        String caseId = createCaseInCcd(true).getId().toString();
+        String citizenToken = idamTokenGenerator.generateIdamTokenForCitizen();
+        String citizenId = idamTokenGenerator.getUserInfoFor(citizenToken).getUid();
+
+        Response response = assignCreatorRole(caseId, citizenToken);
+
+        assertThat(response.getStatusCode()).isEqualTo(NO_CONTENT.value());
+        assertThat(caseRolesForCitizen(caseId, citizenId))
+            .anySatisfy(role -> {
+                assertThat(role.getCaseDataId()).isEqualTo(caseId);
+                assertThat(role.getUserId()).isEqualTo(citizenId);
+                assertThat(role.getCaseRole()).isEqualTo(CREATOR_ROLE);
+            });
+    }
+
+    @Test
+    public void shouldNotAssignCreatorRoleThroughEndpointWithoutCaseAccess() {
+        String caseId = createCaseInCcd(false).getId().toString();
+        String citizenToken = idamTokenGenerator.generateIdamTokenForCitizen();
+        String citizenId = idamTokenGenerator.getUserInfoFor(citizenToken).getUid();
+
+        Response response = assignCreatorRole(caseId, citizenToken);
+
+        assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN.value());
+        assertThat(caseRolesForCitizen(caseId, citizenId))
+            .noneMatch(role -> CREATOR_ROLE.equals(role.getCaseRole()));
+    }
+
     private Response getDocuments(String caseId, String citizenToken, String postcode) {
         return given()
             .relaxedHTTPSValidation()
@@ -65,6 +97,16 @@ public class CicaRoleAssignmentFT extends FunctionalTestSuite {
             .header("X-Postcode", postcode)
             .when()
             .get("/cases/CIC/" + caseId + "/documents");
+    }
+
+    private Response assignCreatorRole(String caseId, String citizenToken) {
+        return given()
+            .relaxedHTTPSValidation()
+            .baseUri(testUrl)
+            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generateCcdDataToken())
+            .header(AUTHORIZATION, citizenToken)
+            .when()
+            .post("/cases/cica/" + caseId + "/role-assignments");
     }
 
     private List<CaseAssignmentUserRole> caseRolesForCitizen(String caseId, String citizenId) {

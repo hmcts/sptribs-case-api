@@ -13,6 +13,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
+import uk.gov.hmcts.sptribs.ciccase.service.CicaRoleService;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.exception.CaseNotFoundException;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
@@ -20,7 +21,10 @@ import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
@@ -35,6 +39,7 @@ class CicaCaseControllerIT {
 
     private static final String VALID_CCD_REFERENCE = "1234567891234567";
     private static final String ACCESS_CHECK_URL = "/cases/cica/" + VALID_CCD_REFERENCE + "/access";
+    private static final String ROLE_ASSIGNMENTS_URL = "/cases/cica/" + VALID_CCD_REFERENCE + "/role-assignments";
 
     @Autowired
     private MockMvc mockMvc;
@@ -47,6 +52,9 @@ class CicaCaseControllerIT {
 
     @MockitoBean
     private CicaCaseService cicaCaseService;
+
+    @MockitoBean
+    private CicaRoleService cicaRoleService;
 
     @BeforeAll
     static void setUp() {
@@ -120,5 +128,61 @@ class CicaCaseControllerIT {
                 .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
                 .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN))
             .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldAssignCreatorRoleToAuthenticatedCitizenWithCaseAccess() throws Exception {
+        mockMvc.perform(post(ROLE_ASSIGNMENTS_URL)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN))
+            .andExpect(status().isNoContent());
+
+        verify(cicaCaseService).checkIfUserHasAccess(VALID_CCD_REFERENCE, TEST_AUTHORIZATION_TOKEN);
+        verify(cicaRoleService).assignCreatorRole(VALID_CCD_REFERENCE, TEST_AUTHORIZATION_TOKEN);
+    }
+
+    @Test
+    void shouldNotAssignCreatorRoleWithoutCaseAccess() throws Exception {
+        doThrow(new UnauthorisedCaseAccessException("User is not associated with this case"))
+            .when(cicaCaseService).checkIfUserHasAccess(VALID_CCD_REFERENCE, TEST_AUTHORIZATION_TOKEN);
+
+        mockMvc.perform(post(ROLE_ASSIGNMENTS_URL)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN))
+            .andExpect(status().isForbidden());
+
+        verifyNoInteractions(cicaRoleService);
+    }
+
+    @Test
+    void shouldNotAssignCreatorRoleWhenCaseDoesNotExist() throws Exception {
+        doThrow(new CaseNotFoundException("Case not found"))
+            .when(cicaCaseService).checkIfUserHasAccess(VALID_CCD_REFERENCE, TEST_AUTHORIZATION_TOKEN);
+
+        mockMvc.perform(post(ROLE_ASSIGNMENTS_URL)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN))
+            .andExpect(status().isNotFound());
+
+        verifyNoInteractions(cicaRoleService);
+    }
+
+    @Test
+    void shouldNotAssignCreatorRoleWithoutUserToken() throws Exception {
+        mockMvc.perform(post(ROLE_ASSIGNMENTS_URL)
+                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN))
+            .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(cicaCaseService, cicaRoleService);
+    }
+
+    @Test
+    void shouldNotAssignCreatorRoleWithInvalidCaseReference() throws Exception {
+        mockMvc.perform(post("/cases/cica/invalid/role-assignments")
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN))
+            .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(cicaCaseService, cicaRoleService);
     }
 }
