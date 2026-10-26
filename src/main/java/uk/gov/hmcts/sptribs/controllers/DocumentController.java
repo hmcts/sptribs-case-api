@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
+import uk.gov.hmcts.sptribs.ciccase.service.CicaRoleService;
 import uk.gov.hmcts.sptribs.ciccase.util.CasePartyUtil;
 import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
 import uk.gov.hmcts.sptribs.controllers.mapper.CaseworkerCICDocumentMapper;
@@ -60,6 +61,7 @@ public class DocumentController {
     private final DocumentDownloadStatusService documentDownloadStatusService;
     private final CaseworkerCICDocumentMapper caseworkerCICDocumentMapper;
     private final CicaCaseService cicaCaseService;
+    private final CicaRoleService cicaRoleService;
     private final CicaCaseMapper cicaCaseMapper;
     private final IdamService idamService;
     private final ObjectMapper objectMapper;
@@ -100,6 +102,7 @@ public class DocumentController {
                 postcode
             );
             validateCaseEntity(cicaCaseEntity, ccdReference);
+            cicaRoleService.assignCreatorRole(ccdReference, authorisation);
 
             CicaCaseResponse response = cicaCaseMapper.toResponse(cicaCaseEntity);
             Party party = resolveParty(authorisation, cicaCaseEntity);

@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
+import uk.gov.hmcts.sptribs.ciccase.service.CicaRoleService;
 import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
 import uk.gov.hmcts.sptribs.controllers.mapper.CaseworkerCICDocumentMapper;
 import uk.gov.hmcts.sptribs.controllers.mapper.CicaCaseMapper;
@@ -65,6 +66,9 @@ class DocumentControllerTest {
 
     @Mock
     private CicaCaseService cicaCaseService;
+
+    @Mock
+    private CicaRoleService cicaRoleService;
 
     @Mock
     private CicaCaseMapper cicaCaseMapper;
@@ -190,6 +194,7 @@ class DocumentControllerTest {
             TEST_AUTHORIZATION,
             TEST_POSTCODE
         );
+        verify(cicaRoleService).assignCreatorRole(TEST_CASE_ID_STRING, TEST_AUTHORIZATION);
 
         verify(cicaCaseMapper).toResponse(cicaCaseEntity);
 
@@ -302,7 +307,7 @@ class DocumentControllerTest {
             .isExactlyInstanceOf(UnauthorisedCaseAccessException.class)
             .hasMessageContaining("Case data is missing");
 
-        verifyNoInteractions(cicaCaseMapper, documentsService, documentDownloadStatusService);
+        verifyNoInteractions(cicaRoleService, cicaCaseMapper, documentsService, documentDownloadStatusService);
     }
 
     @Test

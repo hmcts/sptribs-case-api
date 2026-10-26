@@ -1,0 +1,78 @@
+package uk.gov.hmcts.sptribs.controllers;
+
+import io.restassured.response.Response;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import uk.gov.hmcts.reform.ccd.client.CaseAssignmentApi;
+import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRole;
+import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
+
+import java.util.List;
+
+import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUTHORIZATION;
+
+@SpringBootTest
+public class CicaRoleAssignmentFT extends FunctionalTestSuite {
+
+    private static final String CREATOR_ROLE = "[CREATOR]";
+    private static final String CASE_POSTCODE = "SW1A 1AA";
+
+    @Autowired
+    private CaseAssignmentApi caseAssignmentApi;
+
+    @Test
+    public void shouldAssignCreatorRoleToCitizenAfterAccessingDocuments() {
+        String caseId = createCaseInCcd(true).getId().toString();
+        String citizenToken = idamTokenGenerator.generateIdamTokenForCitizen();
+        String citizenId = idamTokenGenerator.getUserInfoFor(citizenToken).getUid();
+
+        Response response = getDocuments(caseId, citizenToken, CASE_POSTCODE);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThat(caseRolesForCitizen(caseId, citizenId))
+            .anySatisfy(role -> {
+                assertThat(role.getCaseDataId()).isEqualTo(caseId);
+                assertThat(role.getUserId()).isEqualTo(citizenId);
+                assertThat(role.getCaseRole()).isEqualTo(CREATOR_ROLE);
+            });
+    }
+
+    @Test
+    public void shouldNotAssignCreatorRoleWhenPostcodeDoesNotMatch() {
+        String caseId = createCaseInCcd(true).getId().toString();
+        String citizenToken = idamTokenGenerator.generateIdamTokenForCitizen();
+        String citizenId = idamTokenGenerator.getUserInfoFor(citizenToken).getUid();
+
+        Response response = getDocuments(caseId, citizenToken, "INVALID");
+
+        assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED.value());
+        assertThat(caseRolesForCitizen(caseId, citizenId))
+            .noneMatch(role -> CREATOR_ROLE.equals(role.getCaseRole()));
+    }
+
+    private Response getDocuments(String caseId, String citizenToken, String postcode) {
+        return given()
+            .relaxedHTTPSValidation()
+            .baseUri(testUrl)
+            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generateCcdDataToken())
+            .header(AUTHORIZATION, citizenToken)
+            .header("X-Postcode", postcode)
+            .when()
+            .get("/cases/CIC/" + caseId + "/documents");
+    }
+
+    private List<CaseAssignmentUserRole> caseRolesForCitizen(String caseId, String citizenId) {
+        return caseAssignmentApi.getUserRoles(
+            idamTokenGenerator.generateIdamTokenForSystemUser(),
+            serviceAuthenticationGenerator.generate(),
+            caseId,
+            citizenId
+        ).getCaseAssignmentUserRoles();
+    }
+}

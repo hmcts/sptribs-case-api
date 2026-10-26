@@ -22,6 +22,7 @@ import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
+import uk.gov.hmcts.sptribs.ciccase.service.CicaRoleService;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
 import uk.gov.hmcts.sptribs.controllers.mapper.CaseworkerCICDocumentMapper;
@@ -41,6 +42,8 @@ import static java.util.Collections.emptyList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -80,6 +83,9 @@ class DocumentControllerIT {
 
     @MockitoBean
     private CicaCaseService cicaCaseService;
+
+    @MockitoBean
+    private CicaRoleService cicaRoleService;
 
     @MockitoBean
     private DocumentsService documentsService;
@@ -302,6 +308,7 @@ class DocumentControllerIT {
                 "{\"cicaCaseResponse\":{\"id\":\"" + TEST_CASE_ID_STRING + "\",\"state\":\"CaseManagement\"}"
                     + ",\"documentResponse\":{\"contactPartiesDocuments\":[],\"orderAndDecisionDocuments\":[],"
                     + "\"latestCaseBundleDocuments\":[]}}"));
+        verify(cicaRoleService).assignCreatorRole(TEST_CASE_ID_STRING, TEST_AUTHORIZATION_TOKEN);
     }
 
     @Test
@@ -317,6 +324,7 @@ class DocumentControllerIT {
                 .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
                 .header("X-Postcode", invalidPostcode))
             .andExpect(status().isForbidden());
+        verifyNoInteractions(cicaRoleService);
     }
 
     @Test
@@ -332,6 +340,7 @@ class DocumentControllerIT {
                 .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
                 .header("X-Postcode", invalidPostcode))
             .andExpect(status().isUnauthorized());
+        verifyNoInteractions(cicaRoleService);
     }
 
     @Test
@@ -417,8 +426,6 @@ class DocumentControllerIT {
             .build();
     }
 }
-
-
 
 
 
