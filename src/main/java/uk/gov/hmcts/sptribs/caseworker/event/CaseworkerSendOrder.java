@@ -179,21 +179,21 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         } else if (caseData.getCicCase().getOrderIssuingType() != null
             && caseData.getCicCase().getOrderIssuingType().equals(OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER)) {
 
-            List<ListValue<CICDocument>> uploadedOrderDocuments = convertToCICDocuments(caseData.getCicCase().getOrderFile());
+            if (documents != null) {
+                for (ListValue<CICDocument> uploadedOrderDocument : documents) {
 
-            for (ListValue<CICDocument> uploadedOrderDocument : uploadedOrderDocuments) {
+                    try {
 
-                try {
+                        documentsService.buildAndSaveNewDocumentEntity(
+                            uploadedOrderDocument.getValue().getDocumentLink(),
+                            details.getId(),
+                            DocumentType.TRIBUNAL_DIRECTION,
+                            CaseDocumentType.ORDER
+                        );
 
-                    documentsService.buildAndSaveNewDocumentEntity(
-                        uploadedOrderDocument.getValue().getDocumentLink(),
-                        details.getId(),
-                        DocumentType.TRIBUNAL_DIRECTION,
-                        CaseDocumentType.ORDER
-                    );
-
-                } catch (RuntimeException e) {
-                    errors.add(handleDocumentException(uploadedOrderDocument.getValue().getDocumentLink(), e.getMessage()));
+                    } catch (RuntimeException e) {
+                        errors.add(handleDocumentException(uploadedOrderDocument.getValue().getDocumentLink(), e.getMessage()));
+                    }
                 }
             }
         }

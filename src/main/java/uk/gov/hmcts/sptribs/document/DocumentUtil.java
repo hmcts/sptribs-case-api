@@ -208,6 +208,10 @@ public final class DocumentUtil {
             .build();
     }
 
+    /**
+     * Convert a list of {@link OrderDecisionUploadCICDocument} to a list of {@link CICDocument}.
+     * This is null-safe, and doesn't affect nullness of the input.
+     */
     public static List<ListValue<CICDocument>> convertToCICDocuments(
         List<ListValue<OrderDecisionUploadCICDocument>> uploadedDocuments
     ) {
