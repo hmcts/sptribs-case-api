@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -10,6 +11,7 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionMainContent;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionNotice;
@@ -30,6 +32,7 @@ import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentSaveE
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.model.OrderDecisionUploadCICDocument;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.DecisionIssuedNotification;
 
@@ -114,7 +117,9 @@ public class CaseworkerIssueDecision implements CCDConfig<CaseData, State, UserR
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         final CaseData caseData = details.getData();
         final CaseIssueDecision decision = caseData.getCaseIssueDecision();
-        final CICDocument decisionDocument = convertToCICDocument(decision.getDecisionDocument());
+        final CICDocument decisionDocument = decision.getDecisionDocument() != null
+            ? convertToCICDocument(decision.getDecisionDocument())
+            : null;
         final Document decisionDocumentCreatedFromTemplate = decision.getIssueDecisionDraft();
 
         final List<String> errors = new ArrayList<>();

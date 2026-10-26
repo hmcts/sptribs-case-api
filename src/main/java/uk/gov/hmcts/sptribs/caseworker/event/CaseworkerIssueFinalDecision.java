@@ -132,7 +132,9 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         final CaseData caseData = details.getData();
-        final CICDocument finalDecisionDocument = convertToCICDocument(caseData.getCaseIssueFinalDecision().getDocument());
+        final CICDocument finalDecisionDocument = caseData.getCaseIssueFinalDecision().getDocument() != null
+            ? convertToCICDocument(caseData.getCaseIssueFinalDecision().getDocument())
+            : null;
         final Document finalDecisionDocumentCreatedFromTemplate = caseData.getCaseIssueFinalDecision().getFinalDecisionDraft();
 
         final List<String> errors = new ArrayList<>();

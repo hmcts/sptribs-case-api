@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.document;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.jspecify.annotations.NonNull;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -192,32 +193,16 @@ public final class DocumentUtil {
         return documentList;
     }
 
-    /**
-     * Convert a {@link OrderDecisionUploadCICDocument} to a {@link CICDocument}.
-     * This is null-safe, and doesn't affect nullness of the input:
-     *   - If the input is null, the output will be null.
-     *   - Any properties of the input that are null will be null in the output.
-     */
-    public static CICDocument convertToCICDocument(OrderDecisionUploadCICDocument uploadedDocument) {
-        if (uploadedDocument == null) {
-            return null;
-        }
+    public static @NonNull CICDocument convertToCICDocument(@NonNull OrderDecisionUploadCICDocument uploadedDocument) {
         return CICDocument.builder()
             .documentEmailContent(uploadedDocument.getDocumentEmailContent())
             .documentLink(uploadedDocument.getDocumentLink())
             .build();
     }
 
-    /**
-     * Convert a list of {@link OrderDecisionUploadCICDocument} to a list of {@link CICDocument}.
-     * This is null-safe, and doesn't affect nullness of the input.
-     */
-    public static List<ListValue<CICDocument>> convertToCICDocuments(
-        List<ListValue<OrderDecisionUploadCICDocument>> uploadedDocuments
+    public static @NonNull List<ListValue<CICDocument>> convertToCICDocuments(
+        @NonNull List<ListValue<OrderDecisionUploadCICDocument>> uploadedDocuments
     ) {
-        if (uploadedDocuments == null) {
-            return null;
-        }
         List<ListValue<CICDocument>> documentList = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(uploadedDocuments)) {
             uploadedDocuments.forEach(
@@ -235,8 +220,8 @@ public final class DocumentUtil {
         return documentList;
     }
 
-    public static List<ListValue<CaseworkerCICDocumentUpload>> convertToCaseworkerCICDocument(
-        List<ListValue<CaseworkerCICDocument>> uploadedDocuments
+    public static @NonNull List<ListValue<CaseworkerCICDocumentUpload>> convertToCaseworkerCICDocument(
+        @NonNull List<ListValue<CaseworkerCICDocument>> uploadedDocuments
     ) {
         List<ListValue<CaseworkerCICDocumentUpload>> documentList = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(uploadedDocuments)) {

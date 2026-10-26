@@ -35,6 +35,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.model.OrderDecisionUploadCICDocument;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 
@@ -45,6 +46,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.String.format;
+import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_SEND_ORDER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.COLON;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
@@ -132,14 +134,16 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
                                                                        final CaseDetails<CaseData, State> beforeDetails) {
-
         final CaseData caseData = details.getData();
+        final List<ListValue<OrderDecisionUploadCICDocument>> orderFile = caseData.getCicCase().getOrderFile();
 
-        List<ListValue<CICDocument>> documents = convertToCICDocuments(caseData.getCicCase().getOrderFile());
-
-        if (documents != null) {
-            updateCategoryToDocument(documents, DocumentType.TRIBUNAL_DIRECTION.getCategory());
+        if (orderFile == null) {
+            throw new IllegalArgumentException("orderFile was null, this should be impossible at the submit stage");
         }
+
+        final List<ListValue<CICDocument>> documents = convertToCICDocuments(caseData.getCicCase().getOrderFile());
+
+        updateCategoryToDocument(documents, DocumentType.TRIBUNAL_DIRECTION.getCategory());
 
         DraftOrderCIC selectedDraftOrder = null;
         String selectedDynamicDraft = null;
@@ -178,22 +182,19 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             }
         } else if (caseData.getCicCase().getOrderIssuingType() != null
             && caseData.getCicCase().getOrderIssuingType().equals(OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER)) {
+            for (ListValue<CICDocument> uploadedOrderDocument : documents) {
 
-            if (documents != null) {
-                for (ListValue<CICDocument> uploadedOrderDocument : documents) {
+                try {
 
-                    try {
+                    documentsService.buildAndSaveNewDocumentEntity(
+                        uploadedOrderDocument.getValue().getDocumentLink(),
+                        details.getId(),
+                        DocumentType.TRIBUNAL_DIRECTION,
+                        CaseDocumentType.ORDER
+                    );
 
-                        documentsService.buildAndSaveNewDocumentEntity(
-                            uploadedOrderDocument.getValue().getDocumentLink(),
-                            details.getId(),
-                            DocumentType.TRIBUNAL_DIRECTION,
-                            CaseDocumentType.ORDER
-                        );
-
-                    } catch (RuntimeException e) {
-                        errors.add(handleDocumentException(uploadedOrderDocument.getValue().getDocumentLink(), e.getMessage()));
-                    }
+                } catch (RuntimeException e) {
+                    errors.add(handleDocumentException(uploadedOrderDocument.getValue().getDocumentLink(), e.getMessage()));
                 }
             }
         }

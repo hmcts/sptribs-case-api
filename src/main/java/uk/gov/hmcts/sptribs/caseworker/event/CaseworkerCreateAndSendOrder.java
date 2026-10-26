@@ -229,12 +229,13 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
             return;
         }
 
-        List<ListValue<CICDocument>> documents = convertToCICDocuments(cicCase.getOrderFile());
-
-        if (documents != null) {
-            updateCategoryToDocument(documents, DocumentType.TRIBUNAL_DIRECTION.getCategory());
+        if (cicCase.getOrderFile() == null) {
+            throw new IllegalArgumentException("orderFile was null, this should be impossible at the submit stage");
         }
 
+        List<ListValue<CICDocument>> documents = convertToCICDocuments(cicCase.getOrderFile());
+
+        updateCategoryToDocument(documents, DocumentType.TRIBUNAL_DIRECTION.getCategory());
         orderBuilder.uploadedFile(documents);
 
         try {
