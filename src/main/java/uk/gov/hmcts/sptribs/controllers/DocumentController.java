@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.FeignException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -39,6 +40,8 @@ import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.model.DownloadedDocumentResponse;
 import uk.gov.hmcts.sptribs.document.service.DocumentDownloadStatusService;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.exception.CaseNotFoundException;
+import uk.gov.hmcts.sptribs.exception.DocumentDownloadException;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
@@ -47,6 +50,7 @@ import uk.gov.hmcts.sptribs.notification.model.Party;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 @Tag(name = "Document Controller")
 @Slf4j
@@ -102,7 +106,6 @@ public class DocumentController {
                 postcode
             );
             validateCaseEntity(cicaCaseEntity, ccdReference);
-            cicaRoleService.assignCreatorRole(ccdReference, authorisation);
 
             CicaCaseResponse response = cicaCaseMapper.toResponse(cicaCaseEntity);
             Party party = resolveParty(authorisation, cicaCaseEntity);
@@ -156,12 +159,15 @@ public class DocumentController {
     }
 
     @GetMapping(value = "/{ccdReference}/documents/{documentId}/download")
-    @Operation(summary = "Download a document by its ID and verify against case reference and postcode")
+    @Operation(summary = "Download a document by its ID and verify against case reference and postcode",
+        description = "Checks case membership and document ownership before fetching with the caller's token. "
+            + "On a CDAM not-found response, assigns the caller the creator role and retries once.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Document downloaded successfully"),
         @ApiResponse(responseCode = "400", description = "Invalid CCD reference or document ID"),
-        @ApiResponse(responseCode = "401", description = "Unauthorized - Postcode mismatch or document does not belong to the case"),
-        @ApiResponse(responseCode = "404", description = "Document not found"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - Postcode mismatch"),
+        @ApiResponse(responseCode = "403", description = "Caller cannot access the document"),
+        @ApiResponse(responseCode = "404", description = "Document not found on this case"),
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<Resource> downloadDocumentByCaseAndId(
@@ -197,10 +203,12 @@ public class DocumentController {
             validateCaseEntity(cicaCaseEntity, ccdReference);
 
             Party party = resolveParty(authorisation, cicaCaseEntity);
-            DownloadedDocumentResponse documentResponse = documentDownloadService.downloadDocument(
-                authorisation,
-                documentId
-            );
+            UUID documentUuid = UUID.fromString(documentId);
+            if (!documentsService.isDocumentOnCase(Long.valueOf(ccdReference), documentUuid.toString())) {
+                throw new CaseNotFoundException("Document not found on case");
+            }
+            DownloadedDocumentResponse documentResponse = downloadWithCreatorRoleRetry(
+                ccdReference, authorisation, documentUuid.toString());
 
             log.info(
                 "event=document_download_retrieved journey=cica_dashboard step=document_download outcome=success "
@@ -233,6 +241,42 @@ public class DocumentController {
             );
             throw exception;
         }
+    }
+
+    private DownloadedDocumentResponse downloadWithCreatorRoleRetry(String ccdReference, String authorisation,
+                                                                    String documentId) {
+        try {
+            return documentDownloadService.downloadDocument(authorisation, documentId);
+        } catch (FeignException exception) {
+            if (exception.status() != 404) {
+                throw documentAccessFailure(exception);
+            }
+        }
+
+        try {
+            cicaRoleService.assignCreatorRole(ccdReference, authorisation);
+        } catch (RuntimeException assignmentFailure) {
+            // Another request may have assigned the role concurrently. Only a successful caller-token download proves access.
+            try {
+                return documentDownloadService.downloadDocument(authorisation, documentId);
+            } catch (FeignException retryFailure) {
+                throw new DocumentDownloadException("Failed to grant access to document", assignmentFailure);
+            }
+        }
+
+        try {
+            return documentDownloadService.downloadDocument(authorisation, documentId);
+        } catch (FeignException retryFailure) {
+            throw documentAccessFailure(retryFailure);
+        }
+    }
+
+    private RuntimeException documentAccessFailure(FeignException exception) {
+        return switch (exception.status()) {
+            case 404 -> new CaseNotFoundException("Document not found");
+            case 403 -> new UnauthorisedCaseAccessException("Document access denied");
+            default -> new DocumentDownloadException("Failed to download document", exception);
+        };
     }
 
     private boolean recordDocumentDownloadStatus(String ccdReference, Party party, String documentId) {

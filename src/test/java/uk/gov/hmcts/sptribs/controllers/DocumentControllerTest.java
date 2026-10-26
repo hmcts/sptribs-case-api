@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.controllers;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.FeignException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,6 +32,8 @@ import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.model.DownloadedDocumentResponse;
 import uk.gov.hmcts.sptribs.document.service.DocumentDownloadStatusService;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.exception.CaseNotFoundException;
+import uk.gov.hmcts.sptribs.exception.DocumentDownloadException;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
@@ -43,7 +46,9 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -194,7 +199,7 @@ class DocumentControllerTest {
             TEST_AUTHORIZATION,
             TEST_POSTCODE
         );
-        verify(cicaRoleService).assignCreatorRole(TEST_CASE_ID_STRING, TEST_AUTHORIZATION);
+        verifyNoInteractions(cicaRoleService);
 
         verify(cicaCaseMapper).toResponse(cicaCaseEntity);
 
@@ -206,7 +211,7 @@ class DocumentControllerTest {
     @Test
     void shouldReturnDownloadedDocument() {
         // Given
-        final String documentId = "12345";
+        final String documentId = "12345678-1234-1234-1234-123456789012";
         final Resource resource = new ByteArrayResource("test-content".getBytes());
 
         final DownloadedDocumentResponse downloadedDocumentResponse =
@@ -238,6 +243,9 @@ class DocumentControllerTest {
         when(cicaCaseService.checkIfUserHasAccessWithPostcode(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, TEST_POSTCODE))
             .thenReturn(cicaCaseEntity);
 
+        when(documentsService.isDocumentOnCase(Long.valueOf(TEST_CASE_ID_STRING), documentId))
+            .thenReturn(true);
+
         when(documentDownloadService.downloadDocument(
             TEST_AUTHORIZATION,
             documentId
@@ -268,6 +276,124 @@ class DocumentControllerTest {
             TEST_AUTHORIZATION,
             documentId
         );
+        verifyNoInteractions(cicaRoleService);
+    }
+
+    @Test
+    void shouldAssignRoleAndRetryOnceWhenCdamCannotSeeTheDocument() {
+        String documentId = "12345678-1234-1234-1234-123456789012";
+        authoriseDocument(documentId);
+        FeignException notFound = mock(FeignException.class);
+        when(notFound.status()).thenReturn(404);
+        Resource resource = new ByteArrayResource("document".getBytes());
+        when(documentDownloadService.downloadDocument(TEST_AUTHORIZATION, documentId))
+            .thenThrow(notFound)
+            .thenReturn(new DownloadedDocumentResponse(resource, "test.pdf", "application/pdf"));
+
+        ResponseEntity<Resource> response = documentController.downloadDocumentByCaseAndId(
+            TEST_AUTHORIZATION, TEST_POSTCODE, TEST_CASE_ID_STRING, documentId);
+
+        assertThat(response.getBody()).isSameAs(resource);
+        verify(cicaRoleService).assignCreatorRole(TEST_CASE_ID_STRING, TEST_AUTHORIZATION);
+        verify(documentDownloadService, times(2)).downloadDocument(TEST_AUTHORIZATION, documentId);
+    }
+
+    @Test
+    void shouldAllowConcurrentAssignmentOnlyWhenCallerCanDownloadOnRetry() {
+        String documentId = "12345678-1234-1234-1234-123456789012";
+        authoriseDocument(documentId);
+        FeignException notFound = mock(FeignException.class);
+        when(notFound.status()).thenReturn(404);
+        FeignException alreadyAssigned = mock(FeignException.class);
+        Resource resource = new ByteArrayResource("document".getBytes());
+        when(documentDownloadService.downloadDocument(TEST_AUTHORIZATION, documentId))
+            .thenThrow(notFound)
+            .thenReturn(new DownloadedDocumentResponse(resource, "test.pdf", "application/pdf"));
+        doThrow(alreadyAssigned).when(cicaRoleService).assignCreatorRole(TEST_CASE_ID_STRING, TEST_AUTHORIZATION);
+
+        assertThat(documentController.downloadDocumentByCaseAndId(
+            TEST_AUTHORIZATION, TEST_POSTCODE, TEST_CASE_ID_STRING, documentId).getBody()).isSameAs(resource);
+
+        verify(documentDownloadService, times(2)).downloadDocument(TEST_AUTHORIZATION, documentId);
+    }
+
+    @Test
+    void shouldStopAfterOneRetryWhenCdamStillCannotSeeDocument() {
+        String documentId = "12345678-1234-1234-1234-123456789012";
+        authoriseDocument(documentId);
+        FeignException notFound = mock(FeignException.class);
+        when(notFound.status()).thenReturn(404);
+        when(documentDownloadService.downloadDocument(TEST_AUTHORIZATION, documentId))
+            .thenThrow(notFound);
+
+        assertThatThrownBy(() -> documentController.downloadDocumentByCaseAndId(
+            TEST_AUTHORIZATION, TEST_POSTCODE, TEST_CASE_ID_STRING, documentId))
+            .isInstanceOf(CaseNotFoundException.class);
+
+        verify(cicaRoleService).assignCreatorRole(TEST_CASE_ID_STRING, TEST_AUTHORIZATION);
+        verify(documentDownloadService, times(2)).downloadDocument(TEST_AUTHORIZATION, documentId);
+    }
+
+    @Test
+    void shouldFailClosedWhenAssignmentFailsAndCallerStillCannotDownload() {
+        String documentId = "12345678-1234-1234-1234-123456789012";
+        authoriseDocument(documentId);
+        FeignException notFound = mock(FeignException.class);
+        when(notFound.status()).thenReturn(404);
+        when(documentDownloadService.downloadDocument(TEST_AUTHORIZATION, documentId)).thenThrow(notFound);
+        doThrow(new IllegalStateException("Assignment rejected"))
+            .when(cicaRoleService).assignCreatorRole(TEST_CASE_ID_STRING, TEST_AUTHORIZATION);
+
+        assertThatThrownBy(() -> documentController.downloadDocumentByCaseAndId(
+            TEST_AUTHORIZATION, TEST_POSTCODE, TEST_CASE_ID_STRING, documentId))
+            .isInstanceOf(DocumentDownloadException.class);
+
+        verify(documentDownloadService, times(2)).downloadDocument(TEST_AUTHORIZATION, documentId);
+    }
+
+    @Test
+    void shouldNotGrantRoleForUnrelatedCdamDenial() {
+        String documentId = "12345678-1234-1234-1234-123456789012";
+        authoriseDocument(documentId);
+        FeignException forbidden = mock(FeignException.class);
+        when(forbidden.status()).thenReturn(403);
+        when(documentDownloadService.downloadDocument(TEST_AUTHORIZATION, documentId)).thenThrow(forbidden);
+
+        assertThatThrownBy(() -> documentController.downloadDocumentByCaseAndId(
+            TEST_AUTHORIZATION, TEST_POSTCODE, TEST_CASE_ID_STRING, documentId))
+            .isInstanceOf(UnauthorisedCaseAccessException.class);
+
+        verifyNoInteractions(cicaRoleService);
+        verify(documentDownloadService).downloadDocument(TEST_AUTHORIZATION, documentId);
+    }
+
+    @Test
+    void shouldRejectDocumentFromAnotherCaseWithoutCallingCdamOrAssigningRole() {
+        String documentId = "12345678-1234-1234-1234-123456789012";
+        authoriseDocument(documentId);
+        when(documentsService.isDocumentOnCase(Long.valueOf(TEST_CASE_ID_STRING), documentId)).thenReturn(false);
+
+        assertThatThrownBy(() -> documentController.downloadDocumentByCaseAndId(
+            TEST_AUTHORIZATION, TEST_POSTCODE, TEST_CASE_ID_STRING, documentId))
+            .isInstanceOf(CaseNotFoundException.class);
+
+        verifyNoInteractions(documentDownloadService, cicaRoleService);
+    }
+
+    private void authoriseDocument(String documentId) {
+        CaseData caseData = new CaseData();
+        CicCase cicCase = new CicCase();
+        cicCase.setEmail("test-email@hmcts.net");
+        caseData.setCicCase(cicCase);
+        CicaCaseEntity caseEntity = CicaCaseEntity.builder()
+            .data(objectMapper.convertValue(caseData, new TypeReference<Map<String, JsonNode>>() {}))
+            .build();
+        when(cicaCaseService.checkIfUserHasAccessWithPostcode(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, TEST_POSTCODE))
+            .thenReturn(caseEntity);
+        CICUser user = mock(CICUser.class);
+        when(user.getUserInfo()).thenReturn(UserInfo.builder().sub("test-email@hmcts.net").build());
+        when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
+        when(documentsService.isDocumentOnCase(Long.valueOf(TEST_CASE_ID_STRING), documentId)).thenReturn(true);
     }
 
     @Test

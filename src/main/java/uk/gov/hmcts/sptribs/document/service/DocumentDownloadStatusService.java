@@ -31,7 +31,8 @@ public class DocumentDownloadStatusService {
                 return;
             }
 
-            Optional<DocumentEntity> docEntityOpt = documentsRepository.findByDocumentIdUuid(documentId);
+            Optional<DocumentEntity> docEntityOpt = documentsRepository.findOnCaseByDocumentId(
+                Long.valueOf(ccdReference), documentId);
             if (docEntityOpt.isEmpty()) {
                 log.warn("Could not find local DocumentEntity for CDAM document UUID: {}", documentId);
                 return;
