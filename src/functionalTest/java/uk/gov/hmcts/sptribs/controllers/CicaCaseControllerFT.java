@@ -19,8 +19,10 @@ import static org.springframework.http.HttpHeaders.CACHE_CONTROL;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.Draft;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUTHORIZATION;
 
 @SpringBootTest
@@ -42,8 +44,9 @@ public class CicaCaseControllerFT extends FunctionalTestSuite {
     private String postgresPassword;
 
     @Test
-    public void shouldReturnOkWithoutCaseDataWhenAppealExistsAndCitizenHasAccess() {
-        final Long appealIdForAppealThatExists = createCaseInCcd(true).getId();
+    public void shouldReturnOkWithoutCaseDataWhenDraftAppealExistsAndCitizenHasAccess() {
+        var draftAppeal = createCaseInCcd(true);
+        assertThat(draftAppeal.getState()).isEqualTo(Draft.getName());
 
         final Response response = RestAssured
             .given()
@@ -52,7 +55,7 @@ public class CicaCaseControllerFT extends FunctionalTestSuite {
             .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generateCcdDataToken())
             .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForCitizen())
             .when()
-            .get("/cases/cica/" + appealIdForAppealThatExists + "/access");
+            .get("/cases/cica/" + draftAppeal.getId() + "/access");
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThat(response.getBody().asString()).isEmpty();
@@ -76,7 +79,7 @@ public class CicaCaseControllerFT extends FunctionalTestSuite {
     }
 
     @Test
-    public void shouldReturnForbiddenWithoutDisclosingWhetherAppealExists() {
+    public void shouldReturnNotFoundWhenAppealDoesNotExist() {
         final long appealIdForAppealThatDoesNotExist = 1234567890123456L;
 
         final Response response = RestAssured
@@ -88,7 +91,7 @@ public class CicaCaseControllerFT extends FunctionalTestSuite {
             .when()
             .get("/cases/cica/" + appealIdForAppealThatDoesNotExist + "/access");
 
-        assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN.value());
+        assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND.value());
         assertThat(response.getBody().asString()).isEmpty();
     }
 
