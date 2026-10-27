@@ -172,7 +172,7 @@ class CicaCaseUpdateIT {
         calls.verify(cicaCaseService).checkIfUserHasAccess(CASE_ID, TEST_AUTHORIZATION_TOKEN);
         calls.verify(coreCaseDataApi).startEvent(TEST_AUTHORIZATION_TOKEN, CCD_TOKEN, CASE_ID,
             CITIZEN_DSS_UPDATE_CASE_SUBMISSION);
-        calls.verify(cicaRoleService).assignCreatorRole(CASE_ID, TEST_AUTHORIZATION_TOKEN);
+        calls.verify(cicaRoleService).ensureCreatorRole(CASE_ID, TEST_AUTHORIZATION_TOKEN);
         calls.verify(coreCaseDataApi).startEvent(TEST_AUTHORIZATION_TOKEN, CCD_TOKEN, CASE_ID,
             CITIZEN_DSS_UPDATE_CASE_SUBMISSION);
         ArgumentCaptor<CaseDataContent> submitted = ArgumentCaptor.forClass(CaseDataContent.class);
@@ -212,7 +212,7 @@ class CicaCaseUpdateIT {
 
         updateRequest().andExpect(status().isConflict()).andExpect(content().string(""));
 
-        verify(cicaRoleService).assignCreatorRole(CASE_ID, TEST_AUTHORIZATION_TOKEN);
+        verify(cicaRoleService).ensureCreatorRole(CASE_ID, TEST_AUTHORIZATION_TOKEN);
         verify(coreCaseDataApi, never()).createEvent(any(), any(), any(), any());
     }
 
@@ -222,7 +222,7 @@ class CicaCaseUpdateIT {
         when(coreCaseDataApi.startEvent(TEST_AUTHORIZATION_TOKEN, CCD_TOKEN, CASE_ID,
             CITIZEN_DSS_UPDATE_CASE_SUBMISSION)).thenThrow(ccdFailure(404, "No case found for reference"));
         doThrow(ccdFailure(503, "private case data"))
-            .when(cicaRoleService).assignCreatorRole(CASE_ID, TEST_AUTHORIZATION_TOKEN);
+            .when(cicaRoleService).ensureCreatorRole(CASE_ID, TEST_AUTHORIZATION_TOKEN);
 
         updateRequest().andExpect(status().isServiceUnavailable()).andExpect(content().string(""));
 

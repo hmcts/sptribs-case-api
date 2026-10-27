@@ -13,8 +13,7 @@ import java.util.List;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.http.HttpStatus.FORBIDDEN;
-import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUTHORIZATION;
@@ -29,20 +28,20 @@ public class CicaRoleAssignmentFT extends FunctionalTestSuite {
     private CaseAssignmentApi caseAssignmentApi;
 
     @Test
-    public void shouldAssignCreatorRoleToCitizenAfterAccessingDocuments() {
+    public void shouldNotAssignCreatorRoleToCitizenAfterListingDocuments() {
         String caseId = createCaseInCcd(true).getId().toString();
         String citizenToken = idamTokenGenerator.generateIdamTokenForCitizen();
         String citizenId = idamTokenGenerator.getUserInfoFor(citizenToken).getUid();
 
+        assertThat(caseRolesForCitizen(caseId, citizenId)).isEmpty();
+
         Response response = getDocuments(caseId, citizenToken, CASE_POSTCODE);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        // Listing is read-only; creator roles are assigned on demand during downloads or case updates.
         assertThat(caseRolesForCitizen(caseId, citizenId))
-            .anySatisfy(role -> {
-                assertThat(role.getCaseDataId()).isEqualTo(caseId);
-                assertThat(role.getUserId()).isEqualTo(citizenId);
-                assertThat(role.getCaseRole()).isEqualTo(CREATOR_ROLE);
-            });
+            .as("Listing documents must not assign case roles to the citizen")
+            .isEmpty();
     }
 
     @Test
@@ -59,33 +58,16 @@ public class CicaRoleAssignmentFT extends FunctionalTestSuite {
     }
 
     @Test
-    public void shouldAssignCreatorRoleThroughRoleAssignmentsEndpoint() {
+    public void shouldNotExposeRoleAssignmentsEndpoint() {
         String caseId = createCaseInCcd(true).getId().toString();
         String citizenToken = idamTokenGenerator.generateIdamTokenForCitizen();
         String citizenId = idamTokenGenerator.getUserInfoFor(citizenToken).getUid();
 
         Response response = assignCreatorRole(caseId, citizenToken);
 
-        assertThat(response.getStatusCode()).isEqualTo(NO_CONTENT.value());
+        assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND.value());
         assertThat(caseRolesForCitizen(caseId, citizenId))
-            .anySatisfy(role -> {
-                assertThat(role.getCaseDataId()).isEqualTo(caseId);
-                assertThat(role.getUserId()).isEqualTo(citizenId);
-                assertThat(role.getCaseRole()).isEqualTo(CREATOR_ROLE);
-            });
-    }
-
-    @Test
-    public void shouldNotAssignCreatorRoleThroughEndpointWithoutCaseAccess() {
-        String caseId = createCaseInCcd(false).getId().toString();
-        String citizenToken = idamTokenGenerator.generateIdamTokenForCitizen();
-        String citizenId = idamTokenGenerator.getUserInfoFor(citizenToken).getUid();
-
-        Response response = assignCreatorRole(caseId, citizenToken);
-
-        assertThat(response.getStatusCode()).isEqualTo(FORBIDDEN.value());
-        assertThat(caseRolesForCitizen(caseId, citizenId))
-            .noneMatch(role -> CREATOR_ROLE.equals(role.getCaseRole()));
+            .isEmpty();
     }
 
     private Response getDocuments(String caseId, String citizenToken, String postcode) {

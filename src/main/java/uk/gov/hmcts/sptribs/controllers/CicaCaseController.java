@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseUpdateService;
-import uk.gov.hmcts.sptribs.ciccase.service.CicaRoleService;
 import uk.gov.hmcts.sptribs.controllers.model.DssCaseUpdateRequest;
 import uk.gov.hmcts.sptribs.controllers.model.UpdateCaseResponse;
 
@@ -42,7 +41,6 @@ import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUT
 public class CicaCaseController {
 
     private final CicaCaseService cicaCaseService;
-    private final CicaRoleService cicaRoleService;
     private final CicaCaseUpdateService cicaCaseUpdateService;
 
     @GetMapping(value = "/{ccdReference}/access", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -101,44 +99,13 @@ public class CicaCaseController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping(value = "/{ccdReference}/role-assignments")
-    @Operation(
-        summary = "Assign the creator role to the authenticated citizen",
-        description = "Verifies that the authenticated citizen belongs to the case before assigning their own creator role."
-    )
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "204", description = "Creator role assigned", content = @Content),
-        @ApiResponse(responseCode = "400", description = "Invalid CCD reference", content = @Content),
-        @ApiResponse(responseCode = "403", description = "User or service cannot access the case", content = @Content),
-        @ApiResponse(responseCode = "404", description = "Case not found", content = @Content),
-        @ApiResponse(responseCode = "500", description = "Role assignment failed", content = @Content)
-    })
-    public ResponseEntity<Void> assignCreatorRole(
-        @RequestHeader(AUTHORIZATION)
-        @Parameter(description = "User's IDAM access token", required = true)
-        String authorisation,
-
-        @RequestHeader(SERVICE_AUTHORIZATION)
-        @Parameter(description = "S2S token from the frontend service", required = true)
-        String serviceAuthorisation,
-
-        @PathVariable
-        @Pattern(regexp = "^\\d{16}$", message = "CCD reference must be 16 digits long")
-        @Parameter(description = "The CCD reference number", required = true, example = "1740138704453399")
-        String ccdReference
-    ) {
-        cicaCaseService.checkIfUserHasAccess(ccdReference, authorisation);
-        cicaRoleService.assignCreatorRole(ccdReference, authorisation);
-        return ResponseEntity.noContent().build();
-    }
-
     @PostMapping(value = "/{ccdReference}/updates", consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
         summary = "Update a CICA case using the citizen DSS update event",
         description = "Verifies case membership and attempts the CCD update with the caller's token. "
-            + "If CCD reports that the case is inaccessible due to a missing case role, assigns the creator role "
-            + "and retries the event start once. The update is submitted only once."
+            + "If CCD reports that the case is inaccessible, checks the citizen's case roles and assigns the creator "
+            + "role only if absent, then retries the event start once. The update is submitted only once."
     )
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Case updated successfully"),

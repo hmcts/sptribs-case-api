@@ -5,6 +5,8 @@ import feign.Request;
 import feign.Response;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -94,7 +96,7 @@ class CicaCaseUpdateServiceTest {
         calls.verify(cicaCaseService).checkIfUserHasAccess(TEST_CASE_ID_STRING, CITIZEN_TOKEN);
         calls.verify(coreCaseDataApi).startEvent(CITIZEN_TOKEN, SERVICE_TOKEN, TEST_CASE_ID_STRING,
             CITIZEN_DSS_UPDATE_CASE_SUBMISSION);
-        calls.verify(cicaRoleService).assignCreatorRole(TEST_CASE_ID_STRING, CITIZEN_TOKEN);
+        calls.verify(cicaRoleService).ensureCreatorRole(TEST_CASE_ID_STRING, CITIZEN_TOKEN);
         calls.verify(coreCaseDataApi).startEvent(CITIZEN_TOKEN, SERVICE_TOKEN, TEST_CASE_ID_STRING,
             CITIZEN_DSS_UPDATE_CASE_SUBMISSION);
         ArgumentCaptor<CaseDataContent> content = ArgumentCaptor.forClass(CaseDataContent.class);
@@ -115,20 +117,20 @@ class CicaCaseUpdateServiceTest {
         assertThatThrownBy(() -> updateService.updateCase(TEST_CASE_ID_STRING, CITIZEN_TOKEN, new DssCaseDataRequest()))
             .isSameAs(retryFailure);
 
-        verify(cicaRoleService).assignCreatorRole(TEST_CASE_ID_STRING, CITIZEN_TOKEN);
+        verify(cicaRoleService).ensureCreatorRole(TEST_CASE_ID_STRING, CITIZEN_TOKEN);
         verify(coreCaseDataApi, times(2)).startEvent(CITIZEN_TOKEN, SERVICE_TOKEN, TEST_CASE_ID_STRING,
             CITIZEN_DSS_UPDATE_CASE_SUBMISSION);
         verify(coreCaseDataApi, never()).createEvent(any(), any(), any(), any());
     }
 
     @Test
-    void shouldNotRetryIfRoleAssignmentFails() {
+    void shouldNotRetryIfRoleLookupOrAssignmentFails() {
         FeignException missingRole = ccdFailure(404, "No case found for reference");
         FeignException assignmentFailure = ccdFailure(503, "Assignment unavailable");
         when(authTokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
         when(coreCaseDataApi.startEvent(CITIZEN_TOKEN, SERVICE_TOKEN, TEST_CASE_ID_STRING,
             CITIZEN_DSS_UPDATE_CASE_SUBMISSION)).thenThrow(missingRole);
-        doThrow(assignmentFailure).when(cicaRoleService).assignCreatorRole(TEST_CASE_ID_STRING, CITIZEN_TOKEN);
+        doThrow(assignmentFailure).when(cicaRoleService).ensureCreatorRole(TEST_CASE_ID_STRING, CITIZEN_TOKEN);
 
         assertThatThrownBy(() -> updateService.updateCase(TEST_CASE_ID_STRING, CITIZEN_TOKEN, new DssCaseDataRequest()))
             .isSameAs(assignmentFailure);
@@ -138,9 +140,10 @@ class CicaCaseUpdateServiceTest {
         verify(coreCaseDataApi, never()).createEvent(any(), any(), any(), any());
     }
 
-    @Test
-    void shouldNotAssignRoleForUnrelatedCcdFailure() {
-        FeignException forbidden = ccdFailure(403, "Event is not allowed in this state");
+    @ParameterizedTest
+    @ValueSource(ints = {401, 403, 500, 503, -1})
+    void shouldNotAssignRoleForUnrelatedCcdFailure(int status) {
+        FeignException forbidden = ccdFailure(status, "Event is not allowed in this state");
         when(authTokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
         when(coreCaseDataApi.startEvent(CITIZEN_TOKEN, SERVICE_TOKEN, TEST_CASE_ID_STRING,
             CITIZEN_DSS_UPDATE_CASE_SUBMISSION)).thenThrow(forbidden);
@@ -149,6 +152,9 @@ class CicaCaseUpdateServiceTest {
             .isSameAs(forbidden);
 
         verifyNoInteractions(cicaRoleService);
+        verify(coreCaseDataApi).startEvent(CITIZEN_TOKEN, SERVICE_TOKEN, TEST_CASE_ID_STRING,
+            CITIZEN_DSS_UPDATE_CASE_SUBMISSION);
+        verify(coreCaseDataApi, never()).createEvent(any(), any(), any(), any());
     }
 
     @Test

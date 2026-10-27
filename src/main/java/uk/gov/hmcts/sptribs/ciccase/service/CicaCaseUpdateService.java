@@ -36,7 +36,7 @@ public class CicaCaseUpdateService {
                 throw exception;
             }
             // CCD masks an inaccessible case as not found. Membership was checked above.
-            cicaRoleService.assignCreatorRole(ccdReference, userAuthToken);
+            cicaRoleService.ensureCreatorRole(ccdReference, userAuthToken);
             startEventResponse = startUpdate(ccdReference, userAuthToken, serviceAuthToken);
         }
 
@@ -56,6 +56,6 @@ public class CicaCaseUpdateService {
     private boolean isMissingCaseRole(FeignException exception) {
         return exception.status() == 404
             && (exception.contentUTF8().contains(CASE_NOT_FOUND_FOR_REFERENCE)
-                || exception.getMessage().contains(CASE_NOT_FOUND_FOR_REFERENCE));
+                || (exception.getMessage() != null && exception.getMessage().contains(CASE_NOT_FOUND_FOR_REFERENCE)));
     }
 }
