@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import feign.FeignException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -24,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
-import uk.gov.hmcts.sptribs.ciccase.service.CicaRoleService;
 import uk.gov.hmcts.sptribs.ciccase.util.CasePartyUtil;
 import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
 import uk.gov.hmcts.sptribs.controllers.mapper.CaseworkerCICDocumentMapper;
@@ -41,7 +39,6 @@ import uk.gov.hmcts.sptribs.document.model.DownloadedDocumentResponse;
 import uk.gov.hmcts.sptribs.document.service.DocumentDownloadStatusService;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.exception.CaseNotFoundException;
-import uk.gov.hmcts.sptribs.exception.DocumentDownloadException;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
@@ -65,7 +62,6 @@ public class DocumentController {
     private final DocumentDownloadStatusService documentDownloadStatusService;
     private final CaseworkerCICDocumentMapper caseworkerCICDocumentMapper;
     private final CicaCaseService cicaCaseService;
-    private final CicaRoleService cicaRoleService;
     private final CicaCaseMapper cicaCaseMapper;
     private final IdamService idamService;
     private final ObjectMapper objectMapper;
@@ -161,7 +157,8 @@ public class DocumentController {
     @GetMapping(value = "/{ccdReference}/documents/{documentId}/download")
     @Operation(summary = "Download a document by its ID and verify against case reference and postcode",
         description = "Checks case membership and document ownership before fetching with the caller's token. "
-            + "On a CDAM not-found response, assigns the caller the creator role and retries once.")
+            + "On a CDAM metadata not-found response, checks the caller's case roles, assigns the creator role "
+            + "if absent and retries metadata retrieval once.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Document downloaded successfully"),
         @ApiResponse(responseCode = "400", description = "Invalid CCD reference or document ID"),
@@ -207,7 +204,7 @@ public class DocumentController {
             if (!documentsService.isDocumentOnCase(Long.valueOf(ccdReference), documentUuid.toString())) {
                 throw new CaseNotFoundException("Document not found on case");
             }
-            DownloadedDocumentResponse documentResponse = downloadWithCreatorRoleRetry(
+            DownloadedDocumentResponse documentResponse = documentDownloadService.downloadDocument(
                 ccdReference, authorisation, documentUuid.toString());
 
             log.info(
@@ -241,42 +238,6 @@ public class DocumentController {
             );
             throw exception;
         }
-    }
-
-    private DownloadedDocumentResponse downloadWithCreatorRoleRetry(String ccdReference, String authorisation,
-                                                                    String documentId) {
-        try {
-            return documentDownloadService.downloadDocument(authorisation, documentId);
-        } catch (FeignException exception) {
-            if (exception.status() != 404) {
-                throw documentAccessFailure(exception);
-            }
-        }
-
-        try {
-            cicaRoleService.assignCreatorRole(ccdReference, authorisation);
-        } catch (RuntimeException assignmentFailure) {
-            // Another request may have assigned the role concurrently. Only a successful caller-token download proves access.
-            try {
-                return documentDownloadService.downloadDocument(authorisation, documentId);
-            } catch (FeignException retryFailure) {
-                throw new DocumentDownloadException("Failed to grant access to document", assignmentFailure);
-            }
-        }
-
-        try {
-            return documentDownloadService.downloadDocument(authorisation, documentId);
-        } catch (FeignException retryFailure) {
-            throw documentAccessFailure(retryFailure);
-        }
-    }
-
-    private RuntimeException documentAccessFailure(FeignException exception) {
-        return switch (exception.status()) {
-            case 404 -> new CaseNotFoundException("Document not found");
-            case 403 -> new UnauthorisedCaseAccessException("Document access denied");
-            default -> new DocumentDownloadException("Failed to download document", exception);
-        };
     }
 
     private boolean recordDocumentDownloadStatus(String ccdReference, Party party, String documentId) {

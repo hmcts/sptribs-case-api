@@ -43,6 +43,7 @@ import static java.util.Collections.emptyList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -170,9 +171,54 @@ class DocumentControllerIT {
             .andExpect(status().isOk())
             .andExpect(content().bytes(content));
 
-        verify(cicaRoleService).assignCreatorRole(TEST_CASE_ID_STRING, TEST_AUTHORIZATION_TOKEN);
+        verify(cicaRoleService).ensureCreatorRole(TEST_CASE_ID_STRING, TEST_AUTHORIZATION_TOKEN);
         verify(caseDocumentClientApi, org.mockito.Mockito.times(2)).getDocument(
             TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, TEST_CASE_DATA_FILE_UUID);
+    }
+
+    @Test
+    void shouldNotAssignRoleWhenDocumentBinaryIsMissing() throws Exception {
+        mockAuthorisedCaseAccess();
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+        when(caseDocumentClientApi.getDocument(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, TEST_CASE_DATA_FILE_UUID))
+            .thenReturn(ResponseEntity.ok(new Document()));
+        FeignException notFound = org.mockito.Mockito.mock(FeignException.class);
+        when(notFound.status()).thenReturn(404);
+        when(caseDocumentClientApi.getDocumentBinary(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN,
+            TEST_CASE_DATA_FILE_UUID)).thenThrow(notFound);
+
+        mockMvc.perform(get(String.format(DOWNLOAD_DOCUMENT_URL, TEST_CASE_DATA_FILE_UUID))
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
+                .header("X-Postcode", TEST_POSTCODE))
+            .andExpect(status().isNotFound());
+
+        verifyNoInteractions(cicaRoleService);
+        verify(caseDocumentClientApi).getDocument(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, TEST_CASE_DATA_FILE_UUID);
+        verify(caseDocumentClientApi).getDocumentBinary(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN,
+            TEST_CASE_DATA_FILE_UUID);
+    }
+
+    @Test
+    void shouldNotRetryDownloadWhenRoleRecoveryFails() throws Exception {
+        mockAuthorisedCaseAccess();
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+        FeignException notFound = org.mockito.Mockito.mock(FeignException.class);
+        when(notFound.status()).thenReturn(404);
+        when(caseDocumentClientApi.getDocument(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, TEST_CASE_DATA_FILE_UUID))
+            .thenThrow(notFound);
+        org.mockito.Mockito.doThrow(new IllegalStateException("Role lookup unavailable"))
+            .when(cicaRoleService).ensureCreatorRole(TEST_CASE_ID_STRING, TEST_AUTHORIZATION_TOKEN);
+
+        mockMvc.perform(get(String.format(DOWNLOAD_DOCUMENT_URL, TEST_CASE_DATA_FILE_UUID))
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
+                .header("X-Postcode", TEST_POSTCODE))
+            .andExpect(status().isInternalServerError());
+
+        verify(caseDocumentClientApi).getDocument(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, TEST_CASE_DATA_FILE_UUID);
+        verify(caseDocumentClientApi, never()).getDocumentBinary(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN,
+            TEST_CASE_DATA_FILE_UUID);
     }
 
     @Test
@@ -466,4 +512,3 @@ class DocumentControllerIT {
             .build();
     }
 }
-
