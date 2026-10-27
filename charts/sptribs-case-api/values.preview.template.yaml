@@ -97,6 +97,7 @@ ccd:
     java:
       imagePullPolicy: Always
       environment:
+        IDAM_API_BASE_URL: https://idam-api.aat.platform.hmcts.net
         CASE_DOCUMENT_AM_API_ATTACH_DOCUMENT_ENABLED: true
         DATA_STORE_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
         DATA_STORE_DB_USERNAME: ${CCD_DATA_STORE_DB_USERNAME_PREVIEW}
