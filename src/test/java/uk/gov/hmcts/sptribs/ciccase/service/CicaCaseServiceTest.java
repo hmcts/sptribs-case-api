@@ -10,7 +10,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.sptribs.common.repositories.CaseDataRepository;
 import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
-import uk.gov.hmcts.sptribs.exception.CaseNotFoundException;
 import uk.gov.hmcts.sptribs.exception.InvalidPostcodeException;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
 import uk.gov.hmcts.sptribs.idam.CICUser;
@@ -60,8 +59,8 @@ class CicaCaseServiceTest {
     void shouldNotThrowExceptionWhenCheckIfUserHasAccessSuccessful() {
         when(user.getUserInfo()).thenReturn(userInfo());
         when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
-        when(caseDataRepository.checkCaseExists(TEST_CASE_ID_STRING)).thenReturn(true);
-        when(caseDataRepository.checkIfUserHasAccessToCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL)).thenReturn(true);
+        when(caseDataRepository.findCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL))
+            .thenReturn(Optional.of(CicaCaseEntity.builder().state("DSS_Draft").build()));
 
         assertDoesNotThrow(() -> cicaCaseService.checkIfUserHasAccess(TEST_CASE_ID_STRING, TEST_AUTHORIZATION));
     }
@@ -70,8 +69,7 @@ class CicaCaseServiceTest {
     void shouldThrowUnauthorisedCaseAccessExceptionWhenCheckIfUserHasAccessFails() {
         when(user.getUserInfo()).thenReturn(userInfo());
         when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
-        when(caseDataRepository.checkCaseExists(TEST_CASE_ID_STRING)).thenReturn(true);
-        when(caseDataRepository.checkIfUserHasAccessToCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL)).thenReturn(false);
+        when(caseDataRepository.findCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL)).thenReturn(Optional.empty());
 
         assertThrows(UnauthorisedCaseAccessException.class, () ->
             cicaCaseService.checkIfUserHasAccess(TEST_CASE_ID_STRING, TEST_AUTHORIZATION)
@@ -79,20 +77,20 @@ class CicaCaseServiceTest {
     }
 
     @Test
-    void shouldThrowCaseNotFoundExceptionWhenCheckIfUserHasAccessFailsOnNonExistentCase() {
+    void shouldAllowExpiredCaseWhenAssociatedWithUser() {
+        when(user.getUserInfo()).thenReturn(userInfo());
         when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
-        when(caseDataRepository.checkCaseExists(TEST_CASE_ID_STRING)).thenReturn(false);
+        when(caseDataRepository.findCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL))
+            .thenReturn(Optional.of(CicaCaseEntity.builder().state("DSS_Expired").build()));
 
-        assertThrows(CaseNotFoundException.class, () ->
-            cicaCaseService.checkIfUserHasAccess(TEST_CASE_ID_STRING, TEST_AUTHORIZATION)
-        );
+        assertDoesNotThrow(() -> cicaCaseService.checkIfUserHasAccess(TEST_CASE_ID_STRING, TEST_AUTHORIZATION));
     }
 
     @Test
     void shouldThrowUnauthorisedCaseAccessExceptionWhenCheckIfUserHasAccessFailsDueToIdamException() {
         when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenThrow(new RuntimeException("IDAM down"));
 
-        assertThrows(UnauthorisedCaseAccessException.class, () ->
+        assertThrows(IllegalStateException.class, () ->
             cicaCaseService.checkIfUserHasAccess(TEST_CASE_ID_STRING, TEST_AUTHORIZATION)
         );
     }
@@ -157,8 +155,59 @@ class CicaCaseServiceTest {
             cicaCaseService.checkIfUserHasAccessWithPostcode(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, TEST_POSTCODE)
         );
     }
+
+    @Test
+    void shouldVerifySubjectForAssociatedDraftCase() {
+        CicaCaseEntity cicaCase = CicaCaseEntity.builder().state("DSS_Draft").data(Map.of(
+            "cicCaseFullName", new ObjectMapper().getNodeFactory().textNode(" Subject Name "),
+            "cicCaseDateOfBirth", new ObjectMapper().getNodeFactory().textNode("2000-01-01")
+        )).build();
+        when(user.getUserInfo()).thenReturn(userInfo());
+        when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
+        when(caseDataRepository.findCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL))
+            .thenReturn(Optional.of(cicaCase));
+
+        assertThat(cicaCaseService.verifySubject(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, "Subject Name", "2000-01-01"))
+            .isTrue();
+        assertThat(cicaCaseService.verifySubject(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, "subject name", "2000-01-01"))
+            .isFalse();
+        assertThat(cicaCaseService.verifySubject(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, "Subject Name", "2000-01-02"))
+            .isFalse();
+    }
+
+    @Test
+    void shouldNotMatchMissingIdentityFields() {
+        when(user.getUserInfo()).thenReturn(userInfo());
+        when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
+        when(caseDataRepository.findCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL))
+            .thenReturn(Optional.of(CicaCaseEntity.builder().data(Map.of()).build()));
+
+        assertThat(cicaCaseService.verifySubject(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, "Name", "2000-01-01"))
+            .isFalse();
+    }
+
+    @Test
+    void shouldVerifySubjectForAssociatedExpiredCase() {
+        CicaCaseEntity expiredCase = CicaCaseEntity.builder().state("DSS_Expired").data(Map.of(
+            "cicCaseFullName", new ObjectMapper().getNodeFactory().textNode("Subject Name"),
+            "cicCaseDateOfBirth", new ObjectMapper().getNodeFactory().textNode("2000-01-01")
+        )).build();
+        when(user.getUserInfo()).thenReturn(userInfo());
+        when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
+        when(caseDataRepository.findCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL))
+            .thenReturn(Optional.of(expiredCase));
+
+        assertThat(cicaCaseService.verifySubject(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, "Subject Name", "2000-01-01"))
+            .isTrue();
+    }
+
+    @Test
+    void shouldDenySubjectVerificationForUnassociatedUser() {
+        when(user.getUserInfo()).thenReturn(userInfo());
+        when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
+        when(caseDataRepository.findCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL)).thenReturn(Optional.empty());
+
+        assertThrows(UnauthorisedCaseAccessException.class, () ->
+            cicaCaseService.verifySubject(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, "Name", "2000-01-01"));
+    }
 }
-
-
-
-
