@@ -3,8 +3,11 @@ package uk.gov.hmcts.sptribs.controllers;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
 import java.sql.Connection;
@@ -22,7 +25,6 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.Draft;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUTHORIZATION;
 
 @SpringBootTest
@@ -44,9 +46,8 @@ public class CicaCaseControllerFT extends FunctionalTestSuite {
     private String postgresPassword;
 
     @Test
-    public void shouldReturnOkWithoutCaseDataWhenDraftAppealExistsAndCitizenHasAccess() {
-        var draftAppeal = createCaseInCcd(true);
-        assertThat(draftAppeal.getState()).isEqualTo(Draft.getName());
+    public void shouldReturnOkWithoutCaseDataWhenAppealExistsAndCitizenHasAccess() {
+        final Long appealIdForAppealThatExists = createCaseInCcd(true).getId();
 
         final Response response = RestAssured
             .given()
@@ -55,11 +56,36 @@ public class CicaCaseControllerFT extends FunctionalTestSuite {
             .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generateCcdDataToken())
             .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForCitizen())
             .when()
-            .get("/cases/cica/" + draftAppeal.getId() + "/access");
+            .get("/cases/cica/" + appealIdForAppealThatExists + "/access");
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThat(response.getBody().asString()).isEmpty();
         assertThat(response.getHeader(CACHE_CONTROL)).isEqualTo("no-store");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = {"Draft", "DSS_Draft"})
+    public void shouldAllowCitizenAccessToDraftAppeal(State draftState) throws SQLException {
+        Long appealId = createCaseInCcd(true).getId();
+        String jdbcUrl = String.format("jdbc:postgresql://%s:%s/%s", postgresHost, postgresPort, postgresName);
+
+        try (Connection connection = DriverManager.getConnection(jdbcUrl, postgresUsername, postgresPassword);
+             PreparedStatement statement = connection.prepareStatement("UPDATE ccd.case_data SET state = ? WHERE reference = ?")) {
+            statement.setString(1, draftState.getName());
+            statement.setLong(2, appealId);
+            assertThat(statement.executeUpdate()).isEqualTo(1);
+        }
+
+        Response response = RestAssured.given()
+            .relaxedHTTPSValidation()
+            .baseUri(testUrl)
+            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generateCcdDataToken())
+            .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForCitizen())
+            .when()
+            .get("/cases/cica/" + appealId + "/access");
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThat(response.getBody().asString()).isEmpty();
     }
 
     @Test
