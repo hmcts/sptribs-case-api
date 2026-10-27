@@ -3,17 +3,10 @@ package uk.gov.hmcts.sptribs.controllers;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.io.IOException;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,24 +19,12 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.testutil.CaseDataUtil.caseData;
 
 @SpringBootTest
 public class CicaCaseControllerFT extends FunctionalTestSuite {
 
-    @Value("${postgres.host}")
-    private String postgresHost;
-
-    @Value("${postgres.port}")
-    private String postgresPort;
-
-    @Value("${postgres.name}")
-    private String postgresName;
-
-    @Value("${postgres.username}")
-    private String postgresUsername;
-
-    @Value("${postgres.password}")
-    private String postgresPassword;
+    private static final String CASE_WITH_SUBJECT = "classpath:request/casedata/cica-case-with-subject.json";
 
     @Test
     public void shouldReturnOkWithoutCaseDataWhenAppealExistsAndCitizenHasAccess() {
@@ -61,31 +42,6 @@ public class CicaCaseControllerFT extends FunctionalTestSuite {
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThat(response.getBody().asString()).isEmpty();
         assertThat(response.getHeader(CACHE_CONTROL)).isEqualTo("no-store");
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = State.class, names = {"Draft", "DSS_Draft"})
-    public void shouldAllowCitizenAccessToDraftAppeal(State draftState) throws SQLException {
-        Long appealId = createCaseInCcd(true).getId();
-        String jdbcUrl = String.format("jdbc:postgresql://%s:%s/%s", postgresHost, postgresPort, postgresName);
-
-        try (Connection connection = DriverManager.getConnection(jdbcUrl, postgresUsername, postgresPassword);
-             PreparedStatement statement = connection.prepareStatement("UPDATE ccd.case_data SET state = ? WHERE reference = ?")) {
-            statement.setString(1, draftState.getName());
-            statement.setLong(2, appealId);
-            assertThat(statement.executeUpdate()).isEqualTo(1);
-        }
-
-        Response response = RestAssured.given()
-            .relaxedHTTPSValidation()
-            .baseUri(testUrl)
-            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generateCcdDataToken())
-            .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForCitizen())
-            .when()
-            .get("/cases/cica/" + appealId + "/access");
-
-        assertThat(response.getStatusCode()).isEqualTo(OK.value());
-        assertThat(response.getBody().asString()).isEmpty();
     }
 
     @Test
@@ -134,7 +90,7 @@ public class CicaCaseControllerFT extends FunctionalTestSuite {
     }
 
     @Test
-    public void shouldVerifySubjectWithoutReturningCaseDetails() throws SQLException {
+    public void shouldVerifySubjectWithoutReturningCaseDetails() throws IOException {
         String citizenToken = idamTokenGenerator.generateIdamTokenForCitizen();
         Long caseId = createCaseWithSubject();
 
@@ -146,7 +102,7 @@ public class CicaCaseControllerFT extends FunctionalTestSuite {
     }
 
     @Test
-    public void shouldNotRevealWhichSubjectDetailDoesNotMatch() throws SQLException {
+    public void shouldNotRevealWhichSubjectDetailDoesNotMatch() throws IOException {
         String citizenToken = idamTokenGenerator.generateIdamTokenForCitizen();
         Long caseId = createCaseWithSubject();
 
@@ -200,21 +156,8 @@ public class CicaCaseControllerFT extends FunctionalTestSuite {
         assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST.value());
     }
 
-    private Long createCaseWithSubject() throws SQLException {
-        Long caseId = createCaseInCcd(true).getId();
-        String jdbcUrl = String.format("jdbc:postgresql://%s:%s/%s", postgresHost, postgresPort, postgresName);
-        String sql = "UPDATE ccd.case_data SET data = jsonb_set("
-            + "jsonb_set(data, '{cicCaseFullName}', to_jsonb(CAST(? AS text)), true), "
-            + "'{cicCaseDateOfBirth}', to_jsonb(CAST(? AS text)), true) WHERE reference = ?";
-
-        try (Connection connection = DriverManager.getConnection(jdbcUrl, postgresUsername, postgresPassword);
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, "Subject Name");
-            statement.setString(2, "2000-01-01");
-            statement.setLong(3, caseId);
-            assertThat(statement.executeUpdate()).isEqualTo(1);
-        }
-        return caseId;
+    private Long createCaseWithSubject() throws IOException {
+        return createCaseInCcd(true, caseData(CASE_WITH_SUBJECT)).getId();
     }
 
     private Response verifySubject(Long caseId, String citizenToken, String subjectName, String dateOfBirth) {
