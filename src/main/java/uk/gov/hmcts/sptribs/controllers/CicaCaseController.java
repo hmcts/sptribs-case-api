@@ -59,7 +59,11 @@ public class CicaCaseController {
             content = @Content),
         @ApiResponse(
             responseCode = "403",
-            description = "Forbidden - Service not authorized",
+            description = "Forbidden - Service not authorised or user not associated with the case",
+            content = @Content),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Case not found or expired",
             content = @Content),
         @ApiResponse(
             responseCode = "500",

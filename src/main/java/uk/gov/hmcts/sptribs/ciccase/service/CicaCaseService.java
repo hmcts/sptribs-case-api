@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import uk.gov.hmcts.sptribs.common.repositories.CaseDataRepository;
 import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
+import uk.gov.hmcts.sptribs.exception.CaseNotFoundException;
 import uk.gov.hmcts.sptribs.exception.InvalidPostcodeException;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
 import uk.gov.hmcts.sptribs.idam.CICUser;
@@ -27,16 +28,21 @@ public class CicaCaseService {
      *
      * @param ccdReference  the CCD reference number.
      * @param authorisation user authorization token.
-     * @throws UnauthorisedCaseAccessException if the user does not have access or validation fails.
+     * @throws CaseNotFoundException if no eligible case exists for the reference.
+     * @throws UnauthorisedCaseAccessException if the user is not associated with the case.
      */
     public void checkIfUserHasAccess(String ccdReference, String authorisation) {
         try {
             CICUser user = retrieveUserForVerification(authorisation);
-            if (caseDataRepository.findCase(ccdReference, user.getUserInfo().getSub()).isEmpty()) {
+            if (!caseDataRepository.checkCaseExists(ccdReference)) {
+                throw new CaseNotFoundException("No case found with CCD reference: " + ccdReference);
+            }
+            if (!caseDataRepository.checkIfUserHasAccessToCase(ccdReference, user.getUserInfo().getSub())) {
                 throw new UnauthorisedCaseAccessException("User is not authorised to access case: " + ccdReference);
             }
         } catch (Exception e) {
             switch (e) {
+                case CaseNotFoundException cnfe -> throw cnfe;
                 case UnauthorisedCaseAccessException ucae -> throw ucae;
                 case ResponseStatusException rse -> throw rse;
                 default -> {

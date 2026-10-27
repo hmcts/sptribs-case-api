@@ -18,9 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Draft;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Expired;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.Draft;
 
 /**
  * Repository responsible for querying the case_data table.
@@ -36,16 +34,14 @@ public class CaseDataRepositoryImpl implements CaseDataRepository {
     public static final String STATE = "state";
     public static final String STATES = "states";
     public static final String REFERENCE = "reference";
-    private static final List<String> INVALID_STATES = List.of(Draft.getName(), DSS_Draft.getName(),
-        DSS_Expired.getName());
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final ObjectMapper objectMapper;
 
-    private static final String CHECK_CASE_EXISTS_AND_CORRECT_STATE =
+    private static final String CHECK_CASE_EXISTS_AND_NOT_EXPIRED =
         "SELECT COUNT(*) FROM ccd.case_data c "
             + "WHERE c.case_type_id = :caseType AND c.jurisdiction = :jurisdiction "
             + "AND c.reference = :ccdReference "
-            + "AND c.state NOT IN (:invalidStates)";
+            + "AND c.state <> :expiredState";
 
     private static final String SELECT_CASE_DATA_BY_CCD_REF_AND_EMAIL =
         "SELECT c.id, c.reference, c.state, c.data::text AS case_data, c.last_modified "
@@ -85,11 +81,11 @@ public class CaseDataRepositoryImpl implements CaseDataRepository {
             "ccdReference", Long.valueOf(ccdReference),
             "caseType", CASE_TYPE,
             "jurisdiction", JURISDICTION,
-            "invalidStates", INVALID_STATES
+            "expiredState", DSS_Expired.getName()
         );
 
         Integer count = namedParameterJdbcTemplate.queryForObject(
-            CHECK_CASE_EXISTS_AND_CORRECT_STATE,
+            CHECK_CASE_EXISTS_AND_NOT_EXPIRED,
             params,
             Integer.class
         );

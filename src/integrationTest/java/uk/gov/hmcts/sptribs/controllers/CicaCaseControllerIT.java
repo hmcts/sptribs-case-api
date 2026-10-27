@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
+import uk.gov.hmcts.sptribs.exception.CaseNotFoundException;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
@@ -114,16 +115,16 @@ class CicaCaseControllerIT {
     }
 
     @Test
-    void shouldReturn403WhenCaseNotFoundForUser() throws Exception {
+    void shouldReturn404WhenCaseDoesNotExist() throws Exception {
         // Given
-        doThrow(new UnauthorisedCaseAccessException("Case not found for user"))
+        doThrow(new CaseNotFoundException("Case not found"))
             .when(cicaCaseService).checkIfUserHasAccess(VALID_CCD_REFERENCE, TEST_AUTHORIZATION_TOKEN);
 
         // When & Then
         mockMvc.perform(get(ACCESS_CHECK_URL)
                 .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
                 .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN))
-            .andExpect(status().isForbidden());
+            .andExpect(status().isNotFound());
     }
 
     @Test

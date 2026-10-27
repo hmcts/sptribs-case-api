@@ -18,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.sptribs.common.repositories.CaseDataRepository;
 import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
+import uk.gov.hmcts.sptribs.exception.CaseNotFoundException;
 import uk.gov.hmcts.sptribs.exception.InvalidPostcodeException;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
 import uk.gov.hmcts.sptribs.idam.CICUser;
@@ -31,6 +32,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SYSTEM_USER_USER_ID;
@@ -68,34 +71,37 @@ class CicaCaseServiceTest {
     }
 
     @Test
-    void shouldNotThrowExceptionWhenCheckIfUserHasAccessSuccessful() {
+    void shouldAllowAccessToExistingCase() {
         when(user.getUserInfo()).thenReturn(userInfo());
         when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
-        when(caseDataRepository.findCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL))
-            .thenReturn(Optional.of(CicaCaseEntity.builder().state("DSS_Draft").build()));
+        when(caseDataRepository.checkCaseExists(TEST_CASE_ID_STRING)).thenReturn(true);
+        when(caseDataRepository.checkIfUserHasAccessToCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL))
+            .thenReturn(true);
 
         assertDoesNotThrow(() -> cicaCaseService.checkIfUserHasAccess(TEST_CASE_ID_STRING, TEST_AUTHORIZATION));
+        verify(caseDataRepository).checkCaseExists(TEST_CASE_ID_STRING);
+        verify(caseDataRepository).checkIfUserHasAccessToCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL);
     }
 
     @Test
     void shouldThrowUnauthorisedCaseAccessExceptionWhenCheckIfUserHasAccessFails() {
         when(user.getUserInfo()).thenReturn(userInfo());
         when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
-        when(caseDataRepository.findCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL)).thenReturn(Optional.empty());
+        when(caseDataRepository.checkCaseExists(TEST_CASE_ID_STRING)).thenReturn(true);
 
         assertThrows(UnauthorisedCaseAccessException.class, () ->
             cicaCaseService.checkIfUserHasAccess(TEST_CASE_ID_STRING, TEST_AUTHORIZATION)
         );
+        verify(caseDataRepository).checkIfUserHasAccessToCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL);
     }
 
     @Test
-    void shouldAllowExpiredCaseWhenAssociatedWithUser() {
-        when(user.getUserInfo()).thenReturn(userInfo());
+    void shouldReturnNotFoundWhenCaseDoesNotExistOrIsExpired() {
         when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
-        when(caseDataRepository.findCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL))
-            .thenReturn(Optional.of(CicaCaseEntity.builder().state("DSS_Expired").build()));
 
-        assertDoesNotThrow(() -> cicaCaseService.checkIfUserHasAccess(TEST_CASE_ID_STRING, TEST_AUTHORIZATION));
+        assertThrows(CaseNotFoundException.class, () ->
+            cicaCaseService.checkIfUserHasAccess(TEST_CASE_ID_STRING, TEST_AUTHORIZATION));
+        verify(caseDataRepository, never()).checkIfUserHasAccessToCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL);
     }
 
     @Test
