@@ -19,6 +19,13 @@ public class CicaCaseService {
 
     private final CaseDataRepository caseDataRepository;
     private final IdamService idamService;
+    private final CicaRoleService cicaRoleService;
+
+    /** Ensures only a verified case member can obtain the creator role for their own identity. */
+    public void ensureCreatorRole(String ccdReference, String authorisation) {
+        checkIfUserHasAccess(ccdReference, authorisation);
+        cicaRoleService.ensureCreatorRole(ccdReference, authorisation);
+    }
 
     /**
      * Checks if the user has access to the case.

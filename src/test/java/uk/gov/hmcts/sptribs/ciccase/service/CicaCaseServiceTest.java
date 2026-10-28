@@ -22,6 +22,8 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SYSTEM_USER_USER_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_STRING;
@@ -40,6 +42,9 @@ class CicaCaseServiceTest {
     private IdamService idamService;
 
     @Mock
+    private CicaRoleService cicaRoleService;
+
+    @Mock
     private CICUser user;
 
     @Spy
@@ -47,6 +52,71 @@ class CicaCaseServiceTest {
 
     @InjectMocks
     private CicaCaseService cicaCaseService;
+
+    @Test
+    void shouldCheckMembershipBeforeEnsuringCreatorRole() {
+        when(user.getUserInfo()).thenReturn(userInfo());
+        when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
+        when(caseDataRepository.checkCaseExists(TEST_CASE_ID_STRING)).thenReturn(true);
+        when(caseDataRepository.checkIfUserHasAccessToCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL))
+            .thenReturn(true);
+
+        cicaCaseService.ensureCreatorRole(TEST_CASE_ID_STRING, TEST_AUTHORIZATION);
+
+        var calls = inOrder(caseDataRepository, cicaRoleService);
+        calls.verify(caseDataRepository).checkCaseExists(TEST_CASE_ID_STRING);
+        calls.verify(caseDataRepository).checkIfUserHasAccessToCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL);
+        calls.verify(cicaRoleService).ensureCreatorRole(TEST_CASE_ID_STRING, TEST_AUTHORIZATION);
+    }
+
+    @Test
+    void shouldNotEnsureCreatorRoleWhenCitizenDoesNotBelongToCase() {
+        when(user.getUserInfo()).thenReturn(userInfo());
+        when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
+        when(caseDataRepository.checkCaseExists(TEST_CASE_ID_STRING)).thenReturn(true);
+        when(caseDataRepository.checkIfUserHasAccessToCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL))
+            .thenReturn(false);
+
+        assertThrows(UnauthorisedCaseAccessException.class, () ->
+            cicaCaseService.ensureCreatorRole(TEST_CASE_ID_STRING, TEST_AUTHORIZATION));
+
+        verifyNoInteractions(cicaRoleService);
+    }
+
+    @Test
+    void shouldNotEnsureCreatorRoleWhenCaseDoesNotExist() {
+        when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
+        when(caseDataRepository.checkCaseExists(TEST_CASE_ID_STRING)).thenReturn(false);
+
+        assertThrows(CaseNotFoundException.class, () ->
+            cicaCaseService.ensureCreatorRole(TEST_CASE_ID_STRING, TEST_AUTHORIZATION));
+
+        verifyNoInteractions(cicaRoleService);
+    }
+
+    @Test
+    void shouldNotEnsureCreatorRoleWhenIdentityLookupFails() {
+        when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenThrow(new RuntimeException("IDAM unavailable"));
+
+        assertThrows(UnauthorisedCaseAccessException.class, () ->
+            cicaCaseService.ensureCreatorRole(TEST_CASE_ID_STRING, TEST_AUTHORIZATION));
+
+        verifyNoInteractions(caseDataRepository, cicaRoleService);
+    }
+
+    @Test
+    void shouldNotEnsureCreatorRoleWhenMembershipLookupFails() {
+        when(user.getUserInfo()).thenReturn(userInfo());
+        when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
+        when(caseDataRepository.checkCaseExists(TEST_CASE_ID_STRING)).thenReturn(true);
+        when(caseDataRepository.checkIfUserHasAccessToCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL))
+            .thenThrow(new RuntimeException("Database unavailable"));
+
+        assertThrows(UnauthorisedCaseAccessException.class, () ->
+            cicaCaseService.ensureCreatorRole(TEST_CASE_ID_STRING, TEST_AUTHORIZATION));
+
+        verifyNoInteractions(cicaRoleService);
+    }
 
     private UserInfo userInfo() {
         return UserInfo
@@ -158,7 +228,6 @@ class CicaCaseServiceTest {
         );
     }
 }
-
 
 
 

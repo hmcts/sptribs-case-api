@@ -41,7 +41,7 @@ public class DocumentDownloadStatusServiceTest {
             .id(100L)
             .build();
 
-        when(documentsRepository.findByDocumentIdUuid(docUuid)).thenReturn(Optional.of(docEntity));
+        when(documentsRepository.findOnCaseByDocumentId(Long.valueOf(ref), docUuid)).thenReturn(Optional.of(docEntity));
         when(documentDownloadStatusesRepository.findByDocumentIdAndParty(100L, Party.SUBJECT)).thenReturn(Optional.empty());
 
         documentDownloadStatusService.recordDocumentDownload(ref, Party.SUBJECT, docUuid);
@@ -65,7 +65,7 @@ public class DocumentDownloadStatusServiceTest {
             .party(Party.SUBJECT)
             .build();
 
-        when(documentsRepository.findByDocumentIdUuid(docUuid)).thenReturn(Optional.of(docEntity));
+        when(documentsRepository.findOnCaseByDocumentId(Long.valueOf(ref), docUuid)).thenReturn(Optional.of(docEntity));
         when(documentDownloadStatusesRepository.findByDocumentIdAndParty(100L, Party.SUBJECT)).thenReturn(Optional.of(statusEntity));
 
         documentDownloadStatusService.recordDocumentDownload(ref, Party.SUBJECT, docUuid);
@@ -77,7 +77,7 @@ public class DocumentDownloadStatusServiceTest {
     public void shouldNotRecordDownloadIfDocumentNotFound() {
         String ref = "1234567890123456";
 
-        when(documentsRepository.findByDocumentIdUuid("uuid-123")).thenReturn(Optional.empty());
+        when(documentsRepository.findOnCaseByDocumentId(Long.valueOf(ref), "uuid-123")).thenReturn(Optional.empty());
 
         documentDownloadStatusService.recordDocumentDownload(ref, Party.SUBJECT, "uuid-123");
 
@@ -134,7 +134,7 @@ public class DocumentDownloadStatusServiceTest {
             .id(100L)
             .build();
 
-        when(documentsRepository.findByDocumentIdUuid(docUuid)).thenReturn(Optional.of(docEntity));
+        when(documentsRepository.findOnCaseByDocumentId(Long.valueOf(ref), docUuid)).thenReturn(Optional.of(docEntity));
 
         for (Party party : parties) {
             when(documentDownloadStatusesRepository.findByDocumentIdAndParty(100L, party)).thenReturn(Optional.empty());

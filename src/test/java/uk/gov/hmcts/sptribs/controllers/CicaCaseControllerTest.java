@@ -1,7 +1,10 @@
 package uk.gov.hmcts.sptribs.controllers;
 
+import feign.FeignException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -14,7 +17,9 @@ import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CicaCaseControllerTest {
@@ -81,5 +86,32 @@ class CicaCaseControllerTest {
             .hasMessage("Case not found");
 
         verify(cicaCaseService).checkIfUserHasAccess(ccdReference, TEST_AUTHORIZATION);
+    }
+
+    @Test
+    void shouldEnsureCreatorRoleForAuthenticatedCaller() {
+        String ccdReference = "1234567891234567";
+
+        ResponseEntity<Void> response = cicaCaseController.ensureCreatorRole(
+            TEST_AUTHORIZATION, TEST_SERVICE_AUTHORIZATION, ccdReference);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+        assertThat(response.getBody()).isNull();
+        verify(cicaCaseService).ensureCreatorRole(ccdReference, TEST_AUTHORIZATION);
+    }
+
+    @ParameterizedTest
+    @CsvSource({"401,401", "403,403", "404,404", "409,409", "500,500", "503,503", "-1,502", "201,502"})
+    void shouldReturnDownstreamErrorStatusWithoutResponseBody(int downstreamStatus, int responseStatus) {
+        String ccdReference = "1234567891234567";
+        FeignException failure = mock(FeignException.class);
+        when(failure.status()).thenReturn(downstreamStatus);
+        doThrow(failure).when(cicaCaseService).ensureCreatorRole(ccdReference, TEST_AUTHORIZATION);
+
+        ResponseEntity<Void> response = cicaCaseController.ensureCreatorRole(
+            TEST_AUTHORIZATION, TEST_SERVICE_AUTHORIZATION, ccdReference);
+
+        assertThat(response.getStatusCode().value()).isEqualTo(responseStatus);
+        assertThat(response.getBody()).isNull();
     }
 }
