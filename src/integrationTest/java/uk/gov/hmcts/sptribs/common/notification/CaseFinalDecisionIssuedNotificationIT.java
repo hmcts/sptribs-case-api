@@ -85,7 +85,8 @@ public class CaseFinalDecisionIssuedNotificationIT {
 
         @BeforeEach
         void onlyRunWhenDisabled() {
-            assumeFalse(environment.getProperty("feature.citizen-dashboard.enabled", Boolean.class, false),
+            assumeFalse(environment.getProperty("feature.citizen-dashboard.enabled",
+                            Boolean.class, false),
                 "Skipping: feature.citizen-dashboard.enabled is currently true");
         }
 
@@ -100,17 +101,21 @@ public class CaseFinalDecisionIssuedNotificationIT {
                 .caseIssueFinalDecision(CaseIssueFinalDecision.builder()
                     .finalDecisionNotice(CREATE_FROM_TEMPLATE)
                     .finalDecisionGuidance(Document.builder()
-                        .url("http://dm-store-aat.service.core-compute-aat.internal/documents/b7377096-880b-4dab-b9f9-97bd62f14589")
+                        .url("http://dm-store-aat.service.core-compute-aat.internal/documents"
+                                + "/b7377096-880b-4dab-b9f9-97bd62f14589")
                         .filename("DRAFT :Order--[null]--29-11-2022 15:11:08.pdf")
                         .binaryUrl(
-                            "http://dm-store-aat.service.core-compute-aat.internal/documents/b7377096-880b-4dab-b9f9-97bd62f14589/binary")
+                            "http://dm-store-aat.service.core-compute-aat.internal/documents"
+                                    + "/b7377096-880b-4dab-b9f9-97bd62f14589/binary")
                         .categoryId("TD")
                         .build())
                     .finalDecisionDraft(Document.builder()
-                        .url("http://dm-store-aat.service.core-compute-aat.internal/documents/0ebad3a7-223e-4185-b8ce-ccb50a87e982")
+                        .url("http://dm-store-aat.service.core-compute-aat.internal/documents"
+                                + "/0ebad3a7-223e-4185-b8ce-ccb50a87e982")
                         .filename("DRAFT :Order--[null]--09-05-2024 15:11:08.pdf")
                         .binaryUrl(
-                            "http://dm-store-aat.service.core-compute-aat.internal/documents/0ebad3a7-223e-4185-b8ce-ccb50a87e982/binary")
+                            "http://dm-store-aat.service.core-compute-aat.internal/documents"
+                                    + "/0ebad3a7-223e-4185-b8ce-ccb50a87e982/binary")
                         .categoryId("TD")
                         .build())
                     .build()
@@ -120,7 +125,8 @@ public class CaseFinalDecisionIssuedNotificationIT {
             caseFinalDecisionIssuedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
             verify(notificationServiceCIC)
-                .sendEmail(notificationRequestCaptor.capture(), anyList(), eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT));
+                .sendEmail(notificationRequestCaptor.capture(), anyList(),
+                        eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT));
 
             NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -206,18 +212,22 @@ public class CaseFinalDecisionIssuedNotificationIT {
                     .finalDecisionNotice(UPLOAD_FROM_COMPUTER)
                     .document(CICDocument.builder()
                         .documentLink(Document.builder()
-                            .url("http://dm-store-aat.service.core-compute-aat.internal/documents/0ebad3a7-223e-4185-b8ce-ccb50a87e982")
+                            .url("http://dm-store-aat.service.core-compute-aat.internal/documents"
+                                    + "/0ebad3a7-223e-4185-b8ce-ccb50a87e982")
                             .filename("DRAFT :Order--[null]--09-05-2024 15:11:08.pdf")
                             .binaryUrl(
-                                "http://dm-store-aat.service.core-compute-aat.internal/documents/0ebad3a7-223e-4185-b8ce-ccb50a87e982/binary")
+                                "http://dm-store-aat.service.core-compute-aat.internal/documents"
+                                        + "/0ebad3a7-223e-4185-b8ce-ccb50a87e982/binary")
                             .categoryId("TD")
                             .build())
                         .build())
                     .finalDecisionGuidance(Document.builder()
-                        .url("http://dm-store-aat.service.core-compute-aat.internal/documents/b7377096-880b-4dab-b9f9-97bd62f14589")
+                        .url("http://dm-store-aat.service.core-compute-aat.internal/documents"
+                                + "/b7377096-880b-4dab-b9f9-97bd62f14589")
                         .filename("DRAFT :Order--[null]--29-11-2022 15:11:08.pdf")
                         .binaryUrl(
-                            "http://dm-store-aat.service.core-compute-aat.internal/documents/b7377096-880b-4dab-b9f9-97bd62f14589/binary")
+                            "http://dm-store-aat.service.core-compute-aat.internal/documents"
+                                    + "/b7377096-880b-4dab-b9f9-97bd62f14589/binary")
                         .categoryId("TD")
                         .build())
                     .build()
@@ -227,7 +237,8 @@ public class CaseFinalDecisionIssuedNotificationIT {
             caseFinalDecisionIssuedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
             verify(notificationServiceCIC)
-                .sendEmail(notificationRequestCaptor.capture(), anyList(), eq(TEST_CASE_ID.toString()), eq(Party.REPRESENTATIVE));
+                .sendEmail(notificationRequestCaptor.capture(), anyList(),
+                        eq(TEST_CASE_ID.toString()), eq(Party.REPRESENTATIVE));
 
             NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -314,17 +325,21 @@ public class CaseFinalDecisionIssuedNotificationIT {
                 .caseIssueFinalDecision(CaseIssueFinalDecision.builder()
                     .finalDecisionNotice(CREATE_FROM_TEMPLATE)
                     .finalDecisionGuidance(Document.builder()
-                        .url("http://dm-store-aat.service.core-compute-aat.internal/documents/b7377096-880b-4dab-b9f9-97bd62f14589")
+                        .url("http://dm-store-aat.service.core-compute-aat.internal/documents"
+                                + "/b7377096-880b-4dab-b9f9-97bd62f14589")
                         .filename("DRAFT :Order--[null]--29-11-2022 15:11:08.pdf")
                         .binaryUrl(
-                            "http://dm-store-aat.service.core-compute-aat.internal/documents/b7377096-880b-4dab-b9f9-97bd62f14589/binary")
+                            "http://dm-store-aat.service.core-compute-aat.internal/documents"
+                                    + "/b7377096-880b-4dab-b9f9-97bd62f14589/binary")
                         .categoryId("TD")
                         .build())
                     .finalDecisionDraft(Document.builder()
-                        .url("http://dm-store-aat.service.core-compute-aat.internal/documents/0ebad3a7-223e-4185-b8ce-ccb50a87e982")
+                        .url("http://dm-store-aat.service.core-compute-aat.internal/documents"
+                                + "/0ebad3a7-223e-4185-b8ce-ccb50a87e982")
                         .filename("DRAFT :Order--[null]--09-05-2024 15:11:08.pdf")
                         .binaryUrl(
-                            "http://dm-store-aat.service.core-compute-aat.internal/documents/0ebad3a7-223e-4185-b8ce-ccb50a87e982/binary")
+                            "http://dm-store-aat.service.core-compute-aat.internal/documents"
+                                    + "/0ebad3a7-223e-4185-b8ce-ccb50a87e982/binary")
                         .categoryId("TD")
                         .build())
                     .build()
@@ -334,7 +349,8 @@ public class CaseFinalDecisionIssuedNotificationIT {
             caseFinalDecisionIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
             verify(notificationServiceCIC)
-                .sendEmail(notificationRequestCaptor.capture(), anyList(), eq(TEST_CASE_ID.toString()), eq(Party.RESPONDENT));
+                .sendEmail(notificationRequestCaptor.capture(), anyList(),
+                        eq(TEST_CASE_ID.toString()), eq(Party.RESPONDENT));
 
 
             NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
@@ -380,17 +396,21 @@ public class CaseFinalDecisionIssuedNotificationIT {
                 .caseIssueFinalDecision(CaseIssueFinalDecision.builder()
                     .finalDecisionNotice(CREATE_FROM_TEMPLATE)
                     .finalDecisionGuidance(Document.builder()
-                        .url("http://dm-store-aat.service.core-compute-aat.internal/documents/b7377096-880b-4dab-b9f9-97bd62f14589")
+                        .url("http://dm-store-aat.service.core-compute-aat.internal/documents"
+                                + "/b7377096-880b-4dab-b9f9-97bd62f14589")
                         .filename("DRAFT :Order--[null]--29-11-2022 15:11:08.pdf")
                         .binaryUrl(
-                            "http://dm-store-aat.service.core-compute-aat.internal/documents/b7377096-880b-4dab-b9f9-97bd62f14589/binary")
+                            "http://dm-store-aat.service.core-compute-aat.internal/documents"
+                                    + "/b7377096-880b-4dab-b9f9-97bd62f14589/binary")
                         .categoryId("TD")
                         .build())
                     .finalDecisionDraft(Document.builder()
-                        .url("http://dm-store-aat.service.core-compute-aat.internal/documents/0ebad3a7-223e-4185-b8ce-ccb50a87e982")
+                        .url("http://dm-store-aat.service.core-compute-aat.internal/documents"
+                                + "/0ebad3a7-223e-4185-b8ce-ccb50a87e982")
                         .filename("DRAFT :Order--[null]--09-05-2024 15:11:08.pdf")
                         .binaryUrl(
-                            "http://dm-store-aat.service.core-compute-aat.internal/documents/0ebad3a7-223e-4185-b8ce-ccb50a87e982/binary")
+                            "http://dm-store-aat.service.core-compute-aat.internal/documents"
+                                    + "/0ebad3a7-223e-4185-b8ce-ccb50a87e982/binary")
                         .categoryId("TD")
                         .build())
                     .build()
@@ -400,7 +420,8 @@ public class CaseFinalDecisionIssuedNotificationIT {
             caseFinalDecisionIssuedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
             verify(notificationServiceCIC)
-                .sendEmail(notificationRequestCaptor.capture(), anyList(), eq(TEST_CASE_ID.toString()), eq(Party.APPLICANT));
+                .sendEmail(notificationRequestCaptor.capture(), anyList(),
+                        eq(TEST_CASE_ID.toString()), eq(Party.APPLICANT));
 
             NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -475,7 +496,8 @@ public class CaseFinalDecisionIssuedNotificationIT {
 
         @BeforeEach
         void onlyRunWhenEnabled() {
-            assumeTrue(environment.getProperty("feature.citizen-dashboard.enabled", Boolean.class, false),
+            assumeTrue(environment.getProperty("feature.citizen-dashboard.enabled",
+                            Boolean.class, false),
                 "Skipping: feature.citizen-dashboard.enabled is currently false");
         }
 
@@ -490,17 +512,21 @@ public class CaseFinalDecisionIssuedNotificationIT {
                 .caseIssueFinalDecision(CaseIssueFinalDecision.builder()
                     .finalDecisionNotice(CREATE_FROM_TEMPLATE)
                     .finalDecisionGuidance(Document.builder()
-                        .url("http://dm-store-aat.service.core-compute-aat.internal/documents/b7377096-880b-4dab-b9f9-97bd62f14589")
+                        .url("http://dm-store-aat.service.core-compute-aat.internal/documents"
+                                + "/b7377096-880b-4dab-b9f9-97bd62f14589")
                         .filename("DRAFT :Order--[null]--29-11-2022 15:11:08.pdf")
                         .binaryUrl(
-                            "http://dm-store-aat.service.core-compute-aat.internal/documents/b7377096-880b-4dab-b9f9-97bd62f14589/binary")
+                            "http://dm-store-aat.service.core-compute-aat.internal/documents"
+                                    + "/b7377096-880b-4dab-b9f9-97bd62f14589/binary")
                         .categoryId("TD")
                         .build())
                     .finalDecisionDraft(Document.builder()
-                        .url("http://dm-store-aat.service.core-compute-aat.internal/documents/0ebad3a7-223e-4185-b8ce-ccb50a87e982")
+                        .url("http://dm-store-aat.service.core-compute-aat.internal/documents"
+                                + "/0ebad3a7-223e-4185-b8ce-ccb50a87e982")
                         .filename("DRAFT :Order--[null]--09-05-2024 15:11:08.pdf")
                         .binaryUrl(
-                            "http://dm-store-aat.service.core-compute-aat.internal/documents/0ebad3a7-223e-4185-b8ce-ccb50a87e982/binary")
+                            "http://dm-store-aat.service.core-compute-aat.internal/documents"
+                                    + "/0ebad3a7-223e-4185-b8ce-ccb50a87e982/binary")
                         .categoryId("TD")
                         .build())
                     .build()
@@ -509,7 +535,8 @@ public class CaseFinalDecisionIssuedNotificationIT {
 
             caseFinalDecisionIssuedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
-            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), anyList(), eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT));
+            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), anyList(),
+                    eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT));
 
             NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -554,18 +581,22 @@ public class CaseFinalDecisionIssuedNotificationIT {
                     .finalDecisionNotice(UPLOAD_FROM_COMPUTER)
                     .document(CICDocument.builder()
                         .documentLink(Document.builder()
-                            .url("http://dm-store-aat.service.core-compute-aat.internal/documents/0ebad3a7-223e-4185-b8ce-ccb50a87e982")
+                            .url("http://dm-store-aat.service.core-compute-aat.internal/documents"
+                                    + "/0ebad3a7-223e-4185-b8ce-ccb50a87e982")
                             .filename("DRAFT :Order--[null]--09-05-2024 15:11:08.pdf")
                             .binaryUrl(
-                                "http://dm-store-aat.service.core-compute-aat.internal/documents/0ebad3a7-223e-4185-b8ce-ccb50a87e982/binary")
+                                "http://dm-store-aat.service.core-compute-aat.internal/documents"
+                                        + "/0ebad3a7-223e-4185-b8ce-ccb50a87e982/binary")
                             .categoryId("TD")
                             .build())
                         .build())
                     .finalDecisionGuidance(Document.builder()
-                        .url("http://dm-store-aat.service.core-compute-aat.internal/documents/b7377096-880b-4dab-b9f9-97bd62f14589")
+                        .url("http://dm-store-aat.service.core-compute-aat.internal/documents"
+                                + "/b7377096-880b-4dab-b9f9-97bd62f14589")
                         .filename("DRAFT :Order--[null]--29-11-2022 15:11:08.pdf")
                         .binaryUrl(
-                            "http://dm-store-aat.service.core-compute-aat.internal/documents/b7377096-880b-4dab-b9f9-97bd62f14589/binary")
+                            "http://dm-store-aat.service.core-compute-aat.internal/documents"
+                                    + "/b7377096-880b-4dab-b9f9-97bd62f14589/binary")
                         .categoryId("TD")
                         .build())
                     .build()
@@ -574,7 +605,8 @@ public class CaseFinalDecisionIssuedNotificationIT {
 
             caseFinalDecisionIssuedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
-            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), anyList(), eq(TEST_CASE_ID.toString()), eq(Party.REPRESENTATIVE));
+            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), anyList(),
+                    eq(TEST_CASE_ID.toString()), eq(Party.REPRESENTATIVE));
 
             NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -618,17 +650,21 @@ public class CaseFinalDecisionIssuedNotificationIT {
                 .caseIssueFinalDecision(CaseIssueFinalDecision.builder()
                     .finalDecisionNotice(CREATE_FROM_TEMPLATE)
                     .finalDecisionGuidance(Document.builder()
-                        .url("http://dm-store-aat.service.core-compute-aat.internal/documents/b7377096-880b-4dab-b9f9-97bd62f14589")
+                        .url("http://dm-store-aat.service.core-compute-aat.internal/documents"
+                                + "/b7377096-880b-4dab-b9f9-97bd62f14589")
                         .filename("DRAFT :Order--[null]--29-11-2022 15:11:08.pdf")
                         .binaryUrl(
-                            "http://dm-store-aat.service.core-compute-aat.internal/documents/b7377096-880b-4dab-b9f9-97bd62f14589/binary")
+                            "http://dm-store-aat.service.core-compute-aat.internal/documents"
+                                    + "/b7377096-880b-4dab-b9f9-97bd62f14589/binary")
                         .categoryId("TD")
                         .build())
                     .finalDecisionDraft(Document.builder()
-                        .url("http://dm-store-aat.service.core-compute-aat.internal/documents/0ebad3a7-223e-4185-b8ce-ccb50a87e982")
+                        .url("http://dm-store-aat.service.core-compute-aat.internal/documents"
+                                + "/0ebad3a7-223e-4185-b8ce-ccb50a87e982")
                         .filename("DRAFT :Order--[null]--09-05-2024 15:11:08.pdf")
                         .binaryUrl(
-                            "http://dm-store-aat.service.core-compute-aat.internal/documents/0ebad3a7-223e-4185-b8ce-ccb50a87e982/binary")
+                            "http://dm-store-aat.service.core-compute-aat.internal/documents"
+                                    + "/0ebad3a7-223e-4185-b8ce-ccb50a87e982/binary")
                         .categoryId("TD")
                         .build())
                     .build()
@@ -637,7 +673,8 @@ public class CaseFinalDecisionIssuedNotificationIT {
 
             caseFinalDecisionIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
-            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), anyList(), eq(TEST_CASE_ID.toString()), eq(Party.RESPONDENT));
+            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), anyList(),
+                    eq(TEST_CASE_ID.toString()), eq(Party.RESPONDENT));
 
             NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -682,17 +719,21 @@ public class CaseFinalDecisionIssuedNotificationIT {
                 .caseIssueFinalDecision(CaseIssueFinalDecision.builder()
                     .finalDecisionNotice(CREATE_FROM_TEMPLATE)
                     .finalDecisionGuidance(Document.builder()
-                        .url("http://dm-store-aat.service.core-compute-aat.internal/documents/b7377096-880b-4dab-b9f9-97bd62f14589")
+                        .url("http://dm-store-aat.service.core-compute-aat.internal/documents"
+                                + "/b7377096-880b-4dab-b9f9-97bd62f14589")
                         .filename("DRAFT :Order--[null]--29-11-2022 15:11:08.pdf")
                         .binaryUrl(
-                            "http://dm-store-aat.service.core-compute-aat.internal/documents/b7377096-880b-4dab-b9f9-97bd62f14589/binary")
+                            "http://dm-store-aat.service.core-compute-aat.internal/documents"
+                                    + "/b7377096-880b-4dab-b9f9-97bd62f14589/binary")
                         .categoryId("TD")
                         .build())
                     .finalDecisionDraft(Document.builder()
-                        .url("http://dm-store-aat.service.core-compute-aat.internal/documents/0ebad3a7-223e-4185-b8ce-ccb50a87e982")
+                        .url("http://dm-store-aat.service.core-compute-aat.internal/documents"
+                                + "/0ebad3a7-223e-4185-b8ce-ccb50a87e982")
                         .filename("DRAFT :Order--[null]--09-05-2024 15:11:08.pdf")
                         .binaryUrl(
-                            "http://dm-store-aat.service.core-compute-aat.internal/documents/0ebad3a7-223e-4185-b8ce-ccb50a87e982/binary")
+                            "http://dm-store-aat.service.core-compute-aat.internal/documents"
+                                    + "/0ebad3a7-223e-4185-b8ce-ccb50a87e982/binary")
                         .categoryId("TD")
                         .build())
                     .build()
@@ -701,7 +742,8 @@ public class CaseFinalDecisionIssuedNotificationIT {
 
             caseFinalDecisionIssuedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
-            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), anyList(), eq(TEST_CASE_ID.toString()), eq(Party.APPLICANT));
+            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), anyList(),
+                    eq(TEST_CASE_ID.toString()), eq(Party.APPLICANT));
 
             NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
