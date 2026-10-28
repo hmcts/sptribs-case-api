@@ -21,7 +21,7 @@ import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -130,12 +130,12 @@ class CicaCaseControllerIT {
     }
 
     @Test
-    void shouldNotExposeRoleAssignmentsEndpoint() throws Exception {
+    void shouldEnsureCreatorRoleForAuthenticatedCaller() throws Exception {
         mockMvc.perform(post(ROLE_ASSIGNMENTS_URL)
                 .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
                 .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN))
-            .andExpect(status().isNotFound());
+            .andExpect(status().isNoContent());
 
-        verifyNoInteractions(cicaCaseService, cicaRoleService);
+        verify(cicaCaseService).ensureCreatorRole(VALID_CCD_REFERENCE, TEST_AUTHORIZATION_TOKEN);
     }
 }
