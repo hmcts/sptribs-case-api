@@ -1,13 +1,11 @@
 package uk.gov.hmcts.sptribs.controllers;
 
-import feign.FeignException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
@@ -17,18 +15,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
-import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseUpdateService;
-import uk.gov.hmcts.sptribs.controllers.model.DssCaseUpdateRequest;
-import uk.gov.hmcts.sptribs.controllers.model.UpdateCaseResponse;
 
-import static org.springframework.http.HttpStatus.BAD_GATEWAY;
-import static org.springframework.http.HttpStatus.CREATED;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUTHORIZATION;
 
@@ -41,7 +32,6 @@ import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUT
 public class CicaCaseController {
 
     private final CicaCaseService cicaCaseService;
-    private final CicaCaseUpdateService cicaCaseUpdateService;
 
     @GetMapping(value = "/{ccdReference}/access", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
@@ -97,47 +87,5 @@ public class CicaCaseController {
         cicaCaseService.checkIfUserHasAccess(ccdReference, authorisation);
         log.info("Access check completed successfully for case: {}", ccdReference);
         return ResponseEntity.ok().build();
-    }
-
-    @PostMapping(value = "/{ccdReference}/updates", consumes = MediaType.APPLICATION_JSON_VALUE,
-        produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(
-        summary = "Update a CICA case using the citizen DSS update event",
-        description = "Verifies case membership and attempts the CCD update with the caller's token. "
-            + "If CCD reports that the case is inaccessible, checks the citizen's case roles and assigns the creator "
-            + "role only if absent, then retries the event start once. The update is submitted only once."
-    )
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "201", description = "Case updated successfully"),
-        @ApiResponse(responseCode = "400", description = "Invalid case reference or request body", content = @Content),
-        @ApiResponse(responseCode = "401", description = "CCD denied the update", content = @Content),
-        @ApiResponse(responseCode = "403", description = "User or service cannot access the case", content = @Content),
-        @ApiResponse(responseCode = "404", description = "Case or CCD event not found", content = @Content),
-        @ApiResponse(responseCode = "409", description = "CCD update conflict", content = @Content),
-        @ApiResponse(responseCode = "502", description = "CCD could not be reached", content = @Content)
-    })
-    public ResponseEntity<UpdateCaseResponse> updateCase(
-        @RequestHeader(AUTHORIZATION) String authorisation,
-        @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorisation,
-        @PathVariable
-        @Pattern(regexp = "^\\d{16}$", message = "CCD reference must be 16 digits long") String ccdReference,
-        @Valid @RequestBody DssCaseUpdateRequest update
-    ) {
-        try {
-            var updatedCase = cicaCaseUpdateService.updateCase(ccdReference, authorisation, update.data());
-            ResponseEntity<UpdateCaseResponse> response = ResponseEntity.status(CREATED)
-                .body(new UpdateCaseResponse(updatedCase.getReference(), updatedCase.getState()));
-            log.info("Case update response prepared: status={}", CREATED.value());
-            return response;
-        } catch (FeignException exception) {
-            int status = exception.status();
-            int responseStatus = status >= 400 && status < 600 ? status : BAD_GATEWAY.value();
-            Throwable cause = exception.getCause();
-            log.warn("Case update failed: exception_type={} cause_type={} downstream_status={} response_status={}",
-                exception.getClass().getName(), cause == null ? "none" : cause.getClass().getName(),
-                status, responseStatus);
-            // CCD error bodies may contain case data; return the failure status without exposing them.
-            return ResponseEntity.status(responseStatus).build();
-        }
     }
 }

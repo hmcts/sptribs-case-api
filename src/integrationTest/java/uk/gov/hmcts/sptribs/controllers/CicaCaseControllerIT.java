@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.controllers;
 
-import feign.FeignException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -8,15 +7,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.ccd.client.model.CaseResource;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
-import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseUpdateService;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaRoleService;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.exception.CaseNotFoundException;
@@ -25,13 +21,9 @@ import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
@@ -47,7 +39,6 @@ class CicaCaseControllerIT {
     private static final String VALID_CCD_REFERENCE = "1234567891234567";
     private static final String ACCESS_CHECK_URL = "/cases/cica/" + VALID_CCD_REFERENCE + "/access";
     private static final String ROLE_ASSIGNMENTS_URL = "/cases/cica/" + VALID_CCD_REFERENCE + "/role-assignments";
-    private static final String UPDATE_CASE_URL = "/cases/cica/" + VALID_CCD_REFERENCE + "/updates";
 
     @Autowired
     private MockMvc mockMvc;
@@ -63,9 +54,6 @@ class CicaCaseControllerIT {
 
     @MockitoBean
     private CicaRoleService cicaRoleService;
-
-    @MockitoBean
-    private CicaCaseUpdateService cicaCaseUpdateService;
 
     @BeforeAll
     static void setUp() {
@@ -149,78 +137,5 @@ class CicaCaseControllerIT {
             .andExpect(status().isNotFound());
 
         verifyNoInteractions(cicaCaseService, cicaRoleService);
-    }
-
-    @Test
-    void shouldUpdateCaseWithCitizensToken() throws Exception {
-        CaseResource updatedCase = new CaseResource();
-        updatedCase.setReference(VALID_CCD_REFERENCE);
-        updatedCase.setState("CaseManagement");
-        when(cicaCaseUpdateService.updateCase(org.mockito.ArgumentMatchers.eq(VALID_CCD_REFERENCE),
-            org.mockito.ArgumentMatchers.eq(TEST_AUTHORIZATION_TOKEN), org.mockito.ArgumentMatchers.any()))
-            .thenReturn(updatedCase);
-
-        mockMvc.perform(post(UPDATE_CASE_URL)
-                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
-                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"data\":{\"dssCaseDataAdditionalInformation\":\"Update\"}}"))
-            .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.case_id").value(VALID_CCD_REFERENCE))
-            .andExpect(jsonPath("$.state").value("CaseManagement"));
-    }
-
-    @Test
-    void shouldRejectUpdateWithoutUserToken() throws Exception {
-        mockMvc.perform(post(UPDATE_CASE_URL)
-                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"data\":{}}"))
-            .andExpect(status().isBadRequest());
-
-        verifyNoInteractions(cicaCaseUpdateService);
-    }
-
-    @Test
-    void shouldRejectUpdateWithInvalidReference() throws Exception {
-        mockMvc.perform(post("/cases/cica/invalid/updates")
-                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
-                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"data\":{}}"))
-            .andExpect(status().isBadRequest());
-
-        verifyNoInteractions(cicaCaseUpdateService);
-    }
-
-    @Test
-    void shouldRejectUpdateWithoutCaseAccess() throws Exception {
-        when(cicaCaseUpdateService.updateCase(org.mockito.ArgumentMatchers.eq(VALID_CCD_REFERENCE),
-            org.mockito.ArgumentMatchers.eq(TEST_AUTHORIZATION_TOKEN), org.mockito.ArgumentMatchers.any()))
-            .thenThrow(new UnauthorisedCaseAccessException("User is not associated with this case"));
-
-        mockMvc.perform(post(UPDATE_CASE_URL)
-                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
-                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"data\":{}}"))
-            .andExpect(status().isForbidden());
-    }
-
-    @Test
-    void shouldReturnCcdFailureStatusWithoutExposingCcdResponse() throws Exception {
-        FeignException ccdFailure = mock(FeignException.class);
-        when(ccdFailure.status()).thenReturn(404);
-        when(cicaCaseUpdateService.updateCase(org.mockito.ArgumentMatchers.eq(VALID_CCD_REFERENCE),
-            org.mockito.ArgumentMatchers.eq(TEST_AUTHORIZATION_TOKEN), org.mockito.ArgumentMatchers.any()))
-            .thenThrow(ccdFailure);
-
-        mockMvc.perform(post(UPDATE_CASE_URL)
-                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
-                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"data\":{}}"))
-            .andExpect(status().isNotFound())
-            .andExpect(content().string(""));
     }
 }
