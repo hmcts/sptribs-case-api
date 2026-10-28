@@ -26,17 +26,18 @@ public class StatementUploadDocument implements CcdPageConfiguration {
             .mandatory(CicCase::getUploadPartyStatementDocument);
     }
 
-    private AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> caseDataStateCaseDetails, CaseDetails<CaseData, State> caseDataStateCaseDetails1) {
+    private AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
+                                                                   CaseDetails<CaseData, State> beforeDetails) {
 
         // Validate the uploaded document
-        Document document = caseDataStateCaseDetails.getData().getCicCase().getUploadPartyStatementDocument();
+        Document document = details.getData().getCicCase().getUploadPartyStatementDocument();
         final List<String> errors = new ArrayList<>();
         if (document == null || !DocumentFileTypes.isValid(document.getFilename(), DocumentFileTypes.CASEWORKER_UPLOAD_EXTENSIONS)) {
             errors.add(DOCUMENT_VALIDATION_MESSAGE);
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(caseDataStateCaseDetails.getData())
+            .data(details.getData())
             .errors(errors)
             .build();
     }

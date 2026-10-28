@@ -127,6 +127,10 @@ public class CaseworkerAddStatement implements CCDConfig<CaseData, State, UserRo
         }
 
         List<ListValue<CaseworkerCICDocument>> partyStatements = cicCase.getStatementDocuments();
+        if (partyStatements == null) {
+            partyStatements = new ArrayList<>();
+            cicCase.setStatementDocuments(partyStatements);
+        }
         ListValue<CaseworkerCICDocument> newDocuments = ListValue.<CaseworkerCICDocument>builder()
             .id(String.valueOf(partyStatements.size()))
             .value(document)

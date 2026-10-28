@@ -31,7 +31,6 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -743,6 +742,5 @@ public class CicCase {
         typeParameterOverride = "CaseworkerCICDocument",
         access = {CollectionDefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    @Builder.Default
-    private List<ListValue<CaseworkerCICDocument>> statementDocuments = new ArrayList<>();
+    private List<ListValue<CaseworkerCICDocument>> statementDocuments;
 }
