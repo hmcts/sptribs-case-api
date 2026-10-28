@@ -33,8 +33,8 @@ public enum DecisionTemplate implements HasLabel {
     @JsonProperty("CIC10 - Strike Out Warning")
     STRIKE_OUT_WARNING("CIC10 - Strike Out Warning", "ST-CIC-DEC-ENG-CIC10_Strike_Out_Warning"),
 
-    @JsonProperty("CIC11 - Strike Out Decision Notice")
-    STRIKE_OUT_DECISION_NOTICE("CIC11 - Strike Out Decision Notice", "ST-CIC-DEC-ENG-CIC11_Strike_Out_Decision_Notice"),
+    @JsonProperty("CIC11 - Strike Out Appeal")
+    STRIKE_OUT_APPEAL("CIC11 - Strike Out Appeal", "ST-CIC-DEC-ENG-CIC11_Strike_Out_Appeal"),
 
     @JsonProperty("CIC13 - Pro Forma Summons")
     PRO_FORMA_SUMMONS("CIC13 - Pro Forma Summons", "ST-CIC-DEC-ENG-CIC13_Pro_Forma_Summons");
