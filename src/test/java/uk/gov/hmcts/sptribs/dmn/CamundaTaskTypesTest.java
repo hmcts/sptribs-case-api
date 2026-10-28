@@ -366,7 +366,7 @@ class CamundaTaskTypesTest extends DmnDecisionTableBaseUnitTest {
             ),
             Map.of(
                 "taskTypeId", "assignHearingJudge",
-                "taskTypeName", "Assign Hearing Judge"
+                "taskTypeName", "Assign JOH to hearing"
             )
         );
         return Stream.of(

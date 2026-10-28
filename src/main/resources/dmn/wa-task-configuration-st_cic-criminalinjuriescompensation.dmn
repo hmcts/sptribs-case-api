@@ -796,7 +796,7 @@ Short name</description>
         <inputEntry id="UnaryTests_assignHearingJudgeDescriptionCase"><text></text></inputEntry>
         <inputEntry id="UnaryTests_assignHearingJudgeDescriptionType"><text>"assignHearingJudge"</text></inputEntry>
         <outputEntry id="LiteralExpression_assignHearingJudgeDescriptionName"><text>"description"</text></outputEntry>
-        <outputEntry id="LiteralExpression_assignHearingJudgeDescriptionValue"><text>"Check the judge in Roles and Access, even if one is already assigned. Assign or replace the hearing judge as needed, then manually complete this task."</text></outputEntry>
+        <outputEntry id="LiteralExpression_assignHearingJudgeDescriptionValue"><text>"Check the JOH in Roles and Access tab. Assign or replace the JOH as needed, then manually complete this task."</text></outputEntry>
         <outputEntry id="LiteralExpression_assignHearingJudgeDescriptionReconfigure"><text>true</text></outputEntry>
       </rule>
       <rule id="DecisionRule_assignHearingJudgeRole">

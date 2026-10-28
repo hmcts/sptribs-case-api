@@ -126,7 +126,7 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
             Arguments.of(
                 "caseworker-record-listing", "AwaitingHearing",
                 Map.of("Data", Map.of("assignHearingJudgeTaskTrigger", "hearing-1")),
-                List.of(Map.of("taskId", "assignHearingJudge", "name", "Assign Hearing Judge",
+                List.of(Map.of("taskId", "assignHearingJudge", "name", "Assign JOH to hearing",
                     "workingDaysAllowed", 1, "processCategories", "HearingJudgeAssignment_hearing-1",
                     "workType", HEARING_WORK_TYPE, "roleCategory", ROLE_CATEGORY_ADMIN))
             ),
@@ -134,7 +134,7 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
             Arguments.of(
                 "system-trigger-assign-hearing-judge", "AwaitingHearing",
                 Map.of("Data", Map.of("assignHearingJudgeTaskTrigger", "hearing-2")),
-                List.of(Map.of("taskId", "assignHearingJudge", "name", "Assign Hearing Judge",
+                List.of(Map.of("taskId", "assignHearingJudge", "name", "Assign JOH to hearing",
                     "workingDaysAllowed", 1, "processCategories", "HearingJudgeAssignment_hearing-2",
                     "workType", HEARING_WORK_TYPE, "roleCategory", ROLE_CATEGORY_ADMIN))
             ),
