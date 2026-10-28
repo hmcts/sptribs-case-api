@@ -20,7 +20,11 @@ import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
@@ -35,6 +39,7 @@ class CicaCaseControllerIT {
 
     private static final String VALID_CCD_REFERENCE = "1234567891234567";
     private static final String ACCESS_CHECK_URL = "/cases/cica/" + VALID_CCD_REFERENCE + "/access";
+    private static final String VERIFICATION_URL = "/cases/cica/" + VALID_CCD_REFERENCE + "/subject-verifications";
 
     @Autowired
     private MockMvc mockMvc;
@@ -110,7 +115,7 @@ class CicaCaseControllerIT {
     }
 
     @Test
-    void shouldReturn404WhenCaseNotFound() throws Exception {
+    void shouldReturn404WhenCaseDoesNotExist() throws Exception {
         // Given
         doThrow(new CaseNotFoundException("Case not found"))
             .when(cicaCaseService).checkIfUserHasAccess(VALID_CCD_REFERENCE, TEST_AUTHORIZATION_TOKEN);
@@ -120,5 +125,44 @@ class CicaCaseControllerIT {
                 .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
                 .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN))
             .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldReturnOnlyVerificationResult() throws Exception {
+        when(cicaCaseService.verifySubject(VALID_CCD_REFERENCE, TEST_AUTHORIZATION_TOKEN, "Subject Name", "2000-01-01"))
+            .thenReturn(true);
+
+        mockMvc.perform(post(VERIFICATION_URL)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
+                .contentType("application/json")
+                .content("{\"subject_full_name\":\"Subject Name\",\"subject_date_of_birth\":\"2000-01-01\"}"))
+            .andExpect(status().isOk())
+            .andExpect(header().string("Cache-Control", "no-store"))
+            .andExpect(jsonPath("$.verified").value(true))
+            .andExpect(jsonPath("$.data").doesNotExist());
+    }
+
+    @Test
+    void shouldRejectInvalidSubjectDate() throws Exception {
+        mockMvc.perform(post(VERIFICATION_URL)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
+                .contentType("application/json")
+                .content("{\"subject_full_name\":\"Name\",\"subject_date_of_birth\":\"not-a-date\"}"))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldNotDiscloseCaseWhenUserIsNotAssociated() throws Exception {
+        doThrow(new UnauthorisedCaseAccessException("Case not found for user"))
+            .when(cicaCaseService).verifySubject(VALID_CCD_REFERENCE, TEST_AUTHORIZATION_TOKEN, "Subject Name", "2000-01-01");
+
+        mockMvc.perform(post(VERIFICATION_URL)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
+                .contentType("application/json")
+                .content("{\"subject_full_name\":\"Subject Name\",\"subject_date_of_birth\":\"2000-01-01\"}"))
+            .andExpect(status().isForbidden());
     }
 }
