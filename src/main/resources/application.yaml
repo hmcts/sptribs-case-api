@@ -250,6 +250,11 @@ feature:
   migrate-global-search-task:
     enabled: ${GLOBAL_SEARCH_MIGRATION_ENABLED:false}
     caseReference: ${GLOBAL_SEARCH_MIGRATION_TEST_CASE_REF:}
+  remove-first-hearing-date-task:
+    enabled: ${REMOVE_FIRST_HEARING_DATE_ENABLED:false}
+    caseReference: ${REMOVE_FIRST_HEARING_DATE_CASE_REFERENCE:}
+    batchSize: ${REMOVE_FIRST_HEARING_DATE_BATCH_SIZE:100}
+    batchPauseMs: ${REMOVE_FIRST_HEARING_DATE_BATCH_PAUSE_MS:5000}
   clean-deleted-documents-task:
     enabled: ${CLEAN_DELETED_DOCUMENTS_ENABLED:false}
     caseReference: ${CLEAN_DELETED_DOCUMENTS_TEST_CASE_REF:}
