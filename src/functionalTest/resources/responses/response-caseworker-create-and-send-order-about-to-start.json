@@ -36,10 +36,6 @@
       "list_items": [
         {
           "code": "${json-unit.any-string}",
-          "label": "CIC3 - Rule 27"
-        },
-        {
-          "code": "${json-unit.any-string}",
           "label": "CIC6 - General Directions"
         },
         {

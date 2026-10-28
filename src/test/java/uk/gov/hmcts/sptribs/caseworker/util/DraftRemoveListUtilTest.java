@@ -54,7 +54,7 @@ class DraftRemoveListUtilTest {
             .build();
 
         final DraftOrderContentCIC content = DraftOrderContentCIC.builder()
-            .orderTemplate(OrderTemplate.CIC3_RULE_27)
+            .orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS)
             .mainContent("test")
             .orderSignature("test")
             .build();
@@ -185,10 +185,9 @@ class DraftRemoveListUtilTest {
 
         CicCase result = DraftRemoveListUtil.repopulateDynamicDraftList(caseDataNew.getCicCase());
 
-
         Assertions.assertEquals(2, result.getDraftOrderDynamicList().getListItems().size());
         //DynamicList Order should be inverse of draftOrderCICList
-        Assertions.assertEquals("CIC3 - Rule 27--25-02-2026 15:47:25--draft.pdf",
+        Assertions.assertEquals("CIC6 - General Directions--25-02-2026 15:47:25--draft.pdf",
             result.getDraftOrderDynamicList().getListItems().getFirst().getLabel());
         Assertions.assertEquals(UUID.fromString("a57d1138-1f8d-4aeb-b5ad-3681aba68748"),
             result.getDraftOrderDynamicList().getListItems().getFirst().getCode());

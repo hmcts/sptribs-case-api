@@ -3,7 +3,7 @@
     "cicCaseDraftOrderDynamicList": {
       "list_items": [
         {
-          "label": "CIC3 - Rule 27--29-05-2024 13:36:27.pdf--draft.pdf"
+          "label": "CIC6 - General Directions--29-05-2024 13:36:27.pdf--draft.pdf"
         }
       ]
     },
@@ -17,7 +17,7 @@
             "document_binary_url": "TestUrl/binary",
             "category_id": "CIC"
           },
-          "orderContentOrderTemplate": "CIC3_Rule_27",
+          "orderContentOrderTemplate": "CIC6_General_Directions",
           "orderContentMainContent": "Draft Order Content",
           "orderContentOrderSignature": "Mr Judge"
         }

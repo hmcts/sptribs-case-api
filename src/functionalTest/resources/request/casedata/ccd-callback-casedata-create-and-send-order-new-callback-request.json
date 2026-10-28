@@ -114,7 +114,7 @@
   "hyphenatedCaseRef": "1699-9545-8542-9659",
   "cicCaseAnonymiseYesOrNo": "No",
   "cicCaseOrderIssuingType": "NewOrder",
-  "orderContentOrderTemplate": "CIC3_Rule_27",
+  "orderContentOrderTemplate": "CIC6_General_Directions",
   "orderContentMainContent": "Main order content sample",
   "orderContentOrderSignature": "Supreme Judge Fudge",
   "cicCaseOrderTemplateIssued": {
