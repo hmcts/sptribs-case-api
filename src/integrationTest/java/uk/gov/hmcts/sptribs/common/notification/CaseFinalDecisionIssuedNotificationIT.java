@@ -509,7 +509,7 @@ public class CaseFinalDecisionIssuedNotificationIT {
 
             caseFinalDecisionIssuedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
-            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), anyList(), eq(TEST_CASE_ID.toString()), eq(null));
+            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), anyList(), eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT));
 
             NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -574,7 +574,7 @@ public class CaseFinalDecisionIssuedNotificationIT {
 
             caseFinalDecisionIssuedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
-            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), anyList(), eq(TEST_CASE_ID.toString()), eq(null));
+            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), anyList(), eq(TEST_CASE_ID.toString()), eq(Party.REPRESENTATIVE));
 
             NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -637,7 +637,7 @@ public class CaseFinalDecisionIssuedNotificationIT {
 
             caseFinalDecisionIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
-            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), anyList(), eq(TEST_CASE_ID.toString()), eq(null));
+            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), anyList(), eq(TEST_CASE_ID.toString()), eq(Party.RESPONDENT));
 
             NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -701,7 +701,7 @@ public class CaseFinalDecisionIssuedNotificationIT {
 
             caseFinalDecisionIssuedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
-            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), anyList(), eq(TEST_CASE_ID.toString()), eq(null));
+            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), anyList(), eq(TEST_CASE_ID.toString()), eq(Party.APPLICANT));
 
             NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 

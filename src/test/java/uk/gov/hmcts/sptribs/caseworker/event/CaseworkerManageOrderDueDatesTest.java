@@ -276,13 +276,22 @@ class CaseworkerManageOrderDueDatesTest {
                 caseWorkerManageOrderDueDate.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         // Then
-        List<ListValue<DateModel>> responseOrderDueDates =
+        List<ListValue<DateModel>> responseOrderDueDates1 =
                 response.getData().getCicCase().getOrderList().getFirst().getValue().getDueDateList();
 
-        assertThat(responseOrderDueDates).hasSize(1);
-        assertThat(responseOrderDueDates.getFirst().getValue().getDueDate())
+        assertThat(responseOrderDueDates1).hasSize(1);
+        assertThat(responseOrderDueDates1.getFirst().getValue().getDueDate())
                 .hasMonth(beforeUpdatedDueDatesListValues.getFirst().getValue().getDueDate().getMonth());
-        assertThat(responseOrderDueDates.getFirst().getValue().getDueDateOptions())
+        assertThat(responseOrderDueDates1.getFirst().getValue().getDueDateOptions())
+                .isEqualTo(beforeUpdatedDueDatesListValues.getFirst().getValue().getDueDateOptions());
+
+        List<ListValue<DateModel>> responseOrderDueDates2 =
+                response.getData().getCicCase().getOrderList().getLast().getValue().getDueDateList();
+
+        assertThat(responseOrderDueDates2).hasSize(1);
+        assertThat(responseOrderDueDates2.getFirst().getValue().getDueDate())
+                .hasMonth(beforeUpdatedDueDatesListValues.getFirst().getValue().getDueDate().getMonth());
+        assertThat(responseOrderDueDates2.getFirst().getValue().getDueDateOptions())
                 .isEqualTo(beforeUpdatedDueDatesListValues.getFirst().getValue().getDueDateOptions());
     }
 
