@@ -30,6 +30,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.caseworker.model.YesNo.YES;
+import static uk.gov.hmcts.sptribs.ciccase.model.HearingState.Cancelled;
 import static uk.gov.hmcts.sptribs.ciccase.model.HearingState.Listed;
 import static uk.gov.hmcts.sptribs.systemupdate.event.SystemTriggerAssignHearingJudge.SYSTEM_TRIGGER_ASSIGN_HEARING_JUDGE;
 
@@ -53,7 +54,7 @@ class SystemTriggerAssignHearingJudgeTaskTest {
     private SystemTriggerAssignHearingJudgeTask task;
 
     @Test
-    void requestsOneEventPerDueHearingButNotForAnAlreadyRequestedHearing() {
+    void requestsAnEventForUpcomingHearingDespiteHistoricCancelledHearing() {
         LocalDate today = LocalDate.of(2026, 10, 21);
         LocalDate hearingDate = today.plusDays(7);
         BoolQueryBuilder query = boolQuery().must(matchQuery("state", "AwaitingHearing"))
@@ -69,11 +70,11 @@ class SystemTriggerAssignHearingJudgeTaskTest {
         when(dates.isDue(hearingDate, today.minusDays(7))).thenReturn(true);
 
         Listing due = Listing.builder().date(hearingDate).hearingStatus(Listed).build();
-        Listing alreadyRequested = Listing.builder().date(hearingDate).hearingStatus(Listed)
+        Listing historic = Listing.builder().date(hearingDate.minusDays(60)).hearingStatus(Cancelled)
             .hearingJudgeTaskRequested(YES).build();
         CaseData data = CaseData.builder().hearingList(List.of(
             ListValue.<Listing>builder().value(due).build(),
-            ListValue.<Listing>builder().value(alreadyRequested).build())).build();
+            ListValue.<Listing>builder().value(historic).build())).build();
         uk.gov.hmcts.ccd.sdk.api.CaseDetails<CaseData, State> sdkCase = new uk.gov.hmcts.ccd.sdk.api.CaseDetails<>();
         sdkCase.setData(data);
         when(converter.convertToCaseDetailsFromReformModel(rawCase)).thenReturn(sdkCase);

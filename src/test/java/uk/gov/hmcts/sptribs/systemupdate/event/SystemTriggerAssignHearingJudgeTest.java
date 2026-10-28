@@ -20,6 +20,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.caseworker.model.YesNo.YES;
+import static uk.gov.hmcts.sptribs.ciccase.model.HearingState.Cancelled;
 import static uk.gov.hmcts.sptribs.ciccase.model.HearingState.Listed;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,13 +33,13 @@ class SystemTriggerAssignHearingJudgeTest {
     private HearingJudgeTaskDateService dates;
 
     @Test
-    void selectsNextDueHearingThatHasNotAlreadyRequestedATask() {
+    void selectsUpcomingHearingAfterAnHistoricCancelledHearing() {
         LocalDate date = LocalDate.of(2026, 11, 1);
-        Listing alreadyRequested = Listing.builder().date(date).hearingStatus(Listed)
+        Listing historic = Listing.builder().date(date.minusDays(30)).hearingStatus(Cancelled)
             .hearingJudgeTaskRequested(YES).build();
         Listing due = Listing.builder().date(date).hearingStatus(Listed).build();
         CaseData data = CaseData.builder().hearingList(List.of(
-            ListValue.<Listing>builder().id("1").value(alreadyRequested).build(),
+            ListValue.<Listing>builder().id("1").value(historic).build(),
             ListValue.<Listing>builder().id("2").value(due).build())).build();
         CaseDetails<CaseData, State> details = new CaseDetails<>();
         details.setData(data);

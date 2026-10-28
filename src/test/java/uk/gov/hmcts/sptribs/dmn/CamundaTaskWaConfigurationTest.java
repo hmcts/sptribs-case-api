@@ -1387,6 +1387,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
         assertTrue(results.stream().anyMatch(value -> "dueDateIntervalDays".equals(value.get("name"))
             && "1".equals(value.get("value").toString())));
         assertTrue(results.stream().anyMatch(value -> "description".equals(value.get("name"))
+            && value.get("value").toString().contains("even if one is already assigned")
             && value.get("value").toString().contains("manually complete")));
     }
 

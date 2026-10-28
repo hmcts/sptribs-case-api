@@ -71,6 +71,7 @@ public class SystemTriggerAssignHearingJudgeTask implements Runnable {
                             && dates.isDue(listing.getDate(), dates.releaseDate(listing.getDate()))) {
                             updateService.submitEvent(caseDetails.getId(), SYSTEM_TRIGGER_ASSIGN_HEARING_JUDGE,
                                 user, serviceAuth);
+                            break;
                         }
                     }
                 } catch (CcdManagementException | IllegalArgumentException e) {

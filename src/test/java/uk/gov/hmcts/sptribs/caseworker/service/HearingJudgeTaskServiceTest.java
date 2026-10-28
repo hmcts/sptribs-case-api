@@ -39,6 +39,21 @@ class HearingJudgeTaskServiceTest {
     }
 
     @Test
+    void requestsTaskEvenWhenCaseHasAJudgeFromAnEarlierHearing() {
+        CaseData caseData = CaseData.builder().judicialId("previous-hearing-judge").build();
+        LocalDate hearingDate = LocalDate.of(2026, 11, 1);
+        Listing hearing = Listing.builder().date(hearingDate).hearingStatus(Listed).build();
+        when(dates.releaseDate(hearingDate)).thenReturn(LocalDate.of(2026, 10, 18));
+        when(dates.isDue(hearingDate, LocalDate.of(2026, 10, 18))).thenReturn(true);
+
+        new HearingJudgeTaskService(dates).updateTask(caseData, hearing);
+
+        assertThat(hearing.getHearingJudgeTaskRequested()).isEqualTo(YES);
+        assertThat(caseData.getAssignHearingJudgeTaskTrigger()).isEqualTo(hearing.getHearingJudgeTaskId());
+        assertThat(caseData.getJudicialId()).isEqualTo("previous-hearing-judge");
+    }
+
+    @Test
     void doesNotRequestTaskTwiceForSameHearing() {
         CaseData caseData = new CaseData();
         Listing hearing = Listing.builder().date(LocalDate.of(2026, 11, 1))
