@@ -185,7 +185,7 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
         List<String> uuids = new ArrayList<>();
         if (NoticeOption.UPLOAD_FROM_COMPUTER.equals(caseIssueFinalDecision.getFinalDecisionNotice())
             && caseIssueFinalDecision.getDocument() != null) {
-            uuids.add(DocumentUtil.getDocumentUuidFromCICDocument(caseIssueFinalDecision.getDocument()));
+            uuids.add(DocumentUtil.getDocumentUuidFromOrderDecisionUploadDocument(caseIssueFinalDecision.getDocument()));
         } else if (NoticeOption.CREATE_FROM_TEMPLATE.equals(caseIssueFinalDecision.getFinalDecisionNotice())
             && caseIssueFinalDecision.getFinalDecisionDraft() != null) {
             uuids.add(DocumentUtil.getUuid(caseIssueFinalDecision.getFinalDecisionDraft()));

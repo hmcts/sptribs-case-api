@@ -2,6 +2,8 @@ package uk.gov.hmcts.sptribs.caseworker.event.page;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -13,7 +15,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.document.DocumentUtil;
-import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.document.model.OrderDecisionUploadCICDocument;
 
 import java.util.Collections;
 
@@ -29,14 +31,14 @@ public class IssueDecisionUploadNoticeTest {
     @InjectMocks
     private IssueDecisionUploadNotice issueDecisionUploadNotice;
 
-    private final Document invalidDocumentType = Document.builder().filename("file.jar").build();
-
     private final Document validDocumentType = Document.builder().filename("file.pdf").build();
 
-    @Test
-    void midEventReturnsErrorForInvalidDocumentType() {
+    @ParameterizedTest
+    @ValueSource(strings = {"file.uml", "file.docx"})
+    void midEventReturnsErrorForInvalidDocumentType(String filename) {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CICDocument doc = CICDocument.builder().documentLink(invalidDocumentType).build();
+        final OrderDecisionUploadCICDocument doc = OrderDecisionUploadCICDocument.builder()
+            .documentLink(Document.builder().filename(filename).build()).build();
         final CaseData caseData = CaseData.builder()
             .caseIssueDecision(CaseIssueDecision.builder().decisionDocument(doc).build())
             .build();
@@ -50,7 +52,7 @@ public class IssueDecisionUploadNoticeTest {
     @Test
     void midEventReturnsNoErrorsForValidDocumentType() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CICDocument doc = CICDocument.builder().documentLink(validDocumentType).build();
+        final OrderDecisionUploadCICDocument doc = OrderDecisionUploadCICDocument.builder().documentLink(validDocumentType).build();
         final CaseData caseData = CaseData.builder()
             .caseIssueDecision(CaseIssueDecision.builder().decisionDocument(doc).build())
             .build();
@@ -64,18 +66,21 @@ public class IssueDecisionUploadNoticeTest {
     @Test
     void midEventValidatesDecisionDocumentFormat() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CICDocument doc = CICDocument.builder().documentLink(validDocumentType).build();
+        final OrderDecisionUploadCICDocument doc = OrderDecisionUploadCICDocument.builder().documentLink(validDocumentType).build();
         final CaseData caseData = CaseData.builder()
             .caseIssueDecision(CaseIssueDecision.builder().decisionDocument(doc).build())
             .build();
         caseDetails.setData(caseData);
         try (MockedStatic<DocumentUtil> mockedDocumentUtils = Mockito.mockStatic(DocumentUtil.class)) {
-            mockedDocumentUtils.when(() -> DocumentUtil.validateDecisionDocumentFormat(any(CICDocument.class)))
+            mockedDocumentUtils.when(() -> DocumentUtil
+                .validateOrderDecisionUploadCICDocumentFormat(any(OrderDecisionUploadCICDocument.class)))
                 .thenReturn(Collections.emptyList());
 
             issueDecisionUploadNotice.midEvent(caseDetails, caseDetails);
 
-            mockedDocumentUtils.verify(() ->  DocumentUtil.validateDecisionDocumentFormat(any(CICDocument.class)), times(1));
+            mockedDocumentUtils.verify(
+                () -> DocumentUtil.validateOrderDecisionUploadCICDocumentFormat(any(OrderDecisionUploadCICDocument.class)),
+                times(1));
         }
     }
 }

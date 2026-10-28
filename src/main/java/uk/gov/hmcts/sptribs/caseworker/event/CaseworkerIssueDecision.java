@@ -53,6 +53,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.convertToCICDocument;
 
 @Component
 @RequiredArgsConstructor
@@ -113,7 +114,9 @@ public class CaseworkerIssueDecision implements CCDConfig<CaseData, State, UserR
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         final CaseData caseData = details.getData();
         final CaseIssueDecision decision = caseData.getCaseIssueDecision();
-        final CICDocument decisionDocument = decision.getDecisionDocument();
+        final CICDocument decisionDocument = decision.getDecisionDocument() != null
+            ? convertToCICDocument(decision.getDecisionDocument())
+            : null;
         final Document decisionDocumentCreatedFromTemplate = decision.getIssueDecisionDraft();
 
         final List<String> errors = new ArrayList<>();

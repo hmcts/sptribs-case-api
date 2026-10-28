@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.document;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.jspecify.annotations.NonNull;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -11,6 +12,7 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentInfo;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.model.OrderDecisionUploadCICDocument;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -92,7 +94,22 @@ public final class DocumentUtil {
         return errors;
     }
 
-    public static List<String> validateDecisionDocumentFormat(CICDocument document) {
+    public static List<String> validateOrderDecisionUploadCICDocumentFormatList(
+        List<ListValue<OrderDecisionUploadCICDocument>> documentList
+    ) {
+        final List<String> errors = new ArrayList<>();
+
+        if (CollectionUtils.isNotEmpty(documentList)) {
+            documentList.stream()
+                .filter(value -> value != null && !value.getValue().isDocumentValid())
+                .findFirst()
+                .ifPresent(x -> errors.add(DOCUMENT_VALIDATION_MESSAGE));
+        }
+
+        return errors;
+    }
+
+    public static List<String> validateOrderDecisionUploadCICDocumentFormat(OrderDecisionUploadCICDocument document) {
         final List<String> errors = new ArrayList<>();
         if (document != null && !document.isDocumentValid()) {
             errors.add(DOCUMENT_VALIDATION_MESSAGE);
@@ -176,8 +193,35 @@ public final class DocumentUtil {
         return documentList;
     }
 
-    public static List<ListValue<CaseworkerCICDocumentUpload>> convertToCaseworkerCICDocument(
-        List<ListValue<CaseworkerCICDocument>> uploadedDocuments
+    public static @NonNull CICDocument convertToCICDocument(@NonNull OrderDecisionUploadCICDocument uploadedDocument) {
+        return CICDocument.builder()
+            .documentEmailContent(uploadedDocument.getDocumentEmailContent())
+            .documentLink(uploadedDocument.getDocumentLink())
+            .build();
+    }
+
+    public static @NonNull List<ListValue<CICDocument>> convertToCICDocuments(
+        @NonNull List<ListValue<OrderDecisionUploadCICDocument>> uploadedDocuments
+    ) {
+        List<ListValue<CICDocument>> documentList = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(uploadedDocuments)) {
+            uploadedDocuments.forEach(
+                listValue -> {
+                    OrderDecisionUploadCICDocument uploadedDocument = listValue.getValue();
+                    ListValue<CICDocument> documentListValue = new ListValue<>();
+                    documentListValue.setId(listValue.getId());
+                    documentListValue.setValue(convertToCICDocument(uploadedDocument));
+
+                    documentList.add(documentListValue);
+                }
+            );
+        }
+
+        return documentList;
+    }
+
+    public static @NonNull List<ListValue<CaseworkerCICDocumentUpload>> convertToCaseworkerCICDocument(
+        @NonNull List<ListValue<CaseworkerCICDocument>> uploadedDocuments
     ) {
         List<ListValue<CaseworkerCICDocumentUpload>> documentList = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(uploadedDocuments)) {
@@ -267,7 +311,7 @@ public final class DocumentUtil {
         return getUuid(documentLink);
     }
 
-    public static String getDocumentUuidFromCICDocument(CICDocument cicDocument) {
+    public static String getDocumentUuidFromOrderDecisionUploadDocument(OrderDecisionUploadCICDocument cicDocument) {
         Document document = cicDocument.getDocumentLink();
         return getUuid(document);
     }

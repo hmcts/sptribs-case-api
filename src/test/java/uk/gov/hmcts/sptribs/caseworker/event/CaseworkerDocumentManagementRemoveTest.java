@@ -26,6 +26,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.document.model.OrderDecisionUploadCICDocument;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
 import java.util.ArrayList;
@@ -107,7 +108,7 @@ public class CaseworkerDocumentManagementRemoveTest {
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        CICDocument doc = CICDocument.builder()
+        OrderDecisionUploadCICDocument doc = OrderDecisionUploadCICDocument.builder()
             .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build()).build();
         caseData.setCaseIssueFinalDecision(CaseIssueFinalDecision.builder().document(doc).build());
         caseData.setCaseIssueDecision(CaseIssueDecision.builder().decisionDocument(doc).build());
@@ -140,7 +141,7 @@ public class CaseworkerDocumentManagementRemoveTest {
         updatedCaseDetails.setData(caseData);
         final CaseData oldData = caseData();
 
-        CICDocument docOld = CICDocument.builder()
+        OrderDecisionUploadCICDocument docOld = OrderDecisionUploadCICDocument.builder()
             .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build()).build();
         oldData.setCaseIssueFinalDecision(CaseIssueFinalDecision.builder().document(docOld).build());
         oldData.setCaseIssueDecision(CaseIssueDecision.builder().decisionDocument(docOld).build());
@@ -188,7 +189,7 @@ public class CaseworkerDocumentManagementRemoveTest {
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        CICDocument doc = CICDocument.builder()
+        OrderDecisionUploadCICDocument doc = OrderDecisionUploadCICDocument.builder()
             .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build()).build();
         caseData.setCaseIssueFinalDecision(CaseIssueFinalDecision.builder().document(doc).build());
         caseData.setCaseIssueDecision(CaseIssueDecision.builder().decisionDocument(doc).build());
@@ -222,7 +223,7 @@ public class CaseworkerDocumentManagementRemoveTest {
         updatedCaseDetails.setData(caseData);
         final CaseData oldData = caseData();
 
-        CICDocument docOld = CICDocument.builder()
+        OrderDecisionUploadCICDocument docOld = OrderDecisionUploadCICDocument.builder()
             .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build()).build();
         oldData.setCaseIssueFinalDecision(CaseIssueFinalDecision.builder().document(docOld).build());
         oldData.setCaseIssueDecision(CaseIssueDecision.builder().decisionDocument(docOld).build());

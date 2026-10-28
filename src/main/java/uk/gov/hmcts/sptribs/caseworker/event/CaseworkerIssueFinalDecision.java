@@ -59,6 +59,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.FINAL_DECISION_ANNEX_FILE;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.FINAL_DECISION_ANNEX_TEMPLATE_ID;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.convertToCICDocument;
 
 @Component
 @RequiredArgsConstructor
@@ -131,7 +132,9 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         final CaseData caseData = details.getData();
-        final CICDocument finalDecisionDocument = caseData.getCaseIssueFinalDecision().getDocument();
+        final CICDocument finalDecisionDocument = caseData.getCaseIssueFinalDecision().getDocument() != null
+            ? convertToCICDocument(caseData.getCaseIssueFinalDecision().getDocument())
+            : null;
         final Document finalDecisionDocumentCreatedFromTemplate = caseData.getCaseIssueFinalDecision().getFinalDecisionDraft();
 
         final List<String> errors = new ArrayList<>();
