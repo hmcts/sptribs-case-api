@@ -64,8 +64,7 @@ public final class DocumentListUtil {
 
         addDocsToMapIfNotNull(docTypeAndDocMap, CaseDocumentType.HEARING_RECORD,
             getHearingSummaryDocuments(data).stream()
-                .filter(document -> document != null
-                    && document.getDocumentLink() != null
+                .filter(document -> document.getDocumentLink() != null
                     && DocumentFileTypes.isAudioOrVideo(document.getDocumentLink().getFilename()))
                 .toList());
         addDocsToMapIfNotNull(docTypeAndDocMap, ORDER, getOrderDocuments(data.getCicCase()));
@@ -91,7 +90,7 @@ public final class DocumentListUtil {
     private static void addDocsToMapIfNotNull(Map<CaseDocumentType, List<CaseworkerCICDocument>> docTypeAndDocMap,
                                               CaseDocumentType caseDocumentType,
                                               List<CaseworkerCICDocument> documentList) {
-        if (documentList != null && !documentList.isEmpty()) {
+        if (!documentList.isEmpty()) {
             docTypeAndDocMap.put(caseDocumentType, documentList);
         }
     }
@@ -173,17 +172,18 @@ public final class DocumentListUtil {
     }
 
     public static DynamicMultiSelectList prepareDocumentList(final CaseData data, String baseUrl) {
-        List<CaseworkerCICDocument> docList = prepareList(data);
+        return buildDocumentList(prepareList(data), baseUrl);
+    }
+
+    public static DynamicMultiSelectList prepareContactPartiesDocumentList(final CaseData data, String baseUrl) {
+        return buildDocumentList(getContactPartiesAllowedDocuments(data), baseUrl);
+    }
+
+    private static DynamicMultiSelectList buildDocumentList(List<CaseworkerCICDocument> documents, String baseUrl) {
         String apiUrl = baseUrl.replaceAll("/$", "") + "/" + DOCUMENT_BINARY_PATH;
         List<DynamicListElement> dynamicListElements = new ArrayList<>();
-        for (CaseworkerCICDocument doc : docList) {
-            String documentId = StringUtils.substringAfterLast(doc.getDocumentLink().getUrl(),
-                "/");
-            String url = String.format(apiUrl, documentId);
-            DynamicListElement element = DynamicListElement.builder().label("[" + doc.getDocumentLink().getFilename()
-                + " " + doc.getDocumentCategory().getLabel()
-                + "](" + url + ")").code(UUID.randomUUID()).build();
-            dynamicListElements.add(element);
+        for (CaseworkerCICDocument doc : documents) {
+            createDocumentList(apiUrl, dynamicListElements, doc);
         }
 
         return DynamicMultiSelectList
@@ -193,24 +193,92 @@ public final class DocumentListUtil {
             .build();
     }
 
-    public static DynamicMultiSelectList prepareContactPartiesDocumentList(final CaseData data, String baseUrl) {
-        List<CaseworkerCICDocument> docList = prepareList(data);
+    public static Optional<List<ListValue<CaseworkerCICDocument>>> getSelectedContactPartiesDocuments(final CaseData data) {
+        if (data.getContactPartiesDocuments() == null) {
+            return Optional.of(List.of());
+        }
+        DynamicMultiSelectList documentList = data.getContactPartiesDocuments().getDocumentList();
+        List<CaseworkerCICDocument> availableDocuments = getContactPartiesAllowedDocuments(data);
+        return getSelectedDocuments(documentList, availableDocuments);
+    }
 
-        String apiUrl = baseUrl.replaceAll("/$", "") + "/" + DOCUMENT_BINARY_PATH;
-        List<DynamicListElement> dynamicListElements = new ArrayList<>();
-        for (CaseworkerCICDocument doc : docList) {
-            String fileName = doc.getDocumentLink().getFilename();
-            String fileExtension = StringUtils.substringAfterLast(fileName, ".");
-            if (ContactPartiesAllowedFileTypes.isFileTypeValid(fileExtension)) {
-                createDocumentList(apiUrl, dynamicListElements, doc);
+    public static List<CaseworkerCICDocument> requireSelectedContactPartiesDocuments(final CaseData data) {
+        return getSelectedContactPartiesDocuments(data)
+            .orElseThrow(() -> new IllegalStateException("Invalid contact-parties document selection"))
+            .stream().map(ListValue::getValue).toList();
+    }
+
+    public static Optional<List<ListValue<CaseworkerCICDocument>>> getSelectedCaseIssueDocuments(final CaseData data) {
+        if (data.getCaseIssue() == null) {
+            return Optional.of(List.of());
+        }
+        DynamicMultiSelectList documentList = data.getCaseIssue().getDocumentList();
+        List<CaseworkerCICDocument> availableDocuments = prepareList(data);
+        return getSelectedDocuments(documentList, availableDocuments);
+    }
+
+    public static List<CaseworkerCICDocument> requireSelectedCaseIssueDocuments(final CaseData data) {
+        return getSelectedCaseIssueDocuments(data)
+            .orElseThrow(() -> new IllegalStateException("Invalid issue-case document selection"))
+            .stream().map(ListValue::getValue).toList();
+    }
+
+    private static Optional<List<ListValue<CaseworkerCICDocument>>> getSelectedDocuments(
+            DynamicMultiSelectList documentList,
+            List<CaseworkerCICDocument> availableDocuments) {
+        if (documentList == null || CollectionUtils.isEmpty(documentList.getValue())) {
+            return Optional.of(List.of());
+        }
+
+        List<DynamicListElement> selectableDocumentOptions = documentList.getListItems();
+        if (CollectionUtils.isEmpty(selectableDocumentOptions)
+            || selectableDocumentOptions.size() != availableDocuments.size()) {
+            return Optional.empty();
+        }
+
+        Map<UUID, Integer> optionIndices = new HashMap<>();
+        for (int index = 0; index < selectableDocumentOptions.size(); index++) {
+            DynamicListElement option = selectableDocumentOptions.get(index);
+            if (option == null || option.getCode() == null || optionIndices.putIfAbsent(option.getCode(), index) != null) {
+                return Optional.empty();
             }
         }
 
-        return DynamicMultiSelectList
-            .builder()
-            .listItems(dynamicListElements)
-            .value(new ArrayList<>())
-            .build();
+        List<CaseworkerCICDocument> selectedDocuments = new ArrayList<>();
+        for (DynamicListElement selection : documentList.getValue()) {
+            Integer index = selection == null ? null : optionIndices.get(selection.getCode());
+            if (index == null) {
+                return Optional.empty();
+            }
+            selectedDocuments.add(availableDocuments.get(index));
+        }
+
+        return Optional.of(buildListValues(selectedDocuments));
+    }
+
+    public static void initialiseMissingContactPartiesDocumentSelection(CaseData data) {
+        DynamicMultiSelectList documentList = data.getContactPartiesDocuments().getDocumentList();
+        if (documentList == null) {
+            data.getContactPartiesDocuments().setDocumentList(DynamicMultiSelectList.builder()
+                .value(new ArrayList<>())
+                .build());
+        } else if (documentList.getValue() == null) {
+            documentList.setValue(new ArrayList<>());
+        }
+    }
+
+    public static void initialiseMissingCaseIssueDocumentSelection(CaseData data) {
+        if (data.getCaseIssue() == null) {
+            data.setCaseIssue(new uk.gov.hmcts.sptribs.caseworker.model.CaseIssue());
+        }
+        DynamicMultiSelectList documentList = data.getCaseIssue().getDocumentList();
+        if (documentList == null) {
+            data.getCaseIssue().setDocumentList(DynamicMultiSelectList.builder()
+                .value(new ArrayList<>())
+                .build());
+        } else if (documentList.getValue() == null) {
+            documentList.setValue(new ArrayList<>());
+        }
     }
 
     public static List<ListValue<CaseworkerCICDocument>> addToExistingDocumentList(
@@ -231,6 +299,18 @@ public final class DocumentListUtil {
             + " " + doc.getDocumentCategory().getLabel()
             + "](" + url + ")").code(UUID.randomUUID()).build();
         dynamicListElements.add(element);
+    }
+
+    private static boolean isContactPartiesFileTypeAllowed(CaseworkerCICDocument document) {
+        String fileName = document.getDocumentLink().getFilename();
+        String fileExtension = StringUtils.substringAfterLast(fileName, ".");
+        return ContactPartiesAllowedFileTypes.isFileTypeValid(fileExtension);
+    }
+
+    private static List<CaseworkerCICDocument> getContactPartiesAllowedDocuments(CaseData data) {
+        return prepareList(data).stream()
+            .filter(DocumentListUtil::isContactPartiesFileTypeAllowed)
+            .toList();
     }
 
 
