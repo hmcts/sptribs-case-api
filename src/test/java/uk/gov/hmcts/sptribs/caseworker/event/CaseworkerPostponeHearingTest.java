@@ -17,6 +17,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.PostponeHearingNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
+import uk.gov.hmcts.sptribs.caseworker.service.HearingJudgeTaskService;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -62,6 +63,9 @@ class CaseworkerPostponeHearingTest {
 
     @Mock
     private HearingService hearingService;
+
+    @Mock
+    private HearingJudgeTaskService hearingJudgeTaskService;
 
     @Mock
     private HearingPostponedNotification hearingPostponedNotification;

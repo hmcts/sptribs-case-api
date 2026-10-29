@@ -124,6 +124,29 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
     static Stream<Arguments> scenarioProvider() {
         return Stream.of(
             Arguments.of(
+                "caseworker-record-listing", "AwaitingHearing",
+                Map.of("Data", Map.of("assignHearingJudgeTaskTrigger", "hearing-1")),
+                List.of(Map.of("taskId", "assignHearingJudge", "name", "Assign JOH to hearing",
+                    "workingDaysAllowed", 1, "processCategories", "HearingJudgeAssignment_hearing-1",
+                    "workType", HEARING_WORK_TYPE, "roleCategory", ROLE_CATEGORY_ADMIN))
+            ),
+            Arguments.of("caseworker-record-listing", "AwaitingHearing", Map.of("Data", Map.of()), List.of()),
+            Arguments.of(
+                "caseworker-edit-record-listing", "AwaitingHearing",
+                Map.of("Data", Map.of("assignHearingJudgeTaskTrigger", "hearing-3")),
+                List.of(Map.of("taskId", "assignHearingJudge", "name", "Assign JOH to hearing",
+                    "workingDaysAllowed", 1, "processCategories", "HearingJudgeAssignment_hearing-3",
+                    "workType", HEARING_WORK_TYPE, "roleCategory", ROLE_CATEGORY_ADMIN))
+            ),
+            Arguments.of("caseworker-edit-record-listing", "AwaitingHearing", Map.of("Data", Map.of()), List.of()),
+            Arguments.of(
+                "system-trigger-assign-hearing-judge", "AwaitingHearing",
+                Map.of("Data", Map.of("assignHearingJudgeTaskTrigger", "hearing-2")),
+                List.of(Map.of("taskId", "assignHearingJudge", "name", "Assign JOH to hearing",
+                    "workingDaysAllowed", 1, "processCategories", "HearingJudgeAssignment_hearing-2",
+                    "workType", HEARING_WORK_TYPE, "roleCategory", ROLE_CATEGORY_ADMIN))
+            ),
+            Arguments.of(
                 "create-draft-order",
                 "CaseManagement",
                 Map.of("Data", Map.of("cicCaseReferralTypeForWA", "Withdrawal request")),
@@ -1417,9 +1440,9 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
     void if_this_test_fails_needs_updating_with_your_changes() {
         //The purpose of this test is to prevent adding new rows without being tested
         DmnDecisionTableImpl logic = (DmnDecisionTableImpl) decision.getDecisionLogic();
-        assertThat(logic.getInputs().size(), is(5));
+        assertThat(logic.getInputs().size(), is(6));
         assertThat(logic.getOutputs().size(), is(7));
-        assertThat(logic.getRules().size(), is(63));
+        assertThat(logic.getRules().size(), is(64));
     }
 
     @ParameterizedTest(name = "event id: {0} post event state: {1} additional data: {2}")

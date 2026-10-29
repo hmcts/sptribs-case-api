@@ -21,6 +21,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.RemoteHearingInfo;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SelectHearing;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
+import uk.gov.hmcts.sptribs.caseworker.service.HearingJudgeTaskService;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -66,14 +67,24 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
 
     private static final CcdPageConfiguration remoteHearingInfo = new RemoteHearingInfo();
 
-    @Autowired
-    private RecordListHelper recordListHelper;
+    private final RecordListHelper recordListHelper;
+
+    private final HearingService hearingService;
+
+    private final HearingJudgeTaskService hearingJudgeTaskService;
+
+    private final ListingUpdatedNotification listingUpdatedNotification;
 
     @Autowired
-    private HearingService hearingService;
-
-    @Autowired
-    private ListingUpdatedNotification listingUpdatedNotification;
+    public CaseworkerEditRecordListing(RecordListHelper recordListHelper,
+                                       HearingService hearingService,
+                                       HearingJudgeTaskService hearingJudgeTaskService,
+                                       ListingUpdatedNotification listingUpdatedNotification) {
+        this.recordListHelper = recordListHelper;
+        this.hearingService = hearingService;
+        this.hearingJudgeTaskService = hearingJudgeTaskService;
+        this.listingUpdatedNotification = listingUpdatedNotification;
+    }
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -102,6 +113,9 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
         recordListHelper.addOtherInformation(pageBuilder);
         listingChangeReason.addTo(pageBuilder);
         recordNotifyParties.addTo(pageBuilder);
+        eventBuilder.fields()
+            .readonlyNoSummary(CaseData::getAssignHearingJudgeTaskTrigger, "[STATE]=\"NEVER_SHOW\"")
+            .readonlyNoSummary(CaseData::getCancelHearingJudgeTaskTrigger, "[STATE]=\"NEVER_SHOW\"");
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
@@ -159,6 +173,8 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
         recordListHelper.getNotificationParties(caseData);
         caseData.setListing(recordListHelper.checkAndUpdateVenueInformation(caseData.getListing()));
         caseData.setCurrentEvent("");
+
+        hearingJudgeTaskService.updateTask(caseData, caseData.getListing());
 
         final String hearingName = caseData.getCicCase().getHearingList().getValue().getLabel();
 
