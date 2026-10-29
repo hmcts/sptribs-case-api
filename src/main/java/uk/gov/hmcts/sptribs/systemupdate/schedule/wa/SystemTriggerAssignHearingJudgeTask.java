@@ -59,27 +59,31 @@ public class SystemTriggerAssignHearingJudgeTask implements Runnable {
             .filter(rangeQuery("data.hearingList.value.date").from(today));
         try {
             for (CaseDetails caseDetails : searchService.searchForAllCasesWithQuery(query, user, serviceAuth)) {
-                try {
-                    CaseData data = converter.convertToCaseDetailsFromReformModel(caseDetails).getData();
-                    if (data.getHearingList() == null) {
-                        continue;
-                    }
-                    for (ListValue<Listing> hearing : data.getHearingList()) {
-                        Listing listing = hearing.getValue();
-                        if (listing != null && listing.getHearingStatus() == Listed
-                            && listing.getHearingJudgeTaskRequested() != YES
-                            && dates.isDue(listing.getDate(), dates.releaseDate(listing.getDate()))) {
-                            updateService.submitEvent(caseDetails.getId(), SYSTEM_TRIGGER_ASSIGN_HEARING_JUDGE,
-                                user, serviceAuth);
-                            break;
-                        }
-                    }
-                } catch (CcdManagementException | IllegalArgumentException e) {
-                    log.error("Unable to trigger hearing judge task for case {}", caseDetails.getId(), e);
-                }
+                triggerAssignHearingJudgeEvent(user, serviceAuth, caseDetails);
             }
         } catch (CcdSearchCaseException | CcdConflictException e) {
             log.error("Unable to search for hearing judge tasks", e);
+        }
+    }
+
+    private void triggerAssignHearingJudgeEvent(CICUser user, String serviceAuth, CaseDetails caseDetails) {
+        try {
+            CaseData data = converter.convertToCaseDetailsFromReformModel(caseDetails).getData();
+            if (data.getHearingList() == null) {
+                return;
+            }
+            for (ListValue<Listing> hearing : data.getHearingList()) {
+                Listing listing = hearing.getValue();
+                if (listing != null && listing.getHearingStatus() == Listed
+                    && listing.getHearingJudgeTaskRequested() != YES
+                    && dates.isDue(listing.getDate(), dates.releaseDate(listing.getDate()))) {
+                    updateService.submitEvent(caseDetails.getId(), SYSTEM_TRIGGER_ASSIGN_HEARING_JUDGE,
+                        user, serviceAuth);
+                    break;
+                }
+            }
+        } catch (CcdManagementException | IllegalArgumentException e) {
+            log.error("Unable to trigger hearing judge task for case {}", caseDetails.getId(), e);
         }
     }
 }

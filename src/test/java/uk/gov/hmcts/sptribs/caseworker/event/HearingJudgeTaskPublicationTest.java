@@ -3,7 +3,6 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.DisplayContext;
 import uk.gov.hmcts.ccd.sdk.api.Event;
@@ -44,17 +43,16 @@ class HearingJudgeTaskPublicationTest {
     }
 
     static Stream<Arguments> triggerFields() {
-        var record = new CaseworkerRecordListing(null, null, null, null);
-        var edit = new CaseworkerEditRecordListing();
-        ReflectionTestUtils.setField(edit, "recordListHelper", mock(RecordListHelper.class));
+        var recordListing = new CaseworkerRecordListing(null, null, null, null);
+        var editRecordListing = new CaseworkerEditRecordListing(mock(RecordListHelper.class), null, null, null);
         var postpone = new CaseworkerPostponeHearing(null, null, null, null);
         var cancel = new CaseworkerCancelHearing(null, null, null);
         var scheduled = new SystemTriggerAssignHearingJudge(null, null);
 
         return Stream.of(
-            Arguments.of(record, "caseworker-record-listing", "assignHearingJudgeTaskTrigger"),
-            Arguments.of(edit, "caseworker-edit-record-listing", "assignHearingJudgeTaskTrigger"),
-            Arguments.of(edit, "caseworker-edit-record-listing", "cancelHearingJudgeTaskTrigger"),
+            Arguments.of(recordListing, "caseworker-record-listing", "assignHearingJudgeTaskTrigger"),
+            Arguments.of(editRecordListing, "caseworker-edit-record-listing", "assignHearingJudgeTaskTrigger"),
+            Arguments.of(editRecordListing, "caseworker-edit-record-listing", "cancelHearingJudgeTaskTrigger"),
             Arguments.of(postpone, "caseworker-postpone-hearing", "cancelHearingJudgeTaskTrigger"),
             Arguments.of(cancel, "caseworker-cancel-hearing", "cancelHearingJudgeTaskTrigger"),
             Arguments.of(scheduled, "system-trigger-assign-hearing-judge", "assignHearingJudgeTaskTrigger")

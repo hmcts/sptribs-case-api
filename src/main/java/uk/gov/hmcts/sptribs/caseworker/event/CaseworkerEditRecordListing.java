@@ -67,17 +67,24 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
 
     private static final CcdPageConfiguration remoteHearingInfo = new RemoteHearingInfo();
 
-    @Autowired
-    private RecordListHelper recordListHelper;
+    private final RecordListHelper recordListHelper;
+
+    private final HearingService hearingService;
+
+    private final HearingJudgeTaskService hearingJudgeTaskService;
+
+    private final ListingUpdatedNotification listingUpdatedNotification;
 
     @Autowired
-    private HearingService hearingService;
-
-    @Autowired
-    private HearingJudgeTaskService hearingJudgeTaskService;
-
-    @Autowired
-    private ListingUpdatedNotification listingUpdatedNotification;
+    public CaseworkerEditRecordListing(RecordListHelper recordListHelper,
+                                       HearingService hearingService,
+                                       HearingJudgeTaskService hearingJudgeTaskService,
+                                       ListingUpdatedNotification listingUpdatedNotification) {
+        this.recordListHelper = recordListHelper;
+        this.hearingService = hearingService;
+        this.hearingJudgeTaskService = hearingJudgeTaskService;
+        this.listingUpdatedNotification = listingUpdatedNotification;
+    }
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {

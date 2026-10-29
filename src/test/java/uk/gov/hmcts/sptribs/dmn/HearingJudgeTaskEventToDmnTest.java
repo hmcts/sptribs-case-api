@@ -64,9 +64,9 @@ class HearingJudgeTaskEventToDmnTest extends DmnDecisionTableBaseUnitTest {
             response.getState().name(), "additionalData", payload)).getResultList();
 
         assertThat(result).anySatisfy(task -> {
-            assertThat(task.get("taskId")).isEqualTo("assignHearingJudge");
-            assertThat(task.get("name")).isEqualTo("Assign JOH to hearing");
-            assertThat(task.get("processCategories")).isEqualTo("HearingJudgeAssignment_" + attemptKey);
+            assertThat(task).containsEntry("taskId", "assignHearingJudge");
+            assertThat(task).containsEntry("name", "Assign JOH to hearing");
+            assertThat(task).containsEntry("processCategories", "HearingJudgeAssignment_" + attemptKey);
         });
     }
 }
