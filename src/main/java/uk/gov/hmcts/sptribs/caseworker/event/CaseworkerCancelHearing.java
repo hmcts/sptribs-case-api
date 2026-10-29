@@ -90,6 +90,8 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
         hearingDateSelect.addTo(pageBuilder);
         reasonSelect.addTo(pageBuilder);
         recordNotifyParties.addTo(pageBuilder);
+        eventBuilder.fields().readonlyNoSummary(CaseData::getCancelHearingJudgeTaskTrigger,
+            "[STATE]=\"NEVER_SHOW\"");
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {

@@ -43,7 +43,10 @@ public class SystemTriggerAssignHearingJudge implements CCDConfig<CaseData, Stat
             .aboutToSubmitCallback(this::aboutToSubmit)
             .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE)
             .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER)
-            .publishToCamunda();
+            .publishToCamunda()
+            .fields()
+            .page("assignHearingJudgeTask")
+            .readonlyNoSummary(CaseData::getAssignHearingJudgeTaskTrigger, "[STATE]=\"NEVER_SHOW\"");
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,

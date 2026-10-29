@@ -91,6 +91,8 @@ public class CaseworkerPostponeHearing implements CCDConfig<CaseData, State, Use
         selectHearing.addTo(pageBuilder);
         selectReason.addTo(pageBuilder);
         notifyParties.addTo(pageBuilder);
+        eventBuilder.fields().readonlyNoSummary(CaseData::getCancelHearingJudgeTaskTrigger,
+            "[STATE]=\"NEVER_SHOW\"");
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {

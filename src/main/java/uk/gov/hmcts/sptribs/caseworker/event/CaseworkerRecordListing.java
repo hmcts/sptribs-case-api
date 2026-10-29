@@ -106,6 +106,8 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         remoteHearingInfo.addTo(pageBuilder);
         addOtherInformation(pageBuilder);
         recordNotifyParties.addTo(pageBuilder);
+        eventBuilder.fields().readonlyNoSummary(CaseData::getAssignHearingJudgeTaskTrigger,
+            "[STATE]=\"NEVER_SHOW\"");
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {

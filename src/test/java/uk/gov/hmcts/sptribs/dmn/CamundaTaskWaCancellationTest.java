@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import uk.gov.hmcts.sptribs.DmnDecisionTableBaseUnitTest;
 
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
 import static uk.gov.hmcts.sptribs.DmnDecisionTable.WA_TASK_CANCELLATION_ST_CIC_CRIMINALINJURIESCOMPENSATION;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_CATEGORY_HEARING_BUNDLE;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_CATEGORY_HEARING_COMPLETION;
@@ -91,6 +93,19 @@ class CamundaTaskWaCancellationTest extends DmnDecisionTableBaseUnitTest {
         input.putValue("additionalData", Map.of("Data", Map.of()));
 
         assertThat(evaluateDmnTable(input).getResultList(), is(List.of(Map.of("action", "Reconfigure"))));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "caseworker-postpone-hearing", "caseworker-cancel-hearing"
+    })
+    void cancelsOnlyThePublishedHearingAttemptOnPostponementOrCancellation(String eventId) {
+        VariableMap input = new VariableMapImpl();
+        input.putValue("event", eventId);
+        input.putValue("additionalData", Map.of("Data", Map.of("cancelHearingJudgeTaskTrigger", "hearing-one")));
+
+        assertThat(evaluateDmnTable(input).getResultList(), hasItem(
+            Map.of("action", "Cancel", "processCategories", "HearingJudgeAssignment_hearing-one")));
     }
 
     @Test

@@ -106,6 +106,9 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
         recordListHelper.addOtherInformation(pageBuilder);
         listingChangeReason.addTo(pageBuilder);
         recordNotifyParties.addTo(pageBuilder);
+        eventBuilder.fields()
+            .readonlyNoSummary(CaseData::getAssignHearingJudgeTaskTrigger, "[STATE]=\"NEVER_SHOW\"")
+            .readonlyNoSummary(CaseData::getCancelHearingJudgeTaskTrigger, "[STATE]=\"NEVER_SHOW\"");
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
