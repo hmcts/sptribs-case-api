@@ -22,6 +22,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
+import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
 import java.time.Clock;
@@ -38,7 +40,6 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -230,7 +231,18 @@ public class CaseworkerSendOrderIT {
             .isString()
             .contains("# Order sent \n## A notification has been sent to: Subject, Respondent, Representative, Applicant");
 
-        verify(notificationServiceCIC, times(4)).sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
+        verify(notificationServiceCIC, times(4))
+            .sendEmail(any(NotificationRequest.class), anyList(), eq(TEST_CASE_ID_HYPHENATED), any(Party.class));
+
+        verify(notificationServiceCIC, times(1))
+            .sendEmail(any(NotificationRequest.class), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.SUBJECT));
+        verify(notificationServiceCIC, times(1))
+            .sendEmail(any(NotificationRequest.class), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.RESPONDENT));
+        verify(notificationServiceCIC, times(1))
+            .sendEmail(any(NotificationRequest.class), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.APPLICANT));
+        verify(notificationServiceCIC, times(1))
+            .sendEmail(any(NotificationRequest.class), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.REPRESENTATIVE));
+
         verifyNoMoreInteractions(notificationServiceCIC);
     }
 
@@ -266,6 +278,8 @@ public class CaseworkerSendOrderIT {
             .isString()
             .contains("# Send order notification failed \n## Please resend the order");
 
-        verifyNoInteractions(notificationServiceCIC);
+        verify(notificationServiceCIC, times(1))
+            .sendEmail(any(NotificationRequest.class), anyList(), any(), eq(Party.RESPONDENT));
+        verifyNoMoreInteractions(notificationServiceCIC);
     }
 }

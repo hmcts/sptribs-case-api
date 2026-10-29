@@ -125,6 +125,14 @@ public class NotificationServiceCIC {
                                          SendLetterResponse sendLetterResponse,
                                          String sentTo,
                                          String caseReferenceNumber) throws IOException, RestClientException {
+        saveLetterCorrespondence(templateName, sendLetterResponse, sentTo, caseReferenceNumber, null);
+    }
+
+    public void saveLetterCorrespondence(String templateName,
+                                         SendLetterResponse sendLetterResponse,
+                                         String sentTo,
+                                         String caseReferenceNumber,
+                                         Party receivingParty) throws IOException, RestClientException {
 
         Long longCaseRef = Long.parseLong(caseReferenceNumber.replace("-", ""));
         final OffsetDateTime sentOn = OffsetDateTime.now(ZoneId.systemDefault());
@@ -142,6 +150,7 @@ public class NotificationServiceCIC {
                 .documentFilename(correspondencePDF.getFilename())
                 .documentBinaryUrl(correspondencePDF.getBinaryUrl())
                 .correspondenceType("Letter")
+                .receivingParty(receivingParty)
                 .build();
             correspondenceRepository.save(correspondence);
         } catch (IOException | RestClientException e) {
@@ -206,6 +215,12 @@ public class NotificationServiceCIC {
     }
 
     public NotificationResponse sendLetter(NotificationRequest notificationRequest, String caseReferenceNumber) {
+        return sendLetter(notificationRequest, caseReferenceNumber, null);
+    }
+
+    public NotificationResponse sendLetter(NotificationRequest notificationRequest,
+                                           String caseReferenceNumber,
+                                           Party receivingParty) {
         final TemplateName template = notificationRequest.getTemplate();
         final Map<String, Object> templateVars = notificationRequest.getTemplateVars();
         final String templateName = template.name();
@@ -249,7 +264,8 @@ public class NotificationServiceCIC {
                 templateName,
                 sendLetterResponse,
                 formattedAddress,
-                caseReferenceNumber
+                caseReferenceNumber,
+                receivingParty
             );
 
             log.debug("Successfully sent letter with notification id {} and reference {}",

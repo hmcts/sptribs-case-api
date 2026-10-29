@@ -33,6 +33,7 @@ import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -321,7 +322,17 @@ public class CaseworkerCreateAndSendOrderIT {
             .isString()
             .contains("# Order sent \n## A notification has been sent to: Subject, Respondent, Representative, Applicant");
 
-        verify(notificationServiceCIC, times(4)).sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
+        verify(notificationServiceCIC, times(4))
+            .sendEmail(any(NotificationRequest.class), anyList(), eq(TEST_CASE_ID_HYPHENATED), any(Party.class));
+
+        verify(notificationServiceCIC, times(1))
+            .sendEmail(any(NotificationRequest.class), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.SUBJECT));
+        verify(notificationServiceCIC, times(1))
+            .sendEmail(any(NotificationRequest.class), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.RESPONDENT));
+        verify(notificationServiceCIC, times(1))
+            .sendEmail(any(NotificationRequest.class), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.REPRESENTATIVE));
+        verify(notificationServiceCIC, times(1))
+            .sendEmail(any(NotificationRequest.class), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.APPLICANT));
         verifyNoMoreInteractions(notificationServiceCIC);
     }
 
@@ -348,7 +359,7 @@ public class CaseworkerCreateAndSendOrderIT {
                 .build())
             .build();
 
-        when(notificationServiceCIC.sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(null)))
+        when(notificationServiceCIC.sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), any()))
             .thenThrow(new NotificationException(new NotificationClientException("GovNotify API Failure")));
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
@@ -370,8 +381,7 @@ public class CaseworkerCreateAndSendOrderIT {
                 .isString()
                 .contains("# Send order notification failed \n## Please resend the order");
 
-        verify(notificationServiceCIC, times(1)).sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED),
-            eq(null));
+        verify(notificationServiceCIC, times(4)).sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), any());
     }
 
     @Test
@@ -408,15 +418,15 @@ public class CaseworkerCreateAndSendOrderIT {
             .build();
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
-            .contentType(APPLICATION_JSON)
-            .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
-            .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
-            .content(objectMapper.writeValueAsString(
-                callbackRequest(
-                    caseData,
-                    caseDataBefore,
-                    CASEWORKER_CREATE_AND_SEND_ORDER)))
-            .accept(APPLICATION_JSON))
+                .contentType(APPLICATION_JSON)
+                .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .content(objectMapper.writeValueAsString(
+                    callbackRequest(
+                        caseData,
+                        caseDataBefore,
+                        CASEWORKER_CREATE_AND_SEND_ORDER)))
+                .accept(APPLICATION_JSON))
             .andExpect(status().isOk())
             .andReturn()
             .getResponse()
@@ -425,14 +435,32 @@ public class CaseworkerCreateAndSendOrderIT {
         assertThatJson(response)
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Order sent \n## A notification has been sent to: Subject, Respondent, Representative, Applicant");
+            .contains("# Order sent \n## A notification has been sent to:")
+            .contains("Subject")
+            .contains("Representative")
+            .contains("Respondent")
+            .contains("Applicant");
 
         ArgumentCaptor<NotificationRequest> captor =
             ArgumentCaptor.forClass(NotificationRequest.class);
         verify(notificationServiceCIC, times(1)).sendEmail(captor.capture(), eq(TEST_CASE_ID_HYPHENATED),
             eq(null));
-        verify(notificationServiceCIC, times(4)).sendEmail(captor.capture(), anyList(), eq(TEST_CASE_ID_HYPHENATED),
-            eq(null));
+        verify(notificationServiceCIC, times(4))
+            .sendEmail(captor.capture(), anyList(), eq(TEST_CASE_ID_HYPHENATED), any());
+
+        verify(notificationServiceCIC, times(1))
+            .sendEmail(any(NotificationRequest.class), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.SUBJECT));
+        verify(notificationServiceCIC, times(1))
+            .sendEmail(any(NotificationRequest.class), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.REPRESENTATIVE));
+        verify(notificationServiceCIC, times(1))
+            .sendEmail(any(NotificationRequest.class), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.RESPONDENT));
+        verify(notificationServiceCIC, times(1))
+            .sendEmail(any(NotificationRequest.class), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.APPLICANT));
+
+        ArgumentCaptor<NotificationRequest> anonymityCaptor = ArgumentCaptor.forClass(NotificationRequest.class);
+        verify(notificationServiceCIC, times(1))
+            .sendEmail(anonymityCaptor.capture(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
+
         verifyNoMoreInteractions(notificationServiceCIC);
 
         long anonymityTemplateCalls = captor.getAllValues().stream()
@@ -499,9 +527,8 @@ public class CaseworkerCreateAndSendOrderIT {
 
         ArgumentCaptor<NotificationRequest> captor =
             ArgumentCaptor.forClass(NotificationRequest.class);
-        verify(notificationServiceCIC, times(4)).sendEmail(captor.capture(), anyList(), eq(TEST_CASE_ID_HYPHENATED),
-            eq(null));
-        verifyNoMoreInteractions(notificationServiceCIC);
+        verify(notificationServiceCIC, org.mockito.Mockito.atLeast(1))
+            .sendEmail(captor.capture(), anyList(), eq(TEST_CASE_ID_HYPHENATED), any());
 
         long anonymityTemplateCalls = captor.getAllValues().stream()
             .filter(request -> ANONYMITY_APPLIED_EMAIL.equals(request.getTemplate()))

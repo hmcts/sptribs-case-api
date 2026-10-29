@@ -216,7 +216,7 @@ class CaseworkerRecordListingTest {
     }
 
     @ParameterizedTest
-    @EnumSource(NotificationParties.class)
+    @EnumSource(value = NotificationParties.class, names = {"SUBJECT", "REPRESENTATIVE", "RESPONDENT", "APPLICANT"})
     void submittedShouldThrowExceptionWhenSendIsUnsuccessful(NotificationParties notificationParty) {
         final CicCase cicCaseSubject = CicCase.builder()
             .hearingNotificationParties(Set.of(notificationParty))
@@ -240,7 +240,7 @@ class CaseworkerRecordListingTest {
                 doThrow(sendToException).when(listingCreatedNotification).sendToRespondent(any(CaseData.class), anyString());
             case APPLICANT ->
                 doThrow(sendToException).when(listingCreatedNotification).sendToApplicant(any(CaseData.class), anyString());
-            default -> doNothing();
+            default -> { }
         }
 
         final SubmittedCallbackResponse response = caseworkerRecordListing.submitted(updatedCaseDetails, beforeCaseDetails);
@@ -251,7 +251,7 @@ class CaseworkerRecordListingTest {
     }
 
     @ParameterizedTest
-    @EnumSource(NotificationParties.class)
+    @EnumSource(value = NotificationParties.class, names = {"SUBJECT", "REPRESENTATIVE", "RESPONDENT", "APPLICANT"})
     void verifySendToIsCalledForEachParty(NotificationParties notificationParty) {
         final CicCase cicCaseSubject = CicCase.builder()
             .hearingNotificationParties(Set.of(notificationParty))
@@ -273,7 +273,7 @@ class CaseworkerRecordListingTest {
                 doNothing().when(listingCreatedNotification).sendToRespondent(any(CaseData.class), anyString());
             case APPLICANT ->
                 doNothing().when(listingCreatedNotification).sendToApplicant(any(CaseData.class), anyString());
-            default -> doNothing();
+            default -> { }
         }
 
         final SubmittedCallbackResponse response = caseworkerRecordListing.submitted(updatedCaseDetails, beforeCaseDetails);
