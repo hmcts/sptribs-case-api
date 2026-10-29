@@ -11,6 +11,7 @@ import uk.gov.hmcts.sptribs.bankholidays.service.BankHolidayService;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -49,9 +50,22 @@ class HearingJudgeTaskDateServiceTest {
         assertThat(service.isDue(today.minusDays(1), today.minusDays(15))).isFalse();
     }
 
+    @Test
+    void returnsNullWhenHearingDateIsNull() {
+        assertThat(service.releaseDate(null)).isNull();
+    }
+
+    @Test
+    void returnsFalseWhenEitherDateIsNull() {
+        LocalDate today = service.today();
+        assertThat(service.isDue(null, today)).isFalse();
+        assertThat(service.isDue(today, null)).isFalse();
+        assertThat(service.isDue(null, null)).isFalse();
+    }
+
     private void holidays(LocalDate... dates) {
         BankHolidayResponse response = new BankHolidayResponse();
-        response.setEvents(List.of(dates).stream().map(date -> {
+        response.setEvents(Stream.of(dates).map(date -> {
             BankHolidayEvent event = new BankHolidayEvent();
             event.setDate(date);
             return event;
