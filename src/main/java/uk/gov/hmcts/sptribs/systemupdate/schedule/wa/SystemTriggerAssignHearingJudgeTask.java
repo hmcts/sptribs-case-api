@@ -14,7 +14,6 @@ import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.systemupdate.convert.CaseDetailsConverter;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdConflictException;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdManagementException;
-import uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchCaseException;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchService;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdUpdateService;
 
@@ -25,6 +24,7 @@ import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 import static org.elasticsearch.index.query.QueryBuilders.rangeQuery;
 import static uk.gov.hmcts.sptribs.caseworker.model.YesNo.YES;
 import static uk.gov.hmcts.sptribs.ciccase.model.HearingState.Listed;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.systemupdate.event.SystemTriggerAssignHearingJudge.SYSTEM_TRIGGER_ASSIGN_HEARING_JUDGE;
 
 @Component
@@ -57,12 +57,8 @@ public class SystemTriggerAssignHearingJudgeTask implements Runnable {
         BoolQueryBuilder query = boolQuery()
             .must(matchQuery("state", "AwaitingHearing"))
             .filter(rangeQuery("data.hearingList.value.date").from(today));
-        try {
-            for (CaseDetails caseDetails : searchService.searchForAllCasesWithQuery(query, user, serviceAuth)) {
-                triggerAssignHearingJudgeEvent(user, serviceAuth, caseDetails);
-            }
-        } catch (CcdSearchCaseException | CcdConflictException e) {
-            log.error("Unable to search for hearing judge tasks", e);
+        for (CaseDetails caseDetails : searchService.searchForAllCasesWithQuery(query, user, serviceAuth, AwaitingHearing)) {
+            triggerAssignHearingJudgeEvent(user, serviceAuth, caseDetails);
         }
     }
 
@@ -82,7 +78,7 @@ public class SystemTriggerAssignHearingJudgeTask implements Runnable {
                     break;
                 }
             }
-        } catch (CcdManagementException | IllegalArgumentException e) {
+        } catch (CcdManagementException | CcdConflictException | IllegalArgumentException e) {
             log.error("Unable to trigger hearing judge task for case {}", caseDetails.getId(), e);
         }
     }
