@@ -25,6 +25,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
@@ -41,6 +42,14 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.document.model.CaseDocumentType.HEARING_RECORD;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
@@ -326,5 +335,68 @@ class CaseworkerEditHearingSummaryTest {
         assertThat(response).isNotNull();
         assertThat(response.getConfirmationHeader()).contains("Hearing summary edited");
     }
+
+
+    @Test
+    void shouldMakeEventAvailableInAwaitingOutcomeAndCaseClosedStates() {
+        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+
+        caseWorkerEditHearingSummary.configure(configBuilder);
+
+        final Event<CaseData, UserRole, State> event = getEventsFrom(configBuilder).values().stream()
+            .filter(e -> CASEWORKER_EDIT_HEARING_SUMMARY.equals(e.getId()))
+            .findFirst()
+            .orElseThrow();
+
+        assertThat(event.getPostState()).containsExactlyInAnyOrder(AwaitingOutcome, CaseClosed);
+    }
+
+
+    @Test
+    void shouldGrantCaseworkerRolesButNotJudicialRolesEditAccess() {
+        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+
+        caseWorkerEditHearingSummary.configure(configBuilder);
+
+        final Event<CaseData, UserRole, State> event = getEventsFrom(configBuilder).values().stream()
+            .filter(e -> CASEWORKER_EDIT_HEARING_SUMMARY.equals(e.getId()))
+            .findFirst()
+            .orElseThrow();
+
+        assertThat(getEventsFrom(configBuilder).values())
+            .extracting(Event::getId)
+            .contains(CASEWORKER_EDIT_HEARING_SUMMARY);
+
+        assertThat(getEventsFrom(configBuilder).values())
+            .extracting(Event::getGrants)
+            .extracting(map -> map.get(ST_CIC_CASEWORKER))
+            .contains(Permissions.CREATE_READ_UPDATE);
+
+        assertThat(getEventsFrom(configBuilder).values())
+            .extracting(Event::getGrants)
+            .extracting(map -> map.get(ST_CIC_SENIOR_CASEWORKER))
+            .contains(Permissions.CREATE_READ_UPDATE);
+
+        assertThat(getEventsFrom(configBuilder).values())
+            .extracting(Event::getGrants)
+            .extracting(map -> map.get(ST_CIC_HEARING_CENTRE_ADMIN))
+            .contains(Permissions.CREATE_READ_UPDATE);
+
+        assertThat(getEventsFrom(configBuilder).values())
+            .extracting(Event::getGrants)
+            .extracting(map -> map.get(ST_CIC_HEARING_CENTRE_TEAM_LEADER))
+            .contains(Permissions.CREATE_READ_UPDATE);
+
+        assertThat(getEventsFrom(configBuilder).values())
+            .extracting(Event::getGrants)
+            .extracting(map -> map.get(ST_CIC_JUDGE))
+            .doesNotContain(Permissions.CREATE_READ_UPDATE);
+
+        assertThat(getEventsFrom(configBuilder).values())
+            .extracting(Event::getGrants)
+            .extracting(map -> map.get(ST_CIC_SENIOR_JUDGE))
+            .doesNotContain(Permissions.CREATE_READ_UPDATE);
+    }
+
 
 }
