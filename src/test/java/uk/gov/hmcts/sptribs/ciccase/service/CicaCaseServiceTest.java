@@ -214,6 +214,8 @@ class CicaCaseServiceTest {
         )).build();
         when(user.getUserInfo()).thenReturn(userInfo());
         when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
+        when(caseDataRepository.checkIfUserHasAccessToCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL))
+            .thenReturn(true);
         when(caseDataRepository.findCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL))
             .thenReturn(Optional.of(cicaCase));
 
@@ -229,6 +231,8 @@ class CicaCaseServiceTest {
     void shouldNotVerifyWhenCaseHasNoData() {
         when(user.getUserInfo()).thenReturn(userInfo());
         when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
+        when(caseDataRepository.checkIfUserHasAccessToCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL))
+            .thenReturn(true);
         when(caseDataRepository.findCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL))
             .thenReturn(Optional.of(CicaCaseEntity.builder().build()));
 
@@ -241,6 +245,8 @@ class CicaCaseServiceTest {
     void shouldNotVerifyIncompleteSubjectDetails(String reason, Map<String, JsonNode> data) {
         when(user.getUserInfo()).thenReturn(userInfo());
         when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
+        when(caseDataRepository.checkIfUserHasAccessToCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL))
+            .thenReturn(true);
         when(caseDataRepository.findCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL))
             .thenReturn(Optional.of(CicaCaseEntity.builder().data(data).build()));
 
@@ -274,6 +280,8 @@ class CicaCaseServiceTest {
         )).build();
         when(user.getUserInfo()).thenReturn(userInfo());
         when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
+        when(caseDataRepository.checkIfUserHasAccessToCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL))
+            .thenReturn(true);
         when(caseDataRepository.findCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL))
             .thenReturn(Optional.of(expiredCase));
 
@@ -285,6 +293,20 @@ class CicaCaseServiceTest {
     void shouldDenySubjectVerificationForUnassociatedUser() {
         when(user.getUserInfo()).thenReturn(userInfo());
         when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
+
+        assertThrows(UnauthorisedCaseAccessException.class, () ->
+            cicaCaseService.verifySubject(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, "Name", "2000-01-01"));
+
+        verify(caseDataRepository).checkIfUserHasAccessToCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL);
+        verify(caseDataRepository, never()).findCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL);
+    }
+
+    @Test
+    void shouldDenySubjectVerificationWhenCaseIsNoLongerAvailable() {
+        when(user.getUserInfo()).thenReturn(userInfo());
+        when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
+        when(caseDataRepository.checkIfUserHasAccessToCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL))
+            .thenReturn(true);
         when(caseDataRepository.findCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL)).thenReturn(Optional.empty());
 
         assertThrows(UnauthorisedCaseAccessException.class, () ->

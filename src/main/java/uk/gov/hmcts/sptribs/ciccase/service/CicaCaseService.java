@@ -30,6 +30,7 @@ public class CicaCaseService {
      * @param authorisation user authorization token.
      * @throws CaseNotFoundException if no eligible case exists for the reference.
      * @throws UnauthorisedCaseAccessException if the user is not associated with the case.
+     * @throws ResponseStatusException if the user authorisation is invalid.
      */
     public void checkIfUserHasAccess(String ccdReference, String authorisation) {
         try {
@@ -57,7 +58,11 @@ public class CicaCaseService {
     /** Compare identity fields only after resolving the signed-in user's association with the case. */
     public boolean verifySubject(String ccdReference, String authorisation, String fullName, String dateOfBirth) {
         CICUser user = retrieveUserForVerification(authorisation);
-        CicaCaseEntity cicaCase = caseDataRepository.findCase(ccdReference, user.getUserInfo().getSub())
+        String userEmail = user.getUserInfo().getSub();
+        if (!caseDataRepository.checkIfUserHasAccessToCase(ccdReference, userEmail)) {
+            throw new UnauthorisedCaseAccessException("User is not authorised to access case: " + ccdReference);
+        }
+        CicaCaseEntity cicaCase = caseDataRepository.findCase(ccdReference, userEmail)
             .orElseThrow(() -> new UnauthorisedCaseAccessException("User is not authorised to access case: " + ccdReference));
 
         if (cicaCase.getData() == null) {
