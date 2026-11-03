@@ -339,12 +339,15 @@ class CicaCaseUpdateServiceIT {
 
     @Test
     void shouldFailClosedWhenMembershipLookupFails() {
+        IllegalStateException lookupFailure = new IllegalStateException("Database unavailable");
         when(caseDataRepository.checkCaseExists(CASE_ID)).thenReturn(true);
         when(caseDataRepository.checkIfUserHasAccessToCase(CASE_ID, CITIZEN_EMAIL))
-            .thenThrow(new IllegalStateException("Database unavailable"));
+            .thenThrow(lookupFailure);
 
         assertThatThrownBy(() -> service.updateCase(CASE_ID, CITIZEN_AUTH, update()))
-            .isInstanceOf(UnauthorisedCaseAccessException.class);
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessage("Unable to check case access")
+            .hasCause(lookupFailure);
 
         assertThat(CCD.getAllServeEvents()).isEmpty();
         verify(idamService, never()).retrieveSystemUpdateUserDetails();
