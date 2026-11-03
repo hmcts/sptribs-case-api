@@ -73,6 +73,15 @@ public class DocumentDownloadService {
         }
     }
 
+    /**
+     * Retrieves document metadata from CDAM, handling the edge case where CDAM masks missing access permissions as a 404 Not Found.
+     * When a user lacks the necessary case role (such as the creator role) to view a document, CDAM returns a 404 Not Found
+     * instead of a 403 Forbidden. To handle this edge case, this method first attempts to fetch the document metadata normally.
+     * If a 404 {@link FeignException} is caught, it invokes {@link CicaRoleService#ensureCreatorRole} to ensure the caller has
+     * the required creator role on the case, and then retries fetching the metadata once.
+     * Any non-404 exceptions are immediately rethrown, and role recovery is intentionally scoped only to metadata retrieval
+     * so that a genuinely missing document binary after successful metadata retrieval does not grant roles.
+     */
     private Document getDocumentMetadataWithRoleRecovery(String ccdReference, String authorisation,
                                                          String serviceAuth, UUID documentId) {
         try {
@@ -119,8 +128,3 @@ public class DocumentDownloadService {
         return "application/octet-stream";
     }
 }
-
-
-
-
-
