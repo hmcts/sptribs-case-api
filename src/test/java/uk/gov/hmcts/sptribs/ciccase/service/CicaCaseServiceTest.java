@@ -32,10 +32,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SYSTEM_USER_USER_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_STRING;
@@ -111,8 +111,10 @@ class CicaCaseServiceTest {
     void shouldNotEnsureCreatorRoleWhenIdentityLookupFails() {
         when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenThrow(new RuntimeException("IDAM unavailable"));
 
-        assertThrows(UnauthorisedCaseAccessException.class, () ->
-            cicaCaseService.ensureCreatorRole(TEST_CASE_ID_STRING, TEST_AUTHORIZATION));
+        assertThatThrownBy(() -> cicaCaseService.ensureCreatorRole(TEST_CASE_ID_STRING, TEST_AUTHORIZATION))
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessage("Unable to check case access")
+            .hasCauseInstanceOf(RuntimeException.class);
 
         verifyNoInteractions(caseDataRepository, cicaRoleService);
     }
@@ -125,8 +127,10 @@ class CicaCaseServiceTest {
         when(caseDataRepository.checkIfUserHasAccessToCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL))
             .thenThrow(new RuntimeException("Database unavailable"));
 
-        assertThrows(UnauthorisedCaseAccessException.class, () ->
-            cicaCaseService.ensureCreatorRole(TEST_CASE_ID_STRING, TEST_AUTHORIZATION));
+        assertThatThrownBy(() -> cicaCaseService.ensureCreatorRole(TEST_CASE_ID_STRING, TEST_AUTHORIZATION))
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessage("Unable to check case access")
+            .hasCauseInstanceOf(RuntimeException.class);
 
         verifyNoInteractions(cicaRoleService);
     }
@@ -174,7 +178,7 @@ class CicaCaseServiceTest {
     }
 
     @Test
-    void shouldThrowUnauthorisedCaseAccessExceptionWhenCheckIfUserHasAccessFailsDueToIdamException() {
+    void shouldThrowIllegalStateExceptionWhenCheckIfUserHasAccessFailsDueToIdamException() {
         when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenThrow(new RuntimeException("IDAM down"));
 
         assertThatThrownBy(() -> cicaCaseService.checkIfUserHasAccess(TEST_CASE_ID_STRING, TEST_AUTHORIZATION))
@@ -273,6 +277,20 @@ class CicaCaseServiceTest {
         assertThrows(UnauthorisedCaseAccessException.class, () ->
             cicaCaseService.checkIfUserHasAccessWithPostcode(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, TEST_POSTCODE)
         );
+    }
+
+    @Test
+    void shouldRejectMissingPostcode() {
+        CicaCaseEntity caseEntity = CicaCaseEntity.builder()
+            .data(Map.of("cicCaseAddress", objectMapper.createObjectNode().put("PostCode", TEST_POSTCODE)))
+            .build();
+        when(user.getUserInfo()).thenReturn(userInfo());
+        when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
+        when(caseDataRepository.findCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL))
+            .thenReturn(Optional.of(caseEntity));
+
+        assertThrows(InvalidPostcodeException.class, () ->
+            cicaCaseService.checkIfUserHasAccessWithPostcode(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, null));
     }
 
     @Test

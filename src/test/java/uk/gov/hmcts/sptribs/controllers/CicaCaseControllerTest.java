@@ -20,7 +20,6 @@ import uk.gov.hmcts.sptribs.exception.CaseNotFoundException;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
 
 import java.time.LocalDate;
-
 import java.util.List;
 import java.util.Map;
 

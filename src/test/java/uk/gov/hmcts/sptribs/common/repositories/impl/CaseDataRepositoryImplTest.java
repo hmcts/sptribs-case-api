@@ -61,7 +61,7 @@ class CaseDataRepositoryImplTest {
             "ccdReference", 123L,
             "caseType", "CriminalInjuriesCompensation",
             "jurisdiction", "ST_CIC",
-            "invalidStates", List.of("DSS-Expired")
+            "expiredState", "DSS-Expired"
         )), eq(Integer.class));
     }
 
