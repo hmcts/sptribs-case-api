@@ -43,7 +43,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_AMEND_
 
 
 @ExtendWith(MockitoExtension.class)
-class CaseWorkerManageOrderDueDatesTest {
+class CaseworkerManageOrderDueDatesTest {
 
     @Mock
     private OrderService orderService;
@@ -55,12 +55,12 @@ class CaseWorkerManageOrderDueDatesTest {
         ZoneId.systemDefault()
     );
 
-    private CaseWorkerManageOrderDueDate caseWorkerManageOrderDueDate;
+    private CaseworkerManageOrderDueDate caseWorkerManageOrderDueDate;
 
     @BeforeEach
     void setUp() {
         caseWorkerManageOrderDueDate =
-            new CaseWorkerManageOrderDueDate(orderService, fixedClock);
+            new CaseworkerManageOrderDueDate(orderService, fixedClock);
     }
 
 
@@ -170,6 +170,131 @@ class CaseWorkerManageOrderDueDatesTest {
 
     }
 
+    @Test
+    void shouldNotManageDueDateOfSelectedOrderWhenSelectedOrderHasNoLabelContainingIDFromOrderList() {
+        final CaseData caseData = caseData();
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+
+        List<ListValue<DateModel>> beforeUpdatedDueDatesListValues = new ArrayList<>();
+        final Order existingOrder = new Order();
+        beforeUpdatedDueDatesListValues.addAll(List.of(
+                listValue("1", DateModel.builder()
+                        .dueDate(LocalDate.of(2026, 6, 5))
+                        .dueDateOptions(DueDateOptions.DAY_COUNT_28)
+                        .build())
+        ));
+        existingOrder.setDueDateList(beforeUpdatedDueDatesListValues);
+
+        List<ListValue<DateModel>> selectedDueDatesListValues = new ArrayList<>();
+        selectedDueDatesListValues.addAll(List.of(
+                listValue("2", DateModel.builder()
+                        .dueDate(LocalDate.of(2026, 5, 5))
+                        .dueDateOptions(DueDateOptions.DAY_COUNT_14)
+                        .build())
+        ));
+        caseData.setOrderDueDates(selectedDueDatesListValues);
+
+
+        ListValue<Order> existingOrderListValue = new ListValue<>();
+        existingOrderListValue.setValue(existingOrder);
+        existingOrderListValue.setId("1"); // different from ID "0" in getOrderList
+
+        final CicCase cicCase = CicCase.builder()
+                .orderList(List.of(existingOrderListValue))
+                .orderDynamicList(getOrderList())
+                .build();
+        caseData.setCicCase(cicCase);
+
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+                caseWorkerManageOrderDueDate.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        // Then
+        List<ListValue<DateModel>> responseOrderDueDates =
+                response.getData().getCicCase().getOrderList().getFirst().getValue().getDueDateList();
+
+        assertThat(responseOrderDueDates).hasSize(1);
+        assertThat(responseOrderDueDates.getFirst().getValue().getDueDate())
+                .hasMonth(beforeUpdatedDueDatesListValues.getFirst().getValue().getDueDate().getMonth());
+        assertThat(responseOrderDueDates.getFirst().getValue().getDueDateOptions())
+                .isEqualTo(beforeUpdatedDueDatesListValues.getFirst().getValue().getDueDateOptions());
+    }
+
+    @Test
+    void shouldNotManageDueDateOfSelectedOrderWhenSelectedOrderHasNullLabel() {
+        final CaseData caseData = caseData();
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+
+        List<ListValue<DateModel>> beforeUpdatedDueDatesListValues = new ArrayList<>();
+        beforeUpdatedDueDatesListValues.addAll(List.of(
+                listValue("1", DateModel.builder()
+                        .dueDate(LocalDate.of(2026, 6, 5))
+                        .dueDateOptions(DueDateOptions.DAY_COUNT_28)
+                        .build())
+        ));
+        final Order existingOrder1 = new Order();
+        existingOrder1.setDueDateList(beforeUpdatedDueDatesListValues);
+        ListValue<Order> existingOrderListValue = new ListValue<>();
+        existingOrderListValue.setValue(existingOrder1);
+        existingOrderListValue.setId("1");
+
+        final Order existingOrder2 = new Order();
+        existingOrder2.setDueDateList(beforeUpdatedDueDatesListValues);
+        ListValue<Order> selectedOrderListValue = new ListValue<>();
+        selectedOrderListValue.setValue(existingOrder2);
+        selectedOrderListValue.setId(null);
+
+        List<ListValue<DateModel>> selectedDueDatesListValues = new ArrayList<>();
+        selectedDueDatesListValues.addAll(List.of(
+                listValue("2", DateModel.builder()
+                        .dueDate(LocalDate.of(2026, 5, 5))
+                        .dueDateOptions(DueDateOptions.DAY_COUNT_14)
+                        .build())
+        ));
+        caseData.setOrderDueDates(selectedDueDatesListValues);
+
+        final CicCase cicCase = CicCase.builder()
+                .orderList(List.of(existingOrderListValue, selectedOrderListValue))
+                .orderDynamicList(getOrderListWithNullLabelSelected())
+                .build();
+        caseData.setCicCase(cicCase);
+
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+                caseWorkerManageOrderDueDate.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        // Then
+        List<ListValue<DateModel>> responseOrderDueDates1 =
+                response.getData().getCicCase().getOrderList().getFirst().getValue().getDueDateList();
+
+        assertThat(responseOrderDueDates1).hasSize(1);
+        assertThat(responseOrderDueDates1.getFirst().getValue().getDueDate())
+                .hasMonth(beforeUpdatedDueDatesListValues.getFirst().getValue().getDueDate().getMonth());
+        assertThat(responseOrderDueDates1.getFirst().getValue().getDueDateOptions())
+                .isEqualTo(beforeUpdatedDueDatesListValues.getFirst().getValue().getDueDateOptions());
+
+        List<ListValue<DateModel>> responseOrderDueDates2 =
+                response.getData().getCicCase().getOrderList().getLast().getValue().getDueDateList();
+
+        assertThat(responseOrderDueDates2).hasSize(1);
+        assertThat(responseOrderDueDates2.getFirst().getValue().getDueDate())
+                .hasMonth(beforeUpdatedDueDatesListValues.getFirst().getValue().getDueDate().getMonth());
+        assertThat(responseOrderDueDates2.getFirst().getValue().getDueDateOptions())
+                .isEqualTo(beforeUpdatedDueDatesListValues.getFirst().getValue().getDueDateOptions());
+    }
+
     private void buildDueDateList(List<ListValue<DateModel>> dueDatesListValues) {
 
         dueDatesListValues.addAll(List.of(
@@ -213,6 +338,24 @@ class CaseWorkerManageOrderDueDatesTest {
             .value(listItem)
             .listItems(List.of(listItem))
             .build();
+    }
+
+    private DynamicList getOrderListWithNullLabelSelected() {
+        final DynamicListElement listItem1 = DynamicListElement
+                .builder()
+                .label("1")
+                .code(UUID.randomUUID())
+                .build();
+        final DynamicListElement listItem2 = DynamicListElement
+                .builder()
+                .label(null)
+                .code(UUID.randomUUID())
+                .build();
+        return DynamicList
+                .builder()
+                .value(listItem2)
+                .listItems(List.of(listItem1, listItem2))
+                .build();
     }
 
     private ListValue<DateModel> listValue(String id, DateModel model) {
