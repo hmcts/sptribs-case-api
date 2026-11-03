@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.json.JsonCompareMode;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -162,11 +163,22 @@ class CicaRoleAssignmentIT {
         verify(idamService, never()).retrieveSystemUpdateUserDetails();
     }
 
-    @Test
-    void shouldRejectFailedIdentityLookupWithoutAssigningRoles() throws Exception {
-        when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenThrow(ccdFailure(401));
+    @ParameterizedTest
+    @ValueSource(ints = {401, 403})
+    void shouldRejectFailedIdentityLookupWithoutAssigningRoles(int identityStatus) throws Exception {
+        when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenThrow(ccdFailure(identityStatus));
 
-        assignRole().andExpect(status().isForbidden()).andExpect(content().string(""));
+        assignRole().andExpect(status().isUnauthorized())
+            .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PROBLEM_JSON))
+            .andExpect(content().json("""
+                {
+                  "type": "about:blank",
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Invalid user authorisation",
+                  "instance": "%s"
+                }
+                """.formatted(URL), JsonCompareMode.STRICT));
 
         verifyNoInteractions(caseDataRepository, caseAssignmentApi, authTokenGenerator);
         verify(idamService, never()).retrieveSystemUpdateUserDetails();
