@@ -30,8 +30,18 @@ class CaseDataRepositoryImplIT extends IntegrationTestBase {
         assertThat(result).isTrue();
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"Draft", "DSS-Draft"})
+    void givenCCDReference_thenShouldReturnTrueWhenCaseIsDraft(String state) {
+        caseDataITManager.addCaseData(123L, state, "{}");
+
+        boolean result = repository.checkCaseExists("123");
+
+        assertThat(result).isTrue();
+    }
+
     @Test
-    void givenCCDReference_thenShouldReturnFalseWhenStateIsInvalid() {
+    void givenCCDReference_thenShouldReturnFalseWhenCaseIsExpired() {
         caseDataITManager.addCaseData(123L, "DSS-Expired", "{}");
 
         boolean result = repository.checkCaseExists("123");
