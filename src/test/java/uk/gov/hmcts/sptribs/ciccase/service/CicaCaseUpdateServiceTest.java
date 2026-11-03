@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
+import uk.gov.hmcts.sptribs.caseworker.service.ExtendedCaseDataApi;
 import uk.gov.hmcts.sptribs.controllers.model.CicaCaseUpdate;
 import uk.gov.hmcts.sptribs.document.model.CitizenCICDocument;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
@@ -48,6 +49,8 @@ class CicaCaseUpdateServiceTest {
     @Mock
     private CoreCaseDataApi coreCaseDataApi;
     @Mock
+    private ExtendedCaseDataApi extendedCaseDataApi;
+    @Mock
     private AuthTokenGenerator authTokenGenerator;
     @InjectMocks
     private CicaCaseUpdateService service;
@@ -70,10 +73,10 @@ class CicaCaseUpdateServiceTest {
         service.updateCase(CASE_ID, AUTH, update);
 
         var content = ArgumentCaptor.forClass(CaseDataContent.class);
-        var calls = inOrder(cicaCaseService, coreCaseDataApi);
+        var calls = inOrder(cicaCaseService, coreCaseDataApi, extendedCaseDataApi);
         calls.verify(cicaCaseService).checkIfUserHasAccess(CASE_ID, AUTH);
         calls.verify(coreCaseDataApi).startEvent(AUTH, S2S, CASE_ID, CITIZEN_DSS_UPDATE_CASE_SUBMISSION);
-        calls.verify(coreCaseDataApi).createEvent(eq(AUTH), eq(S2S), eq(CASE_ID), content.capture());
+        calls.verify(extendedCaseDataApi).createEvent(eq(AUTH), eq(S2S), eq(CASE_ID), content.capture());
         assertThat(content.getValue().getEventToken()).isEqualTo("event-token");
         assertThat(content.getValue().getEvent().getId()).isEqualTo(CITIZEN_DSS_UPDATE_CASE_SUBMISSION);
         assertThat(content.getValue().getData()).isInstanceOf(Map.class);
@@ -101,12 +104,12 @@ class CicaCaseUpdateServiceTest {
 
         service.updateCase(CASE_ID, AUTH, update);
 
-        var calls = inOrder(cicaCaseService, coreCaseDataApi, cicaRoleService);
+        var calls = inOrder(cicaCaseService, coreCaseDataApi, cicaRoleService, extendedCaseDataApi);
         calls.verify(cicaCaseService).checkIfUserHasAccess(CASE_ID, AUTH);
         calls.verify(coreCaseDataApi).startEvent(AUTH, S2S, CASE_ID, CITIZEN_DSS_UPDATE_CASE_SUBMISSION);
         calls.verify(cicaRoleService).ensureCreatorRole(CASE_ID, AUTH);
         calls.verify(coreCaseDataApi).startEvent(AUTH, S2S, CASE_ID, CITIZEN_DSS_UPDATE_CASE_SUBMISSION);
-        calls.verify(coreCaseDataApi).createEvent(eq(AUTH), eq(S2S), eq(CASE_ID), any());
+        calls.verify(extendedCaseDataApi).createEvent(eq(AUTH), eq(S2S), eq(CASE_ID), any());
     }
 
     @Test
@@ -114,13 +117,12 @@ class CicaCaseUpdateServiceTest {
         FeignException notFound = failure(404);
         when(coreCaseDataApi.startEvent(AUTH, S2S, CASE_ID, CITIZEN_DSS_UPDATE_CASE_SUBMISSION))
             .thenReturn(started("first-token"), started("retry-token"));
-        when(coreCaseDataApi.createEvent(eq(AUTH), eq(S2S), eq(CASE_ID), any()))
-            .thenThrow(notFound).thenReturn(null);
+        doThrow(notFound).doNothing().when(extendedCaseDataApi).createEvent(eq(AUTH), eq(S2S), eq(CASE_ID), any());
 
         service.updateCase(CASE_ID, AUTH, update);
 
         var content = ArgumentCaptor.forClass(CaseDataContent.class);
-        verify(coreCaseDataApi, times(2)).createEvent(eq(AUTH), eq(S2S), eq(CASE_ID), content.capture());
+        verify(extendedCaseDataApi, times(2)).createEvent(eq(AUTH), eq(S2S), eq(CASE_ID), content.capture());
         assertThat(content.getAllValues()).extracting(CaseDataContent::getEventToken)
             .containsExactly("first-token", "retry-token");
         assertThat(content.getAllValues().getFirst().getData()).isEqualTo(content.getValue().getData());
@@ -158,7 +160,7 @@ class CicaCaseUpdateServiceTest {
         assertThatThrownBy(() -> service.updateCase(CASE_ID, AUTH, update))
             .isInstanceOf(UnauthorisedCaseAccessException.class);
 
-        verifyNoInteractions(coreCaseDataApi, cicaRoleService, authTokenGenerator);
+        verifyNoInteractions(coreCaseDataApi, extendedCaseDataApi, cicaRoleService, authTokenGenerator);
     }
 
     @ParameterizedTest
@@ -167,11 +169,11 @@ class CicaCaseUpdateServiceTest {
         FeignException failure = failure(status);
         when(coreCaseDataApi.startEvent(AUTH, S2S, CASE_ID, CITIZEN_DSS_UPDATE_CASE_SUBMISSION))
             .thenReturn(started("event-token"));
-        when(coreCaseDataApi.createEvent(eq(AUTH), eq(S2S), eq(CASE_ID), any())).thenThrow(failure);
+        doThrow(failure).when(extendedCaseDataApi).createEvent(eq(AUTH), eq(S2S), eq(CASE_ID), any());
 
         assertThatThrownBy(() -> service.updateCase(CASE_ID, AUTH, update)).isSameAs(failure);
 
-        verify(coreCaseDataApi).createEvent(eq(AUTH), eq(S2S), eq(CASE_ID), any());
+        verify(extendedCaseDataApi).createEvent(eq(AUTH), eq(S2S), eq(CASE_ID), any());
         verifyNoInteractions(cicaRoleService);
     }
 
@@ -195,7 +197,7 @@ class CicaCaseUpdateServiceTest {
         service.updateCase(CASE_ID, AUTH, new CicaCaseUpdate(null, update.documents()));
         service.updateCase(CASE_ID, AUTH, new CicaCaseUpdate("Text only", List.of()));
 
-        verify(coreCaseDataApi, times(2)).createEvent(eq(AUTH), eq(S2S), eq(CASE_ID), any());
+        verify(extendedCaseDataApi, times(2)).createEvent(eq(AUTH), eq(S2S), eq(CASE_ID), any());
     }
 
     private StartEventResponse started(String token) {

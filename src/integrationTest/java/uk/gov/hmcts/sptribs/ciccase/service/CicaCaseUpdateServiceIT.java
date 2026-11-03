@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -102,7 +103,7 @@ class CicaCaseUpdateServiceIT {
     @Test
     void shouldSubmitDocumentsAndTextAsCitizenWithoutRequiringPostcode() throws Exception {
         givenCaseMember();
-        stubStart("event-token");
+        stubStart();
         stubSubmission();
 
         service.updateCase(CASE_ID, CITIZEN_AUTH, update());
@@ -139,10 +140,58 @@ class CicaCaseUpdateServiceIT {
     }
 
     @ParameterizedTest
+    @ValueSource(ints = {200, 201, 202, 204})
+    void shouldAcceptSuccessfulSubmissionWithoutDecodingBody(int status) {
+        givenCaseMember();
+        stubStart();
+        CCD.stubFor(post(urlEqualTo(SUBMIT_URL)).willReturn(aResponse().withStatus(status)
+            .withHeader("Content-Type", "application/json").withBody("not valid JSON")));
+
+        service.updateCase(CASE_ID, CITIZEN_AUTH, update());
+
+        CCD.verify(1, postRequestedFor(urlEqualTo(SUBMIT_URL))
+            .withHeader(AUTHORIZATION, equalTo(CITIZEN_AUTH))
+            .withHeader(SERVICE_AUTHORIZATION, equalTo(SERVICE_TOKEN))
+            .withHeader("experimental", equalTo("true")));
+        assertNoRoleRequests();
+    }
+
+    @Test
+    void shouldAcceptCreatedResponseWithoutBody() {
+        givenCaseMember();
+        stubStart();
+        CCD.stubFor(post(urlEqualTo(SUBMIT_URL)).willReturn(aResponse().withStatus(201)));
+
+        service.updateCase(CASE_ID, CITIZEN_AUTH, update());
+
+        CCD.verify(1, postRequestedFor(urlEqualTo(SUBMIT_URL)));
+        assertNoRoleRequests();
+    }
+
+    @Test
+    void shouldAcceptCreatedResponseWithIncompatibleCaseResourceFields() {
+        givenCaseMember();
+        stubStart();
+        CCD.stubFor(post(urlEqualTo(SUBMIT_URL)).willReturn(aResponse().withStatus(201)
+            .withHeader("Content-Type", "application/json").withBody("""
+                {
+                  "id": "1234567890123456",
+                  "case_type": {"id": "CriminalInjuriesCompensation"},
+                  "new_response_field": "ignored"
+                }
+                """)));
+
+        service.updateCase(CASE_ID, CITIZEN_AUTH, update());
+
+        CCD.verify(1, postRequestedFor(urlEqualTo(SUBMIT_URL)));
+        assertNoRoleRequests();
+    }
+
+    @ParameterizedTest
     @CsvSource({"true,false", "false,true"})
     void shouldSubmitTextOnlyAndDocumentsOnlyUpdates(boolean includeText, boolean includeDocuments) throws Exception {
         givenCaseMember();
-        stubStart("event-token");
+        stubStart();
         stubSubmission();
 
         service.updateCase(CASE_ID, CITIZEN_AUTH, new CicaCaseUpdate(
@@ -228,13 +277,14 @@ class CicaCaseUpdateServiceIT {
     }
 
     @ParameterizedTest
-    @CsvSource({"start,401", "start,403", "start,409", "start,500", "submit,403", "submit,409", "submit,422", "submit,503"})
+    @CsvSource({"start,401", "start,403", "start,409", "start,500", "submit,401", "submit,403", "submit,409",
+        "submit,422", "submit,500", "submit,503"})
     void shouldNotRecoverOrRetryNon404Failures(String stage, int status) {
         givenCaseMember();
         if ("start".equals(stage)) {
             CCD.stubFor(get(urlEqualTo(START_URL)).willReturn(aResponse().withStatus(status)));
         } else {
-            stubStart("event-token");
+            stubStart();
             CCD.stubFor(post(urlEqualTo(SUBMIT_URL)).willReturn(aResponse().withStatus(status)));
         }
 
@@ -349,15 +399,20 @@ class CicaCaseUpdateServiceIT {
     }
 
     private String startResponse(String token) {
-        return "{\"token\":\"" + token + "\",\"event_id\":\"" + CITIZEN_DSS_UPDATE_CASE_SUBMISSION + "\"}";
+        return objectMapper.createObjectNode()
+            .put("token", token)
+            .put("event_id", CITIZEN_DSS_UPDATE_CASE_SUBMISSION)
+            .toString();
     }
 
-    private void stubStart(String token) {
-        CCD.stubFor(get(urlEqualTo(START_URL)).willReturn(okJson(startResponse(token))));
+    private void stubStart() {
+        CCD.stubFor(get(urlEqualTo(START_URL)).willReturn(okJson(startResponse("event-token"))));
     }
 
     private void stubSubmission() {
-        CCD.stubFor(post(urlEqualTo(SUBMIT_URL)).willReturn(okJson("{}")));
+        // Successful CCD responses must not be decoded, including after role recovery.
+        CCD.stubFor(post(urlEqualTo(SUBMIT_URL)).willReturn(aResponse().withStatus(201)
+            .withHeader("Content-Type", "application/json").withBody("not valid JSON")));
     }
 
     private void stubStart404() {
@@ -367,14 +422,19 @@ class CicaCaseUpdateServiceIT {
 
     private void stubRoleRecovery(boolean alreadyCreator) {
         givenSystemUser();
-        String roles = alreadyCreator
-            ? "{\"case_users\":[{\"case_id\":\"" + CASE_ID + "\",\"user_id\":\"" + CITIZEN_ID + "\",\"case_role\":\"[CREATOR]\"}]}"
-            : "{\"case_users\":[]}";
+        var roles = objectMapper.createObjectNode();
+        var caseUsers = roles.putArray("case_users");
+        if (alreadyCreator) {
+            caseUsers.addObject()
+                .put("case_id", CASE_ID)
+                .put("user_id", CITIZEN_ID)
+                .put("case_role", "[CREATOR]");
+        }
         CCD.stubFor(get(urlPathEqualTo("/case-users")).inScenario(RECOVERY).whenScenarioStateIs(ROLE_REQUIRED)
             .withQueryParam("case_ids", equalTo(CASE_ID)).withQueryParam("user_ids", equalTo(CITIZEN_ID))
             .withHeader(AUTHORIZATION, equalTo(SYSTEM_AUTH))
             .withHeader(SERVICE_AUTHORIZATION, equalTo(SERVICE_TOKEN))
-            .willReturn(okJson(roles)).willSetStateTo(alreadyCreator ? ROLE_ENSURED : ROLE_CHECKED));
+            .willReturn(okJson(roles.toString())).willSetStateTo(alreadyCreator ? ROLE_ENSURED : ROLE_CHECKED));
         CCD.stubFor(post(urlEqualTo("/case-users")).inScenario(RECOVERY).whenScenarioStateIs(ROLE_CHECKED)
             .withHeader(AUTHORIZATION, equalTo(SYSTEM_AUTH))
             .withHeader(SERVICE_AUTHORIZATION, equalTo(SERVICE_TOKEN))

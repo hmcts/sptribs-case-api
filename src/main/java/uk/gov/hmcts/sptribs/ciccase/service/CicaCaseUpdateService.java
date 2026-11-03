@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
+import uk.gov.hmcts.sptribs.caseworker.service.ExtendedCaseDataApi;
 import uk.gov.hmcts.sptribs.controllers.model.CicaCaseUpdate;
 import uk.gov.hmcts.sptribs.document.model.CitizenCICDocument;
 
@@ -25,6 +26,7 @@ public class CicaCaseUpdateService {
     private final CicaCaseService cicaCaseService;
     private final CicaRoleService cicaRoleService;
     private final CoreCaseDataApi coreCaseDataApi;
+    private final ExtendedCaseDataApi extendedCaseDataApi;
     private final AuthTokenGenerator authTokenGenerator;
 
     public void updateCase(String ccdReference, String authorisation, CicaCaseUpdate update) {
@@ -60,7 +62,7 @@ public class CicaCaseUpdateService {
     private void submitUpdate(String ccdReference, String authorisation, String serviceToken, Map<String, Object> data) {
         var started = coreCaseDataApi.startEvent(
             authorisation, serviceToken, ccdReference, CITIZEN_DSS_UPDATE_CASE_SUBMISSION);
-        coreCaseDataApi.createEvent(authorisation, serviceToken, ccdReference, CaseDataContent.builder()
+        extendedCaseDataApi.createEvent(authorisation, serviceToken, ccdReference, CaseDataContent.builder()
             .event(Event.builder().id(CITIZEN_DSS_UPDATE_CASE_SUBMISSION).build())
             .eventToken(started.getToken())
             .data(data)
