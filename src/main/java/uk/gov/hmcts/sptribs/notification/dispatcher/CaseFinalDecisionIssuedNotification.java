@@ -20,6 +20,7 @@ import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,7 +65,8 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
                 templateVarsSubject,
                 cicCase.getEmail(),
                 getTemplateName(),
-                caseNumber);
+                caseNumber,
+                Party.SUBJECT);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVarsSubject);
             notificationResponse = sendLetterNotification(templateVarsSubject, caseNumber);
@@ -85,7 +87,8 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
                 templateVarsRepresentative,
                 cicCase.getRepresentativeEmailAddress(),
                 getTemplateName(),
-                caseNumber);
+                caseNumber,
+                Party.REPRESENTATIVE);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVarsRepresentative);
             notificationResponse = sendLetterNotification(templateVarsRepresentative, caseNumber);
@@ -103,7 +106,8 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
             templateVarsRespondent,
             caseData.getCicCase().getRespondentEmail(),
             FINAL_DECISION_ISSUED_EMAIL,
-            caseNumber);
+            caseNumber,
+            Party.RESPONDENT);
         cicCase.setResNotificationResponse(notificationResponse);
     }
 
@@ -119,7 +123,8 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
                 templateVars,
                 cicCase.getApplicantEmailAddress(),
                 getTemplateName(),
-                caseNumber);
+                caseNumber,
+                Party.APPLICANT);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getApplicantAddress(), templateVars);
             notificationResponse = sendLetterNotification(templateVars, caseNumber);
@@ -133,14 +138,15 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
         final Map<String, Object> templateVars,
         String toEmail,
         TemplateName templateName,
-        String caseReferenceNumber
+        String caseReferenceNumber,
+        Party receivingParty
     ) {
         final NotificationRequest request = notificationHelper.buildEmailNotificationRequest(toEmail,
             true,
             getUploadedDocuments(caseData),
             templateVars,
             templateName);
-        return notificationService.sendEmail(request, getFinalDecisionDocumentsAttachments(caseData), caseReferenceNumber, null);
+        return notificationService.sendEmail(request, getFinalDecisionDocumentsAttachments(caseData), caseReferenceNumber, receivingParty);
     }
 
     private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter, String caseReferenceNumber) {
