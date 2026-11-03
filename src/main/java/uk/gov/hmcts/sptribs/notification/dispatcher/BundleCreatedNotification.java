@@ -45,9 +45,6 @@ public class BundleCreatedNotification implements PartiesNotification {
     @Value("${feature.citizen-dashboard.enabled}")
     private boolean citizenDashboardEnabled;
 
-    @Value("${uk.gov.notify.email.templateVars.respondentEmail}")
-    private String configuredRespondentEmail;
-
     @Autowired
     public BundleCreatedNotification(NotificationServiceCIC notificationService, NotificationHelper notificationHelper) {
         this.notificationService = notificationService;
@@ -152,7 +149,7 @@ public class BundleCreatedNotification implements PartiesNotification {
 
         final NotificationResponse notificationResponse = sendEmailNotification(
             templateVarsRespondent,
-            configuredRespondentEmail,
+            cicCase.getRespondentEmail(),
             BUNDLE_CREATED_EMAIL_RESPONDENT,
             caseNumber
         );

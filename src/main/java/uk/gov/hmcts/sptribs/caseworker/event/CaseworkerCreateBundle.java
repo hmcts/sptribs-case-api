@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -78,6 +79,9 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
 
     @Autowired
     private final BundleCreatedNotification bundleCreatedNotification;
+
+    @Value("${feature.citizen-dashboard.enabled}")
+    private boolean citizenDashboardEnabled;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -167,7 +171,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
 
-        if (details.getState() == CaseClosed) {
+        if (!citizenDashboardEnabled || details.getState() == CaseClosed) {
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader("# Bundle created.")
                 .build();

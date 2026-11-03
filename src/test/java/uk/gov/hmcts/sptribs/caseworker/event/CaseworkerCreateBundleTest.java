@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import org.jspecify.annotations.NonNull;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -90,6 +91,11 @@ class CaseworkerCreateBundleTest {
     @Mock
     private Clock clock;
 
+    @BeforeEach
+    void setUp() {
+        caseworkerCreateBundle.setCitizenDashboardEnabled(true);
+    }
+
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
 
@@ -117,13 +123,28 @@ class CaseworkerCreateBundleTest {
     }
 
     @Test
-    void shouldAddSubmittedCallbackUnconditionally() {
+    void shouldAddSubmittedCallbackWhenCitizenDashboardEnabled() {
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         caseworkerCreateBundle.configure(configBuilder);
 
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getSubmittedCallback)
+            .doesNotContainNull();
+    }
+
+    @Test
+    void shouldAddSubmittedCallbackWhenCitizenDashboardDisabled() {
+        caseworkerCreateBundle.setCitizenDashboardEnabled(false);
+        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+
+        caseworkerCreateBundle.configure(configBuilder);
+
+        assertThat(getEventsFrom(configBuilder).values())
+            .extracting(Event::getSubmittedCallback)
+            .doesNotContainNull();
+        assertThat(getEventsFrom(configBuilder).values())
+            .extracting(Event::getAboutToSubmitCallback)
             .doesNotContainNull();
     }
 
@@ -1111,6 +1132,14 @@ class CaseworkerCreateBundleTest {
     void shouldNotNotifyIfCaseClosed() {
         final CaseData caseData = caseData();
         assertThat(submitBundle(caseData, CaseClosed).getConfirmationHeader()).isEqualTo("# Bundle created.");
+        verifyNoInteractions(bundleCreatedNotification);
+    }
+
+    @Test
+    void shouldNotNotifyWhenCitizenDashboardDisabled() {
+        caseworkerCreateBundle.setCitizenDashboardEnabled(false);
+
+        assertThat(submitBundle(caseData()).getConfirmationHeader()).isEqualTo("# Bundle created.");
         verifyNoInteractions(bundleCreatedNotification);
     }
 

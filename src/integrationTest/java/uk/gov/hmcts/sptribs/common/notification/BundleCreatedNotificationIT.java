@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +63,10 @@ public class BundleCreatedNotificationIT {
     ArgumentCaptor<NotificationRequest> notificationRequestCaptor;
 
     @Nested
-    @TestPropertySource(properties = "feature.citizen-dashboard.enabled=false")
+    @TestPropertySource(properties = {
+        "feature.citizen-dashboard.enabled=false",
+        "uk.gov.notify.email.templateVars.respondentEmail=configured-respondent@example.com"
+    })
     class WhenCitizenDashboardDisabled {
         @Autowired
         private BundleCreatedNotification bundleCreatedNotification;
@@ -159,7 +164,7 @@ public class BundleCreatedNotificationIT {
         }
 
         @Test
-        void shouldSendEmailToConfiguredRespondentInsteadOfStoredAddress() {
+        void shouldSendEmailToStoredRespondentInsteadOfConfiguredAddress() {
             final CaseData data = CaseData.builder()
                 .cicCase(CicCase.builder()
                     .contactPreferenceType(EMAIL)
@@ -179,7 +184,7 @@ public class BundleCreatedNotificationIT {
             NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
             assertThat(notificationRequest.getDestinationAddress())
-                .isEqualTo("appeals.team@cica.gov.uk");
+                .isEqualTo("respondent@email.com");
             assertThat(notificationRequest.getTemplate())
                 .isEqualTo(BUNDLE_CREATED_EMAIL_RESPONDENT);
             assertThat(notificationRequest.getTemplateVars())
@@ -191,72 +196,37 @@ public class BundleCreatedNotificationIT {
             assertThat(data.getCicCase().getResNotificationResponse()).isEqualTo(expectedResponse);
         }
 
-        @Test
-        void shouldSendEmailToRespondentWhenStoredAddressIsNull() {
+        @ParameterizedTest
+        @NullAndEmptySource
+        @ValueSource(strings = "   ")
+        void shouldReportRespondentFailureWhenStoredAddressIsMissing(String respondentEmail) {
             final CaseData data = CaseData.builder()
                 .cicCase(CicCase.builder()
                     .respondentName("Respondent Name")
-                    .respondentEmail(null)
+                    .respondentEmail(respondentEmail)
                     .build())
                 .build();
 
-            final NotificationResponse expectedResponse = NotificationResponse.builder().build();
-            when(notificationServiceCIC.sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null)))
-                .thenReturn(expectedResponse);
+            doThrow(new IllegalArgumentException("Missing respondent email"))
+                .when(notificationServiceCIC).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), isNull());
 
-            bundleCreatedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
+            BundleCreatedNotification.DispatchResult result = bundleCreatedNotification.dispatch(data, TEST_CASE_ID.toString());
 
-            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(null));
-
-            NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
-
-            assertThat(notificationRequest.getDestinationAddress())
-                .isEqualTo("appeals.team@cica.gov.uk");
-            assertThat(notificationRequest.getTemplate())
-                .isEqualTo(BUNDLE_CREATED_EMAIL_RESPONDENT);
-            assertThat(notificationRequest.getTemplateVars())
-                .containsAllEntriesOf(Map.of(
-                    TRIBUNAL_NAME, CIC,
-                    CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
-                    CONTACT_NAME, "Respondent Name"
-                ));
-            assertThat(data.getCicCase().getResNotificationResponse()).isEqualTo(expectedResponse);
+            assertThat(result.sentParties()).isEmpty();
+            assertThat(result.failedParties()).containsExactly(RESPONDENT);
+            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), isNull());
+            assertThat(notificationRequestCaptor.getValue().getDestinationAddress()).isEqualTo(respondentEmail);
+            assertThat(data.getCicCase().getResNotificationResponse()).isNull();
         }
 
         @Test
-        void shouldSendEmailToRespondentWhenStoredAddressIsBlank() {
-            final CaseData data = CaseData.builder()
-                .cicCase(CicCase.builder()
-                    .respondentName("Respondent Name")
-                    .respondentEmail("   ")
-                    .build())
-                .build();
-
-            final NotificationResponse expectedResponse = NotificationResponse.builder().build();
-            when(notificationServiceCIC.sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null)))
-                .thenReturn(expectedResponse);
-
-            bundleCreatedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
-
-            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(null));
-
-            NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
-
-            assertThat(notificationRequest.getDestinationAddress())
-                .isEqualTo("appeals.team@cica.gov.uk");
-            assertThat(notificationRequest.getTemplate())
-                .isEqualTo(BUNDLE_CREATED_EMAIL_RESPONDENT);
-            assertThat(data.getCicCase().getResNotificationResponse()).isEqualTo(expectedResponse);
-        }
-
-        @Test
-        void shouldDispatchToEveryEligiblePartyAndUseConfiguredCicaInbox() {
+        void shouldDispatchToEveryEligiblePartyUsingStoredAddresses() {
             CaseData data = CaseData.builder().cicCase(CicCase.builder()
                 .contactPreferenceType(POST)
                 .caseSubcategory(CaseSubcategory.OTHER)
                 .fullName("Subject")
                 .email("subject@example.com")
-                .respondentEmail(" ")
+                .respondentEmail("respondent@example.com")
                 .respondentName("Respondent")
                 .partiesCIC(Set.of(PartiesCIC.REPRESENTATIVE, PartiesCIC.APPLICANT))
                 .representativeFullName("Representative")
@@ -272,7 +242,7 @@ public class BundleCreatedNotificationIT {
             ArgumentCaptor<NotificationRequest> requests = ArgumentCaptor.forClass(NotificationRequest.class);
             verify(notificationServiceCIC, times(4)).sendEmail(requests.capture(), eq(TEST_CASE_ID.toString()), isNull());
             assertThat(requests.getAllValues()).extracting(NotificationRequest::getDestinationAddress)
-                .containsExactly("subject@example.com", "appeals.team@cica.gov.uk",
+                .containsExactly("subject@example.com", "respondent@example.com",
                     "representative@example.com", "applicant@example.com");
         }
 
@@ -280,19 +250,21 @@ public class BundleCreatedNotificationIT {
         @EnumSource(value = CaseSubcategory.class, names = {"FATAL", "MINOR"})
         void shouldSuppressSubjectForFatalAndMinorCases(CaseSubcategory subcategory) {
             CaseData data = CaseData.builder().cicCase(CicCase.builder()
-                .caseSubcategory(subcategory).email("subject@example.com").build()).build();
+                .caseSubcategory(subcategory).email("subject@example.com")
+                .respondentEmail("respondent@example.com").build()).build();
 
             BundleCreatedNotification.DispatchResult result = bundleCreatedNotification.dispatch(data, TEST_CASE_ID.toString());
 
             assertThat(result.sentParties()).containsExactly(RESPONDENT);
             verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), isNull());
-            assertThat(notificationRequestCaptor.getValue().getDestinationAddress()).isEqualTo("appeals.team@cica.gov.uk");
+            assertThat(notificationRequestCaptor.getValue().getDestinationAddress()).isEqualTo("respondent@example.com");
         }
 
         @Test
         void shouldSkipMissingAndUnselectedPartyAddressesButStillNotifyCica() {
             CaseData data = CaseData.builder().cicCase(CicCase.builder()
                 .email(" ")
+                .respondentEmail("respondent@example.com")
                 .partiesCIC(Set.of(PartiesCIC.APPLICANT))
                 .representativeEmailAddress("representative@example.com")
                 .applicantEmailAddress("")
@@ -303,7 +275,7 @@ public class BundleCreatedNotificationIT {
             assertThat(result.sentParties()).containsExactly(RESPONDENT);
             assertThat(result.failedParties()).isEmpty();
             verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), isNull());
-            assertThat(notificationRequestCaptor.getValue().getDestinationAddress()).isEqualTo("appeals.team@cica.gov.uk");
+            assertThat(notificationRequestCaptor.getValue().getDestinationAddress()).isEqualTo("respondent@example.com");
         }
 
         @Test
@@ -311,7 +283,7 @@ public class BundleCreatedNotificationIT {
             CaseData data = CaseData.builder().cicCase(CicCase.builder()
                 .email("subject@example.com")
                 .subjectNotifyList(NotificationResponse.builder().build())
-                .respondentEmail(null)
+                .respondentEmail("respondent@example.com")
                 .partiesCIC(Set.of(PartiesCIC.REPRESENTATIVE, PartiesCIC.APPLICANT))
                 .representativeEmailAddress("representative@example.com")
                 .applicantEmailAddress("applicant@example.com")
