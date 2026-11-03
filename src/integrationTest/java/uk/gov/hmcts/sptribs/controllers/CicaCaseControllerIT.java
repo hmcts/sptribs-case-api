@@ -7,23 +7,29 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
+import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseUpdateService;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaRoleService;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
+import uk.gov.hmcts.sptribs.controllers.model.CicaCaseUpdate;
 import uk.gov.hmcts.sptribs.exception.CaseNotFoundException;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
+
+import java.util.List;
 
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
@@ -55,6 +61,9 @@ class CicaCaseControllerIT {
     @MockitoBean
     private CicaRoleService cicaRoleService;
 
+    @MockitoBean
+    private CicaCaseUpdateService cicaCaseUpdateService;
+
     @BeforeAll
     static void setUp() {
         IdamWireMock.start();
@@ -63,6 +72,40 @@ class CicaCaseControllerIT {
     @AfterAll
     static void tearDown() {
         IdamWireMock.stopAndReset();
+    }
+
+    @Test
+    void shouldSubmitTextOnlyUpdate() throws Exception {
+        mockMvc.perform(post("/cases/cica/" + VALID_CCD_REFERENCE + "/updates")
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"additional_information\":\"Further information\",\"documents\":[]}"))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.case_id").value(VALID_CCD_REFERENCE));
+
+        verify(cicaCaseUpdateService).updateCase(VALID_CCD_REFERENCE, TEST_AUTHORIZATION_TOKEN,
+            new CicaCaseUpdate("Further information", List.of()));
+    }
+
+    @Test
+    void shouldRejectUpdateWithMissingDocumentLink() throws Exception {
+        mockMvc.perform(post("/cases/cica/" + VALID_CCD_REFERENCE + "/updates")
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"documents\":[{\"document_filename\":\"evidence.pdf\"}]}"))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldRejectUpdateWithoutDocumentsArray() throws Exception {
+        mockMvc.perform(post("/cases/cica/" + VALID_CCD_REFERENCE + "/updates")
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{}"))
+            .andExpect(status().isBadRequest());
     }
 
     @Test

@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
@@ -17,10 +18,15 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
+import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseUpdateService;
+import uk.gov.hmcts.sptribs.controllers.model.CicaCaseUpdate;
+
+import java.util.Map;
 
 import static org.springframework.http.HttpStatus.BAD_GATEWAY;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.AUTHORIZATION;
@@ -35,6 +41,39 @@ import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUT
 public class CicaCaseController {
 
     private final CicaCaseService cicaCaseService;
+    private final CicaCaseUpdateService cicaCaseUpdateService;
+
+    @PostMapping(value = "/{ccdReference}/updates", consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Add citizen documents and information to a case, including Draft cases",
+        description = "Checks case membership without a postcode and submits the DSS update event as the citizen. "
+            + "On a CCD 404, ensures the caller has the creator role and retries once. The case state is unchanged.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "201", description = "Update submitted"),
+        @ApiResponse(responseCode = "400", description = "Invalid reference or update"),
+        @ApiResponse(responseCode = "401", description = "Invalid authentication token"),
+        @ApiResponse(responseCode = "403", description = "User or service cannot access the case"),
+        @ApiResponse(responseCode = "404", description = "CCD case or event not found after recovery"),
+        @ApiResponse(responseCode = "409", description = "CCD update conflict"),
+        @ApiResponse(responseCode = "422", description = "CCD callback validation failed"),
+        @ApiResponse(responseCode = "502", description = "CCD could not be reached")
+    })
+    public ResponseEntity<Map<String, String>> updateCase(
+        @RequestHeader(AUTHORIZATION) @NotBlank String authorisation,
+        @RequestHeader(SERVICE_AUTHORIZATION) @NotBlank String serviceAuthorisation,
+        @PathVariable @Pattern(regexp = "^\\d{16}$", message = "CCD reference must be 16 digits long") String ccdReference,
+        @Valid @RequestBody CicaCaseUpdate update
+    ) {
+        try {
+            cicaCaseUpdateService.updateCase(ccdReference, authorisation, update);
+            return ResponseEntity.status(201).body(Map.of("case_id", ccdReference));
+        } catch (FeignException exception) {
+            int status = exception.status();
+            int responseStatus = status >= 400 && status < 600 ? status : BAD_GATEWAY.value();
+            log.warn("Citizen case update failed: downstream_status={} response_status={}", status, responseStatus);
+            return ResponseEntity.status(responseStatus).build();
+        }
+    }
 
     @GetMapping(value = "/{ccdReference}/access", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(

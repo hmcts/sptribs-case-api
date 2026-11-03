@@ -18,6 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,6 +41,20 @@ class CaseDataRepositoryImplTest {
         boolean result = repository.checkCaseExists("123");
 
         assertThat(result).isTrue();
+    }
+
+    @Test
+    void shouldExcludeOnlyDssExpiredWhenCheckingCaseExists() {
+        when(jdbcTemplate.queryForObject(anyString(), anyMap(), eq(Integer.class))).thenReturn(1);
+
+        assertThat(repository.checkCaseExists("123")).isTrue();
+
+        verify(jdbcTemplate).queryForObject(anyString(), eq(Map.of(
+            "ccdReference", 123L,
+            "caseType", "CriminalInjuriesCompensation",
+            "jurisdiction", "ST_CIC",
+            "invalidStates", List.of("DSS-Expired")
+        )), eq(Integer.class));
     }
 
     @Test

@@ -11,8 +11,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
+import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseUpdateService;
+import uk.gov.hmcts.sptribs.controllers.model.CicaCaseUpdate;
 import uk.gov.hmcts.sptribs.exception.CaseNotFoundException;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
+
+import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -30,8 +35,39 @@ class CicaCaseControllerTest {
     @Mock
     private CicaCaseService cicaCaseService;
 
+    @Mock
+    private CicaCaseUpdateService cicaCaseUpdateService;
+
     @InjectMocks
     private CicaCaseController cicaCaseController;
+
+    @Test
+    void shouldSubmitUpdateAndReturnOnlyCaseReference() {
+        String ccdReference = "1234567891234567";
+        CicaCaseUpdate update = new CicaCaseUpdate("New information", List.of());
+
+        ResponseEntity<Map<String, String>> response = cicaCaseController.updateCase(
+            TEST_AUTHORIZATION, TEST_SERVICE_AUTHORIZATION, ccdReference, update);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(response.getBody()).containsExactlyEntriesOf(Map.of("case_id", ccdReference));
+        verify(cicaCaseUpdateService).updateCase(ccdReference, TEST_AUTHORIZATION, update);
+    }
+
+    @ParameterizedTest
+    @CsvSource({"401,401", "403,403", "404,404", "409,409", "422,422", "500,500", "503,503", "-1,502"})
+    void shouldReturnUpdateFailureWithoutDownstreamBody(int downstreamStatus, int responseStatus) {
+        String ccdReference = "1234567891234567";
+        CicaCaseUpdate update = new CicaCaseUpdate("New information", List.of());
+        FeignException failure = mock(FeignException.class);
+        when(failure.status()).thenReturn(downstreamStatus);
+        doThrow(failure).when(cicaCaseUpdateService).updateCase(ccdReference, TEST_AUTHORIZATION, update);
+
+        var response = cicaCaseController.updateCase(TEST_AUTHORIZATION, TEST_SERVICE_AUTHORIZATION, ccdReference, update);
+
+        assertThat(response.getStatusCode().value()).isEqualTo(responseStatus);
+        assertThat(response.getBody()).isNull();
+    }
 
     @Test
     void shouldReturnOkWhenCheckingIfUserHasAccess() {

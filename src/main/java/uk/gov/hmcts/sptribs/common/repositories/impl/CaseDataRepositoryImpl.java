@@ -18,9 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Draft;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Expired;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.Draft;
 
 /**
  * Repository responsible for querying the case_data table.
@@ -36,8 +34,7 @@ public class CaseDataRepositoryImpl implements CaseDataRepository {
     public static final String STATE = "state";
     public static final String STATES = "states";
     public static final String REFERENCE = "reference";
-    private static final List<String> INVALID_STATES = List.of(Draft.getName(), DSS_Draft.getName(),
-        DSS_Expired.getName());
+    private static final List<String> INVALID_STATES = List.of(DSS_Expired.getName());
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final ObjectMapper objectMapper;
 
