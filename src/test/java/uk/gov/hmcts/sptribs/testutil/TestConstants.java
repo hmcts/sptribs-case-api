@@ -44,8 +44,8 @@ public final class TestConstants {
     public static final String CHANGE_SECURITY_CLASSIFICATION_MID_EVENT_URL = "/callbacks/mid-event?page=changeSecurityClass";
     public static final String SEND_ORDER_NOTIFY_PARTIES_MID_EVENT_URL
         = "/callbacks/mid-event?page=caseWorkerSendOrderNotifyParties";
-    public static final String ISSUE_FINAL_DECISION_SELECT_RECIPIENTS_MID_EVENT_URL
-        = "/callbacks/mid-event?page=issueFinalDecisionSelectRecipients";
+    public static final String CLOSE_CASE_SELECT_RECIPIENTS_MID_EVENT_URL
+        = "/callbacks/mid-event?page=closeCaseSelectRecipients";
     public static final String SELECT_HEARING_MID_EVENT_URL
         = "/callbacks/mid-event?page=selectHearing";
     public static final String REINSTATE_NOTIFY_PARTIES_MID_EVENT_URL
