@@ -2,10 +2,10 @@ package uk.gov.hmcts.sptribs.caseworker;
 
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.DisabledIf;
 import org.springframework.test.context.junit.jupiter.EnabledIf;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -25,6 +25,7 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CREATE_BUNDLE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
@@ -101,22 +102,19 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
     }
 
     @Test
-    @EnabledIfEnvironmentVariable(named = "CITIZEN_DASHBOARD_ENABLED", matches = "(?i)false")
-    public void shouldHaveSubmittedCallbackEndpointWhenCitizenDashboardDisabled() throws Exception {
+    @DisabledIf(expression = "${feature.citizen-dashboard.enabled:false}", loadContext = true)
+    public void shouldHaveNoSubmittedCallbackEndpointWhenCitizenDashboardDisabled() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
         caseData.remove("cicCaseEmail");
         caseData.put("cicCaseRespondentEmail", "");
 
         final Response response = triggerCallback(caseData, CREATE_BUNDLE, SUBMITTED_URL, false);
 
-        assertThat(response.getStatusCode()).isEqualTo(OK.value());
-        assertThatJson(response.asString())
-            .inPath(CONFIRMATION_HEADER)
-            .isString()
-            .isEqualTo("# Bundle created.");
+        assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND.value());
     }
 
     @Test
+    @EnabledIf(expression = "${feature.citizen-dashboard.enabled:false}", loadContext = true)
     public void shouldHaveSimpleMessageForCaseClosed() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
         caseData.put("cicCasePartiesCIC", List.of("SubjectCIC", "RepresentativeCIC", "ApplicantCIC"));

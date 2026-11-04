@@ -134,7 +134,7 @@ class CaseworkerCreateBundleTest {
     }
 
     @Test
-    void shouldAddSubmittedCallbackWhenCitizenDashboardDisabled() {
+    void shouldNotAddSubmittedCallbackWhenCitizenDashboardDisabled() {
         caseworkerCreateBundle.setCitizenDashboardEnabled(false);
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
@@ -142,7 +142,7 @@ class CaseworkerCreateBundleTest {
 
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getSubmittedCallback)
-            .doesNotContainNull();
+            .containsOnlyNulls();
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getAboutToSubmitCallback)
             .doesNotContainNull();
@@ -1132,14 +1132,6 @@ class CaseworkerCreateBundleTest {
     void shouldNotNotifyIfCaseClosed() {
         final CaseData caseData = caseData();
         assertThat(submitBundle(caseData, CaseClosed).getConfirmationHeader()).isEqualTo("# Bundle created.");
-        verifyNoInteractions(bundleCreatedNotification);
-    }
-
-    @Test
-    void shouldNotNotifyWhenCitizenDashboardDisabled() {
-        caseworkerCreateBundle.setCitizenDashboardEnabled(false);
-
-        assertThat(submitBundle(caseData()).getConfirmationHeader()).isEqualTo("# Bundle created.");
         verifyNoInteractions(bundleCreatedNotification);
     }
 

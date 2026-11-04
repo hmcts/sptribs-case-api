@@ -93,12 +93,15 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
                 .description("Bundle: Create a bundle")
                 .showSummary()
                 .aboutToSubmitCallback(this::aboutToSubmit)
-                .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_WA_CONFIG_USER)
                 .grantHistoryOnly(ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE)
                 .publishToCamunda();
+
+        if (citizenDashboardEnabled) {
+            eventBuilder.submittedCallback(this::submitted);
+        }
 
         new PageBuilder(eventBuilder)
             .page("createBundle")
@@ -171,7 +174,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
 
-        if (!citizenDashboardEnabled || details.getState() == CaseClosed) {
+        if (details.getState() == CaseClosed) {
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader("# Bundle created.")
                 .build();
