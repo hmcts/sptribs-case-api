@@ -112,11 +112,10 @@ public class BundleCreationNotificationTest {
         }
 
         @Test
-        void shouldNotifyConfiguredRespondentThatBundleIsCreated() {
+        void shouldNotifyCaseRespondentThatBundleIsCreated() {
             //Given
             final CaseData data = getMockCaseData();
-            data.getCicCase().setRespondentEmail("testresp@outlook.com");
-            ReflectionTestUtils.setField(bundleCreatedNotification, "configuredRespondentEmail", "appeals.team@cica.gov.uk");
+            data.getCicCase().setRespondentEmail("respondent@example.com");
 
             //When
             when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
@@ -128,7 +127,7 @@ public class BundleCreationNotificationTest {
             //Then
             verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
             verify(notificationHelper).buildEmailNotificationRequest(
-                eq("appeals.team@cica.gov.uk"),
+                eq("respondent@example.com"),
                 templateVarsCaptor.capture(),
                 eq(TemplateName.BUNDLE_CREATED_EMAIL_RESPONDENT));
             assertThat(templateVarsCaptor.getValue()).containsEntry("CicCaseRespondentFullName","Appeals team");
@@ -248,11 +247,10 @@ public class BundleCreationNotificationTest {
         }
 
         @Test
-        void shouldNotifyConfiguredRespondentThatBundleIsCreated() {
+        void shouldNotifyCaseRespondentThatBundleIsCreated() {
             //Given
             final CaseData data = getMockCaseData();
-            data.getCicCase().setRespondentEmail("testresp@outlook.com");
-            ReflectionTestUtils.setField(bundleCreatedNotification, "configuredRespondentEmail", "appeals.team@cica.gov.uk");
+            data.getCicCase().setRespondentEmail("respondent@example.com");
 
             //When
             when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
@@ -264,7 +262,7 @@ public class BundleCreationNotificationTest {
             //Then
             verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
             verify(notificationHelper).buildEmailNotificationRequest(
-                eq("appeals.team@cica.gov.uk"),
+                eq("respondent@example.com"),
                 templateVarsCaptor.capture(),
                 eq(TemplateName.BUNDLE_CREATED_EMAIL_RESPONDENT));
             assertThat(templateVarsCaptor.getValue())
@@ -282,7 +280,6 @@ public class BundleCreationNotificationTest {
         @BeforeEach
         void setUp() {
             dispatchNotification = new BundleCreatedNotification(notificationService, new NotificationHelper());
-            ReflectionTestUtils.setField(dispatchNotification, "configuredRespondentEmail", RESPONDENT_INBOX);
         }
 
         @Test
@@ -290,6 +287,7 @@ public class BundleCreationNotificationTest {
             CicCase cicCase = CicCase.builder()
                 .caseSubcategory(CaseSubcategory.OTHER)
                 .email("subject@example.com")
+                .respondentEmail(RESPONDENT_INBOX)
                 .partiesCIC(Set.of(PartiesCIC.REPRESENTATIVE, PartiesCIC.APPLICANT))
                 .representativeEmailAddress("representative@example.com")
                 .applicantEmailAddress("applicant@example.com")
@@ -316,7 +314,11 @@ public class BundleCreationNotificationTest {
         @ParameterizedTest
         @EnumSource(value = CaseSubcategory.class, names = {"FATAL", "MINOR"})
         void shouldNotNotifySubjectForExcludedSubcategories(CaseSubcategory subcategory) {
-            CicCase cicCase = CicCase.builder().caseSubcategory(subcategory).email("subject@example.com").build();
+            CicCase cicCase = CicCase.builder()
+                .caseSubcategory(subcategory)
+                .email("subject@example.com")
+                .respondentEmail(RESPONDENT_INBOX)
+                .build();
 
             BundleCreatedNotification.DispatchResult result = dispatchNotification.dispatch(caseData(cicCase), TEST_CASE_ID.toString());
 
@@ -325,7 +327,11 @@ public class BundleCreationNotificationTest {
 
         @Test
         void shouldSkipSubjectWithBlankEmailAndAbsentParties() {
-            CicCase cicCase = CicCase.builder().caseSubcategory(CaseSubcategory.OTHER).email(" ").build();
+            CicCase cicCase = CicCase.builder()
+                .caseSubcategory(CaseSubcategory.OTHER)
+                .email(" ")
+                .respondentEmail(RESPONDENT_INBOX)
+                .build();
 
             BundleCreatedNotification.DispatchResult result = dispatchNotification.dispatch(caseData(cicCase), TEST_CASE_ID.toString());
 
@@ -335,6 +341,7 @@ public class BundleCreationNotificationTest {
         @Test
         void shouldSkipPartiesWithoutAddresses() {
             CicCase cicCase = CicCase.builder()
+                .respondentEmail(RESPONDENT_INBOX)
                 .partiesCIC(Set.of(PartiesCIC.REPRESENTATIVE, PartiesCIC.APPLICANT))
                 .representativeEmailAddress(" ")
                 .applicantEmailAddress("")
@@ -348,6 +355,7 @@ public class BundleCreationNotificationTest {
         @Test
         void shouldSkipUnselectedPartiesEvenWhenTheyHaveAddresses() {
             CicCase cicCase = CicCase.builder()
+                .respondentEmail(RESPONDENT_INBOX)
                 .partiesCIC(Set.of())
                 .representativeEmailAddress("representative@example.com")
                 .applicantEmailAddress("applicant@example.com")
@@ -362,6 +370,7 @@ public class BundleCreationNotificationTest {
         void shouldContinueAfterSubjectAndRepresentativeFailures() {
             CicCase cicCase = CicCase.builder()
                 .email("subject@example.com")
+                .respondentEmail(RESPONDENT_INBOX)
                 .partiesCIC(Set.of(PartiesCIC.REPRESENTATIVE, PartiesCIC.APPLICANT))
                 .representativeEmailAddress("representative@example.com")
                 .applicantEmailAddress("applicant@example.com")
@@ -381,6 +390,7 @@ public class BundleCreationNotificationTest {
         @Test
         void shouldReportRespondentAndApplicantFailures() {
             CicCase cicCase = CicCase.builder()
+                .respondentEmail(RESPONDENT_INBOX)
                 .partiesCIC(Set.of(PartiesCIC.APPLICANT))
                 .applicantEmailAddress("applicant@example.com")
                 .build();

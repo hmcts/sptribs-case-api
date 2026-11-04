@@ -8,7 +8,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -96,7 +98,11 @@ import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocum
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+    properties = {
+        "feature.citizen-dashboard.enabled=true",
+        "uk.gov.notify.email.templateVars.respondentEmail=configured-respondent@example.com"
+    })
 @AutoConfigureMockMvc
 @ContextConfiguration(initializers = {IdamWireMock.PropertiesInitializer.class})
 public class CaseworkerCreateBundleIT {
@@ -188,7 +194,7 @@ public class CaseworkerCreateBundleIT {
                 BUNDLE_CREATED_EMAIL_CITIZEN, BUNDLE_CREATED_EMAIL_CITIZEN);
         assertThat(requests.getAllValues())
             .extracting(NotificationRequest::getDestinationAddress)
-            .containsExactly("subject@example.com", "appeals.team@cica.gov.uk",
+            .containsExactly("subject@example.com", "respondent@example.com",
                 "representative@example.com", "applicant@example.com");
     }
 
@@ -206,14 +212,13 @@ public class CaseworkerCreateBundleIT {
         verify(notificationServiceCIC, times(3)).sendEmail(requests.capture(), eq(TEST_CASE_ID_HYPHENATED), isNull());
         assertThat(requests.getAllValues())
             .extracting(NotificationRequest::getDestinationAddress)
-            .containsExactly("appeals.team@cica.gov.uk", "representative@example.com", "applicant@example.com");
+            .containsExactly("respondent@example.com", "representative@example.com", "applicant@example.com");
     }
 
     @Test
-    void shouldNotifyCicaWhenAllStoredEmailAddressesAreMissing() throws Exception {
+    void shouldNotifyRespondentWhenOtherStoredEmailAddressesAreMissing() throws Exception {
         CaseData caseData = notificationCaseData();
         caseData.getCicCase().setEmail(null);
-        caseData.getCicCase().setRespondentEmail(" ");
         caseData.getCicCase().setRepresentativeEmailAddress("");
         caseData.getCicCase().setApplicantEmailAddress(null);
 
@@ -223,7 +228,30 @@ public class CaseworkerCreateBundleIT {
             .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent");
         ArgumentCaptor<NotificationRequest> requests = ArgumentCaptor.forClass(NotificationRequest.class);
         verify(notificationServiceCIC).sendEmail(requests.capture(), eq(TEST_CASE_ID_HYPHENATED), isNull());
-        assertThat(requests.getValue().getDestinationAddress()).isEqualTo("appeals.team@cica.gov.uk");
+        assertThat(requests.getValue().getDestinationAddress()).isEqualTo("respondent@example.com");
+    }
+
+    @ParameterizedTest
+    @EmptySource
+    @ValueSource(strings = "   ")
+    void shouldReportRespondentFailureWhenStoredAddressIsBlank(String respondentEmail) throws Exception {
+        CaseData caseData = notificationCaseData();
+        caseData.getCicCase().setRespondentEmail(respondentEmail);
+        doThrow(new IllegalArgumentException("Missing respondent email"))
+            .when(notificationServiceCIC).sendEmail(argThat(request -> request != null
+                && Objects.equals(request.getDestinationAddress(), respondentEmail)), eq(TEST_CASE_ID_HYPHENATED), isNull());
+
+        String response = submittedResponse(caseData, State.CaseManagement);
+
+        assertThat(confirmationHeader(response)).isEqualTo("""
+            # Bundle creation notification failed\s
+            ## A notification could not be sent to: Respondent\s
+            ## Please resend the notification.""");
+        ArgumentCaptor<NotificationRequest> requests = ArgumentCaptor.forClass(NotificationRequest.class);
+        verify(notificationServiceCIC, times(4)).sendEmail(requests.capture(), eq(TEST_CASE_ID_HYPHENATED), isNull());
+        assertThat(requests.getAllValues())
+            .extracting(NotificationRequest::getDestinationAddress)
+            .containsExactly("subject@example.com", respondentEmail, "representative@example.com", "applicant@example.com");
     }
 
     @Test
@@ -240,7 +268,7 @@ public class CaseworkerCreateBundleIT {
         verify(notificationServiceCIC, times(2)).sendEmail(requests.capture(), eq(TEST_CASE_ID_HYPHENATED), isNull());
         assertThat(requests.getAllValues())
             .extracting(NotificationRequest::getDestinationAddress)
-            .containsExactly("appeals.team@cica.gov.uk", "applicant@example.com");
+            .containsExactly("respondent@example.com", "applicant@example.com");
     }
 
     @Test
@@ -273,7 +301,7 @@ public class CaseworkerCreateBundleIT {
         verify(notificationServiceCIC, times(2)).sendEmail(requests.capture(), eq(TEST_CASE_ID_HYPHENATED), isNull());
         assertThat(requests.getAllValues())
             .extracting(NotificationRequest::getDestinationAddress)
-            .containsExactly("subject@example.com", "appeals.team@cica.gov.uk");
+            .containsExactly("subject@example.com", "respondent@example.com");
     }
 
     @Test
@@ -293,7 +321,7 @@ public class CaseworkerCreateBundleIT {
         verify(notificationServiceCIC, times(4)).sendEmail(requests.capture(), eq(TEST_CASE_ID_HYPHENATED), isNull());
         assertThat(requests.getAllValues())
             .extracting(NotificationRequest::getDestinationAddress)
-            .containsExactly("subject@example.com", "appeals.team@cica.gov.uk",
+            .containsExactly("subject@example.com", "respondent@example.com",
                 "representative@example.com", "applicant@example.com");
     }
 
@@ -733,7 +761,7 @@ public class CaseworkerCreateBundleIT {
         assertThat(caseBundles).hasSize(3);
 
         @SuppressWarnings("unchecked")
-        HashMap<String, Object> firstBundleValue = (HashMap<String, Object>) caseBundles.get(0).get("value");
+        HashMap<String, Object> firstBundleValue = (HashMap<String, Object>) caseBundles.getFirst().get("value");
         assertThat(firstBundleValue.get("id")).isEqualTo(newBundleUUID);
         assertThat(firstBundleValue.get("dateAndTime")).isNotNull();
 
@@ -758,7 +786,7 @@ public class CaseworkerCreateBundleIT {
             (List<HashMap<String, Object>>) data.get("caseBundleIdsAndTimestamps");
         assertThat(bundleIdsAndTimestamps).hasSize(1);
         @SuppressWarnings("unchecked")
-        HashMap<String, Object> timestampEntry = (HashMap<String, Object>) bundleIdsAndTimestamps.get(0).get("value");
+        HashMap<String, Object> timestampEntry = (HashMap<String, Object>) bundleIdsAndTimestamps.getFirst().get("value");
         assertThat(timestampEntry.get("bundleId")).isEqualTo(newBundleUUID);
     }
 
@@ -808,7 +836,7 @@ public class CaseworkerCreateBundleIT {
 
         assertThat(caseBundles).hasSize(1);
         @SuppressWarnings("unchecked")
-        HashMap<String, Object> bundleValue = (HashMap<String, Object>) caseBundles.get(0).get("value");
+        HashMap<String, Object> bundleValue = (HashMap<String, Object>) caseBundles.getFirst().get("value");
         assertThat(bundleValue.get("dateAndTime")).isNotNull();
 
         @SuppressWarnings("unchecked")
