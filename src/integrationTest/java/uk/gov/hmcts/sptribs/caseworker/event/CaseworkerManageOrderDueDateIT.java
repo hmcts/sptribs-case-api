@@ -54,7 +54,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @ContextConfiguration(initializers = {IdamWireMock.PropertiesInitializer.class})
-public class CaseWorkerManageOrderDueDateIT {
+public class CaseworkerManageOrderDueDateIT {
 
     private static final String CASEWORKER_MANAGE_ORDER_DUE_DATE_ABOUT_TO_START_RESPONSE =
         "classpath:responses/caseworker-manage-order-due-date-about-to-start-response.json";
