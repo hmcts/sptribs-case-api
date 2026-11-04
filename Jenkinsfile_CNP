@@ -269,6 +269,9 @@ withPipeline(type, product, component) {
     env.FT_POSTGRES_HOST = "sptribs-preview.postgres.database.azure.com"
     env.FT_POSTGRES_PORT = "5432"
     env.FT_POSTGRES_NAME = "pr-${CHANGE_ID}-sptribs-case-api"
+    env.FT_CASE_CLEANUP_ENABLED = "true"
+    env.FT_CCD_JDBC_URL = "jdbc:postgresql://sptribs-preview.postgres.database.azure.com:5432/pr-${CHANGE_ID}-data-store?sslmode=require"
+    env.FT_ELASTICSEARCH_URL = "http://sptribs-case-api-pr-${CHANGE_ID}-es-master:9200"
 
     def waPRLabels = githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pr-values:wa")
     if (waPRLabels.contains("pr-values:wa-ft-tests")) {
@@ -430,6 +433,8 @@ def configureFtDatabase() {
   if (env.ENVIRONMENT == 'preview') {
     env.FT_POSTGRES_USERNAME = env.SPTRIBS_POSTGRES_USERNAME_PREVIEW
     env.FT_POSTGRES_PASSWORD = env.SPTRIBS_POSTGRES_PASSWORD_PREVIEW
+    env.FT_CCD_DB_USERNAME = env.CCD_DATA_STORE_DB_USERNAME_PREVIEW
+    env.FT_CCD_DB_PASSWORD = env.CCD_DATA_STORE_DB_PASSWORD_PREVIEW
   } else {
     env.FT_POSTGRES_USERNAME = env.POSTGRES_USERNAME_AAT
     env.FT_POSTGRES_PASSWORD = env.POSTGRES_PASSWORD_AAT
