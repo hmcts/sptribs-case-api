@@ -15,7 +15,7 @@ public class RemoveStay implements CcdPageConfiguration {
             .label("LabelRemoveStay", "")
             .complex(CaseData::getRemoveCaseStay)
             .mandatory(RemoveCaseStay::getStayRemoveReason)
-            .mandatory(RemoveCaseStay::getStayRemoveOtherDescription, "removeStayStayRemoveReason = \"Other\"")
+            .mandatory(RemoveCaseStay::getStayRemoveOtherDescription, "removeStayStayRemoveReason = \"Other\"", true)
             .optional(RemoveCaseStay::getAdditionalDetail, "").done();
     }
 }
