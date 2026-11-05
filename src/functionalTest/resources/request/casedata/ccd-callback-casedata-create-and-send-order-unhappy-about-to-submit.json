@@ -130,7 +130,7 @@
   "cicCaseAnonymiseYesOrNo": "Yes",
   "cicCaseAnonymisedAppellantName": "AAC",
   "cicCaseOrderIssuingType": "NewOrder",
-  "orderContentOrderTemplate": "CIC3_Rule_27",
+  "orderContentOrderTemplate": "CIC6_General_Directions",
   "orderContentMainContent": "Main order content sample",
   "orderContentOrderSignature": "Supreme Judge Fudge",
   "cicCaseOrderTemplateIssued": {

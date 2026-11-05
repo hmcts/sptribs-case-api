@@ -522,7 +522,7 @@ class CaseworkerSendOrderTest {
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);
         DraftOrderContentCIC draftOrderContentCIC = DraftOrderContentCIC.builder()
-                .orderTemplate(OrderTemplate.CIC3_RULE_27)
+                .orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS)
                 .mainContent("main content")
                 .orderSignature("test signature")
                 .build();
@@ -540,7 +540,7 @@ class CaseworkerSendOrderTest {
         draftOrderCICListValue.setId("0");
 
         DraftOrderContentCIC draftOrderContentCIC2 = DraftOrderContentCIC.builder()
-                .orderTemplate(OrderTemplate.CIC3_RULE_27)
+                .orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS)
                 .mainContent("main content")
                 .orderSignature("test signature")
                 .build();
@@ -883,12 +883,12 @@ class CaseworkerSendOrderTest {
         String date2 = "15-10-2025 11:00:00.pdf";
         final DynamicListElement listElement = DynamicListElement
                 .builder()
-                .label(OrderTemplate.CIC3_RULE_27.getLabel() + DOUBLE_HYPHEN + date)
+                .label(OrderTemplate.CIC6_GENERAL_DIRECTIONS.getLabel() + DOUBLE_HYPHEN + date)
                 .code(UUID.randomUUID())
                 .build();
         final DynamicListElement listElement2 = DynamicListElement
                 .builder()
-                .label(OrderTemplate.CIC3_RULE_27.getLabel() + DOUBLE_HYPHEN + date2)
+                .label(OrderTemplate.CIC6_GENERAL_DIRECTIONS.getLabel() + DOUBLE_HYPHEN + date2)
                 .code(UUID.randomUUID())
                 .build();
         return DynamicList

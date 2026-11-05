@@ -3,7 +3,7 @@
     "cicCaseDraftOrderDynamicList": {
       "list_items": [
         {
-          "label": "CIC3 - Rule 27--09-05-2024 15:11:08--draft.pdf"
+          "label": "CIC6 - General Directions--09-05-2024 15:11:08--draft.pdf"
         }
       ]
     },
@@ -16,7 +16,7 @@
             "document_binary_url": "http://url/binary",
             "category_id": "TD"
           },
-          "orderContentOrderTemplate": "CIC3_Rule_27"
+          "orderContentOrderTemplate": "CIC6_General_Directions"
         }
       }
     ]
