@@ -18,6 +18,7 @@ import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.CASE_STATE
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.CCD_REFERENCE;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.DUE_DATE;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.HEARING_DATE;
+import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.HEARING_TYPE;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.LAST_MODIFIED_DATE;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.LAST_STATE_MODIFIED_DATE;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.SUBJECT_NAME;
@@ -30,6 +31,7 @@ public class SearchResultFields implements CCDConfig<CaseData, State, UserRole> 
         SearchField.<UserRole>builder().id(SUBJECT_NAME).label("Subject Name").build(),
         SearchField.<UserRole>builder().id(CASE_STATE).label("Case Status").build(),
         SearchField.<UserRole>builder().id(CASE_REGION).label("Case Region").build(),
+        SearchField.<UserRole>builder().id(HEARING_TYPE).label("Hearing Type").build(),
         SearchField.<UserRole>builder().id(HEARING_DATE).label("Hearing Date").build(),
         SearchField.<UserRole>builder().id(APPLICANT_NAME).label("Applicant Name").build(),
         SearchField.<UserRole>builder().id(DUE_DATE).label("Due Date").build(),
