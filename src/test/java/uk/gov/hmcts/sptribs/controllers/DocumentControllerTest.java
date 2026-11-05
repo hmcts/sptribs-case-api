@@ -30,6 +30,7 @@ import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.model.DownloadedDocumentResponse;
 import uk.gov.hmcts.sptribs.document.service.DocumentDownloadStatusService;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.exception.CaseNotFoundException;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
@@ -42,6 +43,7 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -190,6 +192,7 @@ class DocumentControllerTest {
             TEST_AUTHORIZATION,
             TEST_POSTCODE
         );
+        verifyNoInteractions(documentDownloadService);
 
         verify(cicaCaseMapper).toResponse(cicaCaseEntity);
 
@@ -201,7 +204,7 @@ class DocumentControllerTest {
     @Test
     void shouldReturnDownloadedDocument() {
         // Given
-        final String documentId = "12345";
+        final String documentId = "12345678-1234-1234-1234-123456789012";
         final Resource resource = new ByteArrayResource("test-content".getBytes());
 
         final DownloadedDocumentResponse downloadedDocumentResponse =
@@ -233,7 +236,11 @@ class DocumentControllerTest {
         when(cicaCaseService.checkIfUserHasAccessWithPostcode(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, TEST_POSTCODE))
             .thenReturn(cicaCaseEntity);
 
+        when(documentsService.isDocumentOnCase(Long.valueOf(TEST_CASE_ID_STRING), documentId))
+            .thenReturn(true);
+
         when(documentDownloadService.downloadDocument(
+            TEST_CASE_ID_STRING,
             TEST_AUTHORIZATION,
             documentId
         )).thenReturn(downloadedDocumentResponse);
@@ -260,9 +267,44 @@ class DocumentControllerTest {
             TEST_POSTCODE
         );
         verify(documentDownloadService).downloadDocument(
+            TEST_CASE_ID_STRING,
             TEST_AUTHORIZATION,
             documentId
         );
+        var calls = inOrder(cicaCaseService, documentsService, documentDownloadService);
+        calls.verify(cicaCaseService).checkIfUserHasAccessWithPostcode(
+            TEST_CASE_ID_STRING, TEST_AUTHORIZATION, TEST_POSTCODE);
+        calls.verify(documentsService).isDocumentOnCase(Long.valueOf(TEST_CASE_ID_STRING), documentId);
+        calls.verify(documentDownloadService).downloadDocument(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, documentId);
+    }
+
+    @Test
+    void shouldRejectDocumentFromAnotherCaseWithoutCallingCdamOrAssigningRole() {
+        String documentId = "12345678-1234-1234-1234-123456789012";
+        authoriseDocument(documentId);
+        when(documentsService.isDocumentOnCase(Long.valueOf(TEST_CASE_ID_STRING), documentId)).thenReturn(false);
+
+        assertThatThrownBy(() -> documentController.downloadDocumentByCaseAndId(
+            TEST_AUTHORIZATION, TEST_POSTCODE, TEST_CASE_ID_STRING, documentId))
+            .isInstanceOf(CaseNotFoundException.class);
+
+        verifyNoInteractions(documentDownloadService);
+    }
+
+    private void authoriseDocument(String documentId) {
+        CaseData caseData = new CaseData();
+        CicCase cicCase = new CicCase();
+        cicCase.setEmail("test-email@hmcts.net");
+        caseData.setCicCase(cicCase);
+        CicaCaseEntity caseEntity = CicaCaseEntity.builder()
+            .data(objectMapper.convertValue(caseData, new TypeReference<Map<String, JsonNode>>() {}))
+            .build();
+        when(cicaCaseService.checkIfUserHasAccessWithPostcode(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, TEST_POSTCODE))
+            .thenReturn(caseEntity);
+        CICUser user = mock(CICUser.class);
+        when(user.getUserInfo()).thenReturn(UserInfo.builder().sub("test-email@hmcts.net").build());
+        when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
+        when(documentsService.isDocumentOnCase(Long.valueOf(TEST_CASE_ID_STRING), documentId)).thenReturn(true);
     }
 
     @Test
@@ -302,7 +344,7 @@ class DocumentControllerTest {
             .isExactlyInstanceOf(UnauthorisedCaseAccessException.class)
             .hasMessageContaining("Case data is missing");
 
-        verifyNoInteractions(cicaCaseMapper, documentsService, documentDownloadStatusService);
+        verifyNoInteractions(documentDownloadService, cicaCaseMapper, documentsService, documentDownloadStatusService);
     }
 
     @Test
@@ -341,6 +383,6 @@ class DocumentControllerTest {
             .isExactlyInstanceOf(UnauthorisedCaseAccessException.class)
             .hasMessageContaining("Unable to determine user identity");
 
-        verifyNoInteractions(documentsService, documentDownloadStatusService);
+        verifyNoInteractions(documentDownloadService, documentsService, documentDownloadStatusService);
     }
 }

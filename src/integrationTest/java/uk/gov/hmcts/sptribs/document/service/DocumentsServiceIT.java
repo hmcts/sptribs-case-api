@@ -55,4 +55,25 @@ class DocumentsServiceIT extends IntegrationTestBase {
         assertThat(duplicateSaveErrors).isEmpty();
         assertThat(caseDocumentITManager.getCount(BINARY_URL)).isEqualTo(1);
     }
+
+    @Test
+    void shouldOnlyFindDocumentOnItsOwnCase() {
+        String documentId = "12345678-1234-1234-1234-123456789012";
+        var document = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder()
+                .url("documents/" + documentId)
+                .binaryUrl("documents/" + documentId + "/binary")
+                .filename("document.pdf")
+                .build())
+            .build();
+
+        assertThat(documentsService.saveDocuments(CASE_ID,
+            List.of(ListValue.<CaseworkerCICDocument>builder().value(document).build()),
+            CaseDocumentType.HEARING_RECORD)).isEmpty();
+
+        assertThat(documentsService.isDocumentOnCase(CASE_ID, documentId)).isTrue();
+        assertThat(documentsService.isDocumentOnCase(CASE_ID + 1, documentId)).isFalse();
+        assertThat(documentsService.isDocumentOnCase(CASE_ID, "22345678-1234-1234-1234-123456789012")).isFalse();
+    }
 }
