@@ -17,7 +17,7 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
@@ -46,15 +46,11 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
-import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.extractDocumentsFromListValues;
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.getAllCaseDocuments;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CREATE_BUNDLE;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
-import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessageBundleCreation;
-import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.APPLICANT;
-import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.REPRESENTATIVE;
-import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.RESPONDENT;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessage;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -83,7 +79,6 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
 
     @Autowired
     private final BundleCreatedNotification bundleCreatedNotification;
-
 
     @Value("${feature.citizen-dashboard.enabled}")
     private boolean citizenDashboardEnabled;
@@ -185,47 +180,28 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
                 .build();
         }
 
-        final CaseData data = details.getData();
-        final CicCase cicCase = data.getCicCase();
-        final String caseNumber = data.getHyphenatedCaseRef();
-        final List<String> errors = new ArrayList<>();
+        BundleCreatedNotification.DispatchResult result = bundleCreatedNotification.dispatch(
+            details.getData(), details.getData().getHyphenatedCaseRef());
 
-        if (cicCase.getRespondentEmail() != null) {
-            try {
-                bundleCreatedNotification.sendToRespondent(data, caseNumber);
-            } catch (Exception notificationException) {
-                errors.add(RESPONDENT.getLabel());
-            }
-        }
-        if (!CollectionUtils.isEmpty(cicCase.getRepresentativeCIC())) {
-            try {
-                bundleCreatedNotification.sendToRepresentative(data, caseNumber);
-            } catch (Exception notificationException) {
-                errors.add(REPRESENTATIVE.getLabel());
-            }
-        }
-        if (CollectionUtils.isEmpty(cicCase.getRepresentativeCIC())
-            && !CollectionUtils.isEmpty(cicCase.getApplicantCIC())) {
-            try {
-                bundleCreatedNotification.sendToApplicant(data, caseNumber);
-            } catch (Exception notificationException) {
-                errors.add(APPLICANT.getLabel());
-            }
-        }
-
-        if (isEmpty(errors)) {
-            return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Bundle created. %n## %s",
-                    generateSimpleMessageBundleCreation(details.getData().getCicCase())))
-                .build();
-        } else {
+        if (!result.failedParties().isEmpty()) {
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(
                     format("# Bundle creation notification failed %n## %s %n## Please resend the notification.",
-                        generateSimpleErrorMessage(errors))
+                        generateSimpleErrorMessage(result.failedParties().stream().map(NotificationParties::getLabel).toList()))
                 )
                 .build();
         }
+
+        if (result.sentParties().isEmpty()) {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader("# Bundle created.")
+                .build();
+        }
+
+        return SubmittedCallbackResponse.builder()
+            .confirmationHeader(format("# Bundle created. %n## %s",
+                generateSimpleMessage(result.sentParties())))
+            .build();
     }
 
     private void setCaseBundleRequestDocuments(CaseData caseData, List<CaseworkerCICDocument> allDocuments) {
