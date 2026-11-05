@@ -20,6 +20,7 @@
     "firstHearingDate" : "",
     "dataVersion" : 0,
     "orderDueDates" : [ ],
-    "cicCaseSelectedDocument" : { }
+    "cicCaseSelectedDocument" : { },
+    "issueCaseDocumentList" : { "value" : [ ] }
   }
 }

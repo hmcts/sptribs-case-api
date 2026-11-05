@@ -13,17 +13,19 @@ import org.springframework.core.env.Environment;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
-import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
+import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
@@ -32,10 +34,8 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
@@ -61,6 +61,7 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_EMAIL_VALUE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME_VALUE;
 import static uk.gov.hmcts.sptribs.common.ccd.CcdCaseType.CIC;
+import static uk.gov.hmcts.sptribs.document.model.DocumentType.APPLICATION_FORM;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.CONTACT_PARTIES_EMAIL;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.CONTACT_PARTIES_EMAIL_NEW_CD;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.CONTACT_PARTIES_POST;
@@ -164,15 +165,14 @@ public class ContactPartiesNotificationIT {
                 CASE_DOCUMENT + 2, EMPTY_PLACEHOLDER
             );
 
-            final CaseData data = CaseData.builder()
+            final CaseData data = withSelectedDocument(CaseData.builder()
                 .cicCase(CicCase.builder()
                     .contactPreferenceType(EMAIL)
                     .fullName("Subject Name")
                     .email("subject@email.com")
                     .notifyPartyMessage("a message")
                     .build())
-                .contactPartiesDocuments(getContactPartiesDocuments())
-                .build();
+                .build());
 
             when(notificationServiceCIC.sendEmail(notificationRequestCaptor.capture(),
                 anyList(), eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT))).thenReturn(NOTIFICATION_RESPONSE);
@@ -254,7 +254,7 @@ public class ContactPartiesNotificationIT {
             );
 
 
-            final CaseData data = CaseData.builder()
+            final CaseData data = withSelectedDocument(CaseData.builder()
                 .cicCase(CicCase.builder()
                     .applicantContactDetailsPreference(EMAIL)
                     .fullName("Subject Name")
@@ -262,8 +262,7 @@ public class ContactPartiesNotificationIT {
                     .applicantEmailAddress("applicant@email.com")
                     .notifyPartyMessage("a message")
                     .build())
-                .contactPartiesDocuments(getContactPartiesDocuments())
-                .build();
+                .build());
 
             when(notificationServiceCIC.sendEmail(notificationRequestCaptor.capture(),
                 anyList(), eq(TEST_CASE_ID.toString()), eq(Party.APPLICANT))).thenReturn(NOTIFICATION_RESPONSE);
@@ -298,7 +297,7 @@ public class ContactPartiesNotificationIT {
                 "DOC", "Test-Doc"
             );
 
-            final CaseData data = CaseData.builder()
+            final CaseData data = withSelectedDocument(CaseData.builder()
                 .cicCase(CicCase.builder()
                     .applicantContactDetailsPreference(POST)
                     .fullName("Subject Name")
@@ -311,8 +310,7 @@ public class ContactPartiesNotificationIT {
                     )
                     .notifyPartyMessage("a message")
                     .build())
-                .contactPartiesDocuments(getContactPartiesDocuments())
-                .build();
+                .build());
 
             when(notificationServiceCIC.sendLetter(any(), any())).thenReturn(NOTIFICATION_RESPONSE);
 
@@ -346,7 +344,7 @@ public class ContactPartiesNotificationIT {
                 CASE_DOCUMENT + 2, EMPTY_PLACEHOLDER
             );
 
-            final CaseData data = CaseData.builder()
+            final CaseData data = withSelectedDocument(CaseData.builder()
                 .cicCase(CicCase.builder()
                     .fullName("Subject Name")
                     .representativeContactDetailsPreference(EMAIL)
@@ -354,8 +352,7 @@ public class ContactPartiesNotificationIT {
                     .representativeEmailAddress("representative@email.com")
                     .notifyPartyMessage("a message")
                     .build())
-                .contactPartiesDocuments(getContactPartiesDocuments())
-                .build();
+                .build());
 
             when(notificationServiceCIC.sendEmail(notificationRequestCaptor.capture(),
                 anyList(), eq(TEST_CASE_ID.toString()), eq(Party.REPRESENTATIVE))).thenReturn(NOTIFICATION_RESPONSE);
@@ -475,15 +472,14 @@ public class ContactPartiesNotificationIT {
                 CASE_DOCUMENT + 2, EMPTY_PLACEHOLDER
             );
 
-            final CaseData data = CaseData.builder()
+            final CaseData data = withSelectedDocument(CaseData.builder()
                 .cicCase(CicCase.builder()
                     .fullName("Subject Name")
                     .respondentName("Respondent Name")
                     .respondentEmail("respondent@email.com")
                     .notifyPartyMessage("a message")
                     .build())
-                .contactPartiesDocuments(getContactPartiesDocuments())
-                .build();
+                .build());
 
             when(notificationServiceCIC.sendEmail(notificationRequestCaptor.capture(),
                 anyList(), eq(TEST_CASE_ID.toString()), eq(Party.RESPONDENT))).thenReturn(NOTIFICATION_RESPONSE);
@@ -557,15 +553,14 @@ public class ContactPartiesNotificationIT {
                 CASE_DOCUMENT + 2, EMPTY_PLACEHOLDER
             );
 
-            final CaseData data = CaseData.builder()
+            final CaseData data = withSelectedDocument(CaseData.builder()
                 .cicCase(CicCase.builder()
                     .fullName("Subject Name")
                     .respondentName("Respondent Name")
                     .respondentEmail("respondent@email.com")
                     .notifyPartyMessage("a message")
                     .build())
-                .contactPartiesDocuments(getContactPartiesDocuments())
-                .build();
+                .build());
 
             when(notificationServiceCIC.sendEmail(notificationRequestCaptor.capture(),
                 anyList(), eq(TEST_CASE_ID.toString()), eq(Party.TRIBUNAL))).thenReturn(NOTIFICATION_RESPONSE);
@@ -618,15 +613,14 @@ public class ContactPartiesNotificationIT {
                 CASE_DOCUMENT + 2, EMPTY_PLACEHOLDER
             );
 
-            final CaseData data = CaseData.builder()
+            final CaseData data = withSelectedDocument(CaseData.builder()
                 .cicCase(CicCase.builder()
                     .contactPreferenceType(EMAIL)
                     .fullName("Subject Name")
                     .email("subject@email.com")
                     .notifyPartyMessage("a message")
                     .build())
-                .contactPartiesDocuments(getContactPartiesDocuments())
-                .build();
+                .build());
 
             when(notificationServiceCIC.sendEmail(notificationRequestCaptor.capture(),
                 anyList(), eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT))).thenReturn(NOTIFICATION_RESPONSE);
@@ -666,7 +660,7 @@ public class ContactPartiesNotificationIT {
             );
 
 
-            final CaseData data = CaseData.builder()
+            final CaseData data = withSelectedDocument(CaseData.builder()
                 .cicCase(CicCase.builder()
                     .applicantContactDetailsPreference(EMAIL)
                     .fullName("Subject Name")
@@ -674,8 +668,7 @@ public class ContactPartiesNotificationIT {
                     .applicantEmailAddress("applicant@email.com")
                     .notifyPartyMessage("a message")
                     .build())
-                .contactPartiesDocuments(getContactPartiesDocuments())
-                .build();
+                .build());
 
             when(notificationServiceCIC.sendEmail(notificationRequestCaptor.capture(),
                 anyList(), eq(TEST_CASE_ID.toString()), eq(Party.APPLICANT))).thenReturn(NOTIFICATION_RESPONSE);
@@ -714,7 +707,7 @@ public class ContactPartiesNotificationIT {
                 CASE_DOCUMENT + 2, EMPTY_PLACEHOLDER
             );
 
-            final CaseData data = CaseData.builder()
+            final CaseData data = withSelectedDocument(CaseData.builder()
                 .cicCase(CicCase.builder()
                     .fullName("Subject Name")
                     .representativeContactDetailsPreference(EMAIL)
@@ -722,8 +715,7 @@ public class ContactPartiesNotificationIT {
                     .representativeEmailAddress("representative@email.com")
                     .notifyPartyMessage("a message")
                     .build())
-                .contactPartiesDocuments(getContactPartiesDocuments())
-                .build();
+                .build());
 
             when(notificationServiceCIC.sendEmail(notificationRequestCaptor.capture(),
                 anyList(), eq(TEST_CASE_ID.toString()), eq(Party.REPRESENTATIVE))).thenReturn(NOTIFICATION_RESPONSE);
@@ -753,22 +745,21 @@ public class ContactPartiesNotificationIT {
         }
     }
 
-    private ContactPartiesDocuments getContactPartiesDocuments() {
-        final List<DynamicListElement> elements = new ArrayList<>();
-        final DynamicListElement listItem = DynamicListElement
-            .builder()
-            .label(
-                "[pdf.pdf A - Application Form](http://manage-case.demo.platform.hmcts.net/documents/0777a9cf-4be8-4664-baa2-9eb5563abaec/binary)")
-            .code(UUID.randomUUID())
-            .build();
-        elements.add(listItem);
-
-        return ContactPartiesDocuments.builder()
-            .documentList(DynamicMultiSelectList
-                .builder()
-                .value(elements)
-                .listItems(elements)
+    private CaseData withSelectedDocument(CaseData data) {
+        String documentUrl = "http://manage-case.demo.platform.hmcts.net/documents/0777a9cf-4be8-4664-baa2-9eb5563abaec";
+        CaseworkerCICDocument document = CaseworkerCICDocument.builder()
+            .documentLink(uk.gov.hmcts.ccd.sdk.type.Document.builder()
+                .filename("pdf.pdf")
+                .url(documentUrl)
+                .binaryUrl(documentUrl + "/binary")
                 .build())
+            .documentCategory(APPLICATION_FORM)
             .build();
+        data.getCicCase().setApplicantDocumentsUploaded(List.of(new ListValue<>("1", document)));
+        DynamicMultiSelectList documentList = DocumentListUtil.prepareContactPartiesDocumentList(data,
+            "http://manage-case.demo.platform.hmcts.net");
+        documentList.setValue(List.of(documentList.getListItems().getFirst()));
+        data.setContactPartiesDocuments(ContactPartiesDocuments.builder().documentList(documentList).build());
+        return data;
     }
 }

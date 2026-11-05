@@ -13,5 +13,5 @@
       ]
     }
   },
-  "errors": []
+  "errors": ["Issue case notification failed. Please resend the notification"]
 }

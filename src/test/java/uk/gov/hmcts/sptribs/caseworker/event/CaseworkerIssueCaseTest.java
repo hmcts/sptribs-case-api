@@ -12,7 +12,10 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
+import uk.gov.hmcts.ccd.sdk.api.DisplayContext;
 import uk.gov.hmcts.ccd.sdk.api.Event;
+import uk.gov.hmcts.ccd.sdk.api.Field;
+import uk.gov.hmcts.ccd.sdk.api.Field.FieldBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
@@ -23,6 +26,7 @@ import uk.gov.hmcts.sptribs.bankholidays.model.BankHolidayResponse;
 import uk.gov.hmcts.sptribs.bankholidays.service.BankHolidayService;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueCaseSelectDocument;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
+import uk.gov.hmcts.sptribs.caseworker.model.Slot;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -45,6 +49,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC.APPLICANT_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC.REPRESENTATIVE;
@@ -120,6 +125,55 @@ class CaseworkerIssueCaseTest {
     }
 
     @Test
+    void shouldShowOnlyDocumentsAndPartiesOnReviewPage() {
+        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+
+        caseworkerIssueCase.configure(configBuilder);
+
+        Event<CaseData, UserRole, State> event = getEventsFrom(configBuilder).get(CASEWORKER_ISSUE_CASE);
+        assertThat(event.isShowSummary()).isFalse();
+        assertThat(event.getEndButtonLabel()).isEqualTo("Confirm and send");
+        assertThat(event.getFields().getPageLabels()).containsEntry("issueCaseReview", "Check your answers");
+        assertThat(event.getFields().getFields().stream()
+            .map(FieldBuilder::build)
+            .filter(field -> "issueCaseReview".equals(field.getPage()))
+            .map(Field::getId))
+            .containsExactly("issueCaseD01", "issueCaseD02", "issueCaseD03",
+                "issueCaseD04", "issueCaseD05", "issueCaseD06",
+                "issueCaseD07", "issueCaseD08", "issueCaseD09",
+                "issueCaseD10",
+                "issueCaseReviewSelectedParties");
+        assertThat(event.getFields().getFields().stream()
+            .map(FieldBuilder::build)
+            .filter(field -> "issueCaseReview".equals(field.getPage())))
+            .allSatisfy(field -> assertThat(field.getContext()).isEqualTo(DisplayContext.ReadOnly));
+        assertThat(event.getFields().getFields().stream()
+            .map(FieldBuilder::build)
+            .filter(field -> field.getId().matches("issueCaseD\\d{2}")))
+            .allSatisfy(field -> assertThat(field.getShowCondition())
+                .isEqualTo("issueCaseActiveDocumentSlotsCONTAINS \""
+                    + field.getId().substring("issueCase".length()) + "\""));
+        assertThat(event.getFields().getFields().stream()
+            .map(FieldBuilder::build)
+            .filter(field -> "issueCaseActiveDocumentSlots".equals(field.getId())))
+            .singleElement()
+            .satisfies(field -> {
+                assertThat(field.getPage()).isEqualTo("issueCaseSelectDocument");
+                assertThat(field.getShowCondition()).isEqualTo("[STATE]=\"ALWAYS_HIDE\"");
+            });
+        assertThat(event.getFields().getFields().stream()
+            .map(FieldBuilder::build)
+            .filter(field -> "issueCaseD01".equals(field.getId())))
+            .singleElement()
+            .satisfies(field -> {
+                assertThat(field.getContext()).isEqualTo(DisplayContext.ReadOnly);
+                assertThat(field.getPage()).isEqualTo("issueCaseReview");
+                assertThat(field.getShowCondition()).isEqualTo("issueCaseActiveDocumentSlotsCONTAINS \"D01\"");
+                assertThat(field.getDisplayContextParameter()).isNull();
+            });
+    }
+
+    @Test
     void shouldSuccessfullyIssueTheCase() {
         final CaseData caseData = caseData();
         final CicCase cicCase = CicCase.builder()
@@ -135,6 +189,10 @@ class CaseworkerIssueCaseTest {
         caseData.setCicCase(cicCase);
 
         final CaseIssue caseIssue = new CaseIssue();
+        caseIssue.setD10(CaseworkerCICDocument.builder()
+            .documentLink(Document.builder().filename("stale.pdf").build()).build());
+        caseIssue.setActiveDocumentSlots(Set.of(Slot.D10));
+        caseIssue.setReviewSelectedParties("Stale selection");
         caseData.setCaseIssue(caseIssue);
         caseData.setHyphenatedCaseRef("1234-5678-3456");
 
@@ -159,6 +217,9 @@ class CaseworkerIssueCaseTest {
 
         assertThat(response.getData().getCicCase().getNotifyPartyApplicant()).isNotNull();
         assertThat(response.getData().getCicCase().getRespondentBundleDueDate()).isNotNull();
+        assertThat(response.getData().getCaseIssue().getD10()).isNull();
+        assertThat(response.getData().getCaseIssue().getActiveDocumentSlots()).isNull();
+        assertThat(response.getData().getCaseIssue().getReviewSelectedParties()).isNull();
         assertThat(submittedResponse).isNotNull();
         assertThat(submittedResponse.getConfirmationHeader())
             .contains("# Case issued \n##  This case has now been issued.");
@@ -197,6 +258,22 @@ class CaseworkerIssueCaseTest {
                 # Issue case notification failed\s
                 ## A notification could not be sent to: Subject, Applicant, Representative, Respondent\s
                 ## Please resend the notification.""");
+    }
+
+    @Test
+    void shouldNotNotifyPartiesWhenNoneWereSelected() {
+        CaseData caseData = caseData();
+        caseData.getCicCase().setNotifyPartySubject(null);
+        caseData.getCicCase().setNotifyPartyApplicant(Set.of());
+        caseData.getCicCase().setNotifyPartyRepresentative(null);
+        caseData.getCicCase().setNotifyPartyRespondent(Set.of());
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(caseData);
+
+        SubmittedCallbackResponse response = caseworkerIssueCase.submitted(details, details);
+
+        assertThat(response.getConfirmationHeader()).contains("This case has now been issued.");
+        verifyNoInteractions(caseIssuedNotification);
     }
 
     @Test
@@ -258,6 +335,13 @@ class CaseworkerIssueCaseTest {
             .notifyPartyRespondent(Set.of(RESPONDENT)).build();
         caseData.setCicCase(cicCase);
 
+        final CaseIssue caseIssue = new CaseIssue();
+        caseIssue.setD10(CaseworkerCICDocument.builder()
+            .documentLink(Document.builder().filename("stale.pdf").build()).build());
+        caseIssue.setActiveDocumentSlots(Set.of(Slot.D10));
+        caseIssue.setReviewSelectedParties("Stale selection");
+        caseData.setCaseIssue(caseIssue);
+
         caseData.setHyphenatedCaseRef("1234-5678-3456");
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -278,6 +362,72 @@ class CaseworkerIssueCaseTest {
         assertThat(documentList).isNotNull();
         assertThat(documentList.getListItems()).hasSize(1);
         assertThat(documentList.getListItems().getFirst().getLabel()).isEqualTo(expectedLabel);
+        assertThat(response.getData().getCaseIssue().getD01()).isNull();
+        assertThat(response.getData().getCaseIssue().getD10()).isNull();
+        assertThat(response.getData().getCaseIssue().getActiveDocumentSlots()).isNull();
+        assertThat(response.getData().getCaseIssue().getReviewSelectedParties()).isNull();
+    }
+
+    @Test
+    void shouldCreateCaseIssueInAboutToStartWhenCaseIssueIsNull() {
+        final CaseData caseData = caseData();
+        caseData.setCicCase(CicCase.builder().build());
+        caseData.setCaseIssue(null);
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerIssueCase.aboutToStart(updatedCaseDetails);
+
+        assertThat(response.getData().getCaseIssue()).isNotNull();
+        assertThat(response.getData().getCaseIssue().getDocumentList()).isNotNull();
+        assertThat(response.getData().getCaseIssue().getActiveDocumentSlots()).isNull();
+        assertThat(response.getData().getCaseIssue().getReviewSelectedParties()).isNull();
+    }
+
+    @Test
+    void shouldInitialiseMissingSelectionAndClearReviewDataInAboutToSubmit() {
+        final CaseData caseData = caseData();
+        caseData.setCicCase(CicCase.builder().build());
+        final CaseIssue caseIssue = new CaseIssue();
+        caseIssue.setDocumentList(DynamicMultiSelectList.builder().build());
+        caseIssue.setD01(CaseworkerCICDocument.builder()
+            .documentLink(Document.builder().filename("selected.pdf").build()).build());
+        caseIssue.setD10(CaseworkerCICDocument.builder()
+            .documentLink(Document.builder().filename("stale.pdf").build()).build());
+        caseIssue.setActiveDocumentSlots(Set.of(Slot.D01, Slot.D10));
+        caseIssue.setReviewSelectedParties("Respondent: Test Respondent");
+        caseData.setCaseIssue(caseIssue);
+
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setData(caseData);
+
+        when(bankHolidayService.getScottishBankHolidays(anyString())).thenReturn(testBankHolidayResponse);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerIssueCase.aboutToSubmit(caseDetails, caseDetails);
+
+        assertThat(response.getData().getCaseIssue().getDocumentList().getValue()).isEmpty();
+        assertThat(response.getData().getCaseIssue().getD01()).isNull();
+        assertThat(response.getData().getCaseIssue().getD10()).isNull();
+        assertThat(response.getData().getCaseIssue().getActiveDocumentSlots()).isNull();
+        assertThat(response.getData().getCaseIssue().getReviewSelectedParties()).isNull();
+    }
+
+    @Test
+    void shouldHandleNullCaseIssueInAboutToSubmit() {
+        final CaseData caseData = caseData();
+        caseData.setCicCase(CicCase.builder().build());
+        caseData.setCaseIssue(null);
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setData(caseData);
+
+        when(bankHolidayService.getScottishBankHolidays(anyString())).thenReturn(testBankHolidayResponse);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerIssueCase.aboutToSubmit(caseDetails, caseDetails);
+
+        assertThat(response.getData().getCaseIssue()).isNotNull();
+        assertThat(response.getData().getCaseIssue().getDocumentList().getValue()).isEmpty();
     }
 
     @ParameterizedTest
@@ -315,6 +465,21 @@ class CaseworkerIssueCaseTest {
         caseworkerIssueCase.aboutToSubmit(details, details);
 
         verify(bankHolidayService, times(1)).getScottishBankHolidays(bankHolidayUrl);
+    }
+
+    @Test
+    void shouldMoveDueDateWhenCalculatedDateIsABankHoliday() {
+        LocalDate calculatedDueDate = LocalDate.now().plusDays(42);
+        CaseData caseData = CaseData.builder().cicCase(CicCase.builder().build()).build();
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(caseData);
+        when(bankHolidayService.getScottishBankHolidays(bankHolidayUrl))
+            .thenReturn(getBankHolidayResponseWithDates(List.of(calculatedDueDate)));
+
+        caseworkerIssueCase.aboutToSubmit(details, details);
+
+        assertThat(caseData.getCicCase().getRespondentBundleDueDate())
+            .isEqualTo(caseworkerIssueCase.getNextWorkingDay(calculatedDueDate, Set.of(calculatedDueDate)));
     }
 
     private BankHolidayResponse getBankHolidayResponse() {

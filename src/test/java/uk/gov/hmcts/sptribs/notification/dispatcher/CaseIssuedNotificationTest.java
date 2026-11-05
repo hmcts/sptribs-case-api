@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -232,6 +233,54 @@ public class CaseIssuedNotificationTest {
             TemplateName.CASE_ISSUED_RESPONDENT_EMAIL);
     }
 
+    @Test
+    void shouldCalculateMissingCaseTimingBeforeNotifyingRespondent() {
+        CaseData data = getMockCaseData();
+        data.getCicCase().setInitialCicaDecisionDate(LocalDate.of(2025, 1, 1));
+        data.getCicCase().setCaseReceivedDate(LocalDate.of(2025, 3, 1));
+        data.getCicCase().setRespondentBundleDueDate(TODAY);
+        Map<String, Object> expectedVars = new HashMap<>();
+        expectedVars.put(CommonConstants.CIC_CASE_RESPONDENT_NAME, data.getCicCase().getRespondentName());
+        expectedVars.put(CommonConstants.CIC_BUNDLE_DUE_DATE_TEXT,
+            "You should provide the tribunal and the Subject/Applicant/Representative with a case bundle by " + TODAY_FORMATTED);
+
+        caseIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
+
+        assertThat(data.getCicCase().getIsCaseInTime()).isEqualTo(YesOrNo.YES);
+        verify(notificationHelper).buildEmailNotificationRequest(
+            data.getCicCase().getAlternativeRespondentEmail(),
+            expectedVars,
+            TemplateName.CASE_ISSUED_RESPONDENT_EMAIL);
+    }
+
+    @Test
+    void shouldSendWithoutAttachmentsWhenCaseIssueHasNoDocumentList() {
+        CaseData data = getMockCaseData();
+        data.getCicCase().setRespondentBundleDueDate(TODAY);
+        data.getCicCase().setIsCaseInTime(YesOrNo.NO);
+        data.setCaseIssue(new CaseIssue());
+
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+            .thenReturn(NotificationRequest.builder().build());
+        caseIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
+
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
+    }
+
+    @Test
+    void shouldSendWithoutAttachmentsWhenCaseIssueIsMissing() {
+        CaseData data = getMockCaseData();
+        data.setCaseIssue(null);
+        data.getCicCase().setRespondentBundleDueDate(TODAY);
+        data.getCicCase().setIsCaseInTime(YesOrNo.YES);
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+            .thenReturn(NotificationRequest.builder().build());
+
+        caseIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
+
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
+    }
+
 
     @Test
     void shouldNotifyRespondentOfCaseIssuedCitizenWithEmailWithAttachmentsDateInTime() {
@@ -262,7 +311,10 @@ public class CaseIssuedNotificationTest {
 
 
         DynamicMultiSelectList dynamicMultiSelectList = DocumentListUtil.prepareDocumentList(data, "test.url");
-        dynamicMultiSelectList.setValue(dynamicMultiSelectList.getListItems());
+        dynamicMultiSelectList.setValue(List.of(uk.gov.hmcts.ccd.sdk.type.DynamicListElement.builder()
+            .code(dynamicMultiSelectList.getListItems().getFirst().getCode())
+            .label("[another.pdf](test.url/documents/other-document-id/binary)")
+            .build()));
         DocumentListUtil.getAllCaseDocuments(data);
         final CaseIssue caseIssue = CaseIssue.builder()
             .documentList(dynamicMultiSelectList)
@@ -278,7 +330,7 @@ public class CaseIssuedNotificationTest {
                 + TODAY_FORMATTED);
 
         //When
-        when(notificationHelper.buildDocumentList(caseIssue.getDocumentList(), 5))
+        when(notificationHelper.buildDocumentListFromDocuments(List.of(cicDocument), 5))
             .thenReturn(getDocumentUploadMap());
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
@@ -339,7 +391,7 @@ public class CaseIssuedNotificationTest {
                 + ". Do not issue to the Subject/Applicant/Representative until we notify you the appeal has been admitted.");
 
         //When
-        when(notificationHelper.buildDocumentList(caseIssue.getDocumentList(), 5))
+        when(notificationHelper.buildDocumentListFromDocuments(List.of(cicDocument), 5))
             .thenReturn(getDocumentUploadMap());
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
