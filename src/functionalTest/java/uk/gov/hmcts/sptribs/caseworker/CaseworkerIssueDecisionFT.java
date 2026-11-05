@@ -142,7 +142,7 @@ public class CaseworkerIssueDecisionFT extends FunctionalTestSuite {
     @ParameterizedTest
     @ValueSource(strings = {
         "CIC3 - Rule 27",
-        "CIC11 - Strike Out Decision Notice"
+        "CIC11 - Strike Out Appeal"
     })
     public void shouldCloseCaseWhenIssuingClosingDecisionTemplate(String template) throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
@@ -161,7 +161,7 @@ public class CaseworkerIssueDecisionFT extends FunctionalTestSuite {
     @ParameterizedTest
     @ValueSource(strings = {
         "CIC3 - Rule 27",
-        "CIC11 - Strike Out Decision Notice"
+        "CIC11 - Strike Out Appeal"
     })
     public void shouldKeepCaseManagementWhenIssuingUploadedDecision(String template) throws Exception {
         final Map<String, Object> caseData = caseData(UPLOAD_DOCUMENT_CALLBACK_REQUEST);

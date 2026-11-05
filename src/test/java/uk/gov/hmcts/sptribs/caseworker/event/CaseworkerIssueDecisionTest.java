@@ -233,13 +233,13 @@ class CaseworkerIssueDecisionTest {
     private static Stream<Arguments> decisionStates() {
         return Stream.of(
             Arguments.of(NoticeOption.CREATE_FROM_TEMPLATE, DecisionTemplate.RULE_27, CaseClosed),
-            Arguments.of(NoticeOption.CREATE_FROM_TEMPLATE, DecisionTemplate.STRIKE_OUT_DECISION_NOTICE, CaseClosed),
+            Arguments.of(NoticeOption.CREATE_FROM_TEMPLATE, DecisionTemplate.STRIKE_OUT_APPEAL, CaseClosed),
             Arguments.of(NoticeOption.CREATE_FROM_TEMPLATE, DecisionTemplate.STRIKE_OUT_WARNING, CaseManagement),
             Arguments.of(NoticeOption.CREATE_FROM_TEMPLATE, DecisionTemplate.ELIGIBILITY, CaseManagement),
             Arguments.of(NoticeOption.CREATE_FROM_TEMPLATE, DecisionTemplate.BLANK_DECISION_NOTICE, CaseManagement),
             Arguments.of(NoticeOption.UPLOAD_FROM_COMPUTER, null, CaseManagement),
             Arguments.of(NoticeOption.UPLOAD_FROM_COMPUTER, DecisionTemplate.RULE_27, CaseManagement),
-            Arguments.of(NoticeOption.UPLOAD_FROM_COMPUTER, DecisionTemplate.STRIKE_OUT_DECISION_NOTICE, CaseManagement)
+            Arguments.of(NoticeOption.UPLOAD_FROM_COMPUTER, DecisionTemplate.STRIKE_OUT_APPEAL, CaseManagement)
         );
     }
 

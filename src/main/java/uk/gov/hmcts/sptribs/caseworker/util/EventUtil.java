@@ -104,7 +104,7 @@ public final class EventUtil {
             mainContent = DocmosisTemplateConstants.ME_JOINT_MAIN_CONTENT;
         } else if (decision.equals(DecisionTemplate.STRIKE_OUT_WARNING)) {
             mainContent = DocmosisTemplateConstants.STRIKE_OUT_WARNING_MAIN_CONTENT;
-        } else if (decision.equals(DecisionTemplate.STRIKE_OUT_DECISION_NOTICE)) {
+        } else if (decision.equals(DecisionTemplate.STRIKE_OUT_APPEAL)) {
             mainContent = DocmosisTemplateConstants.STRIKE_OUT_NOTICE_MAIN_CONTENT;
         } else if (decision.equals(DecisionTemplate.PRO_FORMA_SUMMONS)) {
             mainContent = DocmosisTemplateConstants.PRO_FORMA_MAIN_CONTENT;
