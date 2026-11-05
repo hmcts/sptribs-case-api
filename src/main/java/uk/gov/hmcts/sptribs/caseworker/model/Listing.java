@@ -172,6 +172,19 @@ public class Listing {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
 
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private String hearingJudgeHearingId;
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private String hearingJudgeTaskId;
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate hearingJudgeTaskReleaseDate;
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private YesNo hearingJudgeTaskRequested;
+
     @CCD(
         label = "Start time (24 hour format; e.g. 14:30)",
         regex = "^(2[0-3]|[01]?[0-9]):([0-5]?[0-9])$",
