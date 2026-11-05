@@ -4,8 +4,8 @@ import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
-import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.OrderDecisionUploadCICDocument;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public final class DocumentManagementUtil {
-    public static final CICDocument EMPTY_DOCUMENT = new CICDocument();
+    public static final OrderDecisionUploadCICDocument EMPTY_ORDER_DECISION_UPLOAD_DOCUMENT = new OrderDecisionUploadCICDocument();
 
     private DocumentManagementUtil() {
 
