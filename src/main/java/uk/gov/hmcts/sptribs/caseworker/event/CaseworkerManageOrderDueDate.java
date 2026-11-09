@@ -50,7 +50,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerManageOrderDueDate implements CCDConfig<CaseData, State, UserRole> {
 
     private static final CcdPageConfiguration manageSelectOrderTemplates = new ManageSelectOrders();
     private static final CcdPageConfiguration amendOrderDueDates = new AmendOrderDueDates();
