@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.controllers;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.FeignException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,7 @@ import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
+import uk.gov.hmcts.sptribs.ciccase.service.CicaRoleService;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
 import uk.gov.hmcts.sptribs.controllers.mapper.CaseworkerCICDocumentMapper;
@@ -41,6 +43,9 @@ import static java.util.Collections.emptyList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -82,6 +87,9 @@ class DocumentControllerIT {
     private CicaCaseService cicaCaseService;
 
     @MockitoBean
+    private CicaRoleService cicaRoleService;
+
+    @MockitoBean
     private DocumentsService documentsService;
 
     @MockitoBean
@@ -116,7 +124,6 @@ class DocumentControllerIT {
         document.mimeType = mimeType;
 
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
-        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(CIC_USER);
         when(caseDocumentClientApi.getDocument(
             eq(TEST_AUTHORIZATION_TOKEN),
             eq(TEST_SERVICE_AUTH_TOKEN),
@@ -142,12 +149,99 @@ class DocumentControllerIT {
     }
 
     @Test
+    void shouldRetryWithCitizenTokenAfterAssigningRoleForCdamNotFound() throws Exception {
+        mockAuthorisedCaseAccess();
+        Document document = new Document();
+        document.originalDocumentName = "test.pdf";
+        document.mimeType = "application/pdf";
+        FeignException notFound = org.mockito.Mockito.mock(FeignException.class);
+        when(notFound.status()).thenReturn(404);
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+        when(caseDocumentClientApi.getDocument(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, TEST_CASE_DATA_FILE_UUID))
+            .thenThrow(notFound)
+            .thenReturn(ResponseEntity.ok(document));
+        byte[] content = "document".getBytes();
+        when(caseDocumentClientApi.getDocumentBinary(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN,
+            TEST_CASE_DATA_FILE_UUID)).thenReturn(ResponseEntity.ok(content));
+
+        mockMvc.perform(get(String.format(DOWNLOAD_DOCUMENT_URL, TEST_CASE_DATA_FILE_UUID))
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
+                .header("X-Postcode", TEST_POSTCODE))
+            .andExpect(status().isOk())
+            .andExpect(content().bytes(content));
+
+        verify(cicaRoleService).ensureCreatorRole(TEST_CASE_ID_STRING, TEST_AUTHORIZATION_TOKEN);
+        verify(caseDocumentClientApi, org.mockito.Mockito.times(2)).getDocument(
+            TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, TEST_CASE_DATA_FILE_UUID);
+    }
+
+    @Test
+    void shouldNotAssignRoleWhenDocumentBinaryIsMissing() throws Exception {
+        mockAuthorisedCaseAccess();
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+        when(caseDocumentClientApi.getDocument(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, TEST_CASE_DATA_FILE_UUID))
+            .thenReturn(ResponseEntity.ok(new Document()));
+        FeignException notFound = org.mockito.Mockito.mock(FeignException.class);
+        when(notFound.status()).thenReturn(404);
+        when(caseDocumentClientApi.getDocumentBinary(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN,
+            TEST_CASE_DATA_FILE_UUID)).thenThrow(notFound);
+
+        mockMvc.perform(get(String.format(DOWNLOAD_DOCUMENT_URL, TEST_CASE_DATA_FILE_UUID))
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
+                .header("X-Postcode", TEST_POSTCODE))
+            .andExpect(status().isNotFound());
+
+        verifyNoInteractions(cicaRoleService);
+        verify(caseDocumentClientApi).getDocument(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, TEST_CASE_DATA_FILE_UUID);
+        verify(caseDocumentClientApi).getDocumentBinary(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN,
+            TEST_CASE_DATA_FILE_UUID);
+    }
+
+    @Test
+    void shouldNotRetryDownloadWhenRoleRecoveryFails() throws Exception {
+        mockAuthorisedCaseAccess();
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+        FeignException notFound = org.mockito.Mockito.mock(FeignException.class);
+        when(notFound.status()).thenReturn(404);
+        when(caseDocumentClientApi.getDocument(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, TEST_CASE_DATA_FILE_UUID))
+            .thenThrow(notFound);
+        org.mockito.Mockito.doThrow(new IllegalStateException("Role lookup unavailable"))
+            .when(cicaRoleService).ensureCreatorRole(TEST_CASE_ID_STRING, TEST_AUTHORIZATION_TOKEN);
+
+        mockMvc.perform(get(String.format(DOWNLOAD_DOCUMENT_URL, TEST_CASE_DATA_FILE_UUID))
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
+                .header("X-Postcode", TEST_POSTCODE))
+            .andExpect(status().isInternalServerError());
+
+        verify(caseDocumentClientApi).getDocument(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, TEST_CASE_DATA_FILE_UUID);
+        verify(caseDocumentClientApi, never()).getDocumentBinary(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN,
+            TEST_CASE_DATA_FILE_UUID);
+    }
+
+    @Test
+    void shouldNotFetchUnlinkedDocumentOrAssignRole() throws Exception {
+        mockAuthorisedCaseAccess();
+        when(documentsService.isDocumentOnCase(Long.valueOf(TEST_CASE_ID_STRING), TEST_CASE_DATA_FILE_UUID.toString()))
+            .thenReturn(false);
+
+        mockMvc.perform(get(String.format(DOWNLOAD_DOCUMENT_URL, TEST_CASE_DATA_FILE_UUID))
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
+                .header("X-Postcode", TEST_POSTCODE))
+            .andExpect(status().isNotFound());
+
+        verifyNoInteractions(caseDocumentClientApi, cicaRoleService);
+    }
+
+    @Test
     void shouldReturn500WhenDocumentNotFound() throws Exception {
         // Given
         mockAuthorisedCaseAccess();
 
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
-        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(CIC_USER);
         when(caseDocumentClientApi.getDocument(
             eq(TEST_AUTHORIZATION_TOKEN),
             eq(TEST_SERVICE_AUTH_TOKEN),
@@ -176,7 +270,6 @@ class DocumentControllerIT {
         UUID documentId = UUID.randomUUID();
 
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
-        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(CIC_USER);
         when(caseDocumentClientApi.getDocument(
             eq(TEST_AUTHORIZATION_TOKEN),
             eq(TEST_SERVICE_AUTH_TOKEN),
@@ -202,7 +295,6 @@ class DocumentControllerIT {
         mockAuthorisedCaseAccess();
 
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
-        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(CIC_USER);
         when(caseDocumentClientApi.getDocument(
             eq(TEST_AUTHORIZATION_TOKEN),
             eq(TEST_SERVICE_AUTH_TOKEN),
@@ -218,7 +310,7 @@ class DocumentControllerIT {
     }
 
     @Test
-    void shouldReturn500ForInvalidDocumentId() throws Exception {
+    void shouldReturn400ForInvalidDocumentId() throws Exception {
         // Given
         mockAuthorisedCaseAccess();
 
@@ -229,7 +321,7 @@ class DocumentControllerIT {
                 .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
                 .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
                 .header("X-Postcode", TEST_POSTCODE))
-            .andExpect(status().isInternalServerError());
+            .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -246,7 +338,6 @@ class DocumentControllerIT {
 
 
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
-        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(CIC_USER);
         when(caseDocumentClientApi.getDocument(
             eq(TEST_AUTHORIZATION_TOKEN),
             eq(TEST_SERVICE_AUTH_TOKEN),
@@ -302,6 +393,7 @@ class DocumentControllerIT {
                 "{\"cicaCaseResponse\":{\"id\":\"" + TEST_CASE_ID_STRING + "\",\"state\":\"CaseManagement\"}"
                     + ",\"documentResponse\":{\"contactPartiesDocuments\":[],\"orderAndDecisionDocuments\":[],"
                     + "\"latestCaseBundleDocuments\":[]}}"));
+        verifyNoInteractions(cicaRoleService);
     }
 
     @Test
@@ -317,6 +409,7 @@ class DocumentControllerIT {
                 .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
                 .header("X-Postcode", invalidPostcode))
             .andExpect(status().isForbidden());
+        verifyNoInteractions(cicaRoleService);
     }
 
     @Test
@@ -332,6 +425,7 @@ class DocumentControllerIT {
                 .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
                 .header("X-Postcode", invalidPostcode))
             .andExpect(status().isUnauthorized());
+        verifyNoInteractions(cicaRoleService);
     }
 
     @Test
@@ -396,6 +490,7 @@ class DocumentControllerIT {
         when(cicaCaseService.checkIfUserHasAccessWithPostcode(TEST_CASE_ID_STRING, TEST_AUTHORIZATION_TOKEN, TEST_POSTCODE))
             .thenReturn(buildAuthorisedCaseEntity());
         when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(CIC_USER);
+        when(documentsService.isDocumentOnCase(eq(Long.valueOf(TEST_CASE_ID_STRING)), any())).thenReturn(true);
     }
 
     private CicaCaseEntity buildAuthorisedCaseEntity() {
@@ -417,9 +512,3 @@ class DocumentControllerIT {
             .build();
     }
 }
-
-
-
-
-
-

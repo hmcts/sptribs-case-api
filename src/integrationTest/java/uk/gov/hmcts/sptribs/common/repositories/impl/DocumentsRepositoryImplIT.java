@@ -2,6 +2,8 @@ package uk.gov.hmcts.sptribs.common.repositories.impl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.sptribs.IntegrationTestBase;
@@ -193,6 +195,66 @@ class DocumentsRepositoryImplIT extends IntegrationTestBase {
     }
 
     @Test
+    void shouldFindOnCaseByDocumentIdUsingDocumentUrlOnly() {
+        //given
+        DocumentEntity document = saveDocumentWithUrls("abc123", "other-document");
+
+        //when
+        Optional<DocumentEntity> result = repository.findOnCaseByDocumentId(123L, "abc123");
+
+        //then
+        assertThat(result).isPresent();
+        assertThat(result.get().getId()).isEqualTo(document.getId());
+    }
+
+    @Test
+    void shouldFindOnCaseByDocumentIdUsingBinaryUrlOnly() {
+        //given
+        DocumentEntity document = saveDocumentWithUrls("other-document", "abc123");
+
+        //when
+        Optional<DocumentEntity> result = repository.findOnCaseByDocumentId(123L, "abc123");
+
+        //then
+        assertThat(result).isPresent();
+        assertThat(result.get().getId()).isEqualTo(document.getId());
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "qabc123, other-document",
+        "abc123q, other-document",
+        "other-document, qabc123",
+        "other-document, abc123q"
+    })
+    void shouldNotFindOnCaseByPartialDocumentId(String documentUrlId, String binaryUrlId) {
+        //given
+        saveDocumentWithUrls(documentUrlId, binaryUrlId);
+
+        //when
+        Optional<DocumentEntity> result = repository.findOnCaseByDocumentId(123L, "abc123");
+
+        //then
+        assertThat(result).isEmpty();
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "abc123, other-document",
+        "other-document, abc123"
+    })
+    void shouldNotFindDocumentOnAnotherCaseByDocumentId(String documentUrlId, String binaryUrlId) {
+        //given
+        saveDocumentWithUrls(documentUrlId, binaryUrlId);
+
+        //when
+        Optional<DocumentEntity> result = repository.findOnCaseByDocumentId(456L, "abc123");
+
+        //then
+        assertThat(result).isEmpty();
+    }
+
+    @Test
     void shouldFindContactPartyDocuments() {
         //given
         OffsetDateTime sentOn = OffsetDateTime.now().truncatedTo(ChronoUnit.MICROS);
@@ -247,5 +309,15 @@ class DocumentsRepositoryImplIT extends IntegrationTestBase {
         assertThat(details.document().getDocumentBinaryUrl()).isEqualTo(binaryUrl);
         assertThat(details.sentOn().toLocalDateTime().truncatedTo(ChronoUnit.MICROS)).isEqualTo(
             sentOn.toLocalDateTime().truncatedTo(ChronoUnit.MICROS));
+    }
+
+    private DocumentEntity saveDocumentWithUrls(String documentUrlId, String binaryUrlId) {
+        return repository.saveAndFlush(DocumentEntity.builder()
+            .caseReferenceNumber(123L)
+            .documentUrl("http://dm-store/documents/" + documentUrlId)
+            .documentBinaryUrl("http://dm-store/documents/" + binaryUrlId + "/binary")
+            .documentFilename("test-document.pdf")
+            .caseDocumentTypeId(DOCUMENT_MANAGEMENT_TYPE_ID)
+            .build());
     }
 }

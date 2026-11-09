@@ -116,10 +116,20 @@ public abstract class FunctionalTestSuite {
     protected CaseDocumentsFTDataManager caseDocumentsFTDataManager;
 
     protected CaseDetails createCaseInCcd(boolean createCaseWithIdamAccessEmail) {
+        return createCaseInCcd(createCaseWithIdamAccessEmail, Map.of());
+    }
+
+    protected CaseDetails createCaseInCcd(boolean createCaseWithIdamAccessEmail, Map<String, Object> additionalCaseData) {
         String caseworkerToken = idamTokenGenerator.generateIdamTokenForCaseworker();
         String s2sTokenForCaseApi = serviceAuthenticationGenerator.generate();
         String caseworkerUserId = idamTokenGenerator.getUserInfoFor(caseworkerToken).getUid();
         StartEventResponse startEventResponse = startEventForCreateCase(caseworkerToken, s2sTokenForCaseApi, caseworkerUserId);
+
+        Map<String, Object> caseData = new HashMap<>(additionalCaseData);
+        if (createCaseWithIdamAccessEmail) {
+            caseData.put("cicCaseEmail", "sptribsauto-citizen@mailinator.com");
+            caseData.put("cicCaseAddress", Map.of("PostCode", "SW1A 1AA"));
+        }
 
         CaseDataContent caseDataContent = CaseDataContent.builder()
             .eventToken(startEventResponse.getToken())
@@ -128,15 +138,8 @@ public abstract class FunctionalTestSuite {
                 .summary("Create draft case")
                 .description("Create draft case for functional tests")
                 .build())
-            .data(Map.of())
+            .data(caseData)
             .build();
-
-        if (createCaseWithIdamAccessEmail) {
-            caseDataContent.setData(Map.of(
-                "cicCaseEmail", "sptribsauto-citizen@mailinator.com",
-                "cicCaseAddress", Map.of("PostCode", "SW1A 1AA")
-            ));
-        }
 
         CaseDetails createdCase = submitNewCase(caseDataContent, caseworkerToken, s2sTokenForCaseApi, caseworkerUserId);
         functionalTestDataManager.addReference(createdCase.getId());

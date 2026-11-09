@@ -134,10 +134,13 @@ public interface DocumentsRepository extends JpaRepository<DocumentEntity, Long>
     );
 
     @Query("""
-            SELECT d
-            FROM DocumentEntity d
-            WHERE d.documentUrl LIKE %:documentId% OR d.documentBinaryUrl LIKE %:documentId%
+        select d
+        from DocumentEntity d
+        where d.caseReferenceNumber = :caseReference
+            and (d.documentUrl like concat('%/', :documentId)
+                or d.documentBinaryUrl like concat(concat('%/', :documentId), '/binary'))
         """)
-    Optional<DocumentEntity> findByDocumentIdUuid(
+    Optional<DocumentEntity> findOnCaseByDocumentId(
+        @Param("caseReference") Long caseReference,
         @Param("documentId") String documentId);
 }
