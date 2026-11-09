@@ -26,19 +26,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.MINOR_FATAL_SUBJECT_ERROR_MESSAGE;
 import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAST_ONE_ERROR_MESSAGE;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_FINAL_DECISION;
 import static uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC.APPLICANT_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory.FATAL;
 import static uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory.PARAGRAPH_26;
 import static uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC.REPRESENTATIVE;
 import static uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC.SUBJECT;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.CLOSE_CASE_SELECT_RECIPIENTS_MID_EVENT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ERRORS;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.ISSUE_FINAL_DECISION_SELECT_RECIPIENTS_MID_EVENT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
+import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CLOSE_THE_CASE;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -77,14 +77,14 @@ public class SelectRecipientsHelperIT {
             )
             .build();
 
-        String response = mockMvc.perform(post(ISSUE_FINAL_DECISION_SELECT_RECIPIENTS_MID_EVENT_URL)
+        String response = mockMvc.perform(post(CLOSE_CASE_SELECT_RECIPIENTS_MID_EVENT_URL)
             .contentType(APPLICATION_JSON)
             .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
             .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
             .content(objectMapper.writeValueAsString(
                 callbackRequest(
                     caseData,
-                    CASEWORKER_ISSUE_FINAL_DECISION)))
+                    CASEWORKER_CLOSE_THE_CASE)))
             .accept(APPLICATION_JSON))
             .andExpect(
                 status().isOk())
@@ -100,14 +100,14 @@ public class SelectRecipientsHelperIT {
 
     @Test
     void shouldReturnSelectAtLeastOneContactPartyErrorOnMidEvent() throws Exception {
-        mockMvc.perform(post(ISSUE_FINAL_DECISION_SELECT_RECIPIENTS_MID_EVENT_URL)
+        mockMvc.perform(post(CLOSE_CASE_SELECT_RECIPIENTS_MID_EVENT_URL)
             .contentType(APPLICATION_JSON)
             .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
             .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
             .content(objectMapper.writeValueAsString(
                 callbackRequest(
                     caseData(),
-                    CASEWORKER_ISSUE_FINAL_DECISION)))
+                    CASEWORKER_CLOSE_THE_CASE)))
             .accept(APPLICATION_JSON))
             .andExpect(
                 status().isOk())
@@ -129,14 +129,14 @@ public class SelectRecipientsHelperIT {
             )
             .build();
 
-        mockMvc.perform(post(ISSUE_FINAL_DECISION_SELECT_RECIPIENTS_MID_EVENT_URL)
+        mockMvc.perform(post(CLOSE_CASE_SELECT_RECIPIENTS_MID_EVENT_URL)
             .contentType(APPLICATION_JSON)
             .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
             .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
             .content(objectMapper.writeValueAsString(
                 callbackRequest(
                     caseData,
-                    CASEWORKER_ISSUE_FINAL_DECISION)))
+                    CASEWORKER_CLOSE_THE_CASE)))
             .accept(APPLICATION_JSON))
             .andExpect(
                 status().isOk())
