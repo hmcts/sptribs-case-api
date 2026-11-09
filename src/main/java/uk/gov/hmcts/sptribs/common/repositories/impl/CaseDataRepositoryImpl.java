@@ -57,13 +57,6 @@ public class CaseDataRepositoryImpl implements CaseDataRepository {
             + "  LOWER(c.data #>> '{cicCaseEmail}') = LOWER(:userEmail) "
             + "OR LOWER(c.data #>> '{cicCaseApplicantEmailAddress}') = LOWER(:userEmail) "
             + "OR LOWER(c.data #>> '{cicCaseRepresentativeEmailAddress}') = LOWER(:userEmail) "
-            + "  OR EXISTS ( "
-            + "    SELECT 1 "
-            + "    FROM jsonb_array_elements( "
-            + "      COALESCE(c.data->'SearchCriteria'->'SearchParties', '[]'::jsonb) "
-            + "    ) sp "
-            + "    WHERE LOWER(sp->'value'->>'EmailAddress') = LOWER(:userEmail) "
-            + "  ) "
             + ") "
             + "ORDER BY c.last_modified DESC "
             + "LIMIT 1";
