@@ -245,7 +245,6 @@ class DocumentsRepositoryImplIT extends IntegrationTestBase {
     })
     void shouldNotFindDocumentOnAnotherCaseByDocumentId(String documentUrlId, String binaryUrlId) {
         //given
-        caseDataITManager.addCaseData(456L, "test", "{}");
         saveDocumentWithUrls(documentUrlId, binaryUrlId);
 
         //when
