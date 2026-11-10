@@ -63,7 +63,7 @@ class CaseDataRepositoryImplIT extends IntegrationTestBase {
     }
 
     @Test
-    void givenCCDReference_thenShouldFindCaseBySearchPartiesEmail() {
+    void givenCCDReference_thenShouldReturnEmptyWhenFindBySearchCriteria() {
         caseDataITManager.addCaseData(123L,"Submitted", """
                 {
                   "SearchCriteria": {
