@@ -116,4 +116,17 @@ class CaseDataRepositoryImplIT extends IntegrationTestBase {
 
         assertThat(result).isPresent();
     }
+
+    @Test
+    void givenCCDReference_thenShouldFindCaseByCicCaseApplicantEmailAddress() {
+        caseDataITManager.addCaseData(123L,"Submitted", """
+                {
+                  "cicCaseApplicantEmailAddress": "testApplicant@example.com"
+                }
+            """);
+
+        var result = repository.findCase("123", "testApplicant@example.com");
+
+        assertThat(result).isPresent();
+    }
 }
