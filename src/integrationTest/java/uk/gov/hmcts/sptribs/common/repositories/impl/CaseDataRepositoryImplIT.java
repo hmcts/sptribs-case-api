@@ -80,7 +80,7 @@ class CaseDataRepositoryImplIT extends IntegrationTestBase {
 
         var result = repository.findCase("123", "test@example.com");
 
-        assertThat(result).isPresent();
+        assertThat(result).isEmpty();
     }
 
     @Test
@@ -90,5 +90,18 @@ class CaseDataRepositoryImplIT extends IntegrationTestBase {
         var result = repository.findCase("123", "wrong@example.com");
 
         assertThat(result).isEmpty();
+    }
+
+    @Test
+    void givenCCDReference_thenShouldFindCaseByCicCaseRepresentativeEmailAddress() {
+        caseDataITManager.addCaseData(123L,"Submitted", """
+                {
+                  "cicCaseRepresentativeEmailAddress": "testRep@example.com"
+                }
+            """);
+
+        var result = repository.findCase("123", "testRep@example.com");
+
+        assertThat(result).isPresent();
     }
 }
