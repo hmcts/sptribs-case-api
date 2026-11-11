@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.HandlerMapping;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public class RequestInterceptor implements HandlerInterceptor {
 
     @Autowired
     @Lazy
-    private AuthTokenValidator tokenValidator;
+    AuthTokenValidator tokenValidator;
 
     @Value("#{'${s2s-authorised.services}'.split(',')}")
     private List<String> authorisedServices;
@@ -57,11 +58,18 @@ public class RequestInterceptor implements HandlerInterceptor {
             throw new UnAuthorisedServiceException("Service " + serviceName + " not in configured list for accessing callback");
         }
 
-        if (request.getRequestURI().startsWith(CCD_PERSISTENCE_ENDPOINT_PREFIX) && !CCD_DATA_SERVICE.equals(serviceName)) {
+        if (isCcdPersistenceEndpoint(request) && !CCD_DATA_SERVICE.equals(serviceName)) {
             log.error(CCD_PERSISTENCE_UNAUTHORISED);
             throw new UnAuthorisedServiceException(CCD_PERSISTENCE_UNAUTHORISED);
         }
 
         return true;
+    }
+
+    private boolean isCcdPersistenceEndpoint(HttpServletRequest request) {
+        // Match against the decoded path
+        Object matchingPattern = request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
+        return matchingPattern != null
+            && matchingPattern.toString().startsWith(CCD_PERSISTENCE_ENDPOINT_PREFIX);
     }
 }

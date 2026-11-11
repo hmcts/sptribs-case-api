@@ -5,6 +5,9 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.test.context.ContextConfiguration;
@@ -16,6 +19,7 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.sptribs.IntegrationTestBase;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
+import uk.gov.hmcts.sptribs.caseworker.model.NoticeOption;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
@@ -31,6 +35,7 @@ import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
@@ -226,6 +231,43 @@ public class CaseworkerIssueDecisionIT extends IntegrationTestBase {
 
         String actualResponse = result.getResponse().getContentAsString();
         assertThatJson(actualResponse).isEqualTo(expectedResponse(CASEWORKER_ISSUE_DECISION_ABOUT_TO_SUBMIT_RESPONSE));
+    }
+
+    @ParameterizedTest
+    @MethodSource("decisionStates")
+    void shouldReturnStateForCompletedDecision(NoticeOption noticeOption, DecisionTemplate template,
+                                               String expectedState) throws Exception {
+        final CaseData caseData = CaseData.builder()
+            .caseIssueDecision(CaseIssueDecision.builder()
+                .decisionNotice(noticeOption)
+                .issueDecisionTemplate(template)
+                .build())
+            .build();
+
+        String response = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
+                .contentType(APPLICATION_JSON)
+                .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .content(objectMapper.writeValueAsString(callbackRequest(caseData, CASEWORKER_ISSUE_DECISION)))
+                .accept(APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString();
+
+        assertThatJson(response).inPath("$.state").isString().isEqualTo(expectedState);
+        assertThatJson(response).inPath("$.data.caseIssueDecisionDecisionDate").isString();
+    }
+
+    private static Stream<Arguments> decisionStates() {
+        return Stream.of(
+            Arguments.of(NoticeOption.CREATE_FROM_TEMPLATE, DecisionTemplate.RULE_27, "CaseClosed"),
+            Arguments.of(NoticeOption.CREATE_FROM_TEMPLATE, DecisionTemplate.STRIKE_OUT_DECISION_NOTICE, "CaseClosed"),
+            Arguments.of(NoticeOption.CREATE_FROM_TEMPLATE, DecisionTemplate.STRIKE_OUT_WARNING, "CaseManagement"),
+            Arguments.of(NoticeOption.CREATE_FROM_TEMPLATE, DecisionTemplate.ELIGIBILITY, "CaseManagement"),
+            Arguments.of(NoticeOption.CREATE_FROM_TEMPLATE, DecisionTemplate.BLANK_DECISION_NOTICE, "CaseManagement"),
+            Arguments.of(NoticeOption.UPLOAD_FROM_COMPUTER, null, "CaseManagement"),
+            Arguments.of(NoticeOption.UPLOAD_FROM_COMPUTER, DecisionTemplate.RULE_27, "CaseManagement"),
+            Arguments.of(NoticeOption.UPLOAD_FROM_COMPUTER, DecisionTemplate.STRIKE_OUT_DECISION_NOTICE, "CaseManagement")
+        );
     }
 
     @Test

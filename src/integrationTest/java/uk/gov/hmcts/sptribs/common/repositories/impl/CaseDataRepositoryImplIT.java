@@ -1,6 +1,8 @@
 package uk.gov.hmcts.sptribs.common.repositories.impl;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.sptribs.IntegrationTestBase;
@@ -27,9 +29,19 @@ class CaseDataRepositoryImplIT extends IntegrationTestBase {
         assertThat(result).isTrue();
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"Draft", "DSS-Draft"})
+    void givenCCDReference_thenShouldReturnTrueWhenCaseIsDraft(String state) {
+        caseDataITManager.addCaseData(123L, state, "{}");
+
+        boolean result = repository.checkCaseExists("123");
+
+        assertThat(result).isTrue();
+    }
+
     @Test
-    void givenCCDReference_thenShouldReturnFalseWhenStateIsInvalid() {
-        caseDataITManager.addCaseData(123L,"Draft", "{}");
+    void givenCCDReference_thenShouldReturnFalseWhenCaseIsExpired() {
+        caseDataITManager.addCaseData(123L, "DSS-Expired", "{}");
 
         boolean result = repository.checkCaseExists("123");
 
@@ -45,6 +57,19 @@ class CaseDataRepositoryImplIT extends IntegrationTestBase {
             """);
 
         var result = repository.findCase("123", "test@example.com");
+
+        assertThat(result).isPresent();
+    }
+
+    @Test
+    void givenCCDReference_thenShouldFindCaseByEmailIgnoringCaseSensitivity() {
+        caseDataITManager.addCaseData(123L,"Submitted", """
+                {
+                  "cicCaseEmail": "test@example.com"
+                }
+            """);
+
+        var result = repository.findCase("123", "Test@Example.com");
 
         assertThat(result).isPresent();
     }

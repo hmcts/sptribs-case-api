@@ -20,8 +20,10 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionUpload;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
+import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -131,6 +133,94 @@ class CaseworkerIssueFinalDecisionTest {
     }
 
     @Test
+    void shouldShowCorrectMessageWhenSubmittedToAllPossibleParties() {
+        //Given
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+
+        final CicCase cicCase = CicCase.builder()
+            .caseSubcategory(CaseSubcategory.OTHER)
+            .partiesCIC(Set.of(PartiesCIC.SUBJECT, PartiesCIC.APPLICANT, PartiesCIC.REPRESENTATIVE))
+            .build();
+        final CaseData caseData = caseData();
+        caseData.setCicCase(cicCase);
+        details.setData(caseData);
+
+        //When
+        SubmittedCallbackResponse response = issueFinalDecision.submitted(details, beforeDetails);
+
+        //Then
+        assertThat(response.getConfirmationHeader())
+            .contains("# Final decision notice issued \n"
+                + "## A notification has been sent to: Subject, Respondent, Representative, Applicant");
+    }
+
+    @Test
+    void shouldShowCorrectMessageWhenSubmittedWithoutApplicantOrWithoutRepresentativeOnCase() {
+        //Given
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+
+        final CicCase cicCase = CicCase.builder()
+            .caseSubcategory(CaseSubcategory.OTHER)
+            .partiesCIC(Set.of(PartiesCIC.SUBJECT, PartiesCIC.REPRESENTATIVE))
+            .build();
+        final CaseData caseData = caseData();
+        caseData.setCicCase(cicCase);
+        details.setData(caseData);
+
+        //When
+        SubmittedCallbackResponse responseWithoutApplicant = issueFinalDecision.submitted(details, beforeDetails);
+
+        //Then
+        assertThat(responseWithoutApplicant.getConfirmationHeader())
+            .isEqualTo("# Final decision notice issued \n"
+                + "## A notification has been sent to: Subject, Respondent, Representative");
+
+        cicCase.setPartiesCIC(Set.of(PartiesCIC.SUBJECT, PartiesCIC.APPLICANT));
+
+        //When
+        SubmittedCallbackResponse responseWithoutRepresentative = issueFinalDecision.submitted(details, beforeDetails);
+
+        //Then
+        assertThat(responseWithoutRepresentative.getConfirmationHeader())
+            .isEqualTo("# Final decision notice issued \n"
+                + "## A notification has been sent to: Subject, Respondent, Applicant");
+    }
+
+    @Test
+    void shouldShowCorrectMessageWhenSubmittedWithFatalOrMinorSubcategory() {
+        //Given
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+
+        final CicCase cicCase = CicCase.builder()
+            .caseSubcategory(CaseSubcategory.FATAL)
+            .partiesCIC(Set.of(PartiesCIC.SUBJECT, PartiesCIC.APPLICANT, PartiesCIC.REPRESENTATIVE))
+            .build();
+        final CaseData caseData = caseData();
+        caseData.setCicCase(cicCase);
+        details.setData(caseData);
+
+        //When
+        SubmittedCallbackResponse responseWithFatalSubcategory = issueFinalDecision.submitted(details, beforeDetails);
+
+        //Then
+        assertThat(responseWithFatalSubcategory.getConfirmationHeader())
+            .isEqualTo("# Final decision notice issued \n"
+                + "## A notification has been sent to: Respondent, Representative, Applicant");
+
+        cicCase.setCaseSubcategory(CaseSubcategory.MINOR);
+        //When
+        SubmittedCallbackResponse responseWithMinorSubcategory = issueFinalDecision.submitted(details, beforeDetails);
+
+        //Then
+        assertThat(responseWithMinorSubcategory.getConfirmationHeader())
+            .isEqualTo("# Final decision notice issued \n"
+                + "## A notification has been sent to: Respondent, Representative, Applicant");
+    }
+
+    @Test
     void shouldShowCorrectMessageWhenSubmitted() {
         //Given
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
@@ -151,6 +241,29 @@ class CaseworkerIssueFinalDecisionTest {
         //Then
         assertThat(response.getConfirmationHeader())
             .contains("Final decision notice issued");
+    }
+
+    @Test
+    void shouldShowCorrectErrorMessageWhenSubmittedCatchesExceptionFromNoSetCaseSubcategory() {
+        //Given
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+
+        final CicCase cicCase = CicCase.builder()
+            .partiesCIC(Set.of(PartiesCIC.SUBJECT, PartiesCIC.APPLICANT, PartiesCIC.REPRESENTATIVE))
+            .build();
+        final CaseData caseData = caseData();
+        caseData.setCicCase(cicCase);
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        details.setData(caseData);
+
+        //When
+        SubmittedCallbackResponse response = issueFinalDecision.submitted(details, beforeDetails);
+
+        //Then
+        assertThat(response.getConfirmationHeader())
+            .isEqualTo("# Issue final decision notification failed \n"
+                + "## Please resend the notification");
     }
 
     @Test

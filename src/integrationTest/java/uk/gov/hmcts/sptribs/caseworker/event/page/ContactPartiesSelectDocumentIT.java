@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.junit.jupiter.DisabledIf;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
@@ -149,6 +150,7 @@ public class ContactPartiesSelectDocumentIT {
     }
 
     @Test
+    @DisabledIf(expression = "${feature.citizen-dashboard.enabled:true}", loadContext = true)
     void shouldReturnErrorWhenDocumentSizeExceedsLimit() throws Exception {
         UUID documentId = UUID.randomUUID();
         String label = "[Oversized Document](http://manage-case.demo.platform.hmcts.net/documents/" + documentId + ")";

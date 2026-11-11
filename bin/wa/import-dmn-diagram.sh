@@ -2,7 +2,7 @@
 
 set -eu
 workspace=${1}
-env=${2}
+ENVIRONMENT=${2}
 tenant_id=${3}
 product=${4}
 

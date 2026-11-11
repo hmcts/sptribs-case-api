@@ -58,6 +58,8 @@ idam:
 feature:
   security-classification:
     enabled: false
+  citizen-dashboard:
+    enabled: ${CITIZEN_DASHBOARD_ENABLED:false}
 
 role_assignment_mapping_api:
   url: ${ROLE_ASSIGNMENT_API_URL:http://am-org-role-mapping-service-aat.service.core-compute-aat.internal}

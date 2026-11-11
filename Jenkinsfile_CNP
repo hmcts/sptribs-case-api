@@ -1,6 +1,7 @@
 #!groovy
 
-@Library("Infrastructure")
+@Library("Infrastructure@2.12.2")
+//@Library("Infrastructure@highleveldatasetupstaging")
 
 import uk.gov.hmcts.contino.AppPipelineConfig
 import uk.gov.hmcts.contino.AppPipelineDsl
@@ -40,6 +41,7 @@ def secrets = [
                 secret('idam-data-store-client-secret','IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET'),
                 secret('idam-data-store-system-user-username','IDAM_DATA_STORE_SYSTEM_USER_USERNAME'),
                 secret('idam-data-store-system-user-password','IDAM_DATA_STORE_SYSTEM_USER_PASSWORD'),
+                secret('session-keys', 'SESSION_KEYS'),
         ],
         'sptribs-${env}'    :[
                 secret('app-insights-instrumentation-key', 'APPINSIGHTS_INSTRUMENTATIONKEY'),
@@ -73,11 +75,8 @@ def secrets = [
                 secret('s2s-case-api-secret', 'S2S_SECRET'),
                 secret('ccd-importer-username', 'DEFINITION_IMPORTER_USERNAME'),
                 secret('ccd-importer-password', 'DEFINITION_IMPORTER_PASSWORD')
-        ],
-        'sptribs-prod'    :[
-          secret('s2s-case-api-secret', 'S2S_SECRET_PROD')
         ]
-]
+  ]
 
 AppPipelineConfig pipelineConf = new AppPipelineConfig()
 pipelineConf.vaultSecrets = secrets
@@ -90,11 +89,15 @@ withPipeline(type, product, component) {
     loadVaultSecrets(secrets)
     syncBranchesWithMaster(['demo', 'perftest', 'ithc'])
     afterSuccess('checkout') {
-      def subscription = 'nonprod'
       if (env.ENVIRONMENT == 'ithc' || env.ENVIRONMENT == 'demo' || env.ENVIRONMENT == 'perftest') {
-        withSubscription(subscription) {
-            uploadDmnDiagrams()
-            uploadBpmnDiagram()
+        def subscriptions = [
+          demo  : env.DEMO_SUBSCRIPTION_NAME ?: 'nonprod',
+          perftest: env.PERFTEST_SUBSCRIPTION_NAME ?: 'qa',
+          ithc    : env.ITHC_SUBSCRIPTION_NAME ?: 'qa'
+        ]
+        withSubscription(subscriptions[env.ENVIRONMENT], product, env.ENVIRONMENT) {
+          uploadDmnDiagrams()
+          uploadBpmnDiagram()
         }
       }
     }
@@ -102,6 +105,7 @@ withPipeline(type, product, component) {
     MetricsPublisher metricsPublisher = new MetricsPublisher(this, currentBuild, product, component)
     approvedEnvironmentRepository(params.environment, metricsPublisher) {
       if(params.environment != 'prod') {
+        // enableHighLevelDataSetupForStaging()
         enableHighLevelDataSetup()
       }
     }
@@ -185,6 +189,7 @@ withPipeline(type, product, component) {
   }
 
   afterAlways('functionalTest:aat') {
+    // afterAlways('functionalTest:staging') {
     publishHTML target: [
       allowMissing         : true,
       alwaysLinkToLastBuild: true,
@@ -207,6 +212,7 @@ withPipeline(type, product, component) {
   }
 
   afterAlways('smoketest:aat') {
+    // afterAlways('smoketest:staging') {
     publishHTML target: [
       allowMissing         : true,
       alwaysLinkToLastBuild: true,
@@ -222,8 +228,34 @@ withPipeline(type, product, component) {
     generateDefinitions()
   }
 
+//  before('highleveldatasetup') {
+//    if (params.environment != 'aat') {
+//      builder.gradle('generateCCDConfig --rerun-tasks')
+//      generateDefinitions()
+//    }
+//  }
+//
+//  before('highleveldatasetup:aat') {
+//    env.ENVIRONMENT="aat"
+//    env.CASE_API_URL="http://sptribs-case-api-aat.service.core-compute-aat.internal"
+//    env.CCD_DEF_NAME="aat"
+//    env.ELASTIC_SEARCH_ENABLED=true
+//    env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
+//    env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+//    env.CAMUNDA_BASE_URL = "http://camunda-api-aat.service.core-compute-aat.internal"
+//    env.FT_POSTGRES_HOST = "sptribs-aat-flexible-db-v15-aat.postgres.database.azure.com"
+//    env.FT_POSTGRES_PORT = "5432"
+//    setCommonEnvVariables()
+//
+//    enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
+//
+//    builder.gradle('generateCCDConfig --rerun-tasks')
+//    generateDefinitions()
+//  }
+
   onPR {
     env.ENVIRONMENT="preview"
+    env.CITIZEN_DASHBOARD_ENABLED = "true"
     env.CASE_API_URL = "http://sptribs-case-api-pr-${CHANGE_ID}-java"
     env.CCD_DEF_NAME = "preview"
     env.DEFINITION_STORE_URL_BASE = "https://ccd-definition-store-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
@@ -269,25 +301,49 @@ withPipeline(type, product, component) {
     enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
   }
 
+//  onMaster {
+//    env.ENVIRONMENT="staging"
+//    env.CASE_API_URL="http://sptribs-case-api-staging.service.core-compute-staging.internal"
+//    env.CCD_DEF_NAME="staging"
+//    env.ELASTIC_SEARCH_ENABLED=true
+//    env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
+//    env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-staging.service.core-compute-aat.internal"
+//    env.CAMUNDA_BASE_URL = "http://camunda-api-staging.service.core-compute-staging.internal"
+//    env.FT_POSTGRES_HOST = "sptribs-staging-flexible-db-v15-staging.postgres.database.azure.com"
+//    env.FT_POSTGRES_PORT = "5432"
+//    setCommonEnvVariables()
+//
+//    enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
+//  }
+
   afterSuccess('functionalTest:aat') {
-      env.ENVIRONMENT="prod"
-      env.CASE_API_URL="http://sptribs-case-api-prod.service.core-compute-prod.internal"
-      env.CCD_DEF_NAME="prod"
-      env.DEFINITION_STORE_URL_BASE="http://ccd-definition-store-api-prod.service.core-compute-prod.internal"
-      env.CASE_API_DOCUMENT_DOWNLOAD_URL = "http://manage-case.platform.hmcts.net/"
-      env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
-      env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-prod.service.core-compute-prod.internal"
-      env.IDAM_API_URL_BASE = "https://idam-web-public.platform.hmcts.net"
-      env.S2S_URL_BASE = "http://rpe-service-auth-provider-prod.service.core-compute-prod.internal"
-      env.BEFTA_S2S_CLIENT_ID = "ccd_data"
-      env.CAMUNDA_BASE_URL = "http://camunda-api-prod.service.core-compute-prod.internal"
+    // afterSuccess('functionalTest:staging') {
+    env.CCD_DEF_NAME = 'prod'
+    env.ENVIRONMENT = 'prod'
+    env.DEPLOYMENT_ENVIRONMENT = 'prod'
+    env.CASE_API_URL = 'http://sptribs-case-api-prod.service.core-compute-prod.internal'
+    env.DEFINITION_STORE_URL_BASE = 'http://ccd-definition-store-api-prod.service.core-compute-prod.internal'
+    env.CASE_API_DOCUMENT_DOWNLOAD_URL = 'http://manage-case.platform.hmcts.net/'
+    env.SERVICE_AUTH_MICROSERVICE = 'sptribs_case_api'
+    env.SERVICE_AUTH_PROVIDER_URL = 'http://rpe-service-auth-provider-prod.service.core-compute-prod.internal'
+    env.IDAM_API_URL_BASE = 'https://idam-web-public.platform.hmcts.net'
+    env.S2S_URL_BASE = 'http://rpe-service-auth-provider-prod.service.core-compute-prod.internal'
+    env.BEFTA_S2S_CLIENT_ID = 'ccd_data'
+    env.CAMUNDA_BASE_URL = 'http://camunda-api-prod.service.core-compute-prod.internal'
 
-      builder.gradle('generateCCDConfig --rerun-tasks')
+    withSubscription('prod', product, 'prod') {
+      withAzureKeyvault(
+        azureKeyVaultSecrets: [
+          secret('s2s-case-api-secret', 'S2S_SECRET_PROD')
+        ],
+        keyVaultURLOverride: 'https://sptribs-prod.vault.azure.net/'
+      ) {
+        env.S2S_SECRET_PROD = env.S2S_SECRET_PROD
+      }
+    }
 
-      generateDefinitions()
-
-      uploadDmnDiagrams()
-      uploadBpmnDiagram()
+    uploadDmnDiagrams()
+    uploadBpmnDiagram()
   }
 
   afterSuccess('akschartsinstall') {
@@ -342,6 +398,10 @@ withPipeline(type, product, component) {
     configureFtDatabase()
   }
 
+//  before('functionalTest:staging') {
+//    configureFtDatabase()
+//  }
+
   before('functionalTest:preview') {
     configureFtDatabase()
     if (env.E2E_TESTS_ENABLED == 'true') {
@@ -358,10 +418,13 @@ withPipeline(type, product, component) {
 }
 
 def setCommonEnvVariables() {
-    env.IDAM_API_URL_BASE = "https://idam-web-public.aat.platform.hmcts.net"
-    env.S2S_URL_BASE = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-    env.FEE_API_URL = "http://fees-register-api-aat.service.core-compute-aat.internal"
-    env.BEFTA_S2S_CLIENT_ID = "ccd_data"
+  // env.IDAM_API_URL_BASE = "https://idam-web-public.staging.platform.hmcts.net"
+  // env.S2S_URL_BASE = "http://rpe-service-auth-provider-staging.service.core-compute-staging.internal"
+  // env.FEE_API_URL = "http://fees-register-api-staging.service.core-compute-staging.internal"
+  env.IDAM_API_URL_BASE = "https://idam-web-public.aat.platform.hmcts.net"
+  env.S2S_URL_BASE = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+  env.FEE_API_URL = "http://fees-register-api-aat.service.core-compute-aat.internal"
+  env.BEFTA_S2S_CLIENT_ID = "ccd_data"
 }
 
 def configureFtDatabase() {
@@ -391,7 +454,7 @@ def uploadDmnDiagrams() {
   dir("${WORKSPACE}/bin") {
     tenantId = "st_cic"
     product = "st_cic"
-    sh "./wa/import-dmn-diagram.sh ${WORKSPACE} ${env} ${tenantId} ${product}"
+    sh "./wa/import-dmn-diagram.sh ${WORKSPACE} ${env.ENVIRONMENT} ${tenantId} ${product}"
   }
 }
 

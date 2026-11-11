@@ -23,15 +23,21 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.DraftOrderMainContentPage;
 import uk.gov.hmcts.sptribs.common.event.page.EditDraftOrder;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_DRAFT_ORDER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -61,6 +67,8 @@ public class CaseworkerEditDraftOrder implements CCDConfig<CaseData, State, User
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.ENGLISH);
 
     private final OrderService orderService;
+
+    private final DocumentsService documentsService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -126,6 +134,8 @@ public class CaseworkerEditDraftOrder implements CCDConfig<CaseData, State, User
         String editedFileName = caseData.getCicCase().getOrderTemplateIssued().getFilename();
         String[] fileNameFields = editedFileName.split(DOUBLE_HYPHEN);
         String date = fileNameFields[2].substring(0, fileNameFields[2].length() - 4);
+        List<String> errors = new ArrayList<>();
+
         for (DynamicListElement element : dynamicList.getListItems()) {
             if (element.getCode().equals(code)) {
                 element.setLabel(dynamicListLabel[0] + DOUBLE_HYPHEN + date + DOUBLE_HYPHEN + "draft.pdf");
@@ -138,8 +148,27 @@ public class CaseworkerEditDraftOrder implements CCDConfig<CaseData, State, User
             if (label
                 .contains(draftOrderCIC.getValue().getDraftOrderContentCIC().getOrderTemplate().getLabel())
                 && draftOrderFile[2].contains(dynamicListLabel[1])) {
+                var previousTemplateGeneratedDocument = draftOrderCIC.getValue().getTemplateGeneratedDocument();
                 draftOrderCIC.getValue().setTemplateGeneratedDocument(caseData.getCicCase().getOrderTemplateIssued());
                 draftOrderCIC.getValue().setDraftOrderContentCIC(caseData.getDraftOrderContentCIC());
+                try {
+                    documentsService.buildAndSaveNewDocumentEntity(
+                        draftOrderCIC.getValue().getTemplateGeneratedDocument(),
+                        details.getId(),
+                        DocumentType.TRIBUNAL_DIRECTION,
+                        CaseDocumentType.DRAFT_ORDER
+                    );
+
+                    if (previousTemplateGeneratedDocument != null
+                        && previousTemplateGeneratedDocument.getBinaryUrl() != null
+                        && !previousTemplateGeneratedDocument.getBinaryUrl()
+                            .equals(draftOrderCIC.getValue().getTemplateGeneratedDocument().getBinaryUrl())) {
+                        documentsService.removeEntryFromDocumentTableByBinaryURL(
+                            previousTemplateGeneratedDocument.getBinaryUrl());
+                    }
+                } catch (RuntimeException e) {
+                    errors.add(handleDocumentException(draftOrderCIC.getValue().getTemplateGeneratedDocument(), e.getMessage()));
+                }
             }
         }
         caseData.setDraftOrderContentCIC(new DraftOrderContentCIC());
@@ -149,6 +178,7 @@ public class CaseworkerEditDraftOrder implements CCDConfig<CaseData, State, User
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())
+            .errors(errors)
             .build();
     }
 

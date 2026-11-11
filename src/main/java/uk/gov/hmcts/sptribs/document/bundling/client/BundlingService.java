@@ -29,6 +29,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.BUNDLE_FILE_NAME;
 import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.CASE_BUNDLES;
 import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.DESCRIPTION;
 import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.DOCUMENTS;
@@ -52,8 +53,6 @@ import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.VALUE;
 @Slf4j
 @SuppressWarnings("unchecked")
 public class BundlingService {
-
-    private static final String BUNDLE_FILE_NAME = "st_cic_bundle_all_case.yaml";
 
     @Autowired
     private HttpServletRequest httpServletRequest;
@@ -199,6 +198,7 @@ public class BundlingService {
     private Bundle buildBundle(LinkedHashMap<String, Object> objectLinkedHashMap, Long caseNumber) {
 
         Document stitchedDocument = getStitchedDocument(objectLinkedHashMap, caseNumber);
+        String stitchingFailureMessage = MapUtils.getString(objectLinkedHashMap, STITCHING_FAILURE_MESSAGE, "");
 
         return Bundle.builder()
             .stitchStatus(NEW)
@@ -211,7 +211,7 @@ public class BundlingService {
                 MapUtils.getObject(objectLinkedHashMap, PAGINATION_STYLE, BundlePaginationStyle.off).toString()))
             .pageNumberFormat(PageNumberFormat.valueOf(
                 MapUtils.getObject(objectLinkedHashMap, PAGE_NUMBER_FORMAT, PageNumberFormat.numberOfPages).toString()))
-            .stitchingFailureMessage(MapUtils.getString(objectLinkedHashMap, STITCHING_FAILURE_MESSAGE, ""))
+            .stitchingFailureMessage(stitchingFailureMessage)
             .stitchStatus(MapUtils.getString(objectLinkedHashMap, STITCHING_STATUS, ""))
             .build();
     }

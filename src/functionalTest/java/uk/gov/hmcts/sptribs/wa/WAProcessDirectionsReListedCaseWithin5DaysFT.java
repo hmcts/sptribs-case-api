@@ -13,6 +13,7 @@ import uk.gov.hmcts.sptribs.testutil.RoleAssignmentService;
 import uk.gov.hmcts.sptribs.testutil.TaskManagementService;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +54,7 @@ public class WAProcessDirectionsReListedCaseWithin5DaysFT extends FunctionalTest
 
     @Test
     @EnabledIfEnvironmentVariable(named = "WA_FUNCTIONAL_TESTS_ENABLED", matches = "true")
-    void shouldInitiateProcessDirectionsReListedCaseWithin5DaysTask() throws IOException {
+    void shouldInitiateProcessDirectionsReListedCaseWithin5DaysTask() throws IOException, SQLException {
         final CaseDetails caseDetails = createAndSubmitCitizenCaseAndGetCaseDetails();
         final long id = caseDetails.getId();
         final String newCaseId = String.valueOf(id);
@@ -70,7 +71,7 @@ public class WAProcessDirectionsReListedCaseWithin5DaysFT extends FunctionalTest
 
         hearingCaseData.put("cicCaseReferralTypeForWA", "Listed case (within 5 days)");
         hearingCaseData.putAll(caseData(CASEWORKER_CREATE_DRAFT_ORDER_DATA));
-        checkAndUpdateDraftOrderDocument(hearingCaseData);
+        checkAndUpdateDraftOrderDocument(hearingCaseData, id);
         ccdCaseCreator.createInitialStartEventAndSubmitAdminEvent(
             CASEWORKER_CREATE_DRAFT_ORDER, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, hearingCaseData);
 

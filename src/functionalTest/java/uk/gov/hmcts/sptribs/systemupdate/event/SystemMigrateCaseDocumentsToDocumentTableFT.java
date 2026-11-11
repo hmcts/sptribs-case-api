@@ -30,7 +30,8 @@ public class SystemMigrateCaseDocumentsToDocumentTableFT extends FunctionalTestS
             4L, binaryURL + "50d3cdd5-20ce-47b7-ae9e-7a798849c19b/binary", //DRAFT
            5L, binaryURL + "8ccefd85-a0b1-4acb-bc90-6ce676a3b7a4/binary", //DECISION
             1L, binaryURL + "f045922d-d08b-4864-a5f3-3145911f0086/binary", //APPLICATION
-           6L, binaryURL + "d4748cf4-de21-4e49-8d1e-f5cb2971e2d5/binary"); //FINAL DECISION
+           6L, binaryURL + "d4748cf4-de21-4e49-8d1e-f5cb2971e2d5/binary", //FINAL DECISION
+           7L, binaryURL + "2e8f8b50-4e63-4e86-9f87-bb4d3f241c52/binary"); //HEARING RECORD
     }
 
     @Test

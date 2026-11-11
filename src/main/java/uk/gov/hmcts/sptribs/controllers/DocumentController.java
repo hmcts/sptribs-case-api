@@ -90,39 +90,66 @@ public class DocumentController {
         )
         String ccdReference) {
 
-        log.info("Received request to get documents with CCD reference = {}", ccdReference);
+        long startedAt = System.nanoTime();
+        log.info("event=dashboard_documents_requested journey=cica_dashboard step=dashboard outcome=started");
 
-        CicaCaseEntity cicaCaseEntity = cicaCaseService.checkIfUserHasAccessWithPostcode(ccdReference, authorisation, postcode);
-        validateCaseEntity(cicaCaseEntity, ccdReference);
+        try {
+            CicaCaseEntity cicaCaseEntity = cicaCaseService.checkIfUserHasAccessWithPostcode(
+                ccdReference,
+                authorisation,
+                postcode
+            );
+            validateCaseEntity(cicaCaseEntity, ccdReference);
 
-        CicaCaseResponse response = cicaCaseMapper.toResponse(cicaCaseEntity);
+            CicaCaseResponse response = cicaCaseMapper.toResponse(cicaCaseEntity);
+            Party party = resolveParty(authorisation, cicaCaseEntity);
+            Set<Long> downloadedDocIds = documentDownloadStatusService.getDownloadedDocumentIds(ccdReference, party);
+            DocumentDashboardModel documentDashboardModel = documentsService.getDocumentsOnCase(Long.valueOf(ccdReference));
 
-        Party party = resolveParty(authorisation, cicaCaseEntity);
-
-        Set<Long> downloadedDocIds = documentDownloadStatusService.getDownloadedDocumentIds(ccdReference, party);
-
-        DocumentDashboardModel documentDashboardModel = documentsService.getDocumentsOnCase(Long.valueOf(ccdReference));
-
-        DocumentResponse documentResponse = DocumentResponse.builder()
-            .contactPartiesDocuments(wrapContactPartyWithDownloadStatus(
+            List<DashboardDocument> contactPartyDocuments = wrapContactPartyWithDownloadStatus(
                 documentDashboardModel.getContactPartiesDocuments(),
-                downloadedDocIds))
-            .orderAndDecisionDocuments(wrapWithDownloadStatus(
+                downloadedDocIds
+            );
+            List<DashboardDocument> orderAndDecisionDocuments = wrapWithDownloadStatus(
                 documentDashboardModel.getOrderAndDecisionDocuments(),
-                downloadedDocIds))
-            .latestCaseBundleDocuments(wrapWithDownloadStatus(
+                downloadedDocIds
+            );
+            List<DashboardDocument> latestCaseBundleDocuments = wrapWithDownloadStatus(
                 documentDashboardModel.getLatestCaseBundleDocument() != null
                     ? List.of(documentDashboardModel.getLatestCaseBundleDocument()) : List.of(),
-                downloadedDocIds))
-            .build();
+                downloadedDocIds
+            );
 
-        DashboardResponse dashboardResponse = DashboardResponse.builder()
-            .cicaCaseResponse(response)
-            .documentResponse(documentResponse)
-            .build();
+            DocumentResponse documentResponse = DocumentResponse.builder()
+                .contactPartiesDocuments(contactPartyDocuments)
+                .orderAndDecisionDocuments(orderAndDecisionDocuments)
+                .latestCaseBundleDocuments(latestCaseBundleDocuments)
+                .build();
 
-        return ResponseEntity.ok()
-            .body(dashboardResponse);
+            DashboardResponse dashboardResponse = DashboardResponse.builder()
+                .cicaCaseResponse(response)
+                .documentResponse(documentResponse)
+                .build();
+
+            log.info(
+                "event=dashboard_documents_loaded journey=cica_dashboard step=dashboard outcome=success "
+                    + "duration_ms={} contact_document_count={} order_document_count={} bundle_document_count={}",
+                elapsedMilliseconds(startedAt),
+                contactPartyDocuments.size(),
+                orderAndDecisionDocuments.size(),
+                latestCaseBundleDocuments.size()
+            );
+
+            return ResponseEntity.ok().body(dashboardResponse);
+        } catch (RuntimeException exception) {
+            log.error(
+                "event=dashboard_documents_failed journey=cica_dashboard step=dashboard outcome=failure "
+                    + "duration_ms={} error_type={}",
+                elapsedMilliseconds(startedAt),
+                exception.getClass().getSimpleName()
+            );
+            throw exception;
+        }
     }
 
     @GetMapping(value = "/{ccdReference}/documents/{documentId}/download")
@@ -155,32 +182,68 @@ public class DocumentController {
         @Parameter(description = "The document ID (UUID)", required = true)
         String documentId) {
 
-        log.info("Received request to download document with id: {} for CCD reference: {}", documentId, ccdReference);
-
-        CicaCaseEntity cicaCaseEntity = cicaCaseService.checkIfUserHasAccessWithPostcode(ccdReference, authorisation, postcode);
-        validateCaseEntity(cicaCaseEntity, ccdReference);
-
-        Party party = resolveParty(authorisation, cicaCaseEntity);
-
-        DownloadedDocumentResponse documentResponse = documentDownloadService.downloadDocument(
-            authorisation,
-            documentId
-        );
+        long startedAt = System.nanoTime();
+        log.info("event=document_download_requested journey=cica_dashboard step=document_download outcome=started");
 
         try {
-            documentDownloadStatusService.recordDocumentDownload(ccdReference, party, documentId);
-        } catch (Exception e) {
-            log.error("Failed to record document download status for doc: {}, case: {}", documentId, ccdReference, e);
+            CicaCaseEntity cicaCaseEntity = cicaCaseService.checkIfUserHasAccessWithPostcode(
+                ccdReference,
+                authorisation,
+                postcode
+            );
+            validateCaseEntity(cicaCaseEntity, ccdReference);
+
+            Party party = resolveParty(authorisation, cicaCaseEntity);
+            DownloadedDocumentResponse documentResponse = documentDownloadService.downloadDocument(
+                authorisation,
+                documentId
+            );
+
+            log.info(
+                "event=document_download_retrieved journey=cica_dashboard step=document_download outcome=success "
+                    + "duration_ms={}",
+                elapsedMilliseconds(startedAt)
+            );
+
+            boolean downloadStatusRecorded = recordDocumentDownloadStatus(ccdReference, party, documentId);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.valueOf(documentResponse.mimeType()));
+            headers.set("original-file-name", documentResponse.fileName());
+
+            log.info(
+                "event=document_download_response_prepared journey=cica_dashboard step=document_download "
+                    + "outcome=success duration_ms={} download_status_recorded={}",
+                elapsedMilliseconds(startedAt),
+                downloadStatusRecorded
+            );
+
+            return ResponseEntity.ok()
+                .headers(headers)
+                .body(documentResponse.file());
+        } catch (RuntimeException exception) {
+            log.error(
+                "event=document_download_failed journey=cica_dashboard step=document_download outcome=failure "
+                    + "duration_ms={} error_type={}",
+                elapsedMilliseconds(startedAt),
+                exception.getClass().getSimpleName()
+            );
+            throw exception;
         }
+    }
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.valueOf(documentResponse.mimeType()));
-        headers.set("original-file-name", documentResponse.fileName());
-        log.info("returning document now with name {}", documentResponse.fileName());
-
-        return ResponseEntity.ok()
-            .headers(headers)
-            .body(documentResponse.file());
+    private boolean recordDocumentDownloadStatus(String ccdReference, Party party, String documentId) {
+        try {
+            documentDownloadStatusService.recordDocumentDownload(ccdReference, party, documentId);
+            return true;
+        } catch (Exception exception) {
+            log.error(
+                "event=document_download_status_failed journey=cica_dashboard step=document_download "
+                    + "outcome=partial_success error_type={}",
+                exception.getClass().getSimpleName()
+            );
+            return false;
+        }
     }
 
     private List<DashboardDocument> wrapWithDownloadStatus(
@@ -223,6 +286,10 @@ public class DocumentController {
         if (caseData == null) {
             throw new UnauthorisedCaseAccessException("Case data is missing for CCD reference: " + ccdReference);
         }
+    }
+
+    private long elapsedMilliseconds(long startedAt) {
+        return (System.nanoTime() - startedAt) / 1_000_000;
     }
 
     private List<DashboardDocument> wrapContactPartyWithDownloadStatus(

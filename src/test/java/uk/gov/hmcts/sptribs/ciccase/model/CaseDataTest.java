@@ -1,5 +1,7 @@
 package uk.gov.hmcts.sptribs.ciccase.model;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
@@ -72,5 +74,34 @@ class CaseDataTest {
         //Then
         assertThat(result).isNotNull();
         assertThat(result.getDate()).isEqualTo(now);
+    }
+
+    @Test
+    void shouldSerialiseSearchCriteriaUnderASingleKey() throws Exception {
+        final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
+        final CaseData caseData = objectMapper.readValue("""
+            {"SearchCriteria": {"SearchParties": [{"value": {"EmailAddress": "new@example.com"}}]}}
+            """, CaseData.class);
+
+        final JsonNode json = objectMapper.valueToTree(caseData);
+
+        assertThat(json.has("SearchCriteria")).isTrue();
+        assertThat(json.has("searchCriteria")).isFalse();
+    }
+
+    @Test
+    void shouldIgnoreLowercaseSearchCriteriaWrittenByEarlierVersions() throws Exception {
+        final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
+        final CaseData caseData = objectMapper.readValue("""
+            {
+              "SearchCriteria": {"SearchParties": [{"value": {"EmailAddress": "new@example.com"}}]},
+              "searchCriteria": {"SearchParties": [{"value": {"EmailAddress": "old@example.com"}}]}
+            }
+            """, CaseData.class);
+
+        final JsonNode json = objectMapper.valueToTree(caseData);
+
+        assertThat(json.at("/SearchCriteria/SearchParties/0/value/EmailAddress").asText())
+            .isEqualTo("new@example.com");
     }
 }
