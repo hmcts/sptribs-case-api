@@ -10,6 +10,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
 import uk.gov.hmcts.sptribs.caseworker.model.NoticeOption;
 import uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
@@ -30,11 +31,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.springframework.util.StringUtils.hasText;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.SUBJECT;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DASHBOARD_KEY;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.EMPTY_PLACEHOLDER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.FINAL_DECISION_GUIDANCE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.FINAL_DECISION_NOTICE;
 import static uk.gov.hmcts.sptribs.notification.NotificationHelper.getNotificationParties;
+import static uk.gov.hmcts.sptribs.notification.NotificationHelper.getNotificationPartiesBundle;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.FINAL_DECISION_ISSUED_EMAIL;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.FINAL_DECISION_ISSUED_EMAIL_NEW_CD;
 
@@ -223,6 +227,12 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
     @Override
     public Set<NotificationParties> buildCorrespondenceParties(NotificationContextRequest request) {
         CicCase cicCase = request.getCaseData().getCicCase();
+
+        if (cicCase.getCaseSubcategory() == CaseSubcategory.FATAL
+            || cicCase.getCaseSubcategory() == CaseSubcategory.MINOR) {
+
+            return getNotificationParties(cicCase, Set.of(SUBJECT));
+        }
 
         return getNotificationParties(cicCase);
     }

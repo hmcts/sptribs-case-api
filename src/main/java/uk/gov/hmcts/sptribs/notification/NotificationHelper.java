@@ -12,6 +12,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.springframework.util.StringUtils.hasText;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SPACE;
 import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.APPLICANT;
@@ -333,6 +335,12 @@ public class NotificationHelper {
 
     public static Set<NotificationParties> getNotificationPartiesBundle(CicCase cicCase) {
         Set<NotificationParties> correspondenceParties = new HashSet<>();
+
+        if (cicCase.getCaseSubcategory() != CaseSubcategory.FATAL
+            && cicCase.getCaseSubcategory() != CaseSubcategory.MINOR
+            && hasText(cicCase.getEmail())) {
+            correspondenceParties.add(SUBJECT);
+        }
 
         if (cicCase.getRespondentEmail() != null) {
             correspondenceParties.add(RESPONDENT);

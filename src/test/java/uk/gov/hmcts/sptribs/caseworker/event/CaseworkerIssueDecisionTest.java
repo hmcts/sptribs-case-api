@@ -206,6 +206,9 @@ class CaseworkerIssueDecisionTest {
         details.setId(TEST_CASE_ID);
         details.setData(CaseData.builder().caseIssueDecision(decision).build());
 
+        when(clock.instant()).thenReturn(fixedClock.instant());
+        when(clock.getZone()).thenReturn(fixedClock.getZone());
+
         AboutToStartOrSubmitResponse<CaseData, State> response = issueDecision.aboutToSubmit(details, new CaseDetails<>());
 
         assertThat(response.getState()).isEqualTo(CaseClosed);
@@ -224,6 +227,9 @@ class CaseworkerIssueDecisionTest {
             .build();
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         details.setData(CaseData.builder().caseIssueDecision(decision).build());
+
+        when(clock.instant()).thenReturn(fixedClock.instant());
+        when(clock.getZone()).thenReturn(fixedClock.getZone());
 
         AboutToStartOrSubmitResponse<CaseData, State> response = issueDecision.aboutToSubmit(details, new CaseDetails<>());
 

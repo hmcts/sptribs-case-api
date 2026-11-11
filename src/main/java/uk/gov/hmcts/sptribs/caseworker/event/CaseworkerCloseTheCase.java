@@ -84,8 +84,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
 
     private final NotificationDispatcher notificationDispatcher;
 
-    @Autowired
-    private DocumentsService documentsService;
+    private final DocumentsService documentsService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
