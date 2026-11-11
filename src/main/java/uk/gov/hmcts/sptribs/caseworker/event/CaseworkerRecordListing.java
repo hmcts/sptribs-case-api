@@ -38,7 +38,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.model.YesNo.NO;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_RECORD_LISTING;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
-import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessageFromCorrespondenceParties;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessageFromSentList;
 import static uk.gov.hmcts.sptribs.ciccase.model.HearingState.Listed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
@@ -172,7 +172,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         if (isEmpty(notificationContext.getErrors()) && !isEmpty(notificationContext.getCorrespondenceParties())) {
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Listing record created %n## %s",
-                    generateSimpleMessageFromCorrespondenceParties(notificationContext.getCorrespondenceParties())))
+                    generateSimpleMessageFromSentList(notificationContext.getSent())))
                 .build();
         } else {
             return SubmittedCallbackResponse.builder()

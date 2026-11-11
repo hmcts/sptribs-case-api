@@ -176,7 +176,7 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
         if (isEmpty(notificationContext.getErrors())) {
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Final decision notice issued %n## %s",
-                    MessageUtil.generateSimpleMessageFromCorrespondenceParties(notificationContext.getCorrespondenceParties())))
+                    MessageUtil.generateSimpleMessageFromSentList(notificationContext.getSent())))
                 .build();
         } else {
             return SubmittedCallbackResponse.builder()

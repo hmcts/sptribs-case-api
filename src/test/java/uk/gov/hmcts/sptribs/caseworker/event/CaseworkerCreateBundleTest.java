@@ -65,6 +65,9 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.APPLICANT;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.REPRESENTATIVE;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.RESPONDENT;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
@@ -235,8 +238,8 @@ class CaseworkerCreateBundleTest {
         doAnswer(invocation -> {
             NotificationContext context = invocation.getArgument(0);
             if (context.getNotification() == bundleCreatedNotification) {
-                context.getCorrespondenceParties().add(NotificationParties.REPRESENTATIVE);
-                context.getCorrespondenceParties().add(NotificationParties.RESPONDENT);
+                context.getSent().add(REPRESENTATIVE);
+                context.getSent().add(RESPONDENT);
             }
             return null;
         }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
@@ -338,8 +341,8 @@ class CaseworkerCreateBundleTest {
         doAnswer(invocation -> {
             NotificationContext context = invocation.getArgument(0);
             if (context.getNotification() == bundleCreatedNotification) {
-                context.getCorrespondenceParties().add(NotificationParties.APPLICANT);
-                context.getCorrespondenceParties().add(NotificationParties.RESPONDENT);
+                context.getSent().add(APPLICANT);
+                context.getSent().add(RESPONDENT);
             }
             return null;
         }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
@@ -381,10 +384,9 @@ class CaseworkerCreateBundleTest {
             caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
 
         assertThat(createBundleSubmittedResponse.getConfirmationHeader())
-            .isEqualTo("""
-                # Bundle creation notification failed\s
-                ## A notification could not be sent to: Representative, Respondent\s
-                ## Please resend the notification.""");
+            .isEqualTo("# Bundle created.\n"
+                + "## A notification could not be sent to: Representative, Respondent"
+                + "\n## Please resend the notification.");
     }
 
     @Test
@@ -1222,8 +1224,8 @@ class CaseworkerCreateBundleTest {
         doAnswer(invocation -> {
             NotificationContext context = invocation.getArgument(0);
             if (context.getNotification() == bundleCreatedNotification) {
-                context.getCorrespondenceParties().add(NotificationParties.REPRESENTATIVE);
-                context.getCorrespondenceParties().add(NotificationParties.RESPONDENT);
+                context.getSent().add(REPRESENTATIVE);
+                context.getSent().add(RESPONDENT);
             }
             return null;
         }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));

@@ -27,6 +27,7 @@ public class NotificationDispatcher {
         notificationContext.getCorrespondenceParties().forEach(party -> {
             try {
                 notificationPartiesConsumerMap.get(party).accept(notificationContext);
+                notificationContext.getSent().add(party.getLabel());
             } catch (Exception e) {
                 log.error("Error when attempting to send notification to {}.", party.getLabel());
                 notificationContext.getErrors().add(party.getLabel());

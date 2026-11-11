@@ -20,7 +20,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
-import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -53,7 +52,11 @@ import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAS
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.APPLICANT;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.REPRESENTATIVE;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.RESPONDENT;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SOLICITOR_ADDRESS;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBJECT;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBJECT_ADDRESS;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_APPLICANT_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -254,9 +257,9 @@ class CaseworkerContactPartiesTest {
         doAnswer(invocation -> {
             NotificationContext context = invocation.getArgument(0);
             if (context.getNotification() == contactPartiesNotification) {
-                context.getCorrespondenceParties().add(NotificationParties.SUBJECT);
-                context.getCorrespondenceParties().add(NotificationParties.REPRESENTATIVE);
-                context.getCorrespondenceParties().add(NotificationParties.RESPONDENT);
+                context.getSent().add(REPRESENTATIVE);
+                context.getSent().add(SUBJECT);
+                context.getSent().add(RESPONDENT);
             }
             return null;
         }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
@@ -314,9 +317,9 @@ class CaseworkerContactPartiesTest {
         doAnswer(invocation -> {
             NotificationContext context = invocation.getArgument(0);
             if (context.getNotification() == contactPartiesNotification) {
-                context.getCorrespondenceParties().add(NotificationParties.REPRESENTATIVE);
-                context.getCorrespondenceParties().add(NotificationParties.APPLICANT);
-                context.getCorrespondenceParties().add(NotificationParties.RESPONDENT);
+                context.getSent().add(REPRESENTATIVE);
+                context.getSent().add(APPLICANT);
+                context.getSent().add(RESPONDENT);
             }
             return null;
         }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));

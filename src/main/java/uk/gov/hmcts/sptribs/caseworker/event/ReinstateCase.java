@@ -34,7 +34,7 @@ import java.util.List;
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_REINSTATE_CASE;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
-import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessageFromCorrespondenceParties;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessageFromSentList;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
@@ -150,7 +150,7 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
         if (CollectionUtils.isEmpty(notificationContext.getErrors())) {
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Case reinstated. %n## The case record will now be reopened. %n## %s ",
-                    generateSimpleMessageFromCorrespondenceParties(notificationContext.getCorrespondenceParties())))
+                    generateSimpleMessageFromSentList(notificationContext.getSent())))
                 .build();
         } else {
             return SubmittedCallbackResponse.builder()

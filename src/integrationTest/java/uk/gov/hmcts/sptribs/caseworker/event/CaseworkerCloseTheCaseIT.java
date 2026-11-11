@@ -402,12 +402,9 @@ public class CaseworkerCloseTheCaseIT extends IntegrationTestBase {
         assertThatJson(response)
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains(
-                """
-                    # Case closed\s
-                    ## A notification has been sent to: Applicant, Representative, Respondent, Subject\s
-                    ## Use 'Reinstate case' if this case needs to be reopened in the future."""
-            );
+            .isEqualTo("# Case closed\n"
+                + "## A notification has been sent to: Applicant, Representative, Respondent, Subject\n"
+                + "## Use 'Reinstate case' if this case needs to be reopened in the future.");
 
         verify(notificationServiceCIC, times(4)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
         verifyNoMoreInteractions(notificationServiceCIC);

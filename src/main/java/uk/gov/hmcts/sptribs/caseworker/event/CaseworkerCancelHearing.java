@@ -33,7 +33,7 @@ import static java.lang.String.format;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CANCEL_HEARING;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
-import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessageFromCorrespondenceParties;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessageFromSentList;
 import static uk.gov.hmcts.sptribs.ciccase.model.HearingState.Cancelled;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -141,7 +141,7 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
         if (isEmpty(notificationContext.getErrors()) && !isEmpty(notificationContext.getCorrespondenceParties())) {
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Hearing cancelled %n## %s",
-                    generateSimpleMessageFromCorrespondenceParties(notificationContext.getCorrespondenceParties())))
+                    generateSimpleMessageFromSentList(notificationContext.getSent())))
                 .build();
         } else {
             return SubmittedCallbackResponse.builder()

@@ -31,14 +31,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.springframework.util.StringUtils.hasText;
 import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.SUBJECT;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DASHBOARD_KEY;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.EMPTY_PLACEHOLDER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.FINAL_DECISION_GUIDANCE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.FINAL_DECISION_NOTICE;
 import static uk.gov.hmcts.sptribs.notification.NotificationHelper.getNotificationParties;
-import static uk.gov.hmcts.sptribs.notification.NotificationHelper.getNotificationPartiesBundle;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.FINAL_DECISION_ISSUED_EMAIL;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.FINAL_DECISION_ISSUED_EMAIL_NEW_CD;
 

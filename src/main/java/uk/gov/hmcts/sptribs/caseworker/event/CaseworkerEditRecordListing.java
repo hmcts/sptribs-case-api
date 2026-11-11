@@ -40,7 +40,7 @@ import static java.util.Objects.isNull;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_RECORD_LISTING;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
-import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessageFromCorrespondenceParties;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessageFromSentList;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
@@ -195,7 +195,7 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Listing record updated %n## If any changes are made to this hearing,"
                         + " %n## remember to make those changes in this listing record. %n## %s",
-                    generateSimpleMessageFromCorrespondenceParties(notificationContext.getCorrespondenceParties())))
+                    generateSimpleMessageFromSentList(notificationContext.getSent())))
                 .build();
         } else {
             return SubmittedCallbackResponse.builder()

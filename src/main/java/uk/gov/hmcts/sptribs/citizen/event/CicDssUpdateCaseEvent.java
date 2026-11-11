@@ -214,7 +214,7 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
         if (isEmpty(notificationContext.getErrors())) {
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# CIC Dss Update Case Event Email notifications sent %n## %s",
-                    MessageUtil.generateSimpleMessageFromCorrespondenceParties(notificationContext.getCorrespondenceParties())))
+                    MessageUtil.generateSimpleMessageFromSentList(notificationContext.getSent())))
                 .build();
         } else {
             return SubmittedCallbackResponse.builder()

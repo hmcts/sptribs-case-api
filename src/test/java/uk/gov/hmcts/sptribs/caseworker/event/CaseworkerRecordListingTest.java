@@ -47,6 +47,10 @@ import static uk.gov.hmcts.sptribs.caseworker.model.YesNo.NO;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.APPLICANT;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.REPRESENTATIVE;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.RESPONDENT;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBJECT;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
@@ -289,6 +293,11 @@ class CaseworkerRecordListingTest {
                 context.getCorrespondenceParties().add(NotificationParties.SUBJECT);
                 context.getCorrespondenceParties().add(NotificationParties.APPLICANT);
                 context.getCorrespondenceParties().add(NotificationParties.RESPONDENT);
+
+                context.getSent().add(REPRESENTATIVE);
+                context.getSent().add(SUBJECT);
+                context.getSent().add(APPLICANT);
+                context.getSent().add(RESPONDENT);
             }
             return null;
         }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));

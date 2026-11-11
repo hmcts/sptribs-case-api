@@ -61,6 +61,10 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.APPLICANT;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.REPRESENTATIVE;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.RESPONDENT;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBJECT;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_HYPHENATED;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
@@ -154,10 +158,10 @@ class CaseworkerIssueFinalDecisionTest {
         doAnswer(invocation -> {
             NotificationContext context = invocation.getArgument(0);
             if (context.getNotification() == caseFinalDecisionIssuedNotification) {
-                context.getCorrespondenceParties().add(NotificationParties.APPLICANT);
-                context.getCorrespondenceParties().add(NotificationParties.SUBJECT);
-                context.getCorrespondenceParties().add(NotificationParties.REPRESENTATIVE);
-                context.getCorrespondenceParties().add(NotificationParties.RESPONDENT);
+                context.getSent().add(APPLICANT);
+                context.getSent().add(SUBJECT);
+                context.getSent().add(REPRESENTATIVE);
+                context.getSent().add(RESPONDENT);
             }
             return null;
         }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
@@ -190,8 +194,11 @@ class CaseworkerIssueFinalDecisionTest {
             NotificationContext context = invocation.getArgument(0);
             if (context.getNotification() == caseFinalDecisionIssuedNotification) {
                 context.getCorrespondenceParties().add(NotificationParties.SUBJECT);
-                context.getCorrespondenceParties().add(NotificationParties.REPRESENTATIVE);
                 context.getCorrespondenceParties().add(NotificationParties.RESPONDENT);
+                context.getCorrespondenceParties().add(NotificationParties.REPRESENTATIVE);
+                context.getSent().add(SUBJECT);
+                context.getSent().add(REPRESENTATIVE);
+                context.getSent().add(RESPONDENT);
             }
             return null;
         }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
@@ -213,6 +220,10 @@ class CaseworkerIssueFinalDecisionTest {
                 context.getCorrespondenceParties().add(NotificationParties.SUBJECT);
                 context.getCorrespondenceParties().add(NotificationParties.REPRESENTATIVE);
                 context.getCorrespondenceParties().add(NotificationParties.RESPONDENT);
+                context.getSent().add(APPLICANT);
+                context.getSent().add(SUBJECT);
+                context.getSent().add(REPRESENTATIVE);
+                context.getSent().add(RESPONDENT);
             }
             return null;
         }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));

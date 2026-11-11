@@ -8,7 +8,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -110,10 +109,6 @@ public final class MessageUtil {
     public static String generateSimpleErrorMessage(final List<String> errors) {
         final StringBuilder message = new StringBuilder(100);
 
-        if (errors.isEmpty()) {
-            message.append("No notification recipients found");
-            return message.toString();
-        }
         message.append("A notification could not be sent to: ");
         errors.stream()
             .sorted()
@@ -132,41 +127,33 @@ public final class MessageUtil {
         }
     }
 
-    public static String generateSimpleMessageBundleCreation(final CicCase cicCase) {
-        final StringBuilder message = new StringBuilder(100);
-        message.append("A notification has been sent to: ");
-
-        if (cicCase.getRepNotificationResponse() != null) {
-            message.append(REPRESENTATIVE + COMMA_SPACE);
-        }
-        if (cicCase.getResNotificationResponse() != null) {
-            message.append(RESPONDENT + COMMA_SPACE);
-        }
-        if (cicCase.getAppNotificationResponse() != null) {
-            message.append(APPLICANT + COMMA_SPACE);
-        }
-        return message.substring(0, message.length() - 2);
-    }
-
     public static String generateHeaderFooterMessageFromCorrespondenceParties(
-        Set<NotificationParties> correspondenceParties, String header, String footer) {
+        List<String> correspondenceParties, String header, String footer) {
 
-        final String notificationMessage = generateSimpleMessageFromCorrespondenceParties(correspondenceParties);
-        String message = format("# %s %n## %s", header, notificationMessage);
+        final String notificationMessage = generateSimpleMessageFromSentList(correspondenceParties);
+
+        String message = notificationMessage.isEmpty()
+            ? format("# %s", header)
+            : format("# %s\n## %s", header, notificationMessage);
+
         if (StringUtils.hasText(footer)) {
-            message = message + format(" %n## %s", footer);
+            message = message + format("\n## %s", footer);
         }
         return message;
     }
 
-    public static String generateSimpleMessageFromCorrespondenceParties(Set<NotificationParties> correspondenceParties) {
+    public static String generateSimpleMessageFromSentList(List<String> correspondenceParties) {
 
         final StringBuilder message = new StringBuilder(100);
-        message.append("A notification has been sent to: ");
 
+        if (correspondenceParties.isEmpty()) {
+            return "";
+        }
+
+        message.append("A notification has been sent to: ");
         correspondenceParties.stream()
-            .sorted(Comparator.comparing(NotificationParties::getLabel))
-            .forEach(party -> message.append(party.getLabel()).append(COMMA_SPACE));
+            .sorted()
+            .forEach(party -> message.append(party).append(COMMA_SPACE));
 
         return message.substring(0, message.length() - 2);
     }

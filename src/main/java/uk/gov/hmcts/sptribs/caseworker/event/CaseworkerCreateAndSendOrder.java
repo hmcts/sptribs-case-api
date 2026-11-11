@@ -29,7 +29,6 @@ import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
-import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -52,7 +51,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
 
 import static java.lang.String.format;
 import static org.springframework.util.CollectionUtils.isEmpty;
@@ -311,13 +309,13 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
         List<String> combinedErrors = new ArrayList<>(notificationContext.getErrors());
         combinedErrors.addAll(notificationContextAnonymity.getErrors());
 
-        Set<NotificationParties> combinedCorrespondence = notificationContext.getCorrespondenceParties();
-        combinedCorrespondence.addAll(notificationContextAnonymity.getCorrespondenceParties());
+        List<String> combinedCorrespondence = notificationContext.getSent();
+        combinedCorrespondence.addAll(notificationContextAnonymity.getSent());
 
         if (isEmpty(combinedErrors)) {
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Order sent %n## %s",
-                    MessageUtil.generateSimpleMessageFromCorrespondenceParties(combinedCorrespondence)))
+                    MessageUtil.generateSimpleMessageFromSentList(combinedCorrespondence)))
                 .build();
         } else {
             return SubmittedCallbackResponse.builder()

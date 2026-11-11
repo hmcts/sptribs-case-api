@@ -22,4 +22,5 @@ public class NotificationContext {
     private final List<String> correspondenceIDs = new ArrayList<>();
     private final CaseData beforeData;
     private final List<String> errors = new ArrayList<>();
+    private final List<String> sent = new ArrayList<>();
 }

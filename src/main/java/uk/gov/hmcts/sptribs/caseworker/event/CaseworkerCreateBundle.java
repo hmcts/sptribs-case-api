@@ -52,8 +52,9 @@ import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.extractDocumentsFromListValues;
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.getAllCaseDocuments;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CREATE_BUNDLE;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateHeaderFooterMessageFromCorrespondenceParties;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
-import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessageFromCorrespondenceParties;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessageFromSentList;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -197,14 +198,14 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         if (isEmpty(notificationContext.getErrors())) {
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Bundle created. %n## %s",
-                    generateSimpleMessageFromCorrespondenceParties(notificationContext.getCorrespondenceParties())))
+                    generateSimpleMessageFromSentList(notificationContext.getSent())))
                 .build();
         } else {
+            final String footer = generateSimpleErrorMessage(notificationContext.getErrors())
+                + "\n## Please resend the notification.";
             return SubmittedCallbackResponse.builder()
-                .confirmationHeader(
-                    format("# Bundle creation notification failed %n## %s %n## Please resend the notification.",
-                        generateSimpleErrorMessage(notificationContext.getErrors()))
-                )
+                .confirmationHeader(generateHeaderFooterMessageFromCorrespondenceParties(
+                    notificationContext.getSent(), "Bundle created.", footer))
                 .build();
         }
     }

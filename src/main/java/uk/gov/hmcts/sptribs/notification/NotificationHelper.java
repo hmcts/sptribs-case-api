@@ -16,6 +16,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
+import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
@@ -335,21 +336,23 @@ public class NotificationHelper {
 
     public static Set<NotificationParties> getNotificationPartiesBundle(CicCase cicCase) {
         Set<NotificationParties> correspondenceParties = new HashSet<>();
+        Set<PartiesCIC> parties = cicCase.getPartiesCIC();
 
         if (cicCase.getCaseSubcategory() != CaseSubcategory.FATAL
             && cicCase.getCaseSubcategory() != CaseSubcategory.MINOR
+            && cicCase.getEmail() != null
             && hasText(cicCase.getEmail())) {
             correspondenceParties.add(SUBJECT);
         }
 
-        if (cicCase.getRespondentEmail() != null) {
+        if (cicCase.getRespondentEmail() != null && hasText(cicCase.getRespondentEmail())) {
             correspondenceParties.add(RESPONDENT);
         }
-        if (!CollectionUtils.isEmpty(cicCase.getRepresentativeCIC())) {
+        if (parties.contains(PartiesCIC.REPRESENTATIVE) && hasText(cicCase.getRepresentativeEmailAddress())) {
             correspondenceParties.add(REPRESENTATIVE);
         }
-        if (CollectionUtils.isEmpty(cicCase.getRepresentativeCIC())
-            && !CollectionUtils.isEmpty(cicCase.getApplicantCIC())) {
+        if (parties.contains(PartiesCIC.APPLICANT) && hasText(cicCase.getApplicantEmailAddress())
+            && (cicCase.getEmail() == null || !cicCase.getEmail().equals(cicCase.getApplicantEmailAddress()))) {
             correspondenceParties.add(APPLICANT);
         }
 

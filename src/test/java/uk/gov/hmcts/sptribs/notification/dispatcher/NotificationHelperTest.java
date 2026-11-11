@@ -19,6 +19,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
+import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
@@ -75,6 +76,7 @@ import static uk.gov.hmcts.sptribs.notification.NotificationHelper.getNotificati
 import static uk.gov.hmcts.sptribs.notification.NotificationHelper.getNotificationPartiesBundle;
 import static uk.gov.hmcts.sptribs.notification.NotificationHelper.getPartiesOnCase;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_DATE_1;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_APPLICANT_EMAIL;
 
 @ExtendWith(MockitoExtension.class)
 public class NotificationHelperTest {
@@ -708,7 +710,8 @@ public class NotificationHelperTest {
     void shouldReturnBundleCorrespondencePartiesBasedOnPartiesOnCase() {
 
         final CicCase cicCase = CicCase.builder()
-            .applicantCIC(Set.of(ApplicantCIC.APPLICANT_CIC))
+            .partiesCIC(Set.of(PartiesCIC.APPLICANT))
+            .applicantEmailAddress(TEST_APPLICANT_EMAIL)
             .respondentEmail("test@test.com")
             .build();
 
@@ -717,23 +720,6 @@ public class NotificationHelperTest {
         assertThat(correspondenceParties.size()).isEqualTo(2);
         assertThat(correspondenceParties).contains(RESPONDENT);
         assertThat(correspondenceParties).contains(APPLICANT);
-    }
-
-    @Test
-    void bundleCorrespondencePartiesShouldNotContainApplicantIfRepresentativeIsPresentOnCase() {
-
-        final CicCase cicCase = CicCase.builder()
-            .applicantCIC(Set.of(ApplicantCIC.APPLICANT_CIC))
-            .representativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE))
-            .respondentEmail("test@test.com")
-            .build();
-
-        Set<NotificationParties> correspondenceParties = getNotificationPartiesBundle(cicCase);
-
-        assertThat(correspondenceParties.size()).isEqualTo(2);
-        assertThat(correspondenceParties).contains(RESPONDENT);
-        assertThat(correspondenceParties).contains(REPRESENTATIVE);
-        assertThat(correspondenceParties).doesNotContain(APPLICANT);
     }
 
     private DynamicList getDynamicList() {

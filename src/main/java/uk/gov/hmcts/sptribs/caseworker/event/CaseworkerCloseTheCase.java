@@ -225,7 +225,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
         notificationDispatcher.sendToCorrespondenceParties(notificationContext);
 
         String message = MessageUtil.generateHeaderFooterMessageFromCorrespondenceParties(
-            notificationContext.getCorrespondenceParties(),
+            notificationContext.getSent(),
             "Case closed",
             "Use 'Reinstate case' if this case needs to be reopened in the future."
         );
