@@ -78,7 +78,7 @@ public class CcdSearchServiceIT {
 
         assertThat(searchResult).isNotNull();
         assertThat(searchResult.size()).isEqualTo(1);
-        assertThat(searchResult.get(0)).isEqualTo(caseDetailsList.get(0));
+        assertThat(searchResult.getFirst()).isEqualTo(caseDetailsList.getFirst());
     }
 
     @Test
@@ -99,7 +99,9 @@ public class CcdSearchServiceIT {
         final SearchSourceBuilder sourceBuilder = SearchSourceBuilder
             .searchSource()
             .sort(DUE_DATE, ASC)
+            .sort("reference", ASC)
             .query(query)
+            .trackTotalHits(true)
             .from(0)
             .size(100);
 
@@ -114,7 +116,7 @@ public class CcdSearchServiceIT {
 
         assertThat(searchResult).isNotNull();
         assertThat(searchResult.size()).isEqualTo(1);
-        assertThat(searchResult.get(0)).isEqualTo(caseDetailsList.get(0));
+        assertThat(searchResult.getFirst()).isEqualTo(caseDetailsList.getFirst());
     }
 
     @Test
@@ -148,6 +150,6 @@ public class CcdSearchServiceIT {
 
         assertThat(searchResult).isNotNull();
         assertThat(searchResult.size()).isEqualTo(1);
-        assertThat(searchResult.get(0)).isEqualTo(caseDetailsList.get(0));
+        assertThat(searchResult.getFirst()).isEqualTo(caseDetailsList.getFirst());
     }
 }

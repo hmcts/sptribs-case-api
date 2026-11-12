@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CancelHearingReasonSelect;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RecordNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SelectHearing;
+import uk.gov.hmcts.sptribs.caseworker.service.HearingJudgeTaskService;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -54,12 +55,16 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
 
     private final HearingService hearingService;
 
+    private final HearingJudgeTaskService hearingJudgeTaskService;
+
     private final CancelHearingNotification cancelHearingNotification;
 
     @Autowired
     public CaseworkerCancelHearing(HearingService hearingService,
-                                   CancelHearingNotification cancelHearingNotification) {
+                                    HearingJudgeTaskService hearingJudgeTaskService,
+                                    CancelHearingNotification cancelHearingNotification) {
         this.hearingService = hearingService;
+        this.hearingJudgeTaskService = hearingJudgeTaskService;
         this.cancelHearingNotification = cancelHearingNotification;
     }
 
@@ -85,6 +90,8 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
         hearingDateSelect.addTo(pageBuilder);
         reasonSelect.addTo(pageBuilder);
         recordNotifyParties.addTo(pageBuilder);
+        eventBuilder.fields().readonlyNoSummary(CaseData::getCancelHearingJudgeTaskTrigger,
+            "[STATE]=\"NEVER_SHOW\"");
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
@@ -111,6 +118,7 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
         }
         caseData.getListing().setHearingStatus(Cancelled);
         caseData.getListing().setCancelledDate(LocalDate.now());
+        hearingJudgeTaskService.updateTask(caseData, caseData.getListing());
 
         final String hearingName = caseData.getCicCase().getHearingList().getValue().getLabel();
 

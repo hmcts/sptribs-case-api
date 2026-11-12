@@ -746,6 +746,11 @@
           <text>"Review Order"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_assignHearingJudge">
+        <inputEntry id="UnaryTests_assignHearingJudge"><text></text></inputEntry>
+        <outputEntry id="LiteralExpression_assignHearingJudgeType"><text>"assignHearingJudge"</text></outputEntry>
+        <outputEntry id="LiteralExpression_assignHearingJudgeName"><text>"Assign JOH to hearing"</text></outputEntry>
+      </rule>
     </decisionTable>
   </decision>
   <dmndi:DMNDI>
