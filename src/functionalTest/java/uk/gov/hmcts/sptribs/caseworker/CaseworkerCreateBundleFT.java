@@ -2,13 +2,19 @@ package uk.gov.hmcts.sptribs.caseworker;
 
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.DisabledIf;
 import org.springframework.test.context.junit.jupiter.EnabledIf;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
+import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +29,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CREATE_BUNDLE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.testutil.CaseDataUtil.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
@@ -96,9 +103,10 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
 
     @Test
     @DisabledIf(expression = "${feature.citizen-dashboard.enabled:false}", loadContext = true)
-    public void shouldHaveNoSubmittedCallbackEndpointWhenCitizenDashboardDisabled() throws IOException, SQLException {
-        final Map<String, Object> caseData = caseData(REQUEST);
-        caseData.remove("caseBundleIdsAndTimestamps");
+    public void shouldHaveNoSubmittedCallbackEndpointWhenCitizenDashboardDisabled() throws Exception {
+        final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
+        caseData.remove("cicCaseEmail");
+        caseData.put("cicCaseRespondentEmail", "");
 
         final Response response = triggerCallback(caseData, CREATE_BUNDLE, SUBMITTED_URL, false);
 
@@ -106,9 +114,12 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
     }
 
     @Test
-    @EnabledIf(expression = "${feature.citizen-dashboard.enabled:true}", loadContext = true)
+    @EnabledIf(expression = "${feature.citizen-dashboard.enabled:false}", loadContext = true)
     public void shouldHaveSimpleMessageForCaseClosed() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
+        caseData.put("cicCasePartiesCIC", List.of("SubjectCIC", "RepresentativeCIC", "ApplicantCIC"));
+        caseData.put("cicCaseRepresentativeEmailAddress", "representative@example.com");
+        caseData.put("cicCaseApplicantEmailAddress", "applicant@example.com");
 
         final Response response = triggerCallback(caseData, CREATE_BUNDLE, SUBMITTED_URL, CaseClosed);
 
@@ -116,27 +127,16 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Bundle created.");
+            .isEqualTo("# Bundle created.");
     }
 
     @Test
-    @EnabledIf(expression = "${feature.citizen-dashboard.enabled:true}", loadContext = true)
-    public void shouldBeSuccessfulWhenSubmittedCallbackIsInvoked() throws Exception {
+    @EnabledIf(expression = "${feature.citizen-dashboard.enabled:false}", loadContext = true)
+    public void shouldReportFailedRespondentSendWhenStoredAddressIsBlank() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
-
-        final Response response = triggerCallback(caseData, CREATE_BUNDLE, SUBMITTED_URL, false);
-
-        assertThat(response.getStatusCode()).isEqualTo(OK.value());
-        assertThatJson(response.asString())
-            .inPath(CONFIRMATION_HEADER)
-            .isString()
-            .contains("# Bundle created. \n## A notification has been sent to");
-    }
-
-    @Test
-    @EnabledIf(expression = "${feature.citizen-dashboard.enabled:true}", loadContext = true)
-    public void shouldReturnFailureMessageWhenEmailCouldNotSendWhenSubmittedCallbackIsInvoked() throws Exception {
-        final Map<String, Object> caseData = caseData(SUBMITTED_FAILURE_REQUEST);
+        caseData.remove("cicCaseEmail");
+        caseData.put("cicCaseRespondentEmail", "");
+        caseData.put("cicCasePartiesCIC", List.of("SubjectCIC", "RepresentativeCIC", "ApplicantCIC"));
 
         final Response response = triggerCallback(caseData, CREATE_BUNDLE, SUBMITTED_URL, false);
 
@@ -148,5 +148,75 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
                 # Bundle creation notification failed\s
                 ## A notification could not be sent to: Respondent\s
                 ## Please resend the notification.""");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = {"CaseManagement", "AwaitingHearing", "ReadyToList"})
+    @EnabledIf(expression = "${feature.citizen-dashboard.enabled:false}", loadContext = true)
+    public void shouldNotifyRespondentInNonClosedStatesWhenOtherPartiesHaveNoStoredEmail(State state) throws Exception {
+        final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
+        caseData.put("cicCaseEmail", " ");
+        caseData.put("cicCasePartiesCIC", List.of("SubjectCIC", "RepresentativeCIC", "ApplicantCIC"));
+        caseData.put("cicCaseRepresentativeEmailAddress", "");
+        caseData.remove("cicCaseApplicantEmailAddress");
+
+        final Response response = triggerBundleSubmittedCallback(caseData, state);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .inPath(CONFIRMATION_HEADER)
+            .isString()
+            .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = CaseSubcategory.class, names = {"FATAL", "MINOR"})
+    @EnabledIf(expression = "${feature.citizen-dashboard.enabled:false}", loadContext = true)
+    public void shouldNotNotifySubjectForFatalOrMinorCase(CaseSubcategory subcategory) throws Exception {
+        final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
+        caseData.put("cicCaseCaseSubcategory", subcategory.getLabel());
+
+        final Response response = triggerBundleSubmittedCallback(caseData, CaseManagement);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .inPath(CONFIRMATION_HEADER)
+            .isString()
+            .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent");
+    }
+
+    @Test
+    @EnabledIf(expression = "${feature.citizen-dashboard.enabled:false}", loadContext = true)
+    public void shouldReportFailedSubjectSendWhenSubmittedCallbackIsInvoked() throws Exception {
+        final Map<String, Object> caseData = caseData(SUBMITTED_FAILURE_REQUEST);
+
+        final Response response = triggerCallback(caseData, CREATE_BUNDLE, SUBMITTED_URL, false);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .inPath(CONFIRMATION_HEADER)
+            .isString()
+            .isEqualTo("""
+                # Bundle creation notification failed\s
+                ## A notification could not be sent to: Subject\s
+                ## Please resend the notification.""");
+    }
+
+    private Response triggerBundleSubmittedCallback(Map<String, Object> caseData, State state) {
+        long caseId = createCaseInCcd(false).getId();
+        caseData.put("hyphenatedCaseRef", CaseData.builder().build().formatCaseRef(caseId));
+
+        CaseDetails details = CaseDetails.builder()
+            .id(caseId)
+            .data(caseData)
+            .state(state.getName())
+            .caseTypeId(CcdServiceCode.ST_CIC.getCaseType().getCaseTypeName())
+            .build();
+
+        return triggerCallback(CallbackRequest.builder()
+            .eventId(CREATE_BUNDLE)
+            .caseDetailsBefore(details)
+            .caseDetails(details)
+            .build(), SUBMITTED_URL);
     }
 }
