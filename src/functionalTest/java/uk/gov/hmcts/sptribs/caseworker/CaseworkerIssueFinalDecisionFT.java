@@ -9,8 +9,11 @@ import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
@@ -40,7 +43,7 @@ public class CaseworkerIssueFinalDecisionFT extends FunctionalTestSuite {
     private static final String REQUEST_SUBMITTED_PATH =
         "classpath:request/casedata/ccd-callback-casedata-caseworker-issue-final-decision-submitted.json";
     private static final String REQUEST_SUBMITTED_UNHAPPY_PATH =
-        "classpath:request/casedata/ccd-callback-casedata-caseworker-issue-final-decision-unhappy-submitted.json";
+        "classpath:request/casedata/ccd-callback-casedata-caseworker-issue-final-decision-unhappy-null-subcategory-submitted.json";
 
     private static final String RESPONSE_MID_EVENT = "classpath:responses/response-caseworker-issue-final-decision-mid-event.json";
 
@@ -163,12 +166,14 @@ public class CaseworkerIssueFinalDecisionFT extends FunctionalTestSuite {
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .isEqualTo("# Final decision notice issued \n## A notification has been sent to: Subject");
+            .isEqualTo("# Final decision notice issued \n## A notification has been sent to: Subject, Respondent");
 
         long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
 
         List<CorrespondenceEntity> correspondenceEntities = caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef);
-        assertThat(correspondenceEntities).hasSize(1);
+        assertThat(correspondenceEntities).hasSize(2);
+
+        Set<String> receivingParties = new HashSet<>(Arrays.asList("SUBJECT", "RESPONDENT"));
 
         CorrespondenceEntity firstCorrespondenceEntity = correspondenceEntities.getFirst();
 
@@ -183,6 +188,7 @@ public class CaseworkerIssueFinalDecisionFT extends FunctionalTestSuite {
         assertThat(firstCorrespondenceEntity.getDocumentUrl()).isNotNull();
         assertThat(firstCorrespondenceEntity.getDocumentFilename()).isNotNull();
         assertThat(firstCorrespondenceEntity.getDocumentBinaryUrl()).isNotNull();
+        assertThat(receivingParties).contains(firstCorrespondenceEntity.getReceivingParty().name());
     }
 
     @Test
