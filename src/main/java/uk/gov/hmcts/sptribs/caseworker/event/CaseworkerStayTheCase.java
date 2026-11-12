@@ -66,7 +66,7 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
             .label("LabelAddStay", "")
             .complex(CaseData::getCaseStay)
             .mandatoryWithLabel(CaseStay::getStayReason, "")
-            .mandatory(CaseStay::getFlagType, "stayStayReason = \"Other\"")
+            .mandatory(CaseStay::getFlagType, "stayStayReason = \"Other\"", true)
             .mandatoryWithLabel(CaseStay::getExpirationDate, "")
             .optional(CaseStay::getAdditionalDetail, "");
     }
