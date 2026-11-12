@@ -60,7 +60,7 @@ public class IssueCaseSelectDocumentIT {
     }
 
     @Test
-    void shouldValidateThatDocumentIsSelectedInMidEvent() throws Exception {
+    void shouldRejectDocumentSelectionWithoutCaseDetails() throws Exception {
         DynamicMultiSelectList list = getDynamicMultiSelectDocumentList();
 
         CaseData caseData = CaseData.builder()
