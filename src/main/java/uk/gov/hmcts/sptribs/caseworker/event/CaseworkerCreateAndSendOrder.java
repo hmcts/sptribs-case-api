@@ -39,6 +39,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.CreateNewOrder;
 import uk.gov.hmcts.sptribs.common.event.page.EditNewOrderContentPage;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
+import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
@@ -73,6 +74,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.convertToCICDocuments;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToDocument;
 
 @Slf4j
@@ -196,7 +198,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
 
     private void populateDraftOrder(Order.OrderBuilder orderBuilder, CaseData caseData, CicCase cicCase, List<String> errors,
                                     long caseReferenceNumber) {
-        if (!CREATE_AND_SEND_NEW_ORDER.equals(cicCase.getOrderIssuingType())) {
+        if (!CREATE_AND_SEND_NEW_ORDER.equals(cicCase.getOrderIssuingType()) || cicCase.getOrderTemplateIssued() == null) {
             return;
         }
 
@@ -223,25 +225,24 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
 
     private void populateUploadedOrder(Order.OrderBuilder orderBuilder, CicCase cicCase, List<String> errors,
                                        long caseReferenceNumber) {
-        if (!UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER.equals(cicCase.getOrderIssuingType())) {
+        if (!UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER.equals(cicCase.getOrderIssuingType()) || cicCase.getOrderFile() == null) {
             return;
         }
 
-        if (cicCase.getOrderFile() != null) {
-            updateCategoryToDocument(cicCase.getOrderFile(), DocumentType.TRIBUNAL_DIRECTION.getCategory());
-        }
+        List<ListValue<CICDocument>> documents = convertToCICDocuments(cicCase.getOrderFile());
 
-        orderBuilder.uploadedFile(cicCase.getOrderFile());
+        updateCategoryToDocument(documents, DocumentType.TRIBUNAL_DIRECTION.getCategory());
+        orderBuilder.uploadedFile(documents);
 
         try {
             documentsService.buildAndSaveNewDocumentEntity(
-                cicCase.getOrderFile().getFirst().getValue().getDocumentLink(),
+                documents.getFirst().getValue().getDocumentLink(),
                 caseReferenceNumber,
                 DocumentType.TRIBUNAL_DIRECTION,
                 CaseDocumentType.ORDER
             );
         } catch (RuntimeException e) {
-            errors.add(handleDocumentException(cicCase.getOrderFile().getFirst().getValue().getDocumentLink(), e.getMessage()));
+            errors.add(handleDocumentException(documents.getFirst().getValue().getDocumentLink(), e.getMessage()));
         }
     }
 

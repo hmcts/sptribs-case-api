@@ -31,9 +31,9 @@ import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentSaveE
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants;
 import uk.gov.hmcts.sptribs.document.content.FinalDecisionTemplateContent;
-import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.model.OrderDecisionUploadCICDocument;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseFinalDecisionIssuedNotification;
 
@@ -252,7 +252,7 @@ class CaseworkerIssueFinalDecisionTest {
         beforeDetails.setId(TEST_CASE_ID);
         final CaseData caseData = caseData();
         final CaseIssueFinalDecision caseIssueFinalDecision = new CaseIssueFinalDecision();
-        final CICDocument document = CICDocument.builder()
+        final OrderDecisionUploadCICDocument document = OrderDecisionUploadCICDocument.builder()
             .documentLink(Document.builder().binaryUrl("url").url("url").filename("file.txt").build())
             .documentEmailContent("content")
             .build();
@@ -349,7 +349,7 @@ class CaseworkerIssueFinalDecisionTest {
         beforeDetails.setId(TEST_CASE_ID);
         final CaseData caseData = caseData();
         final CaseIssueFinalDecision caseIssueFinalDecision = new CaseIssueFinalDecision();
-        final CICDocument document = CICDocument.builder()
+        final OrderDecisionUploadCICDocument document = OrderDecisionUploadCICDocument.builder()
             .documentLink(Document.builder().binaryUrl("url").url("url").filename("file.txt").build())
             .documentEmailContent("content")
             .build();
@@ -408,7 +408,7 @@ class CaseworkerIssueFinalDecisionTest {
 
         verifyNoInteractions(documentsService);
 
-        caseIssueFinalDecision.setDocument(CICDocument.builder()
+        caseIssueFinalDecision.setDocument(OrderDecisionUploadCICDocument.builder()
             .documentLink(null)
             .documentEmailContent("final decision document test")
             .build()

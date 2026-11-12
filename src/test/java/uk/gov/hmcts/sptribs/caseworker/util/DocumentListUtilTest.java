@@ -18,10 +18,10 @@ import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
-import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.model.OrderDecisionUploadCICDocument;
 import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 
 import java.time.LocalDate;
@@ -525,7 +525,10 @@ public class DocumentListUtilTest {
     void shouldGenerateFinalDecisionDocList() {
         //Given
         CaseIssueFinalDecision decision = CaseIssueFinalDecision.builder()
-            .document(CICDocument.builder().documentLink(Document.builder().filename("name").binaryUrl("d").build()).build())
+            .document(
+                OrderDecisionUploadCICDocument.builder().documentLink(
+                    Document.builder().filename("name").binaryUrl("d").build()
+                ).build())
             .build();
 
         final CaseData caseData = CaseData.builder().build();
