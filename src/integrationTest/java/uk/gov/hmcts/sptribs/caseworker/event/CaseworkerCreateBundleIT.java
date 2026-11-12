@@ -38,6 +38,7 @@ import uk.gov.hmcts.sptribs.document.bundling.client.BundlingClient;
 import uk.gov.hmcts.sptribs.document.bundling.model.AudioVideoEvidenceBundleDocument;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleCallback;
+import uk.gov.hmcts.sptribs.document.bundling.model.BundleFolder;
 import uk.gov.hmcts.sptribs.document.model.AbstractCaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
@@ -83,6 +84,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CREATE_BUNDLE;
+import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.AUDIO_VIDEO_EVIDENCE_FOLDER_NAME;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.BUNDLE_CREATED_EMAIL_CITIZEN;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.BUNDLE_CREATED_EMAIL_RESPONDENT;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
@@ -843,6 +845,216 @@ public class CaseworkerCreateBundleIT {
         List<HashMap<String, Object>> bundleIdsAndTimestamps =
             (List<HashMap<String, Object>>) data.get("caseBundleIdsAndTimestamps");
         assertThat(bundleIdsAndTimestamps).hasSize(1);
+    }
+
+    @Test
+    void shouldHideAudioVideoEvidenceFolderInBundleWhenNoAudioVideoFilesExist() throws Exception {
+        final CaseData caseData = caseData();
+        caseData.setCaseNumber("1616591401473378");
+        CicCase cicCase = CicCase.builder().build();
+        cicCase.setApplicantDocumentsUploaded(
+            List.of(
+                toListValue(buildCaseworkerDoc(
+                    "paper.pdf",
+                    "http://dm/documents/3/binary",
+                    DocumentType.APPLICATION_FORM,
+                    LocalDate.of(2026, 1, 8)
+                ))
+            )
+        );
+        caseData.setCicCase(cicCase);
+
+        when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTHORIZATION);
+        when(documentsService.getAudioVideoDocuments(any())).thenReturn(List.of());
+
+        List<ListValue<BundleFolder>> folders = new ArrayList<>();
+        folders.add(ListValue.<BundleFolder>builder()
+            .id("1")
+            .value(BundleFolder.builder().name("Applications").sortIndex(1).build())
+            .build());
+        folders.add(ListValue.<BundleFolder>builder()
+            .id("2")
+            .value(BundleFolder.builder().name(AUDIO_VIDEO_EVIDENCE_FOLDER_NAME).sortIndex(2).build())
+            .build());
+        folders.add(ListValue.<BundleFolder>builder()
+            .id("3")
+            .value(BundleFolder.builder().name("Orders").sortIndex(3).build())
+            .build());
+
+        List<ListValue<Bundle>> apiReturnedBundles = new ArrayList<>();
+        apiReturnedBundles.add(ListValue.<Bundle>builder()
+            .id("1")
+            .value(Bundle.builder().id(UUID.randomUUID().toString()).folders(folders).build())
+            .build());
+
+        BundleResponse bundleResponse = mock(BundleResponse.class);
+        LinkedHashMap<String, Object> responseData = new LinkedHashMap<>();
+        responseData.put("caseBundles", OBJECT_MAPPER.convertValue(apiReturnedBundles, LIST_TYPE_REFERENCE));
+        when(bundleResponse.getData()).thenReturn(responseData);
+
+        when(bundlingClient.createBundle(
+            eq(SERVICE_AUTHORIZATION),
+            eq(TEST_AUTHORIZATION_TOKEN),
+            any(BundleCallback.class)
+        )).thenReturn(bundleResponse);
+
+        String response = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
+                .contentType(APPLICATION_JSON)
+                .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .content(objectMapper.writeValueAsString(callbackRequest(caseData, CREATE_BUNDLE)))
+                .accept(APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        HashMap<String, Object> responseMap = objectMapper.readValue(response, TYPE_REFERENCE);
+        @SuppressWarnings("unchecked")
+        HashMap<String, Object> data = (HashMap<String, Object>) responseMap.get("data");
+        @SuppressWarnings("unchecked")
+        List<HashMap<String, Object>> caseBundles = (List<HashMap<String, Object>>) data.get("caseBundles");
+
+        assertThat(caseBundles).hasSize(1);
+        @SuppressWarnings("unchecked")
+        HashMap<String, Object> bundleValue = (HashMap<String, Object>) caseBundles.getFirst().get("value");
+        @SuppressWarnings("unchecked")
+        List<HashMap<String, Object>> bundleFolders = (List<HashMap<String, Object>>) bundleValue.get("folders");
+
+        assertThat(bundleFolders).hasSize(2);
+        assertThat(bundleFolders)
+            .extracting(folder -> {
+                @SuppressWarnings("unchecked")
+                HashMap<String, Object> folderVal = (HashMap<String, Object>) folder.get("value");
+                return (String) folderVal.get("name");
+            })
+            .containsExactlyInAnyOrder("Applications", "Orders")
+            .doesNotContain(AUDIO_VIDEO_EVIDENCE_FOLDER_NAME);
+    }
+
+    @Test
+    void shouldShowAudioVideoEvidenceFolderWithFilesWhenAudioVideoFilesExist() throws Exception {
+        final CaseData caseData = caseData();
+        caseData.setCaseNumber("1616591401473378");
+        CicCase cicCase = CicCase.builder().build();
+        cicCase.setApplicantDocumentsUploaded(
+            List.of(
+                toListValue(buildCaseworkerDoc(
+                    "paper.pdf",
+                    "http://dm/documents/3/binary",
+                    DocumentType.APPLICATION_FORM,
+                    LocalDate.of(2026, 1, 8)
+                ))
+            )
+        );
+        caseData.setCicCase(cicCase);
+
+        when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTHORIZATION);
+        when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).thenReturn("pdf".getBytes());
+
+        DocumentEntity audioDoc1 = DocumentEntity.builder()
+            .documentFilename("hearing-audio.mp3")
+            .documentBinaryUrl(buildDmStoreBinaryUrl(VALID_DOCUMENT_ID_1))
+            .documentTypeName(DocumentType.LINKED_DOCS.name())
+            .savedAt(OffsetDateTime.parse("2026-01-10T10:00:00Z"))
+            .build();
+        DocumentEntity audioDoc2 = DocumentEntity.builder()
+            .documentFilename("cctv-evidence.mp4")
+            .documentBinaryUrl(buildDmStoreBinaryUrl(VALID_DOCUMENT_ID_2))
+            .documentTypeName(DocumentType.POLICE_EVIDENCE.name())
+            .savedAt(OffsetDateTime.parse("2026-01-12T10:00:00Z"))
+            .build();
+        when(documentsService.getAudioVideoDocuments(any())).thenReturn(List.of(audioDoc1, audioDoc2));
+
+        DocumentLink self = new DocumentLink();
+        self.href = "http://dm-store/documents/generated";
+        DocumentLink binary = new DocumentLink();
+        binary.href = "http://dm-store/documents/generated/binary";
+        Links links = new Links();
+        links.self = self;
+        links.binary = binary;
+        uk.gov.hmcts.sptribs.cdam.model.Document uploadedDoc = new uk.gov.hmcts.sptribs.cdam.model.Document();
+        uploadedDoc.links = links;
+        uploadedDoc.originalDocumentName = "audio-video-evidence-1616591401473378.pdf";
+        UploadResponse uploadResponse = new UploadResponse();
+        uploadResponse.setDocuments(List.of(uploadedDoc));
+        when(caseDocumentClientApi.uploadDocuments(eq(TEST_AUTHORIZATION_TOKEN), eq(SERVICE_AUTHORIZATION), any()))
+            .thenReturn(uploadResponse);
+
+        List<ListValue<BundleFolder>> folders = new ArrayList<>();
+        folders.add(ListValue.<BundleFolder>builder()
+            .id("1")
+            .value(BundleFolder.builder().name("Applications").sortIndex(1).build())
+            .build());
+        folders.add(ListValue.<BundleFolder>builder()
+            .id("2")
+            .value(BundleFolder.builder().name(AUDIO_VIDEO_EVIDENCE_FOLDER_NAME).sortIndex(2).build())
+            .build());
+
+        List<ListValue<Bundle>> apiReturnedBundles = new ArrayList<>();
+        apiReturnedBundles.add(ListValue.<Bundle>builder()
+            .id("1")
+            .value(Bundle.builder().id(UUID.randomUUID().toString()).folders(folders).build())
+            .build());
+
+        BundleResponse bundleResponse = mock(BundleResponse.class);
+        LinkedHashMap<String, Object> responseData = new LinkedHashMap<>();
+        responseData.put("caseBundles", OBJECT_MAPPER.convertValue(apiReturnedBundles, LIST_TYPE_REFERENCE));
+        when(bundleResponse.getData()).thenReturn(responseData);
+
+        when(bundlingClient.createBundle(
+            eq(SERVICE_AUTHORIZATION),
+            eq(TEST_AUTHORIZATION_TOKEN),
+            any(BundleCallback.class)
+        )).thenReturn(bundleResponse);
+
+        String response = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
+                .contentType(APPLICATION_JSON)
+                .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .content(objectMapper.writeValueAsString(callbackRequest(caseData, CREATE_BUNDLE)))
+                .accept(APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        HashMap<String, Object> responseMap = objectMapper.readValue(response, TYPE_REFERENCE);
+        @SuppressWarnings("unchecked")
+        HashMap<String, Object> data = (HashMap<String, Object>) responseMap.get("data");
+        @SuppressWarnings("unchecked")
+        List<HashMap<String, Object>> caseBundles = (List<HashMap<String, Object>>) data.get("caseBundles");
+
+        assertThat(caseBundles).hasSize(1);
+        @SuppressWarnings("unchecked")
+        HashMap<String, Object> bundleValue = (HashMap<String, Object>) caseBundles.getFirst().get("value");
+        @SuppressWarnings("unchecked")
+        List<HashMap<String, Object>> bundleFolders = (List<HashMap<String, Object>>) bundleValue.get("folders");
+
+        assertThat(bundleFolders).hasSize(2);
+        @SuppressWarnings("unchecked")
+        HashMap<String, Object> avFolder = bundleFolders.stream()
+            .filter(folder -> {
+                @SuppressWarnings("unchecked")
+                HashMap<String, Object> folderVal = (HashMap<String, Object>) folder.get("value");
+                return AUDIO_VIDEO_EVIDENCE_FOLDER_NAME.equalsIgnoreCase((String) folderVal.get("name"));
+            })
+            .findFirst()
+            .orElseThrow();
+
+        @SuppressWarnings("unchecked")
+        HashMap<String, Object> avFolderVal = (HashMap<String, Object>) avFolder.get("value");
+        @SuppressWarnings("unchecked")
+        List<HashMap<String, Object>> avDocuments = (List<HashMap<String, Object>>) avFolderVal.get("documents");
+
+        assertThat(avDocuments).hasSize(2);
+        assertThat(avDocuments)
+            .extracting(doc -> {
+                @SuppressWarnings("unchecked")
+                HashMap<String, Object> docVal = (HashMap<String, Object>) doc.get("value");
+                return (String) docVal.get("name");
+            })
+            .containsExactlyInAnyOrder("hearing-audio.mp3", "cctv-evidence.mp4");
     }
 
     private String confirmationHeader(String response) throws Exception {

@@ -7,6 +7,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.document.am.model.Classification;
 import uk.gov.hmcts.reform.ccd.document.am.model.DocumentUploadRequest;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.common.ccd.CcdJurisdiction;
 import uk.gov.hmcts.sptribs.document.bundling.model.AudioVideoEvidenceBundleDocument;
+import uk.gov.hmcts.sptribs.document.bundling.model.BundleDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
@@ -27,6 +29,7 @@ import java.net.URI;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -64,6 +67,44 @@ public class AudioVideoEvidenceBundleService {
             byte[] pdf = generatePdf(rows, caseId);
             Document uploadedDocument = upload(pdf, filename);
             return Optional.of(buildBundleDocument(uploadedDocument));
+        } catch (RuntimeException exception) {
+            throw new AudioVideoEvidenceBundleException(caseId, exception);
+        }
+    }
+
+    public List<ListValue<BundleDocument>> createAudioVideoBundleDocuments(Long caseId) {
+        try {
+            List<DocumentEntity> entities = documentsService.getAudioVideoDocuments(caseId);
+            if (entities == null || entities.isEmpty()) {
+                return Collections.emptyList();
+            }
+
+            List<ListValue<BundleDocument>> bundleDocuments = new ArrayList<>();
+            int index = 1;
+            for (DocumentEntity entity : entities) {
+                String binaryUrl = entity.getDocumentBinaryUrl();
+                String documentUrl = entity.getDocumentUrl() != null
+                    ? entity.getDocumentUrl()
+                    : (binaryUrl != null ? StringUtils.substringBeforeLast(binaryUrl, "/binary") : null);
+
+                BundleDocument bundleDocument = BundleDocument.builder()
+                    .name(entity.getDocumentFilename())
+                    .description(resolveDocumentType(entity.getDocumentTypeName()))
+                    .sortIndex(index)
+                    .sourceDocument(Document.builder()
+                        .filename(entity.getDocumentFilename())
+                        .binaryUrl(binaryUrl)
+                        .url(documentUrl)
+                        .build())
+                    .build();
+
+                bundleDocuments.add(ListValue.<BundleDocument>builder()
+                    .id(String.valueOf(index))
+                    .value(bundleDocument)
+                    .build());
+                index++;
+            }
+            return bundleDocuments;
         } catch (RuntimeException exception) {
             throw new AudioVideoEvidenceBundleException(caseId, exception);
         }

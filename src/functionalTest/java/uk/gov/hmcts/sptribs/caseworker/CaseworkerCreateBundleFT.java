@@ -57,6 +57,10 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
         assertThatJson(response.asString())
             .when(IGNORING_EXTRA_FIELDS)
             .isEqualTo(json(expectedResponse(RESPONSE)));
+        assertThatJson(response.asString())
+            .inPath("$.data.caseBundles[0].value.folders[*].value.name")
+            .isArray()
+            .doesNotContain("Audio/video evidence documents");
     }
 
     @Test

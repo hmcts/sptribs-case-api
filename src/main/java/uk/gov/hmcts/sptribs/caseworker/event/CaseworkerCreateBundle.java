@@ -26,6 +26,8 @@ import uk.gov.hmcts.sptribs.document.bundling.AudioVideoEvidenceBundleService;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundlingService;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleCallback;
+import uk.gov.hmcts.sptribs.document.bundling.model.BundleDocument;
+import uk.gov.hmcts.sptribs.document.bundling.model.BundleFolder;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleIdAndTimestamp;
 import uk.gov.hmcts.sptribs.document.bundling.model.Callback;
 import uk.gov.hmcts.sptribs.document.model.AbstractCaseworkerCICDocument;
@@ -35,11 +37,13 @@ import uk.gov.hmcts.sptribs.notification.dispatcher.BundleCreatedNotification;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -64,6 +68,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.AUDIO_VIDEO_EVIDENCE_FOLDER_NAME;
 
 @Component
 @Slf4j
@@ -280,6 +285,12 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
             return null;
         }
 
+        List<ListValue<BundleDocument>> audioVideoDocuments = caseData.getAudioVideoEvidenceBundleDocument() != null
+            ? audioVideoEvidenceBundleService.createAudioVideoBundleDocuments(Long.parseLong(caseData.getCaseNumber()))
+            : Collections.emptyList();
+
+        configureAudioVideoEvidenceFolder(caseBundles, audioVideoDocuments);
+
         List<ListValue<BundleIdAndTimestamp>> bundleIdsAndTimestamps =
             Optional.ofNullable(caseData.getCaseBundleIdsAndTimestamps()).orElse(new ArrayList<>());
 
@@ -336,6 +347,61 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         }
 
         return caseBundles;
+    }
+
+    private void configureAudioVideoEvidenceFolder(List<ListValue<Bundle>> caseBundles,
+                                                   List<ListValue<BundleDocument>> audioVideoDocuments) {
+        for (ListValue<Bundle> caseBundle : caseBundles) {
+            if (caseBundle == null || caseBundle.getValue() == null) {
+                continue;
+            }
+            Bundle bundle = caseBundle.getValue();
+            List<ListValue<BundleFolder>> folders = bundle.getFolders();
+
+            if (CollectionUtils.isEmpty(audioVideoDocuments)) {
+                if (folders != null) {
+                    List<ListValue<BundleFolder>> updatedFolders = folders.stream()
+                        .filter(folder -> folder != null
+                            && folder.getValue() != null
+                            && !AUDIO_VIDEO_EVIDENCE_FOLDER_NAME.equalsIgnoreCase(folder.getValue().getName()))
+                        .collect(Collectors.toCollection(ArrayList::new));
+                    bundle.setFolders(updatedFolders.isEmpty() ? null : updatedFolders);
+                }
+            } else {
+                if (folders == null) {
+                    folders = new ArrayList<>();
+                    bundle.setFolders(folders);
+                }
+                Optional<ListValue<BundleFolder>> audioVideoFolder = folders.stream()
+                    .filter(folder -> folder != null
+                        && folder.getValue() != null
+                        && AUDIO_VIDEO_EVIDENCE_FOLDER_NAME.equalsIgnoreCase(folder.getValue().getName()))
+                    .findFirst();
+
+                if (audioVideoFolder.isPresent()) {
+                    audioVideoFolder.get().getValue().setDocuments(audioVideoDocuments);
+                } else {
+                    int sortIndex = folders.stream()
+                        .filter(Objects::nonNull)
+                        .map(ListValue::getValue)
+                        .filter(Objects::nonNull)
+                        .mapToInt(BundleFolder::getSortIndex)
+                        .max()
+                        .orElse(0) + 1;
+
+                    BundleFolder newFolder = BundleFolder.builder()
+                        .name(AUDIO_VIDEO_EVIDENCE_FOLDER_NAME)
+                        .sortIndex(sortIndex)
+                        .documents(audioVideoDocuments)
+                        .build();
+
+                    folders.add(ListValue.<BundleFolder>builder()
+                        .id(String.valueOf(folders.size() + 1))
+                        .value(newFolder)
+                        .build());
+                }
+            }
+        }
     }
 
     private void clearTemporaryBundleData(CaseData caseData) {
