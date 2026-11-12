@@ -419,7 +419,7 @@ public abstract class FunctionalTestSuite {
             .event(uk.gov.hmcts.reform.ccd.client.model.Event.builder().id(appsDetails.getEventIds().getCreateEvent()).build())
             .eventToken(createEventResponseToken)
             .build();
-        return coreCaseDataApi.submitForCitizen(
+        CaseDetails createdCase = coreCaseDataApi.submitForCitizen(
             citizenToken,
             serviceAuthenticationGenerator.generate(),
             userId,
@@ -428,6 +428,8 @@ public abstract class FunctionalTestSuite {
             true,
             caseDataContent
         );
+        functionalTestDataManager.addReference(createdCase.getId());
+        return createdCase;
     }
 
     protected void checkAndUpdateDraftOrderDocument(Map<String, Object> caseData, long caseReference) throws SQLException, IOException {
@@ -611,10 +613,21 @@ public abstract class FunctionalTestSuite {
 
     @AfterEach
     void tearDownDataManager() throws SQLException {
+        RuntimeException cleanupFailure = null;
         for (long reference : functionalTestDataManager.getTestReferences()) {
-            functionalTestDataManager.clearDown(reference);
+            try {
+                functionalTestDataManager.clearDown(reference);
+            } catch (SQLException | RuntimeException exception) {
+                if (cleanupFailure == null) {
+                    cleanupFailure = new IllegalStateException("Functional test case cleanup failed");
+                }
+                cleanupFailure.addSuppressed(exception);
+            }
         }
         functionalTestDataManager.deleteCaseDocConstants(DOC_TABLE_REFERENCE_ARRAY);
+        if (cleanupFailure != null) {
+            throw cleanupFailure;
+        }
     }
 
     @AfterAll
