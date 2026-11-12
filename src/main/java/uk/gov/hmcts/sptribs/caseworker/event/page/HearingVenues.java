@@ -36,27 +36,29 @@ public class HearingVenues implements CcdPageConfiguration {
             .pageLabel("Listing Details")
             .label("LabelListingDetails", "")
             .pageShowConditions(PageShowConditionsUtil.editSummaryShowConditions())
-            .readonly(CaseData::getCurrentEvent, ALWAYS_HIDE)
+            .readonly(CaseData::getCurrentEvent, ALWAYS_HIDE, true)
             .complex(CaseData::getListing)
             .readonly(Listing::getHearingVenuesMessage)
             .optional(Listing::getHearingVenues,
                 "venueNotListedOption!= \"VenueNotListed\" AND (" + CURRENT_EVENT + CASEWORKER_RECORD_LISTING + "\""
-                    + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_RECORD_LISTING + "\")")
+                    + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_RECORD_LISTING + "\")", true)
             .readonly(Listing::getReadOnlyHearingVenueName,
-                CURRENT_EVENT + CASEWORKER_CREATE_HEARING_SUMMARY + "\"" + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_HEARING_SUMMARY + "\"")
+                      CURRENT_EVENT + CASEWORKER_CREATE_HEARING_SUMMARY + "\""
+                          + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_HEARING_SUMMARY + "\"",
+                      true)
             .optional(Listing::getVenueNotListedOption)
             .mandatory(Listing::getHearingVenueNameAndAddress, "venueNotListedOption= \"VenueNotListed\"")
             .optional(Listing::getRoomAtVenue)
             .optional(Listing::getAddlInstr,
-                CURRENT_EVENT + CASEWORKER_RECORD_LISTING + "\"" + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_RECORD_LISTING + "\"")
+                CURRENT_EVENT + CASEWORKER_RECORD_LISTING + "\"" + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_RECORD_LISTING + "\"", true)
             .label("theLabelListingDetails", "<h4>Hearing date</h4>")
             .mandatory(Listing::getDate)
             .mandatory(Listing::getSession)
             .mandatory(Listing::getHearingTime)
             .mandatory(Listing::getNumberOfDays)
             .mandatory(Listing::getAdditionalHearingDate, "numberOfDays = \"Yes\"")
-            .readonly(Listing::getHearingSummaryExists, ALWAYS_HIDE)
-            .readonly(Listing::getHearingStatus, ALWAYS_HIDE);
+            .readonly(Listing::getHearingSummaryExists, ALWAYS_HIDE, true)
+            .readonly(Listing::getHearingStatus, ALWAYS_HIDE, true);
 
     }
 

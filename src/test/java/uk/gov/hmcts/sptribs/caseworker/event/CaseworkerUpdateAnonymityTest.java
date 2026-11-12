@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -42,19 +41,15 @@ class CaseworkerUpdateAnonymityTest {
     private CaseworkerUpdateAnonymity caseworkerUpdateAnonymity;
 
     @Mock
-    private ApplyAnonymity applyAnonymity;
-
-    @Mock
     private AnonymityAppliedNotification anonymityAppliedNotification;
 
     @Mock
     private AnonymisationRepository anonymisationRepository;
 
-    private AnonymisationService anonymisationService;
-
     @BeforeEach
     void setUp() {
-        anonymisationService = Mockito.spy(new AnonymisationService(anonymisationRepository));
+        AnonymisationService anonymisationService = new AnonymisationService(anonymisationRepository);
+        ApplyAnonymity applyAnonymity = new ApplyAnonymity(anonymisationService);
         caseworkerUpdateAnonymity = new CaseworkerUpdateAnonymity(applyAnonymity, anonymityAppliedNotification, anonymisationService);
     }
 

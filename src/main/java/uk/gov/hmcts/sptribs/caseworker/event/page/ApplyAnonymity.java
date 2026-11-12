@@ -36,10 +36,14 @@ public class ApplyAnonymity implements CcdPageConfiguration {
                 .pageLabel("Anonymity")
                 .label("LabelCaseworkerApplyAnonymity", "")
                 .complex(CaseData::getCicCase)
-                    .readonly(CicCase::getFullName, ALWAYS_HIDE)
-                    .readonly(CicCase::getAnonymisedAppellantName, ALWAYS_HIDE)
-                    .readonly(CicCase::getAnonymityAlreadyApplied, ALWAYS_HIDE)
-                    .readonly(CicCase::getAnonymisationDate, ALWAYS_HIDE)
+                    // Add retainHiddenValue=true, to stop the fieldShowCondition from causing the fields to be dropped.
+                    // In general, readonly fields behave as if retainHiddenValue=true is always set, so we normally wouldn't need to set
+                    // it. However, when a page is hidden by a pageShowCondition (which this page sometimes is), that above logic does not
+                    // hold. Therefore, we set it anyway.
+                    .readonly(CicCase::getFullName, ALWAYS_HIDE, true)
+                    .readonly(CicCase::getAnonymisedAppellantName, ALWAYS_HIDE, true)
+                    .readonly(CicCase::getAnonymityAlreadyApplied, ALWAYS_HIDE, true)
+                    .readonly(CicCase::getAnonymisationDate, ALWAYS_HIDE, true)
                     .mandatory(CicCase::getAnonymiseYesOrNo)
                     .done()
                 .done();
