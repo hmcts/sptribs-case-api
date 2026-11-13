@@ -11,10 +11,12 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
 import uk.gov.hmcts.sptribs.document.bundling.model.AudioVideoEvidenceBundleDocument;
+import uk.gov.hmcts.sptribs.document.bundling.model.BundleDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
@@ -350,6 +352,74 @@ class AudioVideoEvidenceBundleServiceTest {
         assertThatCode(() -> service.deleteAudioVideoEvidenceBundleDocument(Document.builder()
             .url("http://ccd-case-document-am-api/cases/documents/11111111-1111-1111-1111-111111111111")
             .build())).doesNotThrowAnyException();
+    }
+
+    @Test
+    void shouldReturnEmptyListWhenNoAudioVideoDocumentsFoundForBundle() {
+        when(documentsService.getAudioVideoDocuments(12345L)).thenReturn(List.of());
+
+        List<ListValue<BundleDocument>> result = service.createAudioVideoBundleDocuments(12345L);
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void shouldReturnEmptyListWhenAudioVideoDocumentsIsNull() {
+        when(documentsService.getAudioVideoDocuments(12345L)).thenReturn(null);
+
+        List<ListValue<BundleDocument>> result = service.createAudioVideoBundleDocuments(12345L);
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void shouldCreateAudioVideoBundleDocumentsWhenEntitiesPresent() {
+        DocumentEntity audioDoc = DocumentEntity.builder()
+            .documentFilename("hearing-audio.mp3")
+            .documentBinaryUrl("http://dm-store/documents/11111111-1111-1111-1111-111111111111/binary")
+            .documentTypeName(DocumentType.LINKED_DOCS.name())
+            .build();
+
+        DocumentEntity videoDoc = DocumentEntity.builder()
+            .documentFilename("cctv-footage.mp4")
+            .documentUrl("http://dm-store/documents/22222222-2222-2222-2222-222222222222")
+            .documentBinaryUrl("http://dm-store/documents/22222222-2222-2222-2222-222222222222/binary")
+            .documentTypeName("UNKNOWN_OR_CUSTOM")
+            .build();
+
+        when(documentsService.getAudioVideoDocuments(12345L)).thenReturn(List.of(audioDoc, videoDoc));
+
+        List<ListValue<BundleDocument>> result = service.createAudioVideoBundleDocuments(12345L);
+
+        assertThat(result).hasSize(2);
+
+        ListValue<BundleDocument> first = result.getFirst();
+        assertThat(first.getId()).isEqualTo("1");
+        assertThat(first.getValue().getName()).isEqualTo("hearing-audio.mp3");
+        assertThat(first.getValue().getDescription()).isEqualTo(DocumentType.LINKED_DOCS.getLabel());
+        assertThat(first.getValue().getSortIndex()).isEqualTo(1);
+        assertThat(first.getValue().getSourceDocument().getFilename()).isEqualTo("hearing-audio.mp3");
+        assertThat(first.getValue().getSourceDocument().getUrl()).isEqualTo("http://dm-store/documents/11111111-1111-1111-1111-111111111111");
+        assertThat(first.getValue().getSourceDocument().getBinaryUrl()).isEqualTo("http://dm-store/documents/11111111-1111-1111-1111-111111111111/binary");
+
+        ListValue<BundleDocument> second = result.get(1);
+        assertThat(second.getId()).isEqualTo("2");
+        assertThat(second.getValue().getName()).isEqualTo("cctv-footage.mp4");
+        assertThat(second.getValue().getDescription()).isEqualTo("UNKNOWN_OR_CUSTOM");
+        assertThat(second.getValue().getSortIndex()).isEqualTo(2);
+        assertThat(second.getValue().getSourceDocument().getFilename()).isEqualTo("cctv-footage.mp4");
+        assertThat(second.getValue().getSourceDocument().getUrl()).isEqualTo("http://dm-store/documents/22222222-2222-2222-2222-222222222222");
+        assertThat(second.getValue().getSourceDocument().getBinaryUrl()).isEqualTo("http://dm-store/documents/22222222-2222-2222-2222-222222222222/binary");
+    }
+
+    @Test
+    void shouldThrowAudioVideoEvidenceBundleExceptionWhenGetAudioVideoDocumentsFails() {
+        when(documentsService.getAudioVideoDocuments(12345L))
+            .thenThrow(new RuntimeException("Database error"));
+
+        assertThatThrownBy(() -> service.createAudioVideoBundleDocuments(12345L))
+            .isInstanceOf(AudioVideoEvidenceBundleException.class)
+            .hasMessageContaining("12345");
     }
 
     private AudioVideoEvidenceBundleService service() {
