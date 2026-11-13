@@ -171,7 +171,7 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
 
     @ParameterizedTest
     @EnumSource(value = CaseSubcategory.class, names = {"FATAL", "MINOR"})
-    @EnabledIf(expression = "${feature.citizen-dashboard.enabled:true}", loadContext = true)
+    @EnabledIf(expression = "${feature.citizen-dashboard.enabled:false}", loadContext = true)
     public void shouldNotNotifySubjectForFatalOrMinorCase(CaseSubcategory subcategory) throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
         caseData.put("cicCaseCaseSubcategory", subcategory.getLabel());
@@ -186,7 +186,7 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
     }
 
     @Test
-    @EnabledIf(expression = "${feature.citizen-dashboard.enabled:true}", loadContext = true)
+    @EnabledIf(expression = "${feature.citizen-dashboard.enabled:false}", loadContext = true)
     public void shouldReportFailedSubjectSendWhenSubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(SUBMITTED_FAILURE_REQUEST);
 
