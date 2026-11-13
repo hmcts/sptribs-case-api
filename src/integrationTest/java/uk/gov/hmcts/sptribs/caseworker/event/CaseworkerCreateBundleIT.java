@@ -1057,6 +1057,167 @@ public class CaseworkerCreateBundleIT {
             .containsExactlyInAnyOrder("hearing-audio.mp3", "cctv-evidence.mp4");
     }
 
+    @Test
+    void shouldPreserveExistingBundleFoldersWhenNewBundleCreatedWithAudioVideoEvidence() throws Exception {
+        final CaseData caseData = caseData();
+        caseData.setCaseNumber("1616591401473378");
+        CicCase cicCase = CicCase.builder().build();
+        cicCase.setApplicantDocumentsUploaded(
+            List.of(
+                toListValue(buildCaseworkerDoc(
+                    "paper.pdf",
+                    "http://dm/documents/3/binary",
+                    DocumentType.APPLICATION_FORM,
+                    LocalDate.of(2026, 1, 8)
+                ))
+            )
+        );
+        caseData.setCicCase(cicCase);
+
+        final String existingOldBundleUUID = UUID.randomUUID().toString();
+        final String newBundleUUID = UUID.randomUUID().toString();
+
+        List<ListValue<BundleFolder>> oldFolders = new ArrayList<>();
+        oldFolders.add(ListValue.<BundleFolder>builder()
+            .id("1")
+            .value(BundleFolder.builder().name("Applications").sortIndex(1).build())
+            .build());
+
+        Bundle oldBundle = Bundle.builder()
+            .id(existingOldBundleUUID)
+            .folders(oldFolders)
+            .build();
+
+        CaseData caseDataBefore = caseData();
+        caseDataBefore.setCaseBundles(List.of(
+            ListValue.<Bundle>builder().id("1").value(oldBundle).build()
+        ));
+
+        when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTHORIZATION);
+        when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).thenReturn("pdf".getBytes());
+
+        DocumentEntity audioDoc1 = DocumentEntity.builder()
+            .documentFilename("hearing-audio.mp3")
+            .documentBinaryUrl(buildDmStoreBinaryUrl(VALID_DOCUMENT_ID_1))
+            .documentTypeName(DocumentType.LINKED_DOCS.name())
+            .savedAt(OffsetDateTime.parse("2026-01-10T10:00:00Z"))
+            .build();
+        DocumentEntity audioDoc2 = DocumentEntity.builder()
+            .documentFilename("cctv-evidence.mp4")
+            .documentBinaryUrl(buildDmStoreBinaryUrl(VALID_DOCUMENT_ID_2))
+            .documentTypeName(DocumentType.POLICE_EVIDENCE.name())
+            .savedAt(OffsetDateTime.parse("2026-01-12T10:00:00Z"))
+            .build();
+        when(documentsService.getAudioVideoDocuments(any())).thenReturn(List.of(audioDoc1, audioDoc2));
+
+        DocumentLink self = new DocumentLink();
+        self.href = "http://dm-store/documents/generated";
+        DocumentLink binary = new DocumentLink();
+        binary.href = "http://dm-store/documents/generated/binary";
+        Links links = new Links();
+        links.self = self;
+        links.binary = binary;
+        uk.gov.hmcts.sptribs.cdam.model.Document uploadedDoc = new uk.gov.hmcts.sptribs.cdam.model.Document();
+        uploadedDoc.links = links;
+        uploadedDoc.originalDocumentName = "audio-video-evidence-1616591401473378.pdf";
+        UploadResponse uploadResponse = new UploadResponse();
+        uploadResponse.setDocuments(List.of(uploadedDoc));
+        when(caseDocumentClientApi.uploadDocuments(eq(TEST_AUTHORIZATION_TOKEN), eq(SERVICE_AUTHORIZATION), any()))
+            .thenReturn(uploadResponse);
+
+        List<ListValue<BundleFolder>> newFolders = new ArrayList<>();
+        newFolders.add(ListValue.<BundleFolder>builder()
+            .id("1")
+            .value(BundleFolder.builder().name("Applications").sortIndex(1).build())
+            .build());
+        newFolders.add(ListValue.<BundleFolder>builder()
+            .id("2")
+            .value(BundleFolder.builder().name(AUDIO_VIDEO_EVIDENCE_FOLDER_NAME).sortIndex(2).build())
+            .build());
+
+        List<ListValue<Bundle>> apiReturnedBundles = new ArrayList<>();
+        apiReturnedBundles.add(ListValue.<Bundle>builder()
+            .id("1")
+            .value(Bundle.builder().id(existingOldBundleUUID).folders(new ArrayList<>(oldFolders)).build())
+            .build());
+        apiReturnedBundles.add(ListValue.<Bundle>builder()
+            .id("2")
+            .value(Bundle.builder().id(newBundleUUID).folders(newFolders).build())
+            .build());
+
+        BundleResponse bundleResponse = mock(BundleResponse.class);
+        LinkedHashMap<String, Object> responseData = new LinkedHashMap<>();
+        responseData.put("caseBundles", OBJECT_MAPPER.convertValue(apiReturnedBundles, LIST_TYPE_REFERENCE));
+        when(bundleResponse.getData()).thenReturn(responseData);
+
+        when(bundlingClient.createBundle(
+            eq(SERVICE_AUTHORIZATION),
+            eq(TEST_AUTHORIZATION_TOKEN),
+            any(BundleCallback.class)
+        )).thenReturn(bundleResponse);
+
+        String response = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
+                .contentType(APPLICATION_JSON)
+                .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .content(objectMapper.writeValueAsString(callbackRequest(caseData, caseDataBefore, CREATE_BUNDLE)))
+                .accept(APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        HashMap<String, Object> responseMap = objectMapper.readValue(response, TYPE_REFERENCE);
+        @SuppressWarnings("unchecked")
+        HashMap<String, Object> data = (HashMap<String, Object>) responseMap.get("data");
+        @SuppressWarnings("unchecked")
+        List<HashMap<String, Object>> caseBundles = (List<HashMap<String, Object>>) data.get("caseBundles");
+
+        assertThat(caseBundles).hasSize(2);
+
+        @SuppressWarnings("unchecked")
+        HashMap<String, Object> oldBundleVal = caseBundles.stream()
+            .map(bundle -> (HashMap<String, Object>) bundle.get("value"))
+            .filter(bundle -> existingOldBundleUUID.equals(bundle.get("id")))
+            .findFirst()
+            .orElseThrow();
+        @SuppressWarnings("unchecked")
+        List<HashMap<String, Object>> oldBundleFolders = (List<HashMap<String, Object>>) oldBundleVal.get("folders");
+        assertThat(oldBundleFolders).hasSize(1);
+        assertThat(oldBundleFolders)
+            .extracting(folder -> {
+                @SuppressWarnings("unchecked")
+                HashMap<String, Object> folderVal = (HashMap<String, Object>) folder.get("value");
+                return (String) folderVal.get("name");
+            })
+            .doesNotContain(AUDIO_VIDEO_EVIDENCE_FOLDER_NAME);
+
+        @SuppressWarnings("unchecked")
+        HashMap<String, Object> newBundleVal = caseBundles.stream()
+            .map(bundle -> (HashMap<String, Object>) bundle.get("value"))
+            .filter(bundle -> newBundleUUID.equals(bundle.get("id")))
+            .findFirst()
+            .orElseThrow();
+        @SuppressWarnings("unchecked")
+        List<HashMap<String, Object>> newBundleFolders = (List<HashMap<String, Object>>) newBundleVal.get("folders");
+        assertThat(newBundleFolders).hasSize(2);
+        @SuppressWarnings("unchecked")
+        HashMap<String, Object> avFolder = newBundleFolders.stream()
+            .filter(folder -> {
+                @SuppressWarnings("unchecked")
+                HashMap<String, Object> folderVal = (HashMap<String, Object>) folder.get("value");
+                return AUDIO_VIDEO_EVIDENCE_FOLDER_NAME.equalsIgnoreCase((String) folderVal.get("name"));
+            })
+            .findFirst()
+            .orElseThrow();
+
+        @SuppressWarnings("unchecked")
+        HashMap<String, Object> avFolderVal = (HashMap<String, Object>) avFolder.get("value");
+        @SuppressWarnings("unchecked")
+        List<HashMap<String, Object>> avDocuments = (List<HashMap<String, Object>>) avFolderVal.get("documents");
+        assertThat(avDocuments).hasSize(2);
+    }
+
     private String confirmationHeader(String response) throws Exception {
         return objectMapper.readTree(response).path("confirmation_header").asText();
     }

@@ -289,7 +289,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
             ? audioVideoEvidenceBundleService.createAudioVideoBundleDocuments(Long.parseLong(caseData.getCaseNumber()))
             : Collections.emptyList();
 
-        configureAudioVideoEvidenceFolder(caseBundles, audioVideoDocuments);
+        configureAudioVideoEvidenceFolder(caseBundles, audioVideoDocuments, existingBundles);
 
         List<ListValue<BundleIdAndTimestamp>> bundleIdsAndTimestamps =
             Optional.ofNullable(caseData.getCaseBundleIdsAndTimestamps()).orElse(new ArrayList<>());
@@ -350,12 +350,27 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
     }
 
     private void configureAudioVideoEvidenceFolder(List<ListValue<Bundle>> caseBundles,
-                                                   List<ListValue<BundleDocument>> audioVideoDocuments) {
+                                                   List<ListValue<BundleDocument>> audioVideoDocuments,
+                                                   List<ListValue<Bundle>> existingBundles) {
+        final Map<String, List<ListValue<BundleFolder>>> existingFoldersMap = new HashMap<>();
+        for (ListValue<Bundle> existingBundle : existingBundles) {
+            if (existingBundle != null && existingBundle.getValue() != null && existingBundle.getValue().getId() != null) {
+                existingFoldersMap.put(existingBundle.getValue().getId(), existingBundle.getValue().getFolders());
+            }
+        }
+
         for (ListValue<Bundle> caseBundle : caseBundles) {
             if (caseBundle == null || caseBundle.getValue() == null) {
                 continue;
             }
             Bundle bundle = caseBundle.getValue();
+            String bundleId = bundle.getId();
+
+            if (bundleId != null && existingFoldersMap.containsKey(bundleId)) {
+                bundle.setFolders(existingFoldersMap.get(bundleId));
+                continue;
+            }
+
             List<ListValue<BundleFolder>> folders = bundle.getFolders();
 
             if (CollectionUtils.isEmpty(audioVideoDocuments)) {
