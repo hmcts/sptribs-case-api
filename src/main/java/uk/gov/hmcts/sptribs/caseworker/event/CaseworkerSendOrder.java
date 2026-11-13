@@ -32,16 +32,20 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.service.ContactPartiesService;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.notification.NotificationHelper;
+import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.String.format;
@@ -82,6 +86,10 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
     private final NewOrderIssuedNotification newOrderIssuedNotification;
     private final SendOrderOrderDueDates orderDueDates;
     private final DocumentsService documentsService;
+    private final NotificationHelper notificationHelper;
+    private final ContactPartiesService contactPartiesService;
+    private final ContactPartiesNotification contactPartiesNotification;
+    private static final int DOC_ATTACH_LIMIT = 10;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -260,21 +268,29 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
 
 
     private void sendOrderNotification(String caseNumber, CaseData caseData) {
+        final Map<String, String> uploadedDocuments = notificationHelper
+            .buildDocumentList(caseData.getContactPartiesDocuments().getDocumentList(), DOC_ATTACH_LIMIT);
+
+        List<String> correspondenceIds = new ArrayList<>();
+
         if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartySubject())) {
-            newOrderIssuedNotification.sendToSubject(caseData, caseNumber);
+            correspondenceIds.add(contactPartiesNotification.sendToSubject(caseData, caseNumber, uploadedDocuments));
         }
 
         if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRepresentative())) {
-            newOrderIssuedNotification.sendToRepresentative(caseData, caseNumber);
+            correspondenceIds.add(contactPartiesNotification.sendToRepresentative(caseData, caseNumber, uploadedDocuments));
         }
 
         if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRespondent())) {
-            newOrderIssuedNotification.sendToRespondent(caseData, caseNumber);
+            correspondenceIds.add(contactPartiesNotification.sendToRespondent(caseData, caseNumber, uploadedDocuments));
         }
 
         if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyApplicant())) {
-            newOrderIssuedNotification.sendToApplicant(caseData, caseNumber);
+            correspondenceIds.add(contactPartiesNotification.sendToApplicant(caseData, caseNumber, uploadedDocuments));
         }
 
+        if (!correspondenceIds.isEmpty()) {
+            contactPartiesService.linkCorrespondenceIdsToDocuments(caseData, uploadedDocuments, correspondenceIds);
+        }
     }
 }

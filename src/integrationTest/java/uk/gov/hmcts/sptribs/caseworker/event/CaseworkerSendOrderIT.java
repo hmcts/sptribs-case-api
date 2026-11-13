@@ -15,18 +15,24 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DueDateOptions;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
+import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -40,6 +46,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -188,8 +195,27 @@ public class CaseworkerSendOrderIT {
 
     @Test
     void shouldSuccessfullyDispatchEmailsOnSubmitted() throws Exception {
+        ContactPartiesDocuments contactPartiesDocuments = ContactPartiesDocuments.builder()
+            .documentList(DynamicMultiSelectList.builder()
+                .value(new ArrayList<>())
+                .listItems(new ArrayList<>())
+                .build())
+            .build();
+
+        NotificationResponse notificationResponse = NotificationResponse.builder()
+            .id("mock-notification-id")
+            .build();
+
+        when(notificationServiceCIC.sendEmail(
+            any(NotificationRequest.class),
+            anyList(),
+            eq(TEST_CASE_ID_HYPHENATED),
+            any(Party.class)
+        )).thenReturn(notificationResponse);
+
         final CaseData caseData = caseData();
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        caseData.setContactPartiesDocuments(contactPartiesDocuments);
         caseData.setCicCase(
             CicCase.builder()
                 .notifyPartySubject(Set.of(SUBJECT))
@@ -230,7 +256,8 @@ public class CaseworkerSendOrderIT {
             .isString()
             .contains("# Order sent \n## A notification has been sent to: Subject, Respondent, Representative, Applicant");
 
-        verify(notificationServiceCIC, times(4)).sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
+        verify(notificationServiceCIC, times(4)).sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED),
+            any(Party.class));
         verifyNoMoreInteractions(notificationServiceCIC);
     }
 

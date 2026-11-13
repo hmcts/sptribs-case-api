@@ -16,14 +16,17 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.sptribs.IntegrationTestBase;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
+import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.caseworker.model.NoticeOption;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
@@ -31,8 +34,11 @@ import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
+import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -272,8 +278,27 @@ public class CaseworkerIssueDecisionIT extends IntegrationTestBase {
 
     @Test
     void shouldReturnConfirmationMessageIfNotificationsDispatchedOnSubmitted() throws Exception {
+        ContactPartiesDocuments contactPartiesDocuments = ContactPartiesDocuments.builder()
+            .documentList(DynamicMultiSelectList.builder()
+                .value(new ArrayList<>())
+                .listItems(new ArrayList<>())
+                .build())
+            .build();
+
+        NotificationResponse notificationResponse = NotificationResponse.builder()
+            .id("mock-notification-id")
+            .build();
+
+        when(notificationServiceCIC.sendEmail(
+            any(NotificationRequest.class),
+            anyList(),
+            eq(TEST_CASE_ID_HYPHENATED),
+            any(Party.class)
+        )).thenReturn(notificationResponse);
+
         final CaseData caseData = caseData();
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        caseData.setContactPartiesDocuments(contactPartiesDocuments);
         caseData.setCicCase(
             CicCase.builder()
                 .notifyPartySubject(Set.of(SUBJECT))
@@ -314,7 +339,8 @@ public class CaseworkerIssueDecisionIT extends IntegrationTestBase {
             .isString()
             .contains("# Decision notice issued \n## A notification has been sent to: Subject, Respondent, Representative, Applicant");
 
-        verify(notificationServiceCIC, times(4)).sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
+        verify(notificationServiceCIC, times(4)).sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED),
+            any(Party.class));
         verifyNoMoreInteractions(notificationServiceCIC);
     }
 

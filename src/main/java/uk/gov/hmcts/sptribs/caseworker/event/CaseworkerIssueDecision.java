@@ -27,16 +27,20 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentSaveException;
+import uk.gov.hmcts.sptribs.common.service.ContactPartiesService;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.notification.NotificationHelper;
+import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
 import uk.gov.hmcts.sptribs.notification.dispatcher.DecisionIssuedNotification;
 
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_DECISION;
@@ -65,9 +69,12 @@ public class CaseworkerIssueDecision implements CCDConfig<CaseData, State, UserR
     private static final CcdPageConfiguration issueDecisionUploadNotice = new IssueDecisionUploadNotice();
     private static final CcdPageConfiguration issueDecisionSelectRecipients = new IssueDecisionSelectRecipients();
     private static final CcdPageConfiguration issueDecisionMainContent = new IssueDecisionMainContent();
+    private final NotificationHelper notificationHelper;
+    private final ContactPartiesService contactPartiesService;
+    private static final int DOC_ATTACH_LIMIT = 10;
 
     private final CcdPageConfiguration issueDecisionFooter;
-    private final DecisionIssuedNotification decisionIssuedNotification;
+    private final ContactPartiesNotification contactPartiesNotification;
     private final Clock clock;
     private final DocumentsService documentsService;
 
@@ -159,18 +166,26 @@ public class CaseworkerIssueDecision implements CCDConfig<CaseData, State, UserR
     }
 
     private void sendIssueDecisionNotification(String caseNumber, CaseData data) {
+        final Map<String, String> uploadedDocuments = notificationHelper
+            .buildDocumentList(data.getContactPartiesDocuments().getDocumentList(), DOC_ATTACH_LIMIT);
+
+        List<String> correspondenceIds = new ArrayList<>();
 
         if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartySubject())) {
-            decisionIssuedNotification.sendToSubject(data, caseNumber);
+            correspondenceIds.add(contactPartiesNotification.sendToSubject(data, caseNumber, uploadedDocuments));
         }
         if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRespondent())) {
-            decisionIssuedNotification.sendToRespondent(data, caseNumber);
+            correspondenceIds.add(contactPartiesNotification.sendToRespondent(data, caseNumber, uploadedDocuments));
         }
         if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRepresentative())) {
-            decisionIssuedNotification.sendToRepresentative(data, caseNumber);
+            correspondenceIds.add(contactPartiesNotification.sendToRepresentative(data, caseNumber, uploadedDocuments));
         }
         if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyApplicant())) {
-            decisionIssuedNotification.sendToApplicant(data, caseNumber);
+            correspondenceIds.add(contactPartiesNotification.sendToApplicant(data, caseNumber, uploadedDocuments));
+        }
+
+        if (!correspondenceIds.isEmpty()) {
+            contactPartiesService.linkCorrespondenceIdsToDocuments(data, uploadedDocuments, correspondenceIds);
         }
     }
 

@@ -27,12 +27,15 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentSaveException;
+import uk.gov.hmcts.sptribs.common.service.ContactPartiesService;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseFinalDecisionIssuedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -83,11 +86,17 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
 
     private final CaseDataDocumentService caseDataDocumentService;
 
-    private final CaseFinalDecisionIssuedNotification caseFinalDecisionIssuedNotification;
-
     private final Clock clock;
 
     private final DocumentsService documentsService;
+
+    private final NotificationHelper notificationHelper;
+
+    private final ContactPartiesService contactPartiesService;
+
+    private final ContactPartiesNotification contactPartiesNotification;
+
+    private static final int DOC_ATTACH_LIMIT = 10;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -163,23 +172,34 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
         try {
             messageLine2.append("A notification has been sent to: ");
 
+            final Map<String, String> uploadedDocuments = notificationHelper
+                .buildDocumentList(data.getContactPartiesDocuments().getDocumentList(), DOC_ATTACH_LIMIT);
+
+            List<String> correspondenceIds = new ArrayList<>();
+
             if (!cicCase.getCaseSubcategory().equals(CaseSubcategory.FATAL)
                 && !cicCase.getCaseSubcategory().equals(CaseSubcategory.MINOR)) {
                 messageLine2.append("Subject, ");
-                caseFinalDecisionIssuedNotification.sendToSubject(details.getData(), caseNumber);
+                correspondenceIds.add(contactPartiesNotification.sendToSubject(details.getData(), caseNumber, uploadedDocuments));
             }
 
             messageLine2.append("Respondent, ");
-            caseFinalDecisionIssuedNotification.sendToRespondent(details.getData(), caseNumber);
+            correspondenceIds.add(contactPartiesNotification.sendToRespondent(details.getData(), caseNumber, uploadedDocuments));
 
             if (data.getCicCase().getPartiesCIC().contains(PartiesCIC.REPRESENTATIVE)) {
                 messageLine2.append("Representative, ");
-                caseFinalDecisionIssuedNotification.sendToRepresentative(details.getData(), caseNumber);
+                correspondenceIds.add(contactPartiesNotification.sendToRepresentative(details.getData(), caseNumber,
+                    uploadedDocuments));
             }
 
             if (data.getCicCase().getPartiesCIC().contains(PartiesCIC.APPLICANT)) {
                 messageLine2.append("Applicant, ");
-                caseFinalDecisionIssuedNotification.sendToApplicant(details.getData(), caseNumber);
+                correspondenceIds.add(contactPartiesNotification.sendToApplicant(details.getData(), caseNumber,
+                    uploadedDocuments));
+            }
+
+            if (!correspondenceIds.isEmpty()) {
+                contactPartiesService.linkCorrespondenceIdsToDocuments(data, uploadedDocuments, correspondenceIds);
             }
 
             messageLine2.delete(messageLine2.length() - 2, messageLine2.length());

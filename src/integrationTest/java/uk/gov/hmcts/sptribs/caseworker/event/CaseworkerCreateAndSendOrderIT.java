@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,29 +17,36 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.FlagDetail;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
+import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.DueDateOptions;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.document.DocAssemblyService;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
+import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -281,6 +289,24 @@ public class CaseworkerCreateAndSendOrderIT {
 
     @Test
     void shouldSuccessfullyDispatchEmailsOnSubmitted() throws Exception {
+        ContactPartiesDocuments contactPartiesDocuments = ContactPartiesDocuments.builder()
+            .documentList(DynamicMultiSelectList.builder()
+                .value(new ArrayList<>())
+                .listItems(new ArrayList<>())
+                .build())
+            .build();
+
+        NotificationResponse notificationResponse = NotificationResponse.builder()
+            .id("mock-notification-id")
+            .build();
+
+        when(notificationServiceCIC.sendEmail(
+            any(NotificationRequest.class),
+            anyList(),
+            eq(TEST_CASE_ID_HYPHENATED),
+            any(Party.class)
+        )).thenReturn(notificationResponse);
+
         final CaseData caseData = CaseData.builder()
             .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
             .cicCase(CicCase.builder()
@@ -300,6 +326,7 @@ public class CaseworkerCreateAndSendOrderIT {
                 .applicantFullName("Applicant Name")
                 .applicantEmailAddress("applicant@test.com")
                 .build())
+            .contactPartiesDocuments(contactPartiesDocuments)
             .build();
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
@@ -321,12 +348,20 @@ public class CaseworkerCreateAndSendOrderIT {
             .isString()
             .contains("# Order sent \n## A notification has been sent to: Subject, Respondent, Representative, Applicant");
 
-        verify(notificationServiceCIC, times(4)).sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
+        verify(notificationServiceCIC, times(4)).sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED),
+            any(Party.class));
         verifyNoMoreInteractions(notificationServiceCIC);
     }
 
     @Test
     void shouldReturnErrorMessageWhenGovNotifyFailsOnSubmitted() throws Exception {
+        ContactPartiesDocuments contactPartiesDocuments = ContactPartiesDocuments.builder()
+            .documentList(DynamicMultiSelectList.builder()
+                .value(new ArrayList<>())
+                .listItems(new ArrayList<>())
+                .build())
+            .build();
+
         final CaseData caseData = CaseData.builder()
             .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
             .cicCase(CicCase.builder()
@@ -346,9 +381,10 @@ public class CaseworkerCreateAndSendOrderIT {
                 .applicantFullName("Applicant Name")
                 .applicantEmailAddress("applicant@test.com")
                 .build())
+            .contactPartiesDocuments(contactPartiesDocuments)
             .build();
 
-        when(notificationServiceCIC.sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(null)))
+        when(notificationServiceCIC.sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), any(Party.class)))
             .thenThrow(new NotificationException(new NotificationClientException("GovNotify API Failure")));
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
@@ -371,11 +407,29 @@ public class CaseworkerCreateAndSendOrderIT {
                 .contains("# Send order notification failed \n## Please resend the order");
 
         verify(notificationServiceCIC, times(1)).sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED),
-            eq(null));
+            any(Party.class));
     }
 
     @Test
     void shouldDispatchAnonymityEmailWhenAnonymityNewlyAppliedOnSubmitted() throws Exception {
+        ContactPartiesDocuments contactPartiesDocuments = ContactPartiesDocuments.builder()
+            .documentList(DynamicMultiSelectList.builder()
+                .value(new ArrayList<>())
+                .listItems(new ArrayList<>())
+                .build())
+            .build();
+
+        NotificationResponse notificationResponse = NotificationResponse.builder()
+            .id("mock-notification-id")
+            .build();
+
+        when(notificationServiceCIC.sendEmail(
+            any(NotificationRequest.class),
+            anyList(),
+            eq(TEST_CASE_ID_HYPHENATED),
+            any(Party.class)
+        )).thenReturn(notificationResponse);
+
         final CaseData caseData = CaseData.builder()
             .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
             .cicCase(CicCase.builder()
@@ -397,6 +451,7 @@ public class CaseworkerCreateAndSendOrderIT {
                 .applicantFullName("Applicant Name")
                 .applicantEmailAddress("applicant@test.com")
                 .build())
+            .contactPartiesDocuments(contactPartiesDocuments)
             .build();
 
         final CaseData caseDataBefore = CaseData.builder()
@@ -432,7 +487,7 @@ public class CaseworkerCreateAndSendOrderIT {
         verify(notificationServiceCIC, times(1)).sendEmail(captor.capture(), eq(TEST_CASE_ID_HYPHENATED),
             eq(null));
         verify(notificationServiceCIC, times(4)).sendEmail(captor.capture(), anyList(), eq(TEST_CASE_ID_HYPHENATED),
-            eq(null));
+            any(Party.class));
         verifyNoMoreInteractions(notificationServiceCIC);
 
         long anonymityTemplateCalls = captor.getAllValues().stream()
@@ -443,6 +498,13 @@ public class CaseworkerCreateAndSendOrderIT {
 
     @Test
     void shouldNotDispatchAnonymityEmailWhenAnonymityAlreadyAppliedOnSubmitted() throws Exception {
+        ContactPartiesDocuments contactPartiesDocuments = ContactPartiesDocuments.builder()
+            .documentList(DynamicMultiSelectList.builder()
+                .value(new ArrayList<>())
+                .listItems(new ArrayList<>())
+                .build())
+            .build();
+
         final CaseData caseData = CaseData.builder()
             .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
             .cicCase(CicCase.builder()
@@ -465,6 +527,7 @@ public class CaseworkerCreateAndSendOrderIT {
                 .applicantFullName("Applicant Name")
                 .applicantEmailAddress("applicant@test.com")
                 .build())
+            .contactPartiesDocuments(contactPartiesDocuments)
             .build();
 
         final CaseData caseDataBefore = CaseData.builder()
@@ -476,6 +539,17 @@ public class CaseworkerCreateAndSendOrderIT {
                 .fullName("Test Name")
                 .build())
             .build();
+
+        NotificationResponse notificationResponse = NotificationResponse.builder()
+            .id("mock-notification-id")
+            .build();
+
+        when(notificationServiceCIC.sendEmail(
+            any(NotificationRequest.class),
+            anyList(),
+            eq(TEST_CASE_ID_HYPHENATED),
+            any(Party.class)
+        )).thenReturn(notificationResponse);
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
             .contentType(APPLICATION_JSON)
@@ -500,7 +574,7 @@ public class CaseworkerCreateAndSendOrderIT {
         ArgumentCaptor<NotificationRequest> captor =
             ArgumentCaptor.forClass(NotificationRequest.class);
         verify(notificationServiceCIC, times(4)).sendEmail(captor.capture(), anyList(), eq(TEST_CASE_ID_HYPHENATED),
-            eq(null));
+            any(Party.class));
         verifyNoMoreInteractions(notificationServiceCIC);
 
         long anonymityTemplateCalls = captor.getAllValues().stream()
