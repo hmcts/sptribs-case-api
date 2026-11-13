@@ -34,7 +34,6 @@ import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
-import uk.gov.hmcts.sptribs.notification.dispatcher.DecisionIssuedNotification;
 
 import java.time.Clock;
 import java.time.LocalDate;

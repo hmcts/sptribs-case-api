@@ -56,6 +56,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
@@ -566,8 +567,8 @@ class CaseworkerCreateAndSendOrderTest {
         caseDetails.setData(caseData);
 
         doThrow(NotificationException.class)
-                .when(newOrderIssuedNotification)
-                .sendToSubject(caseData, hyphenatedCaseRef);
+                .when(contactPartiesNotification)
+                .sendToSubject(eq(caseData), eq(hyphenatedCaseRef), anyMap());
 
         SubmittedCallbackResponse submittedResponse = caseworkerCreateAndSendOrder.submitted(caseDetails, getApiCaseDetailsBefore());
 
@@ -575,11 +576,11 @@ class CaseworkerCreateAndSendOrderTest {
                 .isEqualTo("""
                     # Send order notification failed\s
                     ## Please resend the order""");
-        verify(newOrderIssuedNotification, times(1)).sendToSubject(any(CaseData.class), anyString());
+        verify(contactPartiesNotification, times(1)).sendToSubject(any(CaseData.class), anyString(), anyMap());
 
-        verify(newOrderIssuedNotification, never()).sendToRepresentative(any(CaseData.class), anyString());
-        verify(newOrderIssuedNotification, never()).sendToRespondent(any(CaseData.class), anyString());
-        verify(newOrderIssuedNotification, never()).sendToApplicant(any(CaseData.class), anyString());
+        verify(contactPartiesNotification, never()).sendToRepresentative(any(CaseData.class), anyString(), anyMap());
+        verify(contactPartiesNotification, never()).sendToRespondent(any(CaseData.class), anyString(), anyMap());
+        verify(contactPartiesNotification, never()).sendToApplicant(any(CaseData.class), anyString(), anyMap());
     }
 
     @Test
@@ -596,8 +597,8 @@ class CaseworkerCreateAndSendOrderTest {
         caseDetails.setData(caseData);
 
         doThrow(NotificationException.class)
-                .when(newOrderIssuedNotification)
-                .sendToRepresentative(caseData, hyphenatedCaseRef);
+                .when(contactPartiesNotification)
+                .sendToRepresentative(eq(caseData),eq(hyphenatedCaseRef), anyMap());
 
         SubmittedCallbackResponse submittedResponse = caseworkerCreateAndSendOrder.submitted(caseDetails, getApiCaseDetailsBefore());
 
@@ -605,18 +606,17 @@ class CaseworkerCreateAndSendOrderTest {
                 .isEqualTo("""
                     # Send order notification failed\s
                     ## Please resend the order""");
-        verify(newOrderIssuedNotification, times(1)).sendToSubject(any(CaseData.class), anyString());
-        verify(newOrderIssuedNotification, times(1)).sendToRepresentative(any(CaseData.class), anyString());
+        verify(contactPartiesNotification, times(1)).sendToSubject(any(CaseData.class), anyString(), anyMap());
+        verify(contactPartiesNotification, times(1)).sendToRepresentative(any(CaseData.class), anyString(), anyMap());
 
-        verify(newOrderIssuedNotification, never()).sendToRespondent(any(CaseData.class), anyString());
-        verify(newOrderIssuedNotification, never()).sendToApplicant(any(CaseData.class), anyString());
+        verify(contactPartiesNotification, never()).sendToRespondent(any(CaseData.class), anyString(), anyMap());
+        verify(contactPartiesNotification, never()).sendToApplicant(any(CaseData.class), anyString(), anyMap());
 
     }
 
     @Test
     void shouldShowErrorMessageWhenNotificationFailsForRespondent() {
         final CaseData caseData = caseData();
-        Map<String, String> emailDocs = getDocumentUploadMap();
         final String hyphenatedCaseRef = caseData.formatCaseRef(TEST_CASE_ID);
         caseData.setHyphenatedCaseRef(hyphenatedCaseRef);
         caseData.getCicCase().setNotifyPartySubject(Set.of(SUBJECT));
@@ -629,7 +629,7 @@ class CaseworkerCreateAndSendOrderTest {
 
         doThrow(NotificationException.class)
                 .when(contactPartiesNotification)
-                .sendToRespondent(caseData, hyphenatedCaseRef, emailDocs);
+                .sendToRespondent(eq(caseData), eq(hyphenatedCaseRef), anyMap());
 
         SubmittedCallbackResponse submittedResponse = caseworkerCreateAndSendOrder.submitted(caseDetails, getApiCaseDetailsBefore());
 
@@ -637,11 +637,11 @@ class CaseworkerCreateAndSendOrderTest {
                 .isEqualTo("""
                     # Send order notification failed\s
                     ## Please resend the order""");
-        verify(newOrderIssuedNotification, times(1)).sendToSubject(any(CaseData.class), anyString());
-        verify(newOrderIssuedNotification, times(1)).sendToRepresentative(any(CaseData.class), anyString());
-        verify(newOrderIssuedNotification, times(1)).sendToRespondent(any(CaseData.class), anyString());
+        verify(contactPartiesNotification, times(1)).sendToSubject(any(CaseData.class), anyString(), anyMap());
+        verify(contactPartiesNotification, times(1)).sendToRepresentative(any(CaseData.class), anyString(), anyMap());
+        verify(contactPartiesNotification, times(1)).sendToRespondent(any(CaseData.class), anyString(), anyMap());
 
-        verify(newOrderIssuedNotification, never()).sendToApplicant(any(CaseData.class), anyString());
+        verify(contactPartiesNotification, never()).sendToApplicant(any(CaseData.class), anyString());
     }
 
     @Test
@@ -658,8 +658,8 @@ class CaseworkerCreateAndSendOrderTest {
         caseDetails.setData(caseData);
 
         doThrow(NotificationException.class)
-                .when(newOrderIssuedNotification)
-                .sendToApplicant(caseData, hyphenatedCaseRef);
+                .when(contactPartiesNotification)
+                .sendToApplicant(eq(caseData), eq(hyphenatedCaseRef), anyMap());
 
         SubmittedCallbackResponse submittedResponse = caseworkerCreateAndSendOrder.submitted(caseDetails, getApiCaseDetailsBefore());
 
@@ -667,10 +667,10 @@ class CaseworkerCreateAndSendOrderTest {
                 .isEqualTo("""
                     # Send order notification failed\s
                     ## Please resend the order""");
-        verify(newOrderIssuedNotification, times(1)).sendToSubject(any(CaseData.class), anyString());
-        verify(newOrderIssuedNotification, times(1)).sendToRepresentative(any(CaseData.class), anyString());
-        verify(newOrderIssuedNotification, times(1)).sendToRespondent(any(CaseData.class), anyString());
-        verify(newOrderIssuedNotification, times(1)).sendToApplicant(any(CaseData.class), anyString());
+        verify(contactPartiesNotification, times(1)).sendToSubject(any(CaseData.class), anyString(), anyMap());
+        verify(contactPartiesNotification, times(1)).sendToRepresentative(any(CaseData.class), anyString(), anyMap());
+        verify(contactPartiesNotification, times(1)).sendToRespondent(any(CaseData.class), anyString(), anyMap());
+        verify(contactPartiesNotification, times(1)).sendToApplicant(any(CaseData.class), anyString(), anyMap());
     }
 
     @Test
