@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker;
 
+import com.jayway.jsonpath.JsonPath;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -122,13 +123,9 @@ public class CaseworkerCloseTheCaseFT extends FunctionalTestSuite {
         final Response response = triggerCallback(caseData, CASEWORKER_CLOSE_THE_CASE, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
-        assertThatJson(response.asString())
-            .inPath(CONFIRMATION_HEADER)
-            .isEqualTo(
-                "# Case closed \\n"
-                    + "## A notification has been sent to: Subject \\n"
-                    + "## Use 'Reinstate case' if this case needs to be reopened in the future."
-            );
+        assertThat(JsonPath.read(response.asString(), CONFIRMATION_HEADER).toString())
+            .isEqualTo("# Case closed\n## A notification has been sent to: Subject\n"
+                + "## Use 'Reinstate case' if this case needs to be reopened in the future.");
 
         long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
 

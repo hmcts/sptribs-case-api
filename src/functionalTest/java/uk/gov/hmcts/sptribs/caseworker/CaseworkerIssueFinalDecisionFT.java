@@ -166,7 +166,7 @@ public class CaseworkerIssueFinalDecisionFT extends FunctionalTestSuite {
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .isEqualTo("# Final decision notice issued \n## A notification has been sent to: Subject, Respondent");
+            .isEqualTo("# Final decision notice issued \n## A notification has been sent to: Respondent, Subject");
 
         long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
 
