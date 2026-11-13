@@ -6,16 +6,20 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.util.Map;
+import java.util.Set;
 
 import static uk.gov.hmcts.sptribs.common.CommonConstants.REINSTATE_REASON;
+import static uk.gov.hmcts.sptribs.notification.NotificationHelper.getNotificationParties;
 
 @Component
 @Slf4j
@@ -116,6 +120,12 @@ public class CaseReinstatedNotification implements PartiesNotification {
 
     private void addCaseReInstateTemplateVars(CicCase cicCase, Map<String, Object> templateVars) {
         templateVars.put(REINSTATE_REASON, cicCase.getReinstateReason().getLabel());
+    }
+
+    public Set<NotificationParties> buildCorrespondenceParties(NotificationContextRequest request) {
+        CicCase cicCase = request.getCaseData().getCicCase();
+
+        return getNotificationParties(cicCase);
     }
 
 }

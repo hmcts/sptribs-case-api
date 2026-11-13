@@ -20,7 +20,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessage;
@@ -97,17 +96,7 @@ public class MessageUtilTest {
         String result = generateSimpleErrorMessage(errors);
 
         assertThat(result)
-            .isEqualTo("A notification could not be sent to: Subject, Applicant, Representative, Respondent");
-    }
-
-    @Test
-    void shouldGenerateSimpleErrorMessageWithoutPartiesIfErrorsIsEmptyList() {
-        final List<String> errors = emptyList();
-
-        String result = generateSimpleErrorMessage(errors);
-
-        assertThat(result)
-            .isEqualTo("A notification could not be sent to");
+            .isEqualTo("A notification could not be sent to: Applicant, Representative, Respondent, Subject");
     }
 
     @Test

@@ -159,9 +159,11 @@ public class CaseworkerLinkCaseIT {
         assertThatJson(response)
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Case Link notification failed \n## Please resend the notification");
+            .contains("# Case link notification failed")
+            .contains("## A notification could not be sent to: Applicant, Representative, Subject")
+            .contains("## Please resend the notification.");
 
-        verify(notificationServiceCIC, times(1)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
+        verify(notificationServiceCIC, times(3)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
         verifyNoMoreInteractions(notificationServiceCIC);
     }
 

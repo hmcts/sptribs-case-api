@@ -16,6 +16,7 @@ import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -28,6 +29,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.REPRESENTAT
 import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.RESPONDENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.SUBJECT;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DASHBOARD_KEY;
+import static uk.gov.hmcts.sptribs.notification.NotificationHelper.getNotificationPartiesBundle;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.BUNDLE_CREATED_EMAIL_CITIZEN;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.BUNDLE_CREATED_EMAIL_RESPONDENT;
 
@@ -155,6 +157,13 @@ public class BundleCreatedNotification implements PartiesNotification {
         );
 
         cicCase.setResNotificationResponse(notificationResponse);
+    }
+
+    @Override
+    public Set<NotificationParties> buildCorrespondenceParties(NotificationContextRequest request) {
+        CicCase cicCase = request.getCaseData().getCicCase();
+
+        return getNotificationPartiesBundle(cicCase);
     }
 
     private NotificationResponse sendEmailNotification(final Map<String, Object> templateVars, String toEmail, TemplateName templateName,

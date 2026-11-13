@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
@@ -14,11 +15,16 @@ import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.TRIBUNAL;
 
 @Component
 @Slf4j
@@ -84,10 +90,16 @@ public class AnonymityAppliedNotification implements PartiesNotification {
             .trim();
     }
 
-    public void sendAnonymityNotificationIfNewlyApplied(final CaseData caseData, final CaseData beforeData) {
+    @Override
+    public Set<NotificationParties> buildCorrespondenceParties(NotificationContextRequest request) {
+        Set<NotificationParties> correspondenceParties = new HashSet<>();
+        CaseData caseData = request.getCaseData();
+        CaseData beforeData = request.getPreviousCaseData() != null ? request.getPreviousCaseData() : null;
+
         if (isAnonymityNewlyApplied(caseData, beforeData)) {
-            sendToTribunal(caseData, caseData.getHyphenatedCaseRef());
+            correspondenceParties.add(TRIBUNAL);
         }
+        return correspondenceParties;
     }
 
     private boolean isAnonymityNewlyApplied(final CaseData caseData, final CaseData beforeData) {

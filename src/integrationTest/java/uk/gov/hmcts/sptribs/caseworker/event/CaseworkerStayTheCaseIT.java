@@ -140,7 +140,7 @@ public class CaseworkerStayTheCaseIT {
         assertThatJson(response)
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Stay Added to Case \n## A notification has been sent to: Subject, Representative, Applicant");
+            .contains("# Stay Added to Case \n## A notification has been sent to: Applicant, Representative, Subject");
 
         verify(notificationServiceCIC, times(3)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
         verifyNoMoreInteractions(notificationServiceCIC);
@@ -178,7 +178,9 @@ public class CaseworkerStayTheCaseIT {
         assertThatJson(response)
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Case stay notification failed \n## Please resend the notification");
+            .contains("# Case stay notification failed")
+            .contains("## A notification could not be sent to: Applicant, Representative, Subject")
+            .contains("## Please resend the notification.");
 
         verifyNoInteractions(notificationServiceCIC);
     }

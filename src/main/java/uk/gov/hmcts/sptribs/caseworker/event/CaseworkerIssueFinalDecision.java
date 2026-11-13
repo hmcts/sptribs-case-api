@@ -18,10 +18,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionSelectTempla
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionUpload;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
-import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -32,7 +29,11 @@ import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.notification.NotificationConstantProfiles;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseFinalDecisionIssuedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -44,7 +45,9 @@ import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
+import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_FINAL_DECISION;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
@@ -84,6 +87,8 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
     private final CaseDataDocumentService caseDataDocumentService;
 
     private final CaseFinalDecisionIssuedNotification caseFinalDecisionIssuedNotification;
+
+    private final NotificationDispatcher notificationDispatcher;
 
     private final Clock clock;
 
@@ -151,47 +156,35 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
-        final CaseData data = details.getData();
-        final CicCase cicCase = data.getCicCase();
-        final String caseNumber = data.getHyphenatedCaseRef();
+        final CaseData caseData = details.getData();
+        final String caseReference = caseData.getHyphenatedCaseRef();
 
         Document finalDecisionGuidance = getFinalDecisionGuidanceDocument(details.getId());
-        data.getCaseIssueFinalDecision().setFinalDecisionGuidance(finalDecisionGuidance);
+        caseData.getCaseIssueFinalDecision().setFinalDecisionGuidance(finalDecisionGuidance);
 
-        final StringBuilder messageLine2 = new StringBuilder(100);
+        NotificationContextRequest notificationContextRequest = NotificationContextRequest.builder()
+            .caseData(caseData)
+            .caseReference(caseReference)
+            .notification(caseFinalDecisionIssuedNotification)
+            .build();
 
-        try {
-            messageLine2.append("A notification has been sent to: ");
+        NotificationContext notificationContext = NotificationConstantProfiles.ISSUE_FINAL_DECISION
+            .buildContext(notificationContextRequest);
 
-            if (!cicCase.getCaseSubcategory().equals(CaseSubcategory.FATAL)
-                && !cicCase.getCaseSubcategory().equals(CaseSubcategory.MINOR)) {
-                messageLine2.append("Subject, ");
-                caseFinalDecisionIssuedNotification.sendToSubject(details.getData(), caseNumber);
-            }
+        notificationDispatcher.sendToCorrespondenceParties(notificationContext);
 
-            messageLine2.append("Respondent, ");
-            caseFinalDecisionIssuedNotification.sendToRespondent(details.getData(), caseNumber);
-
-            if (data.getCicCase().getPartiesCIC().contains(PartiesCIC.REPRESENTATIVE)) {
-                messageLine2.append("Representative, ");
-                caseFinalDecisionIssuedNotification.sendToRepresentative(details.getData(), caseNumber);
-            }
-
-            if (data.getCicCase().getPartiesCIC().contains(PartiesCIC.APPLICANT)) {
-                messageLine2.append("Applicant, ");
-                caseFinalDecisionIssuedNotification.sendToApplicant(details.getData(), caseNumber);
-            }
-
-            messageLine2.delete(messageLine2.length() - 2, messageLine2.length());
-        } catch (Exception notificationException) {
-            log.error("Issue final decision notification failed with exception : {}", notificationException.getMessage());
+        if (isEmpty(notificationContext.getErrors())) {
             return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Issue final decision notification failed %n## Please resend the notification"))
+                .confirmationHeader(format("# Final decision notice issued %n## %s",
+                    MessageUtil.generateSimpleMessageFromSentList(notificationContext.getSent())))
+                .build();
+        } else {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(
+                    format("# Issue final decision notification failed %n## %s %n## Please resend the notification.",
+                        generateSimpleErrorMessage(notificationContext.getErrors())))
                 .build();
         }
-        return SubmittedCallbackResponse.builder()
-            .confirmationHeader(MessageUtil.generateSimpleMessage("Final decision notice issued", messageLine2.toString()))
-            .build();
     }
 
     private Document getFinalDecisionGuidanceDocument(Long caseId) {

@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
@@ -25,13 +26,15 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.IssueCaseSelectDocument;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseIssuedNotification;
-import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -40,9 +43,9 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -79,18 +82,22 @@ class CaseworkerIssueCaseTest {
     @Mock
     private CaseIssuedNotification caseIssuedNotification;
 
+    @Mock
+    private NotificationDispatcher notificationDispatcher;
+
     private final String bankHolidayUrl = "https://www.gov.uk/bank-holidays/scotland.json";
 
     private final String baseUrl = "http://localhost:4013/";
 
     private final BankHolidayResponse testBankHolidayResponse = getBankHolidayResponse();
 
+    @InjectMocks
     private CaseworkerIssueCase caseworkerIssueCase;
 
     @BeforeEach
     void setUp() {
-        caseworkerIssueCase = new CaseworkerIssueCase(caseIssuedNotification, bankHolidayService, bankHolidayUrl, baseUrl);
-
+        ReflectionTestUtils.setField(caseworkerIssueCase, "bankHolidayUrl", bankHolidayUrl);
+        ReflectionTestUtils.setField(caseworkerIssueCase, "baseUrl", baseUrl);
         Mockito.reset(bankHolidayService, caseIssuedNotification);
     }
 
@@ -150,11 +157,6 @@ class CaseworkerIssueCaseTest {
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerIssueCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
-        doNothing().when(caseIssuedNotification).sendToSubject(caseData, caseData.getHyphenatedCaseRef());
-        doNothing().when(caseIssuedNotification).sendToApplicant(caseData, caseData.getHyphenatedCaseRef());
-        doNothing().when(caseIssuedNotification).sendToRepresentative(caseData, caseData.getHyphenatedCaseRef());
-        doNothing().when(caseIssuedNotification).sendToRespondent(caseData, caseData.getHyphenatedCaseRef());
-
         SubmittedCallbackResponse submittedResponse = caseworkerIssueCase.submitted(updatedCaseDetails, beforeDetails);
 
         assertThat(response.getData().getCicCase().getNotifyPartyApplicant()).isNotNull();
@@ -177,25 +179,22 @@ class CaseworkerIssueCaseTest {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
 
-        doThrow(NotificationException.class)
-            .when(caseIssuedNotification)
-            .sendToSubject(caseData, hyphenatedCaseRef);
-        doThrow(NotificationException.class)
-            .when(caseIssuedNotification)
-            .sendToApplicant(caseData, hyphenatedCaseRef);
-        doThrow(NotificationException.class)
-            .when(caseIssuedNotification)
-            .sendToRepresentative(caseData, hyphenatedCaseRef);
-        doThrow(NotificationException.class)
-            .when(caseIssuedNotification)
-            .sendToRespondent(caseData, hyphenatedCaseRef);
-
+        doAnswer(invocation -> {
+            NotificationContext context = invocation.getArgument(0);
+            if (context.getNotification() == caseIssuedNotification) {
+                context.getErrors().add(NotificationParties.SUBJECT.getLabel());
+                context.getErrors().add(NotificationParties.APPLICANT.getLabel());
+                context.getErrors().add(NotificationParties.REPRESENTATIVE.getLabel());
+                context.getErrors().add(NotificationParties.RESPONDENT.getLabel());
+            }
+            return null;
+        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
         SubmittedCallbackResponse submittedResponse = caseworkerIssueCase.submitted(caseDetails, caseDetails);
 
         assertThat(submittedResponse.getConfirmationHeader())
             .isEqualTo("""
                 # Issue case notification failed\s
-                ## A notification could not be sent to: Subject, Applicant, Representative, Respondent\s
+                ## A notification could not be sent to: Applicant, Representative, Respondent, Subject\s
                 ## Please resend the notification.""");
     }
 
@@ -310,7 +309,8 @@ class CaseworkerIssueCaseTest {
         CaseDetails<CaseData, State> details = new CaseDetails<>();
         details.setData(caseData);
 
-        when(bankHolidayService.getScottishBankHolidays(anyString())).thenReturn(getBankHolidayResponse());
+        when(bankHolidayService.getScottishBankHolidays(bankHolidayUrl))
+            .thenReturn(getBankHolidayResponse());
 
         caseworkerIssueCase.aboutToSubmit(details, details);
 
