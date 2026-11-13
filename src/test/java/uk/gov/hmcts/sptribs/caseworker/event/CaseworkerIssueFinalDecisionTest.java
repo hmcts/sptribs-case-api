@@ -28,6 +28,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentSaveException;
+import uk.gov.hmcts.sptribs.common.service.ContactPartiesService;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants;
 import uk.gov.hmcts.sptribs.document.content.FinalDecisionTemplateContent;
@@ -35,7 +36,9 @@ import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseFinalDecisionIssuedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -68,7 +71,7 @@ class CaseworkerIssueFinalDecisionTest {
     private FinalDecisionTemplateContent finalDecisionTemplateContent;
 
     @Mock
-    private CaseFinalDecisionIssuedNotification caseFinalDecisionIssuedNotification;
+    private ContactPartiesNotification contactPartiesNotification;
 
     @Mock
     private DocumentsService documentsService;
@@ -85,6 +88,12 @@ class CaseworkerIssueFinalDecisionTest {
     @Mock
     private HttpServletRequest httpServletRequest;
 
+    @Mock
+    private NotificationHelper notificationHelper;
+
+    @Mock
+    private ContactPartiesService contactPartiesService;
+
     private final Clock fixedClock = Clock.fixed(
         LocalDate.of(2026, 5, 15)
             .atStartOfDay(ZoneId.systemDefault())
@@ -100,9 +109,11 @@ class CaseworkerIssueFinalDecisionTest {
             issueFinalDecisionFooter,
             httpServletRequest,
             caseDataDocumentService,
-            caseFinalDecisionIssuedNotification,
             fixedClock,
-            documentsService
+            documentsService,
+            notificationHelper,
+            contactPartiesService,
+            contactPartiesNotification
         );
     }
 

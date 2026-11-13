@@ -12,10 +12,12 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
+import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderOrderDueDates;
+import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
@@ -36,16 +38,20 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.common.service.ContactPartiesService;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.notification.NotificationHelper;
+import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -57,6 +63,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT;
 import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.COLON;
@@ -77,10 +84,12 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SUBJECT_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.buildDynamicMultiSelectDocumentList;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getApiCaseDetailsBefore;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCICDocumentList;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCicCase;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getDocumentUploadMap;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_SEND_ORDER;
 
 
@@ -91,13 +100,19 @@ class CaseworkerSendOrderTest {
     private CaseworkerSendOrder caseworkerSendOrder;
 
     @Mock
-    private NewOrderIssuedNotification newOrderIssuedNotification;
+    private ContactPartiesNotification contactPartiesNotification;
+
+    @Mock
+    private ContactPartiesService contactPartiesService;
 
     @Mock
     private SendOrderOrderDueDates orderDueDates;
 
     @Mock
     private DocumentsService documentsService;
+
+    @Mock
+    private NotificationHelper notificationHelper;
 
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
@@ -192,6 +207,13 @@ class CaseworkerSendOrderTest {
     @Test
     void shouldSuccessfullyUpdateFileNameForDraftOrderWhenDraftColonPrefix() {
         //Given
+        DynamicMultiSelectList documentList = buildDynamicMultiSelectDocumentList();
+        ContactPartiesDocuments contactPartiesDocuments = ContactPartiesDocuments.builder()
+            .documentList(documentList)
+            .build();
+
+        final int docAttachLimit = 10;
+        Map<String, String> emailDocs = getDocumentUploadMap();
         final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).build();
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);
@@ -234,6 +256,7 @@ class CaseworkerSendOrderTest {
         final CaseData caseData = caseData();
         caseData.setOrderDueDates(List.of(dates));
         caseData.setCicCase(cicCase);
+        caseData.setContactPartiesDocuments(contactPartiesDocuments);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
@@ -241,6 +264,11 @@ class CaseworkerSendOrderTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
+        when(notificationHelper.buildDocumentList(documentList, docAttachLimit)).thenReturn(emailDocs);
+        when(contactPartiesNotification.sendToSubject(caseData, null, emailDocs)).thenReturn("UUID1");
+        when(contactPartiesNotification.sendToRepresentative(caseData, null, emailDocs)).thenReturn("UUID2");
+        when(contactPartiesNotification.sendToApplicant(caseData, null, emailDocs)).thenReturn("UUID3");
+        when(contactPartiesNotification.sendToRespondent(caseData, null, emailDocs)).thenReturn("UUID4");
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerSendOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
         final SubmittedCallbackResponse submitted = caseworkerSendOrder.submitted(updatedCaseDetails, beforeDetails);

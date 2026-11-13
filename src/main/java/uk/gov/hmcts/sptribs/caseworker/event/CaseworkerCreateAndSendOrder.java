@@ -39,17 +39,20 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.CreateNewOrder;
 import uk.gov.hmcts.sptribs.common.event.page.EditNewOrderContentPage;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
+import uk.gov.hmcts.sptribs.common.service.ContactPartiesService;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.dispatcher.AnonymityAppliedNotification;
-import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.CREATE_AND_SEND_NEW_ORDER;
@@ -90,8 +93,11 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
 
     private final ApplyAnonymity applyAnonymitySelect;
     private final DraftOrderFooter draftOrderFooter;
-    private final NewOrderIssuedNotification newOrderIssuedNotification;
+    private final ContactPartiesNotification contactPartiesNotification;
     private final AnonymityAppliedNotification anonymityAppliedNotification;
+    private final NotificationHelper notificationHelper;
+    private final ContactPartiesService contactPartiesService;
+    private static final int DOC_ATTACH_LIMIT = 10;
     private final SendOrderOrderDueDates orderDueDates;
     private final DocumentsService documentsService;
 
@@ -295,21 +301,29 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
     }
 
     private void sendOrderNotification(String caseNumber, CaseData caseData) {
+        final Map<String, String> uploadedDocuments = notificationHelper
+            .buildDocumentList(caseData.getContactPartiesDocuments().getDocumentList(), DOC_ATTACH_LIMIT);
+
+        List<String> correspondenceIds = new ArrayList<>();
+
         if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartySubject())) {
-            newOrderIssuedNotification.sendToSubject(caseData, caseNumber);
+            correspondenceIds.add(contactPartiesNotification.sendToSubject(caseData, caseNumber, uploadedDocuments));
         }
 
         if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRepresentative())) {
-            newOrderIssuedNotification.sendToRepresentative(caseData, caseNumber);
+            correspondenceIds.add(contactPartiesNotification.sendToRepresentative(caseData, caseNumber, uploadedDocuments));
         }
 
         if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRespondent())) {
-            newOrderIssuedNotification.sendToRespondent(caseData, caseNumber);
+            correspondenceIds.add(contactPartiesNotification.sendToRespondent(caseData, caseNumber, uploadedDocuments));
         }
 
         if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyApplicant())) {
-            newOrderIssuedNotification.sendToApplicant(caseData, caseNumber);
+            correspondenceIds.add(contactPartiesNotification.sendToApplicant(caseData, caseNumber, uploadedDocuments));
         }
 
+        if (!correspondenceIds.isEmpty()) {
+            contactPartiesService.linkCorrespondenceIdsToDocuments(caseData, uploadedDocuments, correspondenceIds);
+        }
     }
 }
