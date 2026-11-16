@@ -329,8 +329,8 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         for (ListValue<BundleIdAndTimestamp> item : bundleIdsAndTimestamps) {
             if (item != null && item.getValue() != null) {
                 String bundleId = item.getValue().getBundleId();
-                if (bundleId != null && !bundleIdToTimestampMap.containsKey(bundleId)) {
-                    bundleIdToTimestampMap.put(bundleId, item.getValue().getDateAndTime());
+                if (bundleId != null) {
+                    bundleIdToTimestampMap.putIfAbsent(bundleId, item.getValue().getDateAndTime());
                 }
             }
         }
