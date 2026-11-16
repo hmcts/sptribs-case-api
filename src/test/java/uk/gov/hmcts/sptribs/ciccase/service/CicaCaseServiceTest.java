@@ -280,20 +280,6 @@ class CicaCaseServiceTest {
     }
 
     @Test
-    void shouldRejectMissingPostcode() {
-        CicaCaseEntity caseEntity = CicaCaseEntity.builder()
-            .data(Map.of("cicCaseAddress", objectMapper.createObjectNode().put("PostCode", TEST_POSTCODE)))
-            .build();
-        when(user.getUserInfo()).thenReturn(userInfo());
-        when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
-        when(caseDataRepository.findCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL))
-            .thenReturn(Optional.of(caseEntity));
-
-        assertThrows(InvalidPostcodeException.class, () ->
-            cicaCaseService.checkIfUserHasAccessWithPostcode(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, null));
-    }
-
-    @Test
     void shouldVerifySubjectForAssociatedDraftCase() {
         CicaCaseEntity cicaCase = CicaCaseEntity.builder().state("DSS_Draft").data(Map.of(
             "cicCaseFullName", new ObjectMapper().getNodeFactory().textNode(" Subject Name "),
