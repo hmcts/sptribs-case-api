@@ -861,7 +861,7 @@ class CaseworkerCreateAndSendOrderTest {
             .build();
     }
 
-    private ContactPartiesDocuments getContactPartiesDocuments(){
+    private ContactPartiesDocuments getContactPartiesDocuments() {
 
         return ContactPartiesDocuments.builder()
             .documentList(buildDynamicMultiSelectDocumentList())
