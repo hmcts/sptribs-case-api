@@ -102,19 +102,6 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
     }
 
     @Test
-    @DisabledIf(expression = "${feature.citizen-dashboard.enabled:false}", loadContext = true)
-    public void shouldHaveNoSubmittedCallbackEndpointWhenCitizenDashboardDisabled() throws Exception {
-        final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
-        caseData.remove("cicCaseEmail");
-        caseData.put("cicCaseRespondentEmail", "");
-
-        final Response response = triggerCallback(caseData, CREATE_BUNDLE, SUBMITTED_URL, false);
-
-        assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND.value());
-    }
-
-    @Test
-    @EnabledIf(expression = "${feature.citizen-dashboard.enabled:false}", loadContext = true)
     public void shouldHaveSimpleMessageForCaseClosed() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
         caseData.put("cicCasePartiesCIC", List.of("SubjectCIC", "RepresentativeCIC", "ApplicantCIC"));
@@ -131,7 +118,6 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
     }
 
     @Test
-    @EnabledIf(expression = "${feature.citizen-dashboard.enabled:false}", loadContext = true)
     public void shouldReportFailedRespondentSendWhenStoredAddressIsBlank() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
         caseData.remove("cicCaseEmail");
@@ -145,14 +131,13 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
             .inPath(CONFIRMATION_HEADER)
             .isString()
             .isEqualTo("""
-                # Bundle creation notification failed\s
-                ## A notification could not be sent to: Respondent\s
+                # Bundle created.
+                ## A notification could not be sent to: Respondent
                 ## Please resend the notification.""");
     }
 
     @ParameterizedTest
     @EnumSource(value = State.class, names = {"CaseManagement", "AwaitingHearing", "ReadyToList"})
-    @EnabledIf(expression = "${feature.citizen-dashboard.enabled:false}", loadContext = true)
     public void shouldNotifyRespondentInNonClosedStatesWhenOtherPartiesHaveNoStoredEmail(State state) throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
         caseData.put("cicCaseEmail", " ");
@@ -171,7 +156,6 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
 
     @ParameterizedTest
     @EnumSource(value = CaseSubcategory.class, names = {"FATAL", "MINOR"})
-    @EnabledIf(expression = "${feature.citizen-dashboard.enabled:false}", loadContext = true)
     public void shouldNotNotifySubjectForFatalOrMinorCase(CaseSubcategory subcategory) throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
         caseData.put("cicCaseCaseSubcategory", subcategory.getLabel());
@@ -186,7 +170,6 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
     }
 
     @Test
-    @EnabledIf(expression = "${feature.citizen-dashboard.enabled:false}", loadContext = true)
     public void shouldReportFailedSubjectSendWhenSubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(SUBMITTED_FAILURE_REQUEST);
 
@@ -197,8 +180,9 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
             .inPath(CONFIRMATION_HEADER)
             .isString()
             .isEqualTo("""
-                # Bundle creation notification failed\s
-                ## A notification could not be sent to: Subject\s
+                # Bundle created.
+                ## A notification has been sent to: Respondent
+                ## A notification could not be sent to: Subject
                 ## Please resend the notification.""");
     }
 

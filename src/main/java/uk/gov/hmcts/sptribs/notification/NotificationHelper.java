@@ -345,18 +345,19 @@ public class NotificationHelper {
             correspondenceParties.add(SUBJECT);
         }
 
-        if (cicCase.getRespondentEmail() != null && hasText(cicCase.getRespondentEmail())) {
+        if (cicCase.getRespondentEmail() != null) {
             correspondenceParties.add(RESPONDENT);
         }
-        if (parties.contains(PartiesCIC.REPRESENTATIVE) && hasText(cicCase.getRepresentativeEmailAddress())) {
+        if (parties != null && parties.contains(PartiesCIC.REPRESENTATIVE)
+            && hasText(cicCase.getRepresentativeEmailAddress())) {
             correspondenceParties.add(REPRESENTATIVE);
         }
-        if (parties.contains(PartiesCIC.APPLICANT) && hasText(cicCase.getApplicantEmailAddress())
+        if (parties != null && parties.contains(PartiesCIC.APPLICANT)
+            && hasText(cicCase.getApplicantEmailAddress())
             && (cicCase.getEmail() == null || !cicCase.getEmail().equals(cicCase.getApplicantEmailAddress()))) {
             correspondenceParties.add(APPLICANT);
         }
 
         return correspondenceParties;
     }
-
 }
