@@ -45,7 +45,6 @@ import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
-import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -208,12 +207,12 @@ class CaseworkerSendOrderTest {
     void shouldSuccessfullyUpdateFileNameForDraftOrderWhenDraftColonPrefix() {
         //Given
         DynamicMultiSelectList documentList = buildDynamicMultiSelectDocumentList();
-        ContactPartiesDocuments contactPartiesDocuments = ContactPartiesDocuments.builder()
+        final ContactPartiesDocuments contactPartiesDocuments = ContactPartiesDocuments.builder()
             .documentList(documentList)
             .build();
 
         final int docAttachLimit = 10;
-        Map<String, String> emailDocs = getDocumentUploadMap();
+        final Map<String, String> emailDocs = getDocumentUploadMap();
         final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).build();
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);

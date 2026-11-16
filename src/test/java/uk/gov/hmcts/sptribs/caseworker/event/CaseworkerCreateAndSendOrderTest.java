@@ -26,7 +26,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
-import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -40,8 +39,6 @@ import uk.gov.hmcts.sptribs.notification.dispatcher.AnonymityAppliedNotification
 import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
-import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
-import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -55,7 +52,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;

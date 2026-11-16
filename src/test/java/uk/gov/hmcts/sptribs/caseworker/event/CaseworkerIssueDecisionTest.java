@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
-import io.swagger.annotations.Contact;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,7 +42,6 @@ import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
-import uk.gov.hmcts.sptribs.notification.dispatcher.DecisionIssuedNotification;
 
 import java.time.Clock;
 import java.time.LocalDate;
