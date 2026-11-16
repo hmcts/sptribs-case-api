@@ -39,6 +39,7 @@ import java.util.regex.Pattern;
 import static java.lang.String.format;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CONTACT_PARTIES;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateCombinedNotificationMessageFromSentAndErrorLists;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
@@ -180,6 +181,13 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Message sent %n## %s",
                     MessageUtil.generateSimpleMessageFromSentList(notificationContext.getSent())))
+                .build();
+        }
+        if (!isEmpty(notificationContext.getErrors()) && !isEmpty(notificationContext.getSent())) {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(generateCombinedNotificationMessageFromSentAndErrorLists(notificationContext.getSent(),
+                    notificationContext.getErrors(), "Message sent.")
+                )
                 .build();
         } else {
             return SubmittedCallbackResponse.builder()

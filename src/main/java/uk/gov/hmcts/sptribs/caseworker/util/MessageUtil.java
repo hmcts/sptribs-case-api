@@ -131,10 +131,10 @@ public final class MessageUtil {
         }
     }
 
-    public static String generateHeaderFooterMessageFromCorrespondenceParties(
-        List<String> correspondenceParties, String header, String footer) {
+    public static String generateHeaderFooterMessageFromSentList(
+        List<String> sentList, String header, String footer) {
 
-        final String notificationMessage = generateSimpleMessageFromSentList(correspondenceParties);
+        final String notificationMessage = generateSimpleMessageFromSentList(sentList);
 
         String message = notificationMessage.isEmpty()
             ? format("# %s", header)
@@ -146,19 +146,26 @@ public final class MessageUtil {
         return message;
     }
 
-    public static String generateSimpleMessageFromSentList(List<String> correspondenceParties) {
+    public static String generateSimpleMessageFromSentList(List<String> sentList) {
 
         final StringBuilder message = new StringBuilder(100);
 
-        if (correspondenceParties.isEmpty()) {
+        if (sentList.isEmpty()) {
             return "";
         }
 
         message.append("A notification has been sent to: ");
-        correspondenceParties.stream()
+        sentList.stream()
             .sorted()
             .forEach(party -> message.append(party).append(COMMA_SPACE));
 
         return message.substring(0, message.length() - 2);
+    }
+
+
+    public static String generateCombinedNotificationMessageFromSentAndErrorLists(
+        List<String> sent, List<String> errors, String header) {
+        final String footer = generateSimpleErrorMessage(errors) + "\n## Please resend the notification.";
+        return generateHeaderFooterMessageFromSentList(sent, header, footer);
     }
 }

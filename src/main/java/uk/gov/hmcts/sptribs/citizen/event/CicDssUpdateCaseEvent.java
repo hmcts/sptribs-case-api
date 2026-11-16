@@ -13,7 +13,6 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil;
-import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssMessage;
@@ -45,7 +44,9 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CITIZEN_DSS_UPDATE_CASE_SUBMISSION;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateCombinedNotificationMessageFromSentAndErrorLists;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessageFromSentList;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Draft;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Expired;
@@ -214,7 +215,14 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
         if (isEmpty(notificationContext.getErrors())) {
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# CIC Dss Update Case Event Email notifications sent %n## %s",
-                    MessageUtil.generateSimpleMessageFromSentList(notificationContext.getSent())))
+                    generateSimpleMessageFromSentList(notificationContext.getSent())))
+                .build();
+        }
+        if (!isEmpty(notificationContext.getErrors()) && !isEmpty(notificationContext.getSent())) {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(generateCombinedNotificationMessageFromSentAndErrorLists(notificationContext.getSent(),
+                    notificationContext.getErrors(), "CIC Dss Update Case Event Email notifications sent.")
+                )
                 .build();
         } else {
             return SubmittedCallbackResponse.builder()

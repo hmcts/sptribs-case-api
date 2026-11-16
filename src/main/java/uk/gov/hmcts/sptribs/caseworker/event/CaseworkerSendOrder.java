@@ -22,7 +22,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
 import uk.gov.hmcts.sptribs.caseworker.util.DynamicListUtil;
-import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.SendOrderUtil;
 import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -55,7 +54,9 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DRAFT;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SENT;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateCombinedNotificationMessageFromSentAndErrorLists;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessageFromSentList;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
@@ -267,7 +268,14 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         if (isEmpty(notificationContext.getErrors())) {
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Order sent %n## %s",
-                    MessageUtil.generateSimpleMessageFromSentList(notificationContext.getSent())))
+                    generateSimpleMessageFromSentList(notificationContext.getSent())))
+                .build();
+        }
+        if (!isEmpty(notificationContext.getErrors()) && !isEmpty(notificationContext.getSent())) {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(generateCombinedNotificationMessageFromSentAndErrorLists(notificationContext.getSent(),
+                    notificationContext.getErrors(), "Order sent.")
+                )
                 .build();
         } else {
             return SubmittedCallbackResponse.builder()

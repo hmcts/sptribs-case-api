@@ -52,7 +52,7 @@ import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.extractDocumentsFromListValues;
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.getAllCaseDocuments;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CREATE_BUNDLE;
-import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateHeaderFooterMessageFromCorrespondenceParties;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateCombinedNotificationMessageFromSentAndErrorLists;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessageFromSentList;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -200,12 +200,17 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
                 .confirmationHeader(format("# Bundle created. %n## %s",
                     generateSimpleMessageFromSentList(notificationContext.getSent())))
                 .build();
-        } else {
-            final String footer = generateSimpleErrorMessage(notificationContext.getErrors())
-                + "\n## Please resend the notification.";
+        }
+        if (!isEmpty(notificationContext.getSent()) && !isEmpty(notificationContext.getErrors())) {
             return SubmittedCallbackResponse.builder()
-                .confirmationHeader(generateHeaderFooterMessageFromCorrespondenceParties(
-                    notificationContext.getSent(), "Bundle created.", footer))
+                .confirmationHeader(generateCombinedNotificationMessageFromSentAndErrorLists(
+                    notificationContext.getSent(), notificationContext.getErrors(), "Bundle created."))
+                .build();
+        } else {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(
+                    format("# Bundle creation notification failed %n## %s %n## Please resend the notification.",
+                        generateSimpleErrorMessage(notificationContext.getErrors())))
                 .build();
         }
     }

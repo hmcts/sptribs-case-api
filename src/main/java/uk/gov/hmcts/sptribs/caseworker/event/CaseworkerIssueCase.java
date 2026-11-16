@@ -34,6 +34,7 @@ import java.util.Set;
 import static java.lang.String.format;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_CASE;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateCombinedNotificationMessageFromSentAndErrorLists;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessageFromSentList;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -141,6 +142,13 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Case issued %n##  This case has now been issued. %n## %s",
                     generateSimpleMessageFromSentList(notificationContext.getSent())))
+                .build();
+        }
+        if (!isEmpty(notificationContext.getErrors()) && !isEmpty(notificationContext.getSent())) {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(generateCombinedNotificationMessageFromSentAndErrorLists(notificationContext.getSent(),
+                    notificationContext.getErrors(), "Case issued.")
+                )
                 .build();
         } else {
             return SubmittedCallbackResponse.builder()

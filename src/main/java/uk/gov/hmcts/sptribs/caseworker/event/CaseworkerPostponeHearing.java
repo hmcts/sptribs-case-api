@@ -31,6 +31,7 @@ import java.time.LocalDate;
 import static java.lang.String.format;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_POSTPONE_HEARING;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateCombinedNotificationMessageFromSentAndErrorLists;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessageFromSentList;
 import static uk.gov.hmcts.sptribs.ciccase.model.HearingState.Postponed;
@@ -138,6 +139,13 @@ public class CaseworkerPostponeHearing implements CCDConfig<CaseData, State, Use
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Hearing Postponed %n## The hearing has been postponed, the case has been updated %n## %s",
                     generateSimpleMessageFromSentList(notificationContext.getSent())))
+                .build();
+        }
+        if (!isEmpty(notificationContext.getErrors()) && !isEmpty(notificationContext.getSent())) {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(generateCombinedNotificationMessageFromSentAndErrorLists(notificationContext.getSent(),
+                    notificationContext.getErrors(), "Hearing Postponed.")
+                )
                 .build();
         } else {
             return SubmittedCallbackResponse.builder()

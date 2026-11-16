@@ -33,6 +33,7 @@ import static java.lang.String.format;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil.applyAnonymityCaseFlag;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_UPDATE_ANONYMITY;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateCombinedNotificationMessageFromSentAndErrorLists;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessageFromSentList;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
@@ -119,6 +120,13 @@ public class CaseworkerUpdateAnonymity implements CCDConfig<CaseData, State, Use
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Anonymity update notification sent. %n## %s",
                     generateSimpleMessageFromSentList(notificationContext.getSent())))
+                .build();
+        }
+        if (!isEmpty(notificationContext.getErrors()) && !isEmpty(notificationContext.getSent())) {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(generateCombinedNotificationMessageFromSentAndErrorLists(notificationContext.getSent(),
+                    notificationContext.getErrors(), "Anonymity update notification sent.")
+                )
                 .build();
         } else {
             return SubmittedCallbackResponse.builder()

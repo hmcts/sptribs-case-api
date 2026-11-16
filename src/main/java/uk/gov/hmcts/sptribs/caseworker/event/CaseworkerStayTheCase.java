@@ -22,7 +22,9 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 
 import static java.lang.String.format;
+import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_STAY_THE_CASE;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateCombinedNotificationMessageFromSentAndErrorLists;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessageFromSentList;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -125,6 +127,13 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Stay Added to Case %n## %s",
                     generateSimpleMessageFromSentList(notificationContext.getSent())))
+                .build();
+        }
+        if (!isEmpty(notificationContext.getErrors()) && !isEmpty(notificationContext.getSent())) {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(generateCombinedNotificationMessageFromSentAndErrorLists(notificationContext.getSent(),
+                    notificationContext.getErrors(), "Stay Added to Case.")
+                )
                 .build();
         } else {
             return SubmittedCallbackResponse.builder()

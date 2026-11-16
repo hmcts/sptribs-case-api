@@ -240,7 +240,7 @@ public class CaseworkerCancelHearingIT {
         assertThatJson(response)
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Cancel hearing notification failed")
+            .contains("# Hearing cancelled")
             .contains("## Please resend the notification")
             .contains("Representative")
             .contains("Applicant")

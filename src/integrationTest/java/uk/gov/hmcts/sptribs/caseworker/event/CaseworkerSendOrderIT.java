@@ -234,7 +234,7 @@ public class CaseworkerSendOrderIT {
     }
 
     @Test
-    void shouldReturnErrorMessageIfNotificationsFailOnSubmitted() throws Exception {
+    void shouldReturnCombinedMessageIfSomeNotificationsFailOnSubmitted() throws Exception {
         final CaseData caseData = CaseData.builder()
             .cicCase(CicCase.builder()
                 .notifyPartySubject(Set.of(SUBJECT))
@@ -263,7 +263,8 @@ public class CaseworkerSendOrderIT {
         assertThatJson(response)
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Send order notification failed")
+            .contains("# Order sent.")
+            .contains("## A notification has been sent to: Respondent")
             .contains("## A notification could not be sent to: Applicant, Representative, Subject")
             .contains("## Please resend the notification.");
     }

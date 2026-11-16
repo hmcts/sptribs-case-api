@@ -26,6 +26,7 @@ import java.util.List;
 import static java.lang.String.format;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CASE_FLAG;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateCombinedNotificationMessageFromSentAndErrorLists;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessageFromSentList;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -121,6 +122,13 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Flag created %n## This Flag has been added to case. %s",
                     generateSimpleMessageFromSentList(notificationContext.getSent())))
+                .build();
+        }
+        if (!isEmpty(notificationContext.getErrors()) && !isEmpty(notificationContext.getSent())) {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(generateCombinedNotificationMessageFromSentAndErrorLists(notificationContext.getSent(),
+                    notificationContext.getErrors(), "Flag created %n## This Flag has been added to case.")
+                )
                 .build();
         } else {
             return SubmittedCallbackResponse.builder()

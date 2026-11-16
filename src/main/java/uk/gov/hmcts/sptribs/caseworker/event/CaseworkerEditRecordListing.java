@@ -39,6 +39,7 @@ import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_RECORD_LISTING;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateCombinedNotificationMessageFromSentAndErrorLists;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessageFromSentList;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -196,6 +197,14 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
                 .confirmationHeader(format("# Listing record updated %n## If any changes are made to this hearing,"
                         + " %n## remember to make those changes in this listing record. %n## %s",
                     generateSimpleMessageFromSentList(notificationContext.getSent())))
+                .build();
+        }
+        if (!isEmpty(notificationContext.getErrors()) && !isEmpty(notificationContext.getSent())) {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(generateCombinedNotificationMessageFromSentAndErrorLists(notificationContext.getSent(),
+                    notificationContext.getErrors(), "Listing record updated %n## If any changes are made to this hearing,"
+                        + " %n## remember to make those changes in this listing record.")
+                )
                 .build();
         } else {
             return SubmittedCallbackResponse.builder()

@@ -18,7 +18,6 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionSelectTemplate;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionUploadNotice;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.caseworker.model.NoticeOption;
-import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -44,7 +43,9 @@ import java.util.List;
 import static java.lang.String.format;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_DECISION;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateCombinedNotificationMessageFromSentAndErrorLists;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessageFromSentList;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
@@ -167,7 +168,14 @@ public class CaseworkerIssueDecision implements CCDConfig<CaseData, State, UserR
         if (isEmpty(notificationContext.getErrors())) {
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Decision notice issued %n## %s",
-                    MessageUtil.generateSimpleMessageFromSentList(notificationContext.getSent())))
+                    generateSimpleMessageFromSentList(notificationContext.getSent())))
+                .build();
+        }
+        if (!isEmpty(notificationContext.getErrors()) && !isEmpty(notificationContext.getSent())) {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(generateCombinedNotificationMessageFromSentAndErrorLists(notificationContext.getSent(),
+                    notificationContext.getErrors(), "Decision notice issued.")
+                )
                 .build();
         } else {
             return SubmittedCallbackResponse.builder()

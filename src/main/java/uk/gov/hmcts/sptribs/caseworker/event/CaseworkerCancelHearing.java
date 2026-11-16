@@ -32,6 +32,7 @@ import java.time.LocalDate;
 import static java.lang.String.format;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CANCEL_HEARING;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateCombinedNotificationMessageFromSentAndErrorLists;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessageFromSentList;
 import static uk.gov.hmcts.sptribs.ciccase.model.HearingState.Cancelled;
@@ -138,10 +139,17 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
 
         notificationDispatcher.sendToCorrespondenceParties(notificationContext);
 
-        if (isEmpty(notificationContext.getErrors()) && !isEmpty(notificationContext.getCorrespondenceParties())) {
+        if (isEmpty(notificationContext.getErrors()) && !isEmpty(notificationContext.getSent())) {
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Hearing cancelled %n## %s",
                     generateSimpleMessageFromSentList(notificationContext.getSent())))
+                .build();
+        }
+        if (!isEmpty(notificationContext.getErrors()) && !isEmpty(notificationContext.getSent())) {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(generateCombinedNotificationMessageFromSentAndErrorLists(notificationContext.getSent(),
+                notificationContext.getErrors(), "Hearing cancelled")
+                )
                 .build();
         } else {
             return SubmittedCallbackResponse.builder()

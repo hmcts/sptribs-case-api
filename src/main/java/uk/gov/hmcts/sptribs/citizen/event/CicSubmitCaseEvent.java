@@ -54,6 +54,7 @@ import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.util.CollectionUtils.isEmpty;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateCombinedNotificationMessageFromSentAndErrorLists;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessageFromSentList;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
@@ -147,6 +148,13 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Application Received. %n## %s",
                     generateSimpleMessageFromSentList(notificationContext.getSent())))
+                .build();
+        }
+        if (!isEmpty(notificationContext.getErrors()) && !isEmpty(notificationContext.getSent())) {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(generateCombinedNotificationMessageFromSentAndErrorLists(notificationContext.getSent(),
+                    notificationContext.getErrors(), "Application Received.")
+                )
                 .build();
         } else {
             return SubmittedCallbackResponse.builder()

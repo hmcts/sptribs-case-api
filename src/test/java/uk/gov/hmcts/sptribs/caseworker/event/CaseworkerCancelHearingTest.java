@@ -40,13 +40,17 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_DATE_1;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_TIME;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.REPRESENTATIVE;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.RESPONDENT;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SOLICITOR_ADDRESS;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBJECT;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBJECT_ADDRESS;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SUBJECT_EMAIL;
@@ -223,12 +227,15 @@ class CaseworkerCancelHearingTest {
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.AwaitingOutcome);
 
-        when(cancelHearingNotification.buildCorrespondenceParties(any()))
-            .thenReturn(Set.of(
-                NotificationParties.SUBJECT,
-                NotificationParties.REPRESENTATIVE,
-                NotificationParties.RESPONDENT
-            ));
+        doAnswer(invocation -> {
+            NotificationContext context = invocation.getArgument(0);
+            if (context.getNotification() == cancelHearingNotification) {
+                context.getSent().add(SUBJECT);
+                context.getSent().add(REPRESENTATIVE);
+                context.getSent().add(RESPONDENT);
+            }
+            return null;
+        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
@@ -237,6 +244,9 @@ class CaseworkerCancelHearingTest {
 
         //Then
         assertThat(cancelled.getConfirmationHeader()).contains("Hearing cancelled");
+        assertThat(cancelled.getConfirmationHeader()).contains(SUBJECT);
+        assertThat(cancelled.getConfirmationHeader()).contains(REPRESENTATIVE);
+        assertThat(cancelled.getConfirmationHeader()).contains(RESPONDENT);
         assertThat(response).isNotNull();
         assertThat(response.getState()).isEqualTo(State.CaseManagement);
         assertThat(response.getData().getListing().getHearingStatus()).isEqualTo(HearingState.Cancelled);
@@ -255,5 +265,4 @@ class CaseworkerCancelHearingTest {
             .listItems(List.of(listItem))
             .build();
     }
-
 }
