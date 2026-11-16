@@ -263,6 +263,13 @@ public class CaseworkerSendOrderIT {
 
     @Test
     void shouldReturnErrorMessageIfNotificationsFailOnSubmitted() throws Exception {
+        ContactPartiesDocuments contactPartiesDocuments = ContactPartiesDocuments.builder()
+            .documentList(DynamicMultiSelectList.builder()
+                .value(new ArrayList<>())
+                .listItems(new ArrayList<>())
+                .build())
+            .build();
+
         final CaseData caseData = CaseData.builder()
             .cicCase(CicCase.builder()
                 .notifyPartySubject(Set.of(SUBJECT))
@@ -271,6 +278,7 @@ public class CaseworkerSendOrderIT {
                 .notifyPartyApplicant(Set.of(APPLICANT_CIC))
                 .build()
             )
+            .contactPartiesDocuments(contactPartiesDocuments)
             .build();
 
         String response = mockMvc.perform(post(SUBMITTED_URL)

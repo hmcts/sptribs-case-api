@@ -554,6 +554,7 @@ class CaseworkerCreateAndSendOrderTest {
         final CaseData caseData = caseData();
         final String hyphenatedCaseRef = caseData.formatCaseRef(TEST_CASE_ID);
         caseData.setHyphenatedCaseRef(hyphenatedCaseRef);
+        caseData.setContactPartiesDocuments(getContactPartiesDocuments());
         caseData.getCicCase().setNotifyPartySubject(Set.of(SUBJECT));
         caseData.getCicCase().setNotifyPartyApplicant(Set.of(APPLICANT_CIC));
         caseData.getCicCase().setNotifyPartyRepresentative(Set.of(REPRESENTATIVE));
@@ -584,6 +585,7 @@ class CaseworkerCreateAndSendOrderTest {
         final CaseData caseData = caseData();
         final String hyphenatedCaseRef = caseData.formatCaseRef(TEST_CASE_ID);
         caseData.setHyphenatedCaseRef(hyphenatedCaseRef);
+        caseData.setContactPartiesDocuments(getContactPartiesDocuments());
         caseData.getCicCase().setNotifyPartySubject(Set.of(SUBJECT));
         caseData.getCicCase().setNotifyPartyApplicant(Set.of(APPLICANT_CIC));
         caseData.getCicCase().setNotifyPartyRepresentative(Set.of(REPRESENTATIVE));
@@ -615,6 +617,7 @@ class CaseworkerCreateAndSendOrderTest {
         final CaseData caseData = caseData();
         final String hyphenatedCaseRef = caseData.formatCaseRef(TEST_CASE_ID);
         caseData.setHyphenatedCaseRef(hyphenatedCaseRef);
+        caseData.setContactPartiesDocuments(getContactPartiesDocuments());
         caseData.getCicCase().setNotifyPartySubject(Set.of(SUBJECT));
         caseData.getCicCase().setNotifyPartyApplicant(Set.of(APPLICANT_CIC));
         caseData.getCicCase().setNotifyPartyRepresentative(Set.of(REPRESENTATIVE));
@@ -637,7 +640,7 @@ class CaseworkerCreateAndSendOrderTest {
         verify(contactPartiesNotification, times(1)).sendToRepresentative(any(CaseData.class), anyString(), anyMap());
         verify(contactPartiesNotification, times(1)).sendToRespondent(any(CaseData.class), anyString(), anyMap());
 
-        verify(contactPartiesNotification, never()).sendToApplicant(any(CaseData.class), anyString());
+        verify(contactPartiesNotification, never()).sendToApplicant(any(CaseData.class), anyString(), anyMap());
     }
 
     @Test
@@ -645,6 +648,7 @@ class CaseworkerCreateAndSendOrderTest {
         final CaseData caseData = caseData();
         final String hyphenatedCaseRef = caseData.formatCaseRef(TEST_CASE_ID);
         caseData.setHyphenatedCaseRef(hyphenatedCaseRef);
+        caseData.setContactPartiesDocuments(getContactPartiesDocuments());
         caseData.getCicCase().setNotifyPartySubject(Set.of(SUBJECT));
         caseData.getCicCase().setNotifyPartyApplicant(Set.of(APPLICANT_CIC));
         caseData.getCicCase().setNotifyPartyRepresentative(Set.of(REPRESENTATIVE));
@@ -854,6 +858,13 @@ class CaseworkerCreateAndSendOrderTest {
             .dateTimeCreated(LocalDateTime.now())
             .hearingRelevant(YesOrNo.YES)
             .availableExternally(YesOrNo.NO)
+            .build();
+    }
+
+    private ContactPartiesDocuments getContactPartiesDocuments(){
+
+        return ContactPartiesDocuments.builder()
+            .documentList(buildDynamicMultiSelectDocumentList())
             .build();
     }
 
