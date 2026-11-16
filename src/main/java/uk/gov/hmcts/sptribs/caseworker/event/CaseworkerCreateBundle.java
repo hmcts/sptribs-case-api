@@ -291,48 +291,25 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
 
         configureAudioVideoEvidenceFolder(caseBundles, audioVideoDocuments, existingBundles);
 
+        applyBundleTimestamps(caseData, caseBundles, existingBundles);
+
+        return caseBundles;
+    }
+
+    private void applyBundleTimestamps(CaseData caseData,
+                                       List<ListValue<Bundle>> caseBundles,
+                                       List<ListValue<Bundle>> existingBundles) {
         List<ListValue<BundleIdAndTimestamp>> bundleIdsAndTimestamps =
             Optional.ofNullable(caseData.getCaseBundleIdsAndTimestamps()).orElse(new ArrayList<>());
 
-        Map<String, LocalDateTime> bundleIdToTimestampMap = new HashMap<>();
-        for (ListValue<BundleIdAndTimestamp> item : bundleIdsAndTimestamps) {
-            if (item != null && item.getValue() != null) {
-                String bundleId = item.getValue().getBundleId();
-                if (bundleId != null && !bundleIdToTimestampMap.containsKey(bundleId)) {
-                    bundleIdToTimestampMap.put(bundleId, item.getValue().getDateAndTime());
-                }
-            }
-        }
+        Map<String, LocalDateTime> bundleIdToTimestampMap = buildBundleIdToTimestampMap(bundleIdsAndTimestamps);
 
         Set<String> existingBundleIds = existingBundles.stream()
             .map(bundle -> bundle.getValue().getId())
             .collect(Collectors.toCollection(HashSet::new));
 
         for (ListValue<Bundle> caseBundle : caseBundles) {
-            String bundleId = caseBundle.getValue().getId();
-
-            if (bundleIdToTimestampMap.containsKey(bundleId)) {
-                // Case 1: Bundle has a known timestamp in our stored data - restore it
-                caseBundle.getValue().setDateAndTime(bundleIdToTimestampMap.get(bundleId));
-            } else if (existingBundleIds.contains(bundleId)) {
-                // Case 2: Old bundle that existed before the timestamp workaround was implemented
-                // Leave timestamp as null for backwards compatibility
-                caseBundle.getValue().setDateAndTime(null);
-            } else {
-                // Case 3: Truly new bundle - set current timestamp and record it
-                LocalDateTime now = LocalDateTime.now(clock);
-                caseBundle.getValue().setDateAndTime(now);
-
-                String listValueId = String.valueOf(bundleIdsAndTimestamps.size() + 1);
-                BundleIdAndTimestamp bundleIdAndTimestamp = BundleIdAndTimestamp.builder()
-                    .bundleId(bundleId)
-                    .dateAndTime(now)
-                    .build();
-                bundleIdsAndTimestamps.add(ListValue.<BundleIdAndTimestamp>builder()
-                    .id(listValueId)
-                    .value(bundleIdAndTimestamp)
-                    .build());
-            }
+            updateBundleTimestamp(caseBundle.getValue(), bundleIdToTimestampMap, existingBundleIds, bundleIdsAndTimestamps);
         }
 
         caseData.setCaseBundleIdsAndTimestamps(bundleIdsAndTimestamps);
@@ -345,78 +322,146 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
                 )
             );
         }
+    }
 
-        return caseBundles;
+    private Map<String, LocalDateTime> buildBundleIdToTimestampMap(List<ListValue<BundleIdAndTimestamp>> bundleIdsAndTimestamps) {
+        Map<String, LocalDateTime> bundleIdToTimestampMap = new HashMap<>();
+        for (ListValue<BundleIdAndTimestamp> item : bundleIdsAndTimestamps) {
+            if (item != null && item.getValue() != null) {
+                String bundleId = item.getValue().getBundleId();
+                if (bundleId != null && !bundleIdToTimestampMap.containsKey(bundleId)) {
+                    bundleIdToTimestampMap.put(bundleId, item.getValue().getDateAndTime());
+                }
+            }
+        }
+        return bundleIdToTimestampMap;
+    }
+
+    private void updateBundleTimestamp(Bundle bundle,
+                                       Map<String, LocalDateTime> bundleIdToTimestampMap,
+                                       Set<String> existingBundleIds,
+                                       List<ListValue<BundleIdAndTimestamp>> bundleIdsAndTimestamps) {
+        String bundleId = bundle.getId();
+
+        if (bundleIdToTimestampMap.containsKey(bundleId)) {
+            // Case 1: Bundle has a known timestamp in our stored data - restore it
+            bundle.setDateAndTime(bundleIdToTimestampMap.get(bundleId));
+        } else if (existingBundleIds.contains(bundleId)) {
+            // Case 2: Old bundle that existed before the timestamp workaround was implemented
+            // Leave timestamp as null for backwards compatibility
+            bundle.setDateAndTime(null);
+        } else {
+            // Case 3: Truly new bundle - set current timestamp and record it
+            LocalDateTime now = LocalDateTime.now(clock);
+            bundle.setDateAndTime(now);
+
+            String listValueId = String.valueOf(bundleIdsAndTimestamps.size() + 1);
+            BundleIdAndTimestamp bundleIdAndTimestamp = BundleIdAndTimestamp.builder()
+                .bundleId(bundleId)
+                .dateAndTime(now)
+                .build();
+            bundleIdsAndTimestamps.add(ListValue.<BundleIdAndTimestamp>builder()
+                .id(listValueId)
+                .value(bundleIdAndTimestamp)
+                .build());
+        }
     }
 
     private void configureAudioVideoEvidenceFolder(List<ListValue<Bundle>> caseBundles,
                                                    List<ListValue<BundleDocument>> audioVideoDocuments,
                                                    List<ListValue<Bundle>> existingBundles) {
+        final Map<String, List<ListValue<BundleFolder>>> existingFoldersMap = buildExistingFoldersMap(existingBundles);
+
+        for (ListValue<Bundle> caseBundle : caseBundles) {
+            if (caseBundle != null && caseBundle.getValue() != null) {
+                configureBundleAudioVideoEvidenceFolder(caseBundle.getValue(), audioVideoDocuments, existingFoldersMap);
+            }
+        }
+    }
+
+    private Map<String, List<ListValue<BundleFolder>>> buildExistingFoldersMap(List<ListValue<Bundle>> existingBundles) {
         final Map<String, List<ListValue<BundleFolder>>> existingFoldersMap = new HashMap<>();
         for (ListValue<Bundle> existingBundle : existingBundles) {
             if (existingBundle != null && existingBundle.getValue() != null && existingBundle.getValue().getId() != null) {
                 existingFoldersMap.put(existingBundle.getValue().getId(), existingBundle.getValue().getFolders());
             }
         }
+        return existingFoldersMap;
+    }
 
-        for (ListValue<Bundle> caseBundle : caseBundles) {
-            if (caseBundle == null || caseBundle.getValue() == null) {
-                continue;
-            }
-            Bundle bundle = caseBundle.getValue();
-            String bundleId = bundle.getId();
+    private void configureBundleAudioVideoEvidenceFolder(Bundle bundle,
+                                                         List<ListValue<BundleDocument>> audioVideoDocuments,
+                                                         Map<String, List<ListValue<BundleFolder>>> existingFoldersMap) {
+        String bundleId = bundle.getId();
 
-            if (bundleId != null && existingFoldersMap.containsKey(bundleId)) {
-                bundle.setFolders(existingFoldersMap.get(bundleId));
-                continue;
-            }
-
-            List<ListValue<BundleFolder>> folders = bundle.getFolders();
-
-            if (CollectionUtils.isEmpty(audioVideoDocuments)) {
-                if (folders != null) {
-                    List<ListValue<BundleFolder>> updatedFolders = folders.stream()
-                        .filter(folder -> folder != null
-                            && folder.getValue() != null
-                            && !AUDIO_VIDEO_EVIDENCE_FOLDER_NAME.equalsIgnoreCase(folder.getValue().getName()))
-                        .collect(Collectors.toCollection(ArrayList::new));
-                    bundle.setFolders(updatedFolders.isEmpty() ? null : updatedFolders);
-                }
-            } else {
-                if (folders == null) {
-                    folders = new ArrayList<>();
-                    bundle.setFolders(folders);
-                }
-                Optional<ListValue<BundleFolder>> audioVideoFolder = folders.stream()
-                    .filter(folder -> folder != null
-                        && folder.getValue() != null
-                        && AUDIO_VIDEO_EVIDENCE_FOLDER_NAME.equalsIgnoreCase(folder.getValue().getName()))
-                    .findFirst();
-
-                if (audioVideoFolder.isPresent()) {
-                    audioVideoFolder.get().getValue().setDocuments(audioVideoDocuments);
-                } else {
-                    int sortIndex = folders.stream()
-                        .filter(Objects::nonNull)
-                        .map(ListValue::getValue)
-                        .filter(Objects::nonNull)
-                        .mapToInt(BundleFolder::getSortIndex)
-                        .max()
-                        .orElse(0) + 1;
-
-                    BundleFolder newFolder = BundleFolder.builder()
-                        .name(AUDIO_VIDEO_EVIDENCE_FOLDER_NAME)
-                        .sortIndex(sortIndex)
-                        .documents(audioVideoDocuments)
-                        .build();
-
-                    folders.add(ListValue.<BundleFolder>builder()
-                        .id(String.valueOf(folders.size() + 1))
-                        .value(newFolder)
-                        .build());
-                }
-            }
+        if (bundleId != null && existingFoldersMap.containsKey(bundleId)) {
+            bundle.setFolders(existingFoldersMap.get(bundleId));
+            return;
         }
+
+        if (CollectionUtils.isEmpty(audioVideoDocuments)) {
+            removeAudioVideoEvidenceFolder(bundle);
+        } else {
+            addOrUpdateAudioVideoEvidenceFolder(bundle, audioVideoDocuments);
+        }
+    }
+
+    private void removeAudioVideoEvidenceFolder(Bundle bundle) {
+        List<ListValue<BundleFolder>> folders = bundle.getFolders();
+        if (folders == null) {
+            return;
+        }
+
+        List<ListValue<BundleFolder>> updatedFolders = folders.stream()
+            .filter(folder -> folder != null
+                && folder.getValue() != null
+                && !AUDIO_VIDEO_EVIDENCE_FOLDER_NAME.equalsIgnoreCase(folder.getValue().getName()))
+            .collect(Collectors.toCollection(ArrayList::new));
+
+        bundle.setFolders(updatedFolders.isEmpty() ? null : updatedFolders);
+    }
+
+    private void addOrUpdateAudioVideoEvidenceFolder(Bundle bundle,
+                                                     List<ListValue<BundleDocument>> audioVideoDocuments) {
+        List<ListValue<BundleFolder>> folders = bundle.getFolders();
+        if (folders == null) {
+            folders = new ArrayList<>();
+            bundle.setFolders(folders);
+        }
+
+        Optional<ListValue<BundleFolder>> audioVideoFolder = folders.stream()
+            .filter(folder -> folder != null
+                && folder.getValue() != null
+                && AUDIO_VIDEO_EVIDENCE_FOLDER_NAME.equalsIgnoreCase(folder.getValue().getName()))
+            .findFirst();
+
+        if (audioVideoFolder.isPresent()) {
+            audioVideoFolder.get().getValue().setDocuments(audioVideoDocuments);
+        } else {
+            folders.add(createAudioVideoEvidenceFolder(folders, audioVideoDocuments));
+        }
+    }
+
+    private ListValue<BundleFolder> createAudioVideoEvidenceFolder(List<ListValue<BundleFolder>> folders,
+                                                                   List<ListValue<BundleDocument>> audioVideoDocuments) {
+        int sortIndex = folders.stream()
+            .filter(Objects::nonNull)
+            .map(ListValue::getValue)
+            .filter(Objects::nonNull)
+            .mapToInt(BundleFolder::getSortIndex)
+            .max()
+            .orElse(0) + 1;
+
+        BundleFolder newFolder = BundleFolder.builder()
+            .name(AUDIO_VIDEO_EVIDENCE_FOLDER_NAME)
+            .sortIndex(sortIndex)
+            .documents(audioVideoDocuments)
+            .build();
+
+        return ListValue.<BundleFolder>builder()
+            .id(String.valueOf(folders.size() + 1))
+            .value(newFolder)
+            .build();
     }
 
     private void clearTemporaryBundleData(CaseData caseData) {

@@ -83,9 +83,7 @@ public class AudioVideoEvidenceBundleService {
             int index = 1;
             for (DocumentEntity entity : entities) {
                 String binaryUrl = entity.getDocumentBinaryUrl();
-                String documentUrl = entity.getDocumentUrl() != null
-                    ? entity.getDocumentUrl()
-                    : (binaryUrl != null ? StringUtils.substringBeforeLast(binaryUrl, "/binary") : null);
+                String documentUrl = resolveDocumentUrl(entity.getDocumentUrl(), binaryUrl);
 
                 BundleDocument bundleDocument = BundleDocument.builder()
                     .name(entity.getDocumentFilename())
@@ -108,6 +106,16 @@ public class AudioVideoEvidenceBundleService {
         } catch (RuntimeException exception) {
             throw new AudioVideoEvidenceBundleException(caseId, exception);
         }
+    }
+
+    private String resolveDocumentUrl(String documentUrl, String binaryUrl) {
+        if (documentUrl != null) {
+            return documentUrl;
+        }
+        if (binaryUrl != null) {
+            return StringUtils.substringBeforeLast(binaryUrl, "/binary");
+        }
+        return null;
     }
 
     public void deleteAudioVideoEvidenceBundleDocument(Document generatedPdf) {
