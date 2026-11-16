@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -76,6 +77,7 @@ import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -170,6 +172,20 @@ public class CaseworkerCreateBundleIT {
     void setClock() {
         when(clock.instant()).thenReturn(instant);
         when(clock.getZone()).thenReturn(zoneId);
+    }
+
+    @AfterEach
+    void cleanUpMocks() {
+        reset(
+            webMvcConfig,
+            authTokenGenerator,
+            bundlingClient,
+            clock,
+            pdfServiceClient,
+            caseDocumentClientApi,
+            documentsService,
+            notificationServiceCIC
+        );
     }
 
     @Test
