@@ -17,8 +17,11 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionPreviewTemplate;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionSelectRecipients;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionSelectTemplate;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionUploadNotice;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
+import uk.gov.hmcts.sptribs.caseworker.model.NoticeOption;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -39,6 +42,7 @@ import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_DECISION;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
@@ -108,8 +112,9 @@ public class CaseworkerIssueDecision implements CCDConfig<CaseData, State, UserR
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         final CaseData caseData = details.getData();
-        final CICDocument decisionDocument = caseData.getCaseIssueDecision().getDecisionDocument();
-        final Document decisionDocumentCreatedFromTemplate = caseData.getCaseIssueDecision().getIssueDecisionDraft();
+        final CaseIssueDecision decision = caseData.getCaseIssueDecision();
+        final CICDocument decisionDocument = decision.getDecisionDocument();
+        final Document decisionDocumentCreatedFromTemplate = decision.getIssueDecisionDraft();
 
         final List<String> errors = new ArrayList<>();
 
@@ -120,13 +125,20 @@ public class CaseworkerIssueDecision implements CCDConfig<CaseData, State, UserR
             saveDecisionDocumentToDB(decisionDocumentCreatedFromTemplate, details.getId(), errors);
         }
 
-        caseData.getCaseIssueDecision().setDecisionDate(LocalDate.now(this.clock));
+        decision.setDecisionDate(LocalDate.now(this.clock));
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
-            .state(CaseManagement)
+            .state(isClosingDecision(decision) ? CaseClosed : CaseManagement)
             .errors(errors)
             .build();
+    }
+
+    private boolean isClosingDecision(CaseIssueDecision decision) {
+        return decision != null
+            && decision.getDecisionNotice() == NoticeOption.CREATE_FROM_TEMPLATE
+            && (decision.getIssueDecisionTemplate() == DecisionTemplate.RULE_27
+                || decision.getIssueDecisionTemplate() == DecisionTemplate.STRIKE_OUT_DECISION_NOTICE);
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,

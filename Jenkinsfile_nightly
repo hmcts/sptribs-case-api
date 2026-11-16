@@ -9,7 +9,7 @@ properties([
   ])
 ])
 
-@Library("Infrastructure@2.7.2")
+@Library("Infrastructure@2.12.2")
 
 import uk.gov.hmcts.contino.GradleBuilder
 
@@ -38,6 +38,8 @@ def secrets = [
 ]
 
 GradleBuilder builder = new GradleBuilder(this, product)
+
+env.ENVIRONMENT = 'aat'
 
 withNightlyPipeline(type, product, component) {
   env.TEST_URL = "http://sptribs-case-api-aat.service.core-compute-aat.internal"

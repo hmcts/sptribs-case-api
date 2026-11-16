@@ -21,7 +21,7 @@ java:
     POSTGRES_NAME: "{{ .Values.global.databaseNamePrefix }}sptribs-case-api"
     POSTGRES_USERNAME: ${SPTRIBS_POSTGRES_USERNAME_PREVIEW}
     POSTGRES_CONNECTION_OPTIONS: ""
-    CITIZEN_DASHBOARD_ENABLED: false
+    CITIZEN_DASHBOARD_ENABLED: true
     SPTRIBS_FRONTEND_URL: "https://sptribs-frontend.aat.platform.hmcts.net/dashboard"
   keyVaults:
     sptribs:
@@ -97,6 +97,7 @@ ccd:
     java:
       imagePullPolicy: Always
       environment:
+        IDAM_API_BASE_URL: https://idam-api.aat.platform.hmcts.net
         CASE_DOCUMENT_AM_API_ATTACH_DOCUMENT_ENABLED: true
         DATA_STORE_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
         DATA_STORE_DB_USERNAME: ${CCD_DATA_STORE_DB_USERNAME_PREVIEW}
@@ -189,6 +190,7 @@ ccd:
         USER_PROFILE_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
         IDAM_ADMIN_WEB_SERVICE_KEY: ${ADMIN_S2S_KEY}
         IDAM_OAUTH2_AW_CLIENT_SECRET: ${ADMIN_WEB_IDAM_SECRET}
+        SESSION_KEYS: '${SESSION_KEYS}'
 
   importer:
     userprofile:
@@ -237,10 +239,14 @@ ccd:
     imageTag: "7.16.1"
     imagePullPolicy: "IfNotPresent"
     logstashJavaOpts: "-Xmx1g -Xms512M"
+    securityContext:
+      allowPrivilegeEscalation: false
     extraInitContainers: |
       - name: download-postgres-jdbc
         image: hmctsprod.azurecr.io/curl:7.70.0
         command: ['curl', '-L', 'https://jdbc.postgresql.org/download/postgresql-42.2.18.jar', '-o', '/logstash-lib/postgresql.jar']
+        securityContext:
+          allowPrivilegeEscalation: false
         volumeMounts:
         - name: logstash-lib
           mountPath: /logstash-lib

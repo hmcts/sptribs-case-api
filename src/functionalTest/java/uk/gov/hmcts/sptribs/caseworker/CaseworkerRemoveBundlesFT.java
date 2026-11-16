@@ -3,8 +3,10 @@ package uk.gov.hmcts.sptribs.caseworker;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
+import java.util.List;
 import java.util.Map;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
@@ -48,11 +50,27 @@ public class CaseworkerRemoveBundlesFT extends FunctionalTestSuite {
     public void shouldReturnCorrectBundleWhenAboutToSubmitCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_ABOUT_TO_SUBMIT);
 
+        Long appealId = saveTestBundleDocuments(caseData);
+
+        List<DocumentEntity> documentEntitiesBeforeBundleRemoval = caseDocumentsFTDataManager.getDocumentEntities(appealId);
+        assertThat(documentEntitiesBeforeBundleRemoval).hasSize(3);
+
         final Response response = triggerCallback(caseData, REMOVE_BUNDLES, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .when(IGNORING_EXTRA_FIELDS)
             .isEqualTo(json(expectedResponse(RESPONSE_ABOUT_TO_SUBMIT)));
+
+        List<DocumentEntity> documentEntities = caseDocumentsFTDataManager.getDocumentEntities(appealId);
+        assertThat(documentEntities).hasSize(1);
+        DocumentEntity firstDocumentEntity = documentEntities.getFirst();
+
+        assertThat(firstDocumentEntity.getId()).isNotNull();
+        assertThat(firstDocumentEntity.getCaseReferenceNumber()).isEqualTo(appealId);
+        assertThat(firstDocumentEntity.getDocumentFilename()).isEqualTo("3-cicBundle.pdf");
+        assertThat(firstDocumentEntity.getDocumentTypeName()).isEqualTo(null);
+        assertThat(firstDocumentEntity.getCaseDocumentTypeId()).isEqualTo(9L);
+        assertThat(firstDocumentEntity.getSavedAt()).isNotNull();
     }
 }

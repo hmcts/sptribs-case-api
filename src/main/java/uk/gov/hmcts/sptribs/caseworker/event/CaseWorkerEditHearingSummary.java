@@ -7,6 +7,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.EditHearingLoadingPage;
 import uk.gov.hmcts.sptribs.caseworker.event.page.EditHearingSummarySelect;
@@ -24,12 +25,19 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
+import static uk.gov.hmcts.sptribs.caseworker.service.HearingService.isMatchingHearing;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_HEARING_SUMMARY;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
@@ -38,7 +46,11 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORK
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.uploadRecFile;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.getAddedDocuments;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.getDocumentsWithUpdatedCategory;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.getRemovedDocuments;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateUploadedDocumentCategory;
+import static uk.gov.hmcts.sptribs.document.model.CaseDocumentType.HEARING_RECORD;
 
 @Component
 @Slf4j
@@ -62,12 +74,15 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
     @Autowired
     private JudicialService judicialService;
 
+    @Autowired
+    private DocumentsService documentsService;
+
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         PageBuilder pageBuilder = new PageBuilder(
             configBuilder
                 .event(CASEWORKER_EDIT_HEARING_SUMMARY)
-                .forStates(AwaitingOutcome)
+                .forStates(AwaitingOutcome, CaseClosed)
                 .name("Hearings: Edit summary")
                 .showSummary()
                 .aboutToStartCallback(this::aboutToStart)
@@ -75,14 +90,9 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
                 .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                    ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
+                    ST_CIC_HEARING_CENTRE_TEAM_LEADER)
                 .grantHistoryOnly(
-                    ST_CIC_CASEWORKER,
-                    ST_CIC_SENIOR_CASEWORKER,
-                    ST_CIC_HEARING_CENTRE_ADMIN,
-                    ST_CIC_HEARING_CENTRE_TEAM_LEADER,
                     ST_CIC_SENIOR_JUDGE,
-                    SUPER_USER,
                     ST_CIC_JUDGE));
         hearingSummarySelect.addTo(pageBuilder);
         editHearingLoadingPage.addTo(pageBuilder);
@@ -106,6 +116,7 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
+            .state(details.getState())
             .build();
     }
 
@@ -114,11 +125,19 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
         final CaseDetails<CaseData, State> beforeDetails
     ) {
         final CaseData caseData = details.getData();
+        final List<String> errors = new ArrayList<>();
         caseData.setJudicialId(judicialService.populateJudicialId(caseData));
         caseData.getListing().getSummary().setJudgeList(null);
-        uploadRecFile(caseData);
-
         final String hearingName = caseData.getCicCase().getHearingSummaryList().getValue().getLabel();
+        final List<ListValue<CaseworkerCICDocument>> existingRecordings = getHearingRecordings(beforeDetails.getData(), hearingName);
+        final List<ListValue<CaseworkerCICDocument>> recordings = resolveUpdatedRecordings(caseData, existingRecordings);
+        caseData.getListing().getSummary().setRecFile(recordings);
+        caseData.getListing().getSummary().setRecFileUpload(new ArrayList<>());
+        errors.addAll(documentsService.saveDocuments(
+            details.getId(), getAddedDocuments(recordings, existingRecordings), HEARING_RECORD));
+        errors.addAll(documentsService.updateDocumentCategories(
+            getDocumentsWithUpdatedCategory(recordings, existingRecordings)));
+        errors.addAll(documentsService.removeDocuments(getRemovedDocuments(existingRecordings, recordings)));
 
         recordListHelper.saveSummary(details.getData());
         hearingService.updateHearingList(caseData, hearingName);
@@ -127,9 +146,43 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
-            .state(AwaitingOutcome)
+            .state(details.getState())
+            .errors(errors)
             .build();
 
+    }
+
+    private List<ListValue<CaseworkerCICDocument>> getHearingRecordings(CaseData caseData, String hearingName) {
+        if (caseData == null || caseData.getHearingList() == null) {
+            return List.of();
+        }
+
+        return caseData.getHearingList().stream()
+            .filter(listing -> isMatchingHearing(listing, hearingName))
+            .map(listing -> listing.getValue().getSummary().getRecFile())
+            .filter(Objects::nonNull)
+            .findFirst()
+            .orElse(List.of());
+    }
+
+    private List<ListValue<CaseworkerCICDocument>> resolveUpdatedRecordings(
+        CaseData caseData,
+        List<ListValue<CaseworkerCICDocument>> existingRecordings
+    ) {
+        List<ListValue<CaseworkerCICDocumentUpload>> uploadedRecordings = caseData.getListing().getSummary().getRecFileUpload();
+        if (uploadedRecordings != null) {
+            if (uploadedRecordings.isEmpty()) {
+                return List.of();
+            }
+            return updateUploadedDocumentCategory(uploadedRecordings, false);
+        }
+
+        List<ListValue<CaseworkerCICDocument>> currentRecordings = caseData.getListing().getSummary().getRecFile();
+        if (currentRecordings != null) {
+            return currentRecordings;
+        }
+
+        return existingRecordings;
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,

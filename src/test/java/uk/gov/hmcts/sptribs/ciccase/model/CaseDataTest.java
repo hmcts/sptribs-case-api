@@ -1,15 +1,14 @@
 package uk.gov.hmcts.sptribs.ciccase.model;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import static java.time.format.DateTimeFormatter.ofPattern;
-import static java.util.Locale.UK;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class CaseDataTest {
@@ -19,22 +18,6 @@ class CaseDataTest {
         final CaseData caseData = CaseData.builder().build();
 
         assertThat(caseData.getCicCase().getApplicantFullName()).isNull();
-    }
-
-    @Test
-    void shouldGetHearingDate() {
-        final DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
-        final LocalDate now = LocalDate.now();
-        final Listing listing = Listing.builder().hearingStatus(HearingState.Listed).date(now).build();
-        final ListValue<Listing> listingListValue = new ListValue<>();
-        listingListValue.setValue(listing);
-        final CaseData caseData = CaseData.builder()
-            .hearingList(List.of(listingListValue))
-            .build();
-
-        final String result = caseData.getFirstHearingDate();
-
-        assertThat(result).isEqualTo(dateFormatter.format(now));
     }
 
     @Test
@@ -72,5 +55,46 @@ class CaseDataTest {
         //Then
         assertThat(result).isNotNull();
         assertThat(result.getDate()).isEqualTo(now);
+    }
+
+    @Test
+    void shouldIgnoreLegacyFirstHearingDateInCaseData() throws Exception {
+        final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
+        final CaseData caseData = objectMapper.readValue("""
+            {"firstHearingDate": "05 Feb 2024"}
+            """, CaseData.class);
+
+        final JsonNode json = objectMapper.valueToTree(caseData);
+
+        assertThat(json.has("firstHearingDate")).isFalse();
+    }
+
+    @Test
+    void shouldSerialiseSearchCriteriaUnderASingleKey() throws Exception {
+        final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
+        final CaseData caseData = objectMapper.readValue("""
+            {"SearchCriteria": {"SearchParties": [{"value": {"EmailAddress": "new@example.com"}}]}}
+            """, CaseData.class);
+
+        final JsonNode json = objectMapper.valueToTree(caseData);
+
+        assertThat(json.has("SearchCriteria")).isTrue();
+        assertThat(json.has("searchCriteria")).isFalse();
+    }
+
+    @Test
+    void shouldIgnoreLowercaseSearchCriteriaWrittenByEarlierVersions() throws Exception {
+        final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
+        final CaseData caseData = objectMapper.readValue("""
+            {
+              "SearchCriteria": {"SearchParties": [{"value": {"EmailAddress": "new@example.com"}}]},
+              "searchCriteria": {"SearchParties": [{"value": {"EmailAddress": "old@example.com"}}]}
+            }
+            """, CaseData.class);
+
+        final JsonNode json = objectMapper.valueToTree(caseData);
+
+        assertThat(json.at("/SearchCriteria/SearchParties/0/value/EmailAddress").asText())
+            .isEqualTo("new@example.com");
     }
 }

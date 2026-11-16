@@ -8,5 +8,9 @@
   },
   "cicCaseNotifyPartySubject": ["SubjectCIC"],
   "cicCaseFullName": "Testing subject",
-  "cicCaseEmail": "subject@hmcts.net"
+  "cicCaseEmail": "subject@hmcts.net",
+  "cicCaseCaseSubcategory": "other",
+  "cicCasePartiesCIC": [
+    "SubjectCIC"
+  ]
 }

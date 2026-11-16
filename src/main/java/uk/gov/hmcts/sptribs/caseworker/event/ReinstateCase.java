@@ -22,6 +22,7 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseReinstatedNotification;
 
 import java.util.ArrayList;
@@ -40,7 +41,11 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORK
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.convertToCaseworkerCICDocument;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.getAddedDocuments;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.getDocumentsWithUpdatedCategory;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.getRemovedDocuments;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateUploadedDocumentCategory;
+import static uk.gov.hmcts.sptribs.document.model.CaseDocumentType.DOCUMENT_MANAGEMENT;
 
 @Component
 @Slf4j
@@ -53,6 +58,9 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
 
     @Autowired
     private CaseReinstatedNotification caseReinstatedNotification;
+
+    @Autowired
+    private DocumentsService documentsService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -102,10 +110,19 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
         List<ListValue<CaseworkerCICDocument>> documents = updateUploadedDocumentCategory(uploadedDocuments, false);
         caseData.getCicCase().setReinstateDocumentsUpload(new ArrayList<>());
         caseData.getCicCase().setReinstateDocuments(documents);
+        List<ListValue<CaseworkerCICDocument>> existingDocuments = beforeDetails.getData() == null
+            ? List.of()
+            : beforeDetails.getData().getCicCase().getReinstateDocuments();
+        List<String> errors = new ArrayList<>(documentsService.saveDocuments(
+            details.getId(), getAddedDocuments(documents, existingDocuments), DOCUMENT_MANAGEMENT));
+        errors.addAll(documentsService.updateDocumentCategories(
+            getDocumentsWithUpdatedCategory(documents, existingDocuments)));
+        errors.addAll(documentsService.removeDocuments(getRemovedDocuments(existingDocuments, documents)));
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(CaseManagement)
+            .errors(errors)
             .build();
     }
 
