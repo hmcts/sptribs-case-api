@@ -138,10 +138,10 @@ public final class MessageUtil {
 
         String message = notificationMessage.isEmpty()
             ? format("# %s", header)
-            : format("# %s\n## %s", header, notificationMessage);
+            : format("# %s%n## %s", header, notificationMessage);
 
         if (StringUtils.hasText(footer)) {
-            message = message + format("\n## %s", footer);
+            message = message + format("%n## %s", footer);
         }
         return message;
     }

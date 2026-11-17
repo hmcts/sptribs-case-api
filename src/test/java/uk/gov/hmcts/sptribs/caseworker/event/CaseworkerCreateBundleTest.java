@@ -68,6 +68,7 @@ import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.APPLICANT;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.REPRESENTATIVE;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.RESPONDENT;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBJECT;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
@@ -1234,28 +1235,35 @@ class CaseworkerCreateBundleTest {
         assertThat(response.getConfirmationHeader())
             .isEqualTo("# Bundle created. \n## A notification has been sent to: Representative, Respondent");
     }
-    //NEED TO UPDATE THESE TESTS
-    //    @Test
-    //    void shouldConfirmBundleWhenNoNotificationWasSent() {
-    //        CaseData caseData = caseData();
-    //        when(bundleCreatedNotification.dispatch(caseData, "1234-5678-3456"))
-    //            .thenReturn(new BundleCreatedNotification.DispatchResult(Set.of(), List.of()));
-    //
-    //        assertThat(submitBundle(caseData).getConfirmationHeader()).isEqualTo("# Bundle created.");
-    //    }
-    //
-    //    @Test
-    //    void shouldReportFailedRecipients() {
-    //        CaseData caseData = caseData();
-    //        when(bundleCreatedNotification.dispatch(caseData, "1234-5678-3456"))
-    //            .thenReturn(new BundleCreatedNotification.DispatchResult(Set.of(NotificationParties.APPLICANT),
-    //                List.of(NotificationParties.SUBJECT, NotificationParties.REPRESENTATIVE)));
-    //
-    //        assertThat(submitBundle(caseData).getConfirmationHeader()).isEqualTo("""
-    //            # Bundle creation notification failed\s
-    //            ## A notification could not be sent to: Subject, Representative\s
-    //            ## Please resend the notification.""");
-    //    }
+
+    @Test
+    void shouldConfirmBundleWhenNoNotificationWasSent() {
+        CaseData caseData = caseData();
+
+        SubmittedCallbackResponse response = submitBundle(caseData);
+        assertThat(response.getConfirmationHeader()).isEqualTo("# Bundle creation notification failed "
+             + "\n## No notification recipients found "
+            + "\n## Please resend the notification.");
+    }
+
+    @Test
+    void shouldReportFailedRecipients() {
+        CaseData caseData = caseData();
+        doAnswer(invocation -> {
+            NotificationContext context = invocation.getArgument(0);
+            if (context.getNotification() == bundleCreatedNotification) {
+                context.getErrors().add(REPRESENTATIVE);
+                context.getErrors().add(SUBJECT);
+            }
+            return null;
+        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
+        SubmittedCallbackResponse response = submitBundle(caseData);
+
+        assertThat(response.getConfirmationHeader()).isEqualTo("""
+            # Bundle creation notification failed\s
+            ## A notification could not be sent to: Representative, Subject\s
+            ## Please resend the notification.""");
+    }
 
     private SubmittedCallbackResponse submitBundle(CaseData caseData) {
         return submitBundle(caseData, State.CaseManagement);

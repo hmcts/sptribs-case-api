@@ -195,7 +195,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
 
         notificationDispatcher.sendToCorrespondenceParties(notificationContext);
 
-        if (isEmpty(notificationContext.getErrors())) {
+        if (isEmpty(notificationContext.getErrors()) && !isEmpty(notificationContext.getSent())) {
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Bundle created. %n## %s",
                     generateSimpleMessageFromSentList(notificationContext.getSent())))

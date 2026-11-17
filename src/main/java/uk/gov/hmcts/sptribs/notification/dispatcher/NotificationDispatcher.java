@@ -29,7 +29,9 @@ public class NotificationDispatcher {
                 notificationPartiesConsumerMap.get(party).accept(notificationContext);
                 notificationContext.getSent().add(party.getLabel());
             } catch (Exception e) {
-                log.error("Error when attempting to send notification to {}.", party.getLabel());
+                log.error("Error when attempting to send {} to {}.",
+                    notificationContext.getNotification().getClass().getName(),
+                    party.getLabel());
                 notificationContext.getErrors().add(party.getLabel());
             }
         });
