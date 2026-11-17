@@ -24,6 +24,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -40,6 +41,7 @@ import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.DecisionIssuedNotification;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -50,6 +52,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -60,6 +63,9 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.REPRESENTATIVE;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.RESPONDENT;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBJECT;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_HYPHENATED;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
@@ -292,6 +298,83 @@ class CaseworkerIssueDecisionTest {
 
         //Then
         Assertions.assertEquals(DocmosisTemplateConstants.ELIGIBILITY_MAIN_CONTENT, response.getData().getDecisionMainContent());
+    }
+
+    @Test
+    void shouldShowErrorMessageForFailedNotificationsWhenSubmitted() {
+        //Given
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseData caseData = caseData();
+        final CaseIssueDecision decision = new CaseIssueDecision();
+        final CicCase cicCase = CicCase.builder()
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
+            .build();
+        caseData.setCicCase(cicCase);
+        caseData.setCaseIssueDecision(decision);
+        caseData.setHyphenatedCaseRef("1234-5678-90");
+        details.setData(caseData);
+
+        //When
+
+        doAnswer(invocation -> {
+            NotificationContext context = invocation.getArgument(0);
+            if (context.getNotification() == decisionIssuedNotification) {
+                context.getErrors().add(REPRESENTATIVE);
+                context.getErrors().add(RESPONDENT);
+            }
+            return null;
+        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
+        SubmittedCallbackResponse response = issueDecision.submitted(details, beforeDetails);
+
+        //Then
+        assertThat(response.getConfirmationHeader()).contains("""
+            # Issue a decision notification failed\s
+            ## A notification could not be sent to: Representative, Respondent\s
+            ## Please resend the notification.\
+            """);
+    }
+
+    @Test
+    void shouldShowPartialMessageForBothSentAndFailedNotificationsWhenSubmitted() {
+        //Given
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseData caseData = caseData();
+        final CaseIssueDecision decision = new CaseIssueDecision();
+        final CicCase cicCase = CicCase.builder()
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
+            .build();
+        caseData.setCicCase(cicCase);
+        caseData.setCaseIssueDecision(decision);
+        caseData.setHyphenatedCaseRef("1234-5678-90");
+        details.setData(caseData);
+
+        //When
+
+        doAnswer(invocation -> {
+            NotificationContext context = invocation.getArgument(0);
+            if (context.getNotification() == decisionIssuedNotification) {
+                context.getErrors().add(REPRESENTATIVE);
+                context.getErrors().add(RESPONDENT);
+                context.getSent().add(SUBJECT);
+            }
+            return null;
+        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
+        SubmittedCallbackResponse response = issueDecision.submitted(details, beforeDetails);
+
+        //Then
+        assertThat(response.getConfirmationHeader()).contains("""
+            # Decision notice issued.\
+            \n## A notification has been sent to: Subject\
+            \n## A notification could not be sent to: Representative, Respondent\
+            \n## Please resend the notification.""");
     }
 
     @Test

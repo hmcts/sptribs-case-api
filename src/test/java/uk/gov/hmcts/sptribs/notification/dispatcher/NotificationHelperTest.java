@@ -2,6 +2,8 @@ package uk.gov.hmcts.sptribs.notification.dispatcher;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -16,6 +18,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
@@ -44,6 +47,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SPACE;
+import static uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory.MINOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.APPLICANT;
 import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.REPRESENTATIVE;
 import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.RESPONDENT;
@@ -708,6 +712,23 @@ public class NotificationHelperTest {
 
         assertThat(correspondenceParties).hasSize(2);
         assertThat(correspondenceParties).contains(APPLICANT, RESPONDENT);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = CaseSubcategory.class, names = {"FATAL", "MINOR"})
+    void shouldReturnBundleCorrespondencePartiesBasedOnPartiesOnCaseExcludingFatalOrMinor(CaseSubcategory caseSubcategory) {
+
+        final CicCase cicCase = CicCase.builder()
+            .partiesCIC(Set.of(PartiesCIC.SUBJECT))
+            .respondentEmail("test@test.com")
+            .email("subject@test.com")
+            .caseSubcategory(caseSubcategory)
+            .build();
+
+        Set<NotificationParties> correspondenceParties = getNotificationPartiesBundle(cicCase);
+
+        assertThat(correspondenceParties).hasSize(1);
+        assertThat(correspondenceParties).contains(RESPONDENT);
     }
 
     private DynamicList getDynamicList() {

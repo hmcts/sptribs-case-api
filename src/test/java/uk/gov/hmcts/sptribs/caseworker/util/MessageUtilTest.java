@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateCombinedNotificationMessageFromSentAndErrorLists;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessage;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASEWORKER_USER_EMAIL;
@@ -213,5 +214,20 @@ public class MessageUtilTest {
 
         assertThat(result)
             .isEqualTo("A notification has been sent to: Respondent");
+    }
+
+    @Test
+    void shouldGenerateCombinedMessageWithSentAndErrors() {
+        final String result = generateCombinedNotificationMessageFromSentAndErrorLists(
+            List.of("Applicant", "Subject"),
+            List.of("Representative", "Respondent"),
+            "test event"
+        );
+
+        assertThat(result).isEqualTo("""
+            # test event\
+            \n## A notification has been sent to: Applicant, Subject\
+            \n## A notification could not be sent to: Representative, Respondent\
+            \n## Please resend the notification.""");
     }
 }
