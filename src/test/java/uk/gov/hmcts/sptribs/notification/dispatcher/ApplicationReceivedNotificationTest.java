@@ -10,16 +10,22 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
+import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -28,6 +34,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.APPLICANT;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.REPRESENTATIVE;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.SUBJECT;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DASHBOARD_KEY;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 
@@ -148,6 +157,27 @@ public class ApplicationReceivedNotificationTest {
             applicationReceivedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
             verify(notificationService, never()).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
+        }
+
+        @Test
+        void shouldReturnAllPartiesOnCase() {
+            CicCase cicCase = CicCase.builder()
+                .subjectCIC(Set.of(SubjectCIC.SUBJECT))
+                .applicantCIC(Set.of(ApplicantCIC.APPLICANT_CIC))
+                .representativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE))
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .cicCase(cicCase)
+                .build();
+
+            NotificationContextRequest request = NotificationContextRequest.builder()
+                .caseData(caseData)
+                .build();
+
+            Set<NotificationParties> correspondenceParties = applicationReceivedNotification.buildCorrespondenceParties(request);
+
+            assertThat(correspondenceParties).contains(SUBJECT, APPLICANT, REPRESENTATIVE);
         }
     }
 
