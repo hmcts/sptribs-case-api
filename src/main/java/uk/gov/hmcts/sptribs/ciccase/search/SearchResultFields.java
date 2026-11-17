@@ -31,7 +31,6 @@ public class SearchResultFields implements CCDConfig<CaseData, State, UserRole> 
         SearchField.<UserRole>builder().id(SUBJECT_NAME).label("Subject Name").build(),
         SearchField.<UserRole>builder().id(CASE_STATE).label("Case Status").build(),
         SearchField.<UserRole>builder().id(CASE_REGION).label("Case Region").build(),
-        SearchField.<UserRole>builder().id(HEARING_TYPE).label("Hearing Type").build(),
         SearchField.<UserRole>builder().id(HEARING_DATE).label("Hearing Date").build(),
         SearchField.<UserRole>builder().id(APPLICANT_NAME).label("Applicant Name").build(),
         SearchField.<UserRole>builder().id(DUE_DATE).label("Due Date").build(),
