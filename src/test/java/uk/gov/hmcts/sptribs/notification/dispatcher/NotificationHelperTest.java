@@ -759,13 +759,15 @@ public class NotificationHelperTest {
 
     @ParameterizedTest
     @NullAndEmptySource
-    void shouldNotAddApplicantWhenApplicantEmailIsNullOrEmpty(String email) { final CicCase cicCase = CicCase.builder()
-        .partiesCIC(Set.of(PartiesCIC.APPLICANT))
-        .applicantEmailAddress(email)
-        .build();
+    void shouldNotAddApplicantWhenApplicantEmailIsNullOrEmpty(String email) {
+        final CicCase cicCase = CicCase.builder()
+            .partiesCIC(Set.of(PartiesCIC.APPLICANT))
+            .applicantEmailAddress(email)
+            .build();
 
         Set<NotificationParties> correspondenceParties = getNotificationPartiesBundle(cicCase);
-        assertThat(correspondenceParties).doesNotContain(APPLICANT);}
+        assertThat(correspondenceParties).doesNotContain(APPLICANT);
+    }
 
     private DynamicList getDynamicList() {
         final DynamicListElement listItem = DynamicListElement
