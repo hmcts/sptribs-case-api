@@ -47,7 +47,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SPACE;
-import static uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory.MINOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.APPLICANT;
 import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.REPRESENTATIVE;
 import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.RESPONDENT;
