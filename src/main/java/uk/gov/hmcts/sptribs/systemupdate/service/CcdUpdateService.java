@@ -144,7 +144,6 @@ public class CcdUpdateService {
         }
     }
 
-
     private void startAndSubmitEventForCaseworkers(final String eventId,
                                                    final String serviceAuth,
                                                    final String caseId,

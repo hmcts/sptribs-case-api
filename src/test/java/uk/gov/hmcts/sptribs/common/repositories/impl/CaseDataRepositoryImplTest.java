@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.common.repositories.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -17,8 +18,11 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Expired;
 
 @ExtendWith(MockitoExtension.class)
 class CaseDataRepositoryImplTest {
@@ -40,6 +44,11 @@ class CaseDataRepositoryImplTest {
         boolean result = repository.checkCaseExists("123");
 
         assertThat(result).isTrue();
+        verify(jdbcTemplate).queryForObject(
+            argThat(sql -> sql.contains("c.state <> :expiredState")),
+            ArgumentMatchers.<Map<String, ?>>argThat(params -> DSS_Expired.getName().equals(params.get("expiredState"))
+                && !params.containsKey("invalidStates")),
+            eq(Integer.class));
     }
 
     @Test
