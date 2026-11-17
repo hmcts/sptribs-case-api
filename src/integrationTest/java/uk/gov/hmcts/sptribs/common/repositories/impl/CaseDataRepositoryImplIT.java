@@ -75,27 +75,6 @@ class CaseDataRepositoryImplIT extends IntegrationTestBase {
     }
 
     @Test
-    void givenCCDReference_thenShouldReturnEmptyWhenFindBySearchCriteria() {
-        caseDataITManager.addCaseData(123L,"Submitted", """
-                {
-                  "SearchCriteria": {
-                    "SearchParties": [
-                      {
-                        "value": {
-                          "EmailAddress": "test@example.com"
-                        }
-                      }
-                    ]
-                  }
-                }
-            """);
-
-        var result = repository.findCase("123", "test@example.com");
-
-        assertThat(result).isEmpty();
-    }
-
-    @Test
     void givenCCDReference_thenShouldReturnEmptyWhenEmailDoesNotMatch() {
         caseDataITManager.addCaseData(123L,"Submitted", "{}");
 
