@@ -13,6 +13,7 @@ import uk.gov.hmcts.sptribs.testutil.RoleAssignmentService;
 import uk.gov.hmcts.sptribs.testutil.TaskManagementService;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -50,7 +51,7 @@ public class WAProcessTimeExtensionDirectionsReturnedFT extends FunctionalTestSu
 
     @Test
     @EnabledIfEnvironmentVariable(named = "WA_FUNCTIONAL_TESTS_ENABLED", matches = "true")
-    void shouldInitiateProcessTimeExtensionDirectionsReturnedTask() throws IOException {
+    void shouldInitiateProcessTimeExtensionDirectionsReturnedTask() throws IOException, SQLException {
         final CaseDetails caseDetails = createAndSubmitCitizenCaseAndGetCaseDetails();
         final long id = caseDetails.getId();
         final String newCaseId = String.valueOf(id);
@@ -63,7 +64,7 @@ public class WAProcessTimeExtensionDirectionsReturnedFT extends FunctionalTestSu
 
         caseData.put("cicCaseReferralTypeForWA", "Time extension request");
         caseData.putAll(caseData(CASEWORKER_CREATE_DRAFT_ORDER_DATA));
-        checkAndUpdateDraftOrderDocument(caseData);
+        checkAndUpdateDraftOrderDocument(caseData, id);
         ccdCaseCreator.createInitialStartEventAndSubmitAdminEvent(
             CASEWORKER_CREATE_DRAFT_ORDER, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 

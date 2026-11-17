@@ -3,7 +3,6 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -15,13 +14,14 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionMainContent;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionNotice;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionPreviewTemplate;
-import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionSelectRecipients;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionSelectTemplate;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionUpload;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
+import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -73,8 +73,6 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
 
     private static final CcdPageConfiguration issueFinalDecisionPreviewTemplate = new IssueFinalDecisionPreviewTemplate();
 
-    private static final CcdPageConfiguration issueFinalDecisionSelectRecipients = new IssueFinalDecisionSelectRecipients();
-
     private static final CcdPageConfiguration issueFinalDecisionMainContent = new IssueFinalDecisionMainContent();
 
     private static final CcdPageConfiguration issueFinalDecisionUpload = new IssueFinalDecisionUpload();
@@ -115,7 +113,6 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
         issueFinalDecisionUpload.addTo(pageBuilder);
         issueFinalDecisionFooter.addTo(pageBuilder);
         issueFinalDecisionPreviewTemplate.addTo(pageBuilder);
-        issueFinalDecisionSelectRecipients.addTo(pageBuilder);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
@@ -160,35 +157,40 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
 
         Document finalDecisionGuidance = getFinalDecisionGuidanceDocument(details.getId());
         data.getCaseIssueFinalDecision().setFinalDecisionGuidance(finalDecisionGuidance);
+
+        final StringBuilder messageLine2 = new StringBuilder(100);
+
         try {
-            final StringBuilder messageLine2 = new StringBuilder(100);
-            messageLine2.append(" A notification will be sent  to: ");
-            if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
+            messageLine2.append("A notification has been sent to: ");
+
+            if (!cicCase.getCaseSubcategory().equals(CaseSubcategory.FATAL)
+                && !cicCase.getCaseSubcategory().equals(CaseSubcategory.MINOR)) {
                 messageLine2.append("Subject, ");
                 caseFinalDecisionIssuedNotification.sendToSubject(details.getData(), caseNumber);
             }
-            if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
+
+            messageLine2.append("Respondent, ");
+            caseFinalDecisionIssuedNotification.sendToRespondent(details.getData(), caseNumber);
+
+            if (data.getCicCase().getPartiesCIC().contains(PartiesCIC.REPRESENTATIVE)) {
                 messageLine2.append("Representative, ");
                 caseFinalDecisionIssuedNotification.sendToRepresentative(details.getData(), caseNumber);
             }
-            if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
-                messageLine2.append("Respondent, ");
-                caseFinalDecisionIssuedNotification.sendToRespondent(details.getData(), caseNumber);
-            }
-            if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyApplicant())) {
-                messageLine2.append("Applicant ");
+
+            if (data.getCicCase().getPartiesCIC().contains(PartiesCIC.APPLICANT)) {
+                messageLine2.append("Applicant, ");
                 caseFinalDecisionIssuedNotification.sendToApplicant(details.getData(), caseNumber);
             }
+
+            messageLine2.delete(messageLine2.length() - 2, messageLine2.length());
         } catch (Exception notificationException) {
             log.error("Issue final decision notification failed with exception : {}", notificationException.getMessage());
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Issue final decision notification failed %n## Please resend the notification"))
                 .build();
         }
-
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Final decision notice issued %n## %s",
-                MessageUtil.generateSimpleMessage(cicCase)))
+            .confirmationHeader(MessageUtil.generateSimpleMessage("Final decision notice issued", messageLine2.toString()))
             .build();
     }
 

@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.caseworker;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.json.JSONObject;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
@@ -32,6 +33,7 @@ public class CaseworkerCreateTestCaseFT extends FunctionalTestSuite {
 
     private static final String CASEWORKER_CREATE_TEST_CASE_EVENT_ID = "create-test-case";
 
+    @Disabled(value = "Disabled due to CDAM flakiness - document upload hitting DM Store Read Timeout")
     @Test
     public void shouldSuccessfullySubmitWhenAboutToSubmitCallbackIsTriggered() throws Exception {
         JSONObject emptyJsonObject = new JSONObject();

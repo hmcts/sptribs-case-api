@@ -55,6 +55,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.GlobalSearchAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.NonRespondentAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.SuperUserOnlyAccess;
+import uk.gov.hmcts.sptribs.document.bundling.model.AudioVideoEvidenceBundleDocument;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleIdAndTimestamp;
 import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
@@ -63,14 +64,11 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.notification.model.Correspondence;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
-import static java.time.format.DateTimeFormatter.ofPattern;
-import static java.util.Locale.UK;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
@@ -113,9 +111,8 @@ public class CaseData {
         label = "Search Criteria",
         access = {GlobalSearchAccess.class}
     )
-    @SuppressWarnings("MemberName") // Field name is case-sensitive in CCD
     @JsonProperty("SearchCriteria")
-    private SearchCriteria SearchCriteria;
+    private SearchCriteria searchCriteria;
 
     @CCD(
         label = "Case Location",
@@ -255,6 +252,12 @@ public class CaseData {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private List<MultiBundleConfig> multiBundleConfiguration;
+
+    @CCD(
+        label = "Audio/video evidence bundle documents",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private AudioVideoEvidenceBundleDocument audioVideoEvidenceBundleDocument;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -523,9 +526,6 @@ public class CaseData {
     private YesOrNo hasDssNotificationSent;
 
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private String firstHearingDate;
-
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private String hearingVenueName;
 
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
@@ -572,17 +572,6 @@ public class CaseData {
     )
     @External
     private Long reindexCasesMatchingCount;
-
-    public String getFirstHearingDate() {
-
-        Listing nextListing = getNextListedHearing();
-        DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
-        if (!ObjectUtils.isEmpty(nextListing) && !ObjectUtils.isEmpty(nextListing.getDate())) {
-            return dateFormatter.format(nextListing.getDate());
-        }
-        return "";
-
-    }
 
     @JsonIgnore
     public boolean isBundleOrderEnabled() {

@@ -10,6 +10,7 @@ import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
@@ -19,9 +20,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference.WELSH;
 import static uk.gov.hmcts.sptribs.testutil.CaseDataUtil.caseData;
+import static uk.gov.hmcts.sptribs.testutil.CaseDataUtil.caseDataFromString;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
+import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.resourceAsString;
 
 @SpringBootTest
 public class CicSubmitCaseEventFT extends FunctionalTestSuite {
@@ -40,14 +43,20 @@ public class CicSubmitCaseEventFT extends FunctionalTestSuite {
 
     @Test
     public void shouldSuccessfullySubmitCaseWhenAboutToSubmitCallbackIsTriggered() throws Exception {
-        final Map<String, Object> caseData = caseData(REQUEST);
+        final Map<String, String> documentIds = Map.of(
+            "328c674f-59c3-418a-b76b-78f2cc52d21a", UUID.randomUUID().toString(),
+            "328c674f-59c3-418a-b76b-78f2cc52d21b", UUID.randomUUID().toString(),
+            "328c674f-59c3-418a-b76b-78f2cc52d21c", UUID.randomUUID().toString()
+        );
+        final Map<String, Object> caseData = caseDataFromString(
+            replaceDocumentIds(resourceAsString(REQUEST), documentIds));
         final Response response = triggerCallback(caseData, CITIZEN_SUBMIT_CASE_EVENT_ID, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .when(IGNORING_EXTRA_FIELDS)
             .when(IGNORING_ARRAY_ORDER)
-            .isEqualTo(json(expectedResponse(RESPONSE)));
+            .isEqualTo(json(replaceDocumentIds(expectedResponse(RESPONSE), documentIds)));
 
         long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
 
@@ -65,6 +74,13 @@ public class CicSubmitCaseEventFT extends FunctionalTestSuite {
         assertThat(firstDocumentEntity.getDocumentUrl()).isNotNull();
         assertThat(firstDocumentEntity.getDocumentFilename()).isNotNull();
         assertThat(firstDocumentEntity.getDocumentBinaryUrl()).isNotNull();
+    }
+
+    private static String replaceDocumentIds(String content, Map<String, String> documentIds) {
+        for (Map.Entry<String, String> documentId : documentIds.entrySet()) {
+            content = content.replace(documentId.getKey(), documentId.getValue());
+        }
+        return content;
     }
 
     @Test

@@ -1,12 +1,12 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import org.jspecify.annotations.NonNull;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
@@ -18,15 +18,17 @@ import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
-import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
-import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.document.bundling.AudioVideoEvidenceBundleException;
+import uk.gov.hmcts.sptribs.document.bundling.AudioVideoEvidenceBundleService;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundlingService;
+import uk.gov.hmcts.sptribs.document.bundling.model.AudioVideoEvidenceBundleDocument;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleCallback;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleIdAndTimestamp;
@@ -42,15 +44,16 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -83,7 +86,15 @@ class CaseworkerCreateBundleTest {
     private BundlingService bundlingService;
 
     @Mock
+    private AudioVideoEvidenceBundleService audioVideoEvidenceBundleService;
+
+    @Mock
     private Clock clock;
+
+    @BeforeEach
+    void setUp() {
+        caseworkerCreateBundle.setCitizenDashboardEnabled(true);
+    }
 
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
@@ -112,9 +123,19 @@ class CaseworkerCreateBundleTest {
     }
 
     @Test
-    void shouldNotAddSubmittedIfCitizenDashboardIsDisabled() {
-        ReflectionTestUtils.setField(caseworkerCreateBundle, "citizenDashboardEnabled", false);
+    void shouldAddSubmittedCallbackWhenCitizenDashboardEnabled() {
+        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
+        caseworkerCreateBundle.configure(configBuilder);
+
+        assertThat(getEventsFrom(configBuilder).values())
+            .extracting(Event::getSubmittedCallback)
+            .doesNotContainNull();
+    }
+
+    @Test
+    void shouldNotAddSubmittedCallbackWhenCitizenDashboardDisabled() {
+        caseworkerCreateBundle.setCitizenDashboardEnabled(false);
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         caseworkerCreateBundle.configure(configBuilder);
@@ -122,18 +143,8 @@ class CaseworkerCreateBundleTest {
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getSubmittedCallback)
             .containsOnlyNulls();
-    }
-
-    @Test
-    void shouldAddSubmittedIfCitizenDashboardIsEnabled() {
-        ReflectionTestUtils.setField(caseworkerCreateBundle, "citizenDashboardEnabled", true);
-
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
-
-        caseworkerCreateBundle.configure(configBuilder);
-
         assertThat(getEventsFrom(configBuilder).values())
-            .extracting(Event::getSubmittedCallback)
+            .extracting(Event::getAboutToSubmitCallback)
             .doesNotContainNull();
     }
 
@@ -151,9 +162,19 @@ class CaseworkerCreateBundleTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         final Bundle bundle = Bundle.builder().build();
+        AudioVideoEvidenceBundleDocument audioVideoBundleDocument = AudioVideoEvidenceBundleDocument.builder()
+            .documentLink(Document.builder()
+                .filename("audio-video-evidence-123.pdf")
+                .url("http://dm-store/documents/generated")
+                .binaryUrl("http://dm-store/documents/generated/binary")
+                .build())
+            .date(LocalDate.of(2026, 8, 5))
+            .build();
 
         when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
         when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
+        when(audioVideoEvidenceBundleService.createAudioVideoEvidenceBundleDocument(TEST_CASE_ID))
+            .thenReturn(Optional.of(audioVideoBundleDocument));
 
         when(bundlingService.createBundle(any(BundleCallback.class), eq(TEST_CASE_ID))).thenAnswer(callback -> {
             final BundleCallback callbackAtMockTime = (BundleCallback) callback.getArguments()[0];
@@ -163,6 +184,7 @@ class CaseworkerCreateBundleTest {
             assertThat(dataAtMockTime.getCaseDocuments().getFirst().getValue()).isEqualTo(cicDocuments.getFirst().getValue());
             assertThat(dataAtMockTime.getBundleConfiguration()).isEqualTo(MULTI_BUNDLE_CONFIG);
             assertThat(dataAtMockTime.getMultiBundleConfiguration()).isEqualTo(List.of(MULTI_BUNDLE_CONFIG));
+            assertThat(dataAtMockTime.getAudioVideoEvidenceBundleDocument()).isEqualTo(audioVideoBundleDocument);
             return List.of(bundle);
         });
 
@@ -172,6 +194,7 @@ class CaseworkerCreateBundleTest {
         verify(bundlingService).getMultiBundleConfig();
         verify(bundlingService).getMultiBundleConfigs();
         verify(bundlingService).buildBundleListValues(anyList());
+        verify(audioVideoEvidenceBundleService).createAudioVideoEvidenceBundleDocument(TEST_CASE_ID);
 
         final CaseData responseData = response.getData();
         assertThat(responseData)
@@ -183,100 +206,134 @@ class CaseworkerCreateBundleTest {
         //i.e. not in their respective child objects as well (CicCase.applicantDocumentsUploaded)
         assertThat(responseData.getCaseDocuments()).isNull();
         assertThat(responseData.getMultiBundleConfiguration()).isNull();
+        assertThat(responseData.getAudioVideoEvidenceBundleDocument()).isNull();
     }
 
     @Test
-    void shouldSuccessfullySendNotificationToRepresentative() {
-
+    void shouldProceedWhenAudioVideoEvidenceIsEmpty() {
         final CaseData caseData = caseData();
         final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList();
         final CicCase cicCase = CicCase.builder().build();
         cicCase.setApplicantDocumentsUploaded(cicDocuments);
         caseData.setCicCase(cicCase);
-        caseData.setHyphenatedCaseRef("1234-5678-3456");
-        cicCase.setRepresentativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE));
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        doAnswer(invocation -> {
-            cicCase.setResNotificationResponse(NotificationResponse.builder().build());
-            return null;
-        }).when(bundleCreatedNotification).sendToRespondent(any(), any());
+        final Bundle bundle = Bundle.builder().build();
+        AudioVideoEvidenceBundleDocument staleAudioVideoBundleDocument = AudioVideoEvidenceBundleDocument.builder()
+            .documentLink(Document.builder().filename("stale-audio-video-evidence.pdf").build())
+            .build();
+        caseData.setAudioVideoEvidenceBundleDocument(staleAudioVideoBundleDocument);
 
-        doAnswer(invocation -> {
-            cicCase.setRepNotificationResponse(NotificationResponse.builder().build());
-            return null;
-        }).when(bundleCreatedNotification).sendToRepresentative((CaseData) any(), any());
+        when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
+        when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
+        when(audioVideoEvidenceBundleService.createAudioVideoEvidenceBundleDocument(TEST_CASE_ID))
+            .thenReturn(Optional.empty());
+        when(bundlingService.createBundle(any(BundleCallback.class), eq(TEST_CASE_ID))).thenAnswer(invocation -> {
+            BundleCallback callback = invocation.getArgument(0);
+            assertThat(callback.getCaseDetails().getData().getAudioVideoEvidenceBundleDocument()).isNull();
+            return List.of(bundle);
+        });
 
-        SubmittedCallbackResponse createBundleSubmittedResponse =
-            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
 
-        assertThat(createBundleSubmittedResponse.getConfirmationHeader())
-            .isEqualTo("# Bundle created. \n## A notification has been sent to: Representative, Respondent");
+        assertThat(response.getErrors()).isNull();
+        assertThat(response.getData().getCaseBundles()).isNotNull();
+        verify(bundlingService).createBundle(any(BundleCallback.class), eq(TEST_CASE_ID));
     }
 
     @Test
-    void shouldSuccessfullySendNotificationToApplicant() {
+    void shouldDeleteAudioVideoEvidenceDocumentWhenBundleCreationFails() {
+        final CaseData caseData = caseData();
+        final CicCase cicCase = CicCase.builder().build();
+        cicCase.setApplicantDocumentsUploaded(getCaseworkerCICDocumentList());
+        caseData.setCicCase(cicCase);
 
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+
+        Document generatedPdf = Document.builder()
+            .filename("audio-video-evidence-123.pdf")
+            .url("http://dm-store/documents/11111111-1111-1111-1111-111111111111")
+            .binaryUrl("http://dm-store/documents/11111111-1111-1111-1111-111111111111/binary")
+            .build();
+        AudioVideoEvidenceBundleDocument audioVideoBundleDocument = AudioVideoEvidenceBundleDocument.builder()
+            .documentLink(generatedPdf)
+            .build();
+
+        when(audioVideoEvidenceBundleService.createAudioVideoEvidenceBundleDocument(TEST_CASE_ID))
+            .thenReturn(Optional.of(audioVideoBundleDocument));
+        when(bundlingService.createBundle(any(BundleCallback.class), eq(TEST_CASE_ID))).thenReturn(null);
+        when(bundlingService.buildBundleListValues(any())).thenReturn(null);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+
+        assertThat(response.getData().getCaseBundles()).isNull();
+        verify(audioVideoEvidenceBundleService).deleteAudioVideoEvidenceBundleDocument(generatedPdf);
+    }
+
+    @Test
+    void shouldReturnCallbackErrorWhenAudioVideoEvidenceGenerationFails() {
         final CaseData caseData = caseData();
         final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList();
         final CicCase cicCase = CicCase.builder().build();
         cicCase.setApplicantDocumentsUploaded(cicDocuments);
         caseData.setCicCase(cicCase);
-        caseData.setHyphenatedCaseRef("1234-5678-3456");
-        cicCase.setApplicantCIC(Set.of(ApplicantCIC.APPLICANT_CIC));
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        doAnswer(invocation -> {
-            cicCase.setResNotificationResponse(NotificationResponse.builder().build());
-            return null;
-        }).when(bundleCreatedNotification).sendToRespondent(any(), any());
+        when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
+        when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
+        when(audioVideoEvidenceBundleService.createAudioVideoEvidenceBundleDocument(TEST_CASE_ID))
+            .thenThrow(new AudioVideoEvidenceBundleException(TEST_CASE_ID, new RuntimeException("upload failed")));
 
-        doAnswer(invocation -> {
-            cicCase.setAppNotificationResponse(NotificationResponse.builder().build());
-            return null;
-        }).when(bundleCreatedNotification).sendToApplicant(any(), any());
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
 
-        SubmittedCallbackResponse createBundleSubmittedResponse =
-            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
-
-        assertThat(createBundleSubmittedResponse.getConfirmationHeader())
-            .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent, Applicant");
+        assertThat(response.getErrors())
+            .containsExactly("The audio/video evidence document could not be created. No bundle has been created. Please try again.");
+        assertThat(response.getData().getCaseBundles()).isEmpty();
+        assertThat(response.getData().getMultiBundleConfiguration()).isNull();
+        assertThat(response.getData().getCaseDocuments()).isNull();
+        assertThat(response.getData().getFurtherCaseDocuments()).isNull();
+        assertThat(response.getData().getAudioVideoEvidenceBundleDocument()).isNull();
+        verify(bundlingService, never()).createBundle(any(BundleCallback.class), eq(TEST_CASE_ID));
     }
 
     @Test
-    void shouldReturnFailedToSendNotificationOnError() {
-
+    void shouldNotSilentlyHandleUnexpectedAudioVideoException() {
         final CaseData caseData = caseData();
         final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList();
         final CicCase cicCase = CicCase.builder().build();
         cicCase.setApplicantDocumentsUploaded(cicDocuments);
         caseData.setCicCase(cicCase);
-        cicCase.setRepresentativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE));
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        doThrow(new RuntimeException("Notification Failed")).when(bundleCreatedNotification).sendToRespondent(any(), any());
-        doThrow(new RuntimeException("Notification Failed")).when(bundleCreatedNotification).sendToRepresentative((CaseData) any(), any());
+        when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
+        when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
+        when(audioVideoEvidenceBundleService.createAudioVideoEvidenceBundleDocument(TEST_CASE_ID))
+            .thenThrow(new RuntimeException("unexpected"));
 
-        SubmittedCallbackResponse createBundleSubmittedResponse =
-            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+        final CaseDetails<CaseData, State> callbackCaseDetails = CaseDetails.<CaseData, State>builder().build();
+        assertThatThrownBy(() -> caseworkerCreateBundle.aboutToSubmit(
+            updatedCaseDetails,
+            callbackCaseDetails
+        )).isInstanceOf(RuntimeException.class).hasMessage("unexpected");
 
-        assertThat(createBundleSubmittedResponse.getConfirmationHeader())
-            .isEqualTo("""
-                # Bundle creation notification failed\s
-                ## A notification could not be sent to: Respondent, Representative\s
-                ## Please resend the notification.""");
+        verify(bundlingService, never()).createBundle(any(BundleCallback.class), eq(TEST_CASE_ID));
     }
 
     @Test
@@ -334,6 +391,7 @@ class CaseworkerCreateBundleTest {
             .isEqualTo(caseDetails.getData());
         assertThat(responseData.getCaseBundles()).isNotNull();
         assertThat(responseData.getCaseDocuments()).isNull();
+        assertThat(responseData.getFurtherCaseDocuments()).isNull();
         assertThat(responseData.getMultiBundleConfiguration()).isNull();
     }
 
@@ -362,7 +420,7 @@ class CaseworkerCreateBundleTest {
 
         cicCase.setApplicantDocumentsUploaded(allApplicantDocs);
 
-        Document document = Document.builder().url("testUrl").filename("test").build();
+        Document document = Document.builder().url("testUrl").filename("test.pdf").build();
         DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder().templateGeneratedDocument(document).build();
         Order order = Order.builder().draftOrder(draftOrderCIC).orderSentDate(LocalDate.of(2026, 5, 1)).build();
         cicCase.setOrderList(List.of(ListValue.<Order>builder().value(order).build()));
@@ -415,6 +473,7 @@ class CaseworkerCreateBundleTest {
             .isEqualTo(caseDetails.getData());
         assertThat(responseData.getCaseBundles()).isNotNull();
         assertThat(responseData.getCaseDocuments()).isNull();
+        assertThat(responseData.getFurtherCaseDocuments()).isNull();
         assertThat(responseData.getMultiBundleConfiguration()).isNull();
     }
 
@@ -482,6 +541,7 @@ class CaseworkerCreateBundleTest {
             .isEqualTo(updatedCaseDetails.getData());
         assertThat(responseData.getCaseBundles()).isNotNull();
         assertThat(responseData.getCaseDocuments()).isNull();
+        assertThat(responseData.getFurtherCaseDocuments()).isNull();
         assertThat(responseData.getMultiBundleConfiguration()).isNull();
     }
 
@@ -1071,24 +1131,60 @@ class CaseworkerCreateBundleTest {
     @Test
     void shouldNotNotifyIfCaseClosed() {
         final CaseData caseData = caseData();
-        final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList();
-        final CicCase cicCase = CicCase.builder().build();
-        cicCase.setApplicantDocumentsUploaded(cicDocuments);
-        caseData.setCicCase(cicCase);
-        caseData.setHyphenatedCaseRef("1234-5678-3456");
-        cicCase.setRepresentativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE));
-
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        updatedCaseDetails.setState(CaseClosed);
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-
-        SubmittedCallbackResponse createBundleSubmittedResponse =
-            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
-
-        assertThat(createBundleSubmittedResponse.getConfirmationHeader())
-            .isEqualTo("# Bundle created.");
+        assertThat(submitBundle(caseData, CaseClosed).getConfirmationHeader()).isEqualTo("# Bundle created.");
         verifyNoInteractions(bundleCreatedNotification);
+    }
+
+    @Test
+    void shouldShowOnlyRecipientsSentInThisCallback() {
+        CaseData caseData = caseData();
+        caseData.setCicCase(CicCase.builder().build());
+        caseData.getCicCase().setSubjectNotifyList(NotificationResponse.builder().build());
+        when(bundleCreatedNotification.dispatch(caseData, "1234-5678-3456"))
+            .thenReturn(new BundleCreatedNotification.DispatchResult(
+                Set.of(NotificationParties.RESPONDENT, NotificationParties.APPLICANT), List.of()));
+
+        SubmittedCallbackResponse response = submitBundle(caseData);
+
+        assertThat(response.getConfirmationHeader())
+            .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent, Applicant");
+        verify(bundleCreatedNotification).dispatch(caseData, "1234-5678-3456");
+    }
+
+    @Test
+    void shouldConfirmBundleWhenNoNotificationWasSent() {
+        CaseData caseData = caseData();
+        when(bundleCreatedNotification.dispatch(caseData, "1234-5678-3456"))
+            .thenReturn(new BundleCreatedNotification.DispatchResult(Set.of(), List.of()));
+
+        assertThat(submitBundle(caseData).getConfirmationHeader()).isEqualTo("# Bundle created.");
+    }
+
+    @Test
+    void shouldReportFailedRecipients() {
+        CaseData caseData = caseData();
+        when(bundleCreatedNotification.dispatch(caseData, "1234-5678-3456"))
+            .thenReturn(new BundleCreatedNotification.DispatchResult(Set.of(NotificationParties.APPLICANT),
+                List.of(NotificationParties.SUBJECT, NotificationParties.REPRESENTATIVE)));
+
+        assertThat(submitBundle(caseData).getConfirmationHeader()).isEqualTo("""
+            # Bundle creation notification failed\s
+            ## A notification could not be sent to: Subject, Representative\s
+            ## Please resend the notification.""");
+    }
+
+    private SubmittedCallbackResponse submitBundle(CaseData caseData) {
+        return submitBundle(caseData, State.CaseManagement);
+    }
+
+    private SubmittedCallbackResponse submitBundle(CaseData caseData, State state) {
+        caseData.setHyphenatedCaseRef("1234-5678-3456");
+
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setState(state);
+        details.setData(caseData);
+        details.setId(TEST_CASE_ID);
+
+        return caseworkerCreateBundle.submitted(details, CaseDetails.<CaseData, State>builder().build());
     }
 }

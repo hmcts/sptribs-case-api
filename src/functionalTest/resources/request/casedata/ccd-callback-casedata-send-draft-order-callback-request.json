@@ -34,9 +34,9 @@
   "orderDueDates": [],
 
   "cicCaseOrderTemplateIssued": {
-    "document_url": "http://dm-store.service.core-compute.internal/documents/${UUID1}",
+    "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/${UUID1}",
     "document_filename": "test.pdf",
-    "document_binary_url": "http://dm-store.service.core-compute.internal/documents/${UUID1}/binary",
+    "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/${UUID1}/binary",
     "category_id": "TD"
   },
 
@@ -58,9 +58,9 @@
       "id": "cb58659c-e90e-41c9-ab49-f3e3bd7523c0",
       "value": {
         "templateGeneratedDocument": {
-          "document_url": "http://dm-store.service.core-compute.internal/documents/${UUID1}",
+          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/${UUID1}",
           "document_filename": "Draft: test.pdf--CIC3 - Rule 27--26-04-2024 10:09:12.pdf",
-          "document_binary_url": "http://dm-store.service.core-compute.internal/documents/${UUID1}/binary",
+          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/${UUID1}/binary",
           "category_id": "TD"
         },
         "orderContentOrderTemplate": "CIC3_Rule_27"
@@ -79,9 +79,9 @@
             "value": {
               "documentEmailContent": "Test",
               "documentLink": {
-                "document_url": "http://dm-store.service.core-compute.internal/documents/${UUID1}",
+                "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/${UUID1}",
                 "document_filename": "test.pdf",
-                "document_binary_url": "http://dm-store.service.core-compute.internal/documents/${UUID1}/binary",
+                "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/${UUID1}/binary",
                 "category_id": "TD"
               }
             }
