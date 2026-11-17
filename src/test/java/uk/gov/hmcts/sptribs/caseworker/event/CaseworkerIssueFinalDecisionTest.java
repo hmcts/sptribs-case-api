@@ -288,9 +288,10 @@ class CaseworkerIssueFinalDecisionTest {
 
         //Then
         assertThat(response.getConfirmationHeader())
-            .isEqualTo("# Issue final decision notification failed \n"
-                + "## A notification could not be sent to: Applicant, Representative, Subject \n"
-                + "## Please resend the notification.");
+            .isEqualTo("""
+                # Issue final decision notification failed \
+                \n## A notification could not be sent to: Applicant, Representative, Subject \
+                \n## Please resend the notification.""");
     }
 
     @Test

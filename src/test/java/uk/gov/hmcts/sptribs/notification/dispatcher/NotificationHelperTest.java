@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -729,6 +730,42 @@ public class NotificationHelperTest {
         assertThat(correspondenceParties).hasSize(1);
         assertThat(correspondenceParties).contains(RESPONDENT);
     }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldNotAddSubjectWhenEmailIsNullOrEmpty(String email) {
+        final CicCase cicCase = CicCase.builder()
+            .partiesCIC(Set.of(PartiesCIC.SUBJECT))
+            .email(email)
+            .build();
+
+        Set<NotificationParties> correspondenceParties = getNotificationPartiesBundle(cicCase);
+
+        assertThat(correspondenceParties).doesNotContain(SUBJECT);
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldNotAddRepresentativeWhenRepresentativeEmailIsNullOrEmpty(String email) {
+        final CicCase cicCase = CicCase.builder()
+            .partiesCIC(Set.of(PartiesCIC.REPRESENTATIVE))
+            .representativeEmailAddress(email)
+            .build();
+
+        Set<NotificationParties> correspondenceParties = getNotificationPartiesBundle(cicCase);
+
+        assertThat(correspondenceParties).doesNotContain(REPRESENTATIVE);
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldNotAddApplicantWhenApplicantEmailIsNullOrEmpty(String email) { final CicCase cicCase = CicCase.builder()
+        .partiesCIC(Set.of(PartiesCIC.APPLICANT))
+        .applicantEmailAddress(email)
+        .build();
+
+        Set<NotificationParties> correspondenceParties = getNotificationPartiesBundle(cicCase);
+        assertThat(correspondenceParties).doesNotContain(APPLICANT);}
 
     private DynamicList getDynamicList() {
         final DynamicListElement listItem = DynamicListElement
