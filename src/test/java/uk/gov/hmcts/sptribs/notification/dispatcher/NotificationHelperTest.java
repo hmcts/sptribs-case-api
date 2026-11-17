@@ -604,10 +604,8 @@ public class NotificationHelperTest {
 
         Set<NotificationParties> correspondenceParties = getHearingNotificationParties(cicCase);
 
-        assertThat(correspondenceParties.size()).isEqualTo(3);
-        assertThat(correspondenceParties).contains(REPRESENTATIVE);
-        assertThat(correspondenceParties).contains(RESPONDENT);
-        assertThat(correspondenceParties).contains(SUBJECT);
+        assertThat(correspondenceParties).hasSize(3);
+        assertThat(correspondenceParties).contains(REPRESENTATIVE, RESPONDENT, SUBJECT);
     }
 
     @Test
@@ -620,9 +618,8 @@ public class NotificationHelperTest {
 
         Set<NotificationParties> correspondenceParties = getHearingNotificationParties(cicCase, Set.of(SUBJECT));
 
-        assertThat(correspondenceParties.size()).isEqualTo(2);
-        assertThat(correspondenceParties).contains(REPRESENTATIVE);
-        assertThat(correspondenceParties).contains(RESPONDENT);
+        assertThat(correspondenceParties).hasSize(2);
+        assertThat(correspondenceParties).contains(REPRESENTATIVE, RESPONDENT);
         assertThat(correspondenceParties).doesNotContain(SUBJECT);
     }
 
@@ -633,7 +630,7 @@ public class NotificationHelperTest {
 
         Set<NotificationParties> correspondenceParties = getHearingNotificationParties(cicCase, Set.of(SUBJECT));
 
-        assertThat(correspondenceParties.size()).isEqualTo(0);
+        assertThat(correspondenceParties).isEmpty();
     }
 
     @Test
@@ -648,11 +645,8 @@ public class NotificationHelperTest {
 
         Set<NotificationParties> correspondenceParties = getNotificationParties(cicCase);
 
-        assertThat(correspondenceParties.size()).isEqualTo(4);
-        assertThat(correspondenceParties).contains(REPRESENTATIVE);
-        assertThat(correspondenceParties).contains(RESPONDENT);
-        assertThat(correspondenceParties).contains(SUBJECT);
-        assertThat(correspondenceParties).contains(APPLICANT);
+        assertThat(correspondenceParties).hasSize(4);
+        assertThat(correspondenceParties).contains(REPRESENTATIVE, RESPONDENT, SUBJECT, APPLICANT);
     }
 
     @Test
@@ -666,10 +660,8 @@ public class NotificationHelperTest {
 
         Set<NotificationParties> correspondenceParties = getNotificationParties(cicCase, Set.of(APPLICANT));
 
-        assertThat(correspondenceParties.size()).isEqualTo(3);
-        assertThat(correspondenceParties).contains(REPRESENTATIVE);
-        assertThat(correspondenceParties).contains(RESPONDENT);
-        assertThat(correspondenceParties).contains(SUBJECT);
+        assertThat(correspondenceParties).hasSize(3);
+        assertThat(correspondenceParties).contains(REPRESENTATIVE, RESPONDENT, SUBJECT);
         assertThat(correspondenceParties).doesNotContain(APPLICANT);
     }
 
@@ -684,10 +676,8 @@ public class NotificationHelperTest {
 
         Set<NotificationParties> correspondenceParties = getPartiesOnCase(cicCase);
 
-        assertThat(correspondenceParties.size()).isEqualTo(3);
-        assertThat(correspondenceParties).contains(REPRESENTATIVE);
-        assertThat(correspondenceParties).contains(SUBJECT);
-        assertThat(correspondenceParties).contains(APPLICANT);
+        assertThat(correspondenceParties).hasSize(3);
+        assertThat(correspondenceParties).contains(REPRESENTATIVE, APPLICANT, SUBJECT);
     }
 
     @Test
@@ -700,9 +690,8 @@ public class NotificationHelperTest {
 
         Set<NotificationParties> correspondenceParties = getPartiesOnCase(cicCase, Set.of(APPLICANT));
 
-        assertThat(correspondenceParties.size()).isEqualTo(2);
-        assertThat(correspondenceParties).contains(REPRESENTATIVE);
-        assertThat(correspondenceParties).contains(SUBJECT);
+        assertThat(correspondenceParties).hasSize(2);
+        assertThat(correspondenceParties).contains(REPRESENTATIVE, SUBJECT);
         assertThat(correspondenceParties).doesNotContain(APPLICANT);
     }
 
@@ -717,9 +706,8 @@ public class NotificationHelperTest {
 
         Set<NotificationParties> correspondenceParties = getNotificationPartiesBundle(cicCase);
 
-        assertThat(correspondenceParties.size()).isEqualTo(2);
-        assertThat(correspondenceParties).contains(RESPONDENT);
-        assertThat(correspondenceParties).contains(APPLICANT);
+        assertThat(correspondenceParties).hasSize(2);
+        assertThat(correspondenceParties).contains(APPLICANT, RESPONDENT);
     }
 
     private DynamicList getDynamicList() {

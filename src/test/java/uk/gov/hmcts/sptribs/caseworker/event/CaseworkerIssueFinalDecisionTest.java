@@ -236,63 +236,6 @@ class CaseworkerIssueFinalDecisionTest {
                 + "## A notification has been sent to: Applicant, Representative, Respondent, Subject");
     }
 
-    //TEST Needs to be rewritten elsewhere
-
-    //    @Test
-    //    void shouldShowCorrectMessageWhenSubmittedWithFatalOrMinorSubcategory() {
-    //        //Given
-    //        final CaseDetails<CaseData, State> details = new CaseDetails<>();
-    //        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-    //
-    //        final CicCase cicCase = CicCase.builder()
-    //            .caseSubcategory(CaseSubcategory.FATAL)
-    //            .partiesCIC(Set.of(PartiesCIC.SUBJECT, PartiesCIC.APPLICANT, PartiesCIC.REPRESENTATIVE))
-    //            .build();
-    //        final CaseData caseData = caseData();
-    //        caseData.setCicCase(cicCase);
-    //        details.setData(caseData);
-    //
-    //        //When
-    //        doAnswer(invocation -> {
-    //            NotificationContext context = invocation.getArgument(0);
-    //            if (context.getNotification() == caseFinalDecisionIssuedNotification) {
-    //                context.getCorrespondenceParties().add(NotificationParties.APPLICANT);
-    //                context.getCorrespondenceParties().add(NotificationParties.SUBJECT);
-    //                context.getCorrespondenceParties().add(NotificationParties.REPRESENTATIVE);
-    //                context.getCorrespondenceParties().add(NotificationParties.RESPONDENT);
-    //            }
-    //            return null;
-    //        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
-    //
-    //        SubmittedCallbackResponse responseWithFatalSubcategory = issueFinalDecision.submitted(details, beforeDetails);
-    //
-    //        //Then
-    //        assertThat(responseWithFatalSubcategory.getConfirmationHeader())
-    //            .isEqualTo("# Final decision notice issued \n"
-    //                + "## A notification has been sent to: Applicant, Representative, Respondent, Subject");
-    //
-    //        cicCase.setCaseSubcategory(CaseSubcategory.MINOR);
-    //
-    //        //When
-    //        doAnswer(invocation -> {
-    //            NotificationContext context = invocation.getArgument(0);
-    //            if (context.getNotification() == caseFinalDecisionIssuedNotification) {
-    //                context.getCorrespondenceParties().add(NotificationParties.APPLICANT);
-    //                context.getCorrespondenceParties().add(NotificationParties.SUBJECT);
-    //                context.getCorrespondenceParties().add(NotificationParties.REPRESENTATIVE);
-    //                context.getCorrespondenceParties().add(NotificationParties.RESPONDENT);
-    //            }
-    //            return null;
-    //        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
-    //
-    //        SubmittedCallbackResponse responseWithMinorSubcategory = issueFinalDecision.submitted(details, beforeDetails);
-    //
-    //        //Then
-    //        assertThat(responseWithMinorSubcategory.getConfirmationHeader())
-    //            .isEqualTo("# Final decision notice issued \n"
-    //                + "## A notification has been sent to: Respondent, Representative, Applicant");
-    //    }
-
     @Test
     void shouldShowCorrectMessageWhenSubmitted() {
         //Given
