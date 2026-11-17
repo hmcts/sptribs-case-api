@@ -117,7 +117,8 @@ public class CicDssUpdateCaseEventFT extends FunctionalTestSuite {
         assertThatJson(response.asString())
             .inPath("$.confirmation_header")
             .isString()
-            .isEqualTo("# CIC Dss Update Case Event Email notification failed. \n## "
-                + "A notification could not be sent to: Applicant \n## Please resend the notification. ");
+            .isEqualTo("# CIC Dss Update Case Event Email notifications sent.\n## "
+                + "A notification has been sent to: Tribunal"
+                + "\n## A notification could not be sent to: Applicant\n## Please resend the notification.");
     }
 }

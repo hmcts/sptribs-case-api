@@ -128,8 +128,8 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
             .inPath(CONFIRMATION_HEADER)
             .isString()
             .isEqualTo("""
-                # Bundle created.
-                ## A notification could not be sent to: Respondent
+                # Bundle creation notification failed\s
+                ## A notification could not be sent to: Respondent\s
                 ## Please resend the notification.""");
     }
 
