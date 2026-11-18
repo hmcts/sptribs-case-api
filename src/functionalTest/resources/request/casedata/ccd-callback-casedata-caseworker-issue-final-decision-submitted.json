@@ -12,5 +12,10 @@
   "cicCaseCaseSubcategory": "other",
   "cicCasePartiesCIC": [
     "SubjectCIC"
-  ]
+  ],
+  "contactPartiesDocumentsDocumentList": {
+    "value": [],
+    "list_items": []
+  },
+  "cicCaseNotifyPartyMessage": "Party message"
 }

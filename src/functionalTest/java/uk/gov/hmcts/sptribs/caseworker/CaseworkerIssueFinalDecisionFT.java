@@ -180,7 +180,7 @@ public class CaseworkerIssueFinalDecisionFT extends FunctionalTestSuite {
         assertThat(firstCorrespondenceEntity.getId()).isNotNull();
         assertThat(firstCorrespondenceEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
             .toString().replace("-", "")));
-        assertThat(firstCorrespondenceEntity.getEventType()).startsWith("FINAL_DECISION_ISSUED_EMAIL");
+        assertThat(firstCorrespondenceEntity.getEventType()).startsWith("CONTACT_PARTIES_EMAIL");
         assertThat(firstCorrespondenceEntity.getSentOn()).isNotNull();
         assertThat(firstCorrespondenceEntity.getSentFrom()).isNotNull();
         assertThat(firstCorrespondenceEntity.getSentTo()).isNotNull();

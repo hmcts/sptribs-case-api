@@ -3,7 +3,6 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
@@ -32,11 +31,15 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.service.ContactPartiesService;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.notification.NotificationHelper;
+import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
+import uk.gov.hmcts.sptribs.util.OrderNotificationUtil;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -82,6 +85,10 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
     private final NewOrderIssuedNotification newOrderIssuedNotification;
     private final SendOrderOrderDueDates orderDueDates;
     private final DocumentsService documentsService;
+    private final NotificationHelper notificationHelper;
+    private final ContactPartiesService contactPartiesService;
+    private final ContactPartiesNotification contactPartiesNotification;
+    private static final int DOC_ATTACH_LIMIT = 10;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -257,24 +264,15 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             .build();
     }
 
-
-
     private void sendOrderNotification(String caseNumber, CaseData caseData) {
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartySubject())) {
-            newOrderIssuedNotification.sendToSubject(caseData, caseNumber);
-        }
-
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRepresentative())) {
-            newOrderIssuedNotification.sendToRepresentative(caseData, caseNumber);
-        }
-
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRespondent())) {
-            newOrderIssuedNotification.sendToRespondent(caseData, caseNumber);
-        }
-
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyApplicant())) {
-            newOrderIssuedNotification.sendToApplicant(caseData, caseNumber);
-        }
+        OrderNotificationUtil.sendOrderNotification(
+            caseNumber,
+            caseData,
+            DOC_ATTACH_LIMIT,
+            notificationHelper,
+            contactPartiesNotification,
+            contactPartiesService
+        );
 
     }
 }

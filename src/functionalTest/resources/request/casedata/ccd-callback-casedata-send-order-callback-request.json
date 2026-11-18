@@ -147,5 +147,10 @@
   "cicCaseFinalDecisionDocumentList": [],
   "stayIsCaseStayed": "No",
   "hearingSummaryExists": "YES",
-  "hearingList": []
+  "hearingList": [],
+  "contactPartiesDocumentsDocumentList": {
+    "value": [],
+    "list_items": []
+  },
+  "cicCaseNotifyPartyMessage": "Party message"
 }

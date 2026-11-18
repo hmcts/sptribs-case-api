@@ -1,5 +1,6 @@
 {
   "caseIssueDecisionDecisionNotice": "Create from a template",
+  "cicCaseNotifyPartyMessage": "Party message",
   "caseIssueDecisionIssueDecisionDraft": {
     "document_url": "",
     "document_filename": "pdf.pdf",
@@ -8,5 +9,10 @@
   "cicCaseContactPreferenceType": "Email",
   "cicCaseNotifyPartySubject": ["SubjectCIC"],
   "cicCaseFullName": "Testing subject",
-  "cicCaseEmail": "subject@hmcts.net"
+  "cicCaseEmail": "subject@hmcts.net",
+  "contactPartiesDocumentsDocumentList": {
+    "value": [],
+    "list_items": []
+  }
+
 }

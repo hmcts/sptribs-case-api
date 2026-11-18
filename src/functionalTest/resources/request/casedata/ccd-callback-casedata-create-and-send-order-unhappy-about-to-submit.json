@@ -138,5 +138,9 @@
     "document_filename": "Order--[AAC]--09-05-2024 09:04:04.pdf",
     "document_binary_url": "http://dm-store.service.core-compute.internal/documents/6bcdb209-ba65-4f31-a12a-5abbdf250fb6/binary",
     "category_id": "TD"
+  },
+  "contactPartiesDocumentsDocumentList": {
+    "value": [],
+    "list_items": []
   }
 }

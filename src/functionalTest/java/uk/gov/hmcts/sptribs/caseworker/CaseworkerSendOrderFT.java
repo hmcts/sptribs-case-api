@@ -136,7 +136,7 @@ public class CaseworkerSendOrderFT extends FunctionalTestSuite {
         assertThat(firstCorrespondenceEntity.getId()).isNotNull();
         assertThat(firstCorrespondenceEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
             .toString().replace("-", "")));
-        assertThat(firstCorrespondenceEntity.getEventType()).isEqualTo("NEW_ORDER_ISSUED_POST");
+        assertThat(firstCorrespondenceEntity.getEventType()).isEqualTo("CONTACT_PARTIES_POST");
         assertThat(firstCorrespondenceEntity.getSentOn()).isNotNull();
         assertThat(firstCorrespondenceEntity.getSentFrom()).isNotNull();
         assertThat(firstCorrespondenceEntity.getSentTo()).isNotNull();

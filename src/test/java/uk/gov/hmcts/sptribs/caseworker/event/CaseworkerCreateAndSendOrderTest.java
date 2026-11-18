@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.FlagDetail;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
@@ -17,6 +18,7 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ApplyAnonymity;
 import uk.gov.hmcts.sptribs.caseworker.event.page.DraftOrderFooter;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderOrderDueDates;
+import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
@@ -27,11 +29,14 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.service.ContactPartiesService;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.dispatcher.AnonymityAppliedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 
@@ -39,6 +44,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -46,12 +52,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.CREATE_AND_SEND_NEW_ORDER;
 import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_AND_SEND_ORDER;
@@ -64,9 +72,11 @@ import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.DATE_MODEL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_HYPHENATED;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.buildDynamicMultiSelectDocumentList;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getApiCaseDetailsBefore;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCicCase;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getDocumentUploadMap;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -79,10 +89,19 @@ class CaseworkerCreateAndSendOrderTest {
     private ApplyAnonymity applyAnonymity;
 
     @Mock
+    private ContactPartiesNotification contactPartiesNotification;
+
+    @Mock
+    private ContactPartiesService contactPartiesService;
+
+    @Mock
     private DraftOrderFooter draftOrderFooter;
 
     @Mock
     private SendOrderOrderDueDates orderDueDates;
+
+    @Mock
+    private NotificationHelper notificationHelper;
 
     @Mock
     private NewOrderIssuedNotification newOrderIssuedNotification;
@@ -181,6 +200,14 @@ class CaseworkerCreateAndSendOrderTest {
 
     @Test
     void shouldSuccessfullyCreateAndSendNewAnonymisedOrder() {
+        DynamicMultiSelectList documentList = buildDynamicMultiSelectDocumentList();
+        ContactPartiesDocuments contactPartiesDocuments = ContactPartiesDocuments.builder()
+            .documentList(documentList)
+            .build();
+
+        final int docAttachLimit = 10;
+        Map<String, String> emailDocs = getDocumentUploadMap();
+
         DraftOrderContentCIC draftOrderContentCIC = DraftOrderContentCIC.builder()
                 .orderTemplate(OrderTemplate.CIC3_RULE_27)
                 .mainContent("Main order content sample")
@@ -195,10 +222,17 @@ class CaseworkerCreateAndSendOrderTest {
                 .build();
 
         final CaseData caseData = CaseData.builder()
+            .contactPartiesDocuments(contactPartiesDocuments)
                 .draftOrderContentCIC(draftOrderContentCIC)
                 .orderDueDates(List.of(ListValue.<DateModel>builder().value(DATE_MODEL).build()))
                 .cicCase(getCicCase(CREATE_AND_SEND_NEW_ORDER, YesOrNo.YES, "AAC", document))
                 .build();
+
+        when(notificationHelper.buildDocumentList(documentList, docAttachLimit)).thenReturn(emailDocs);
+        when(contactPartiesNotification.sendToSubject(caseData, TEST_CASE_ID_HYPHENATED, emailDocs)).thenReturn("UUID1");
+        when(contactPartiesNotification.sendToRepresentative(caseData, TEST_CASE_ID_HYPHENATED, emailDocs)).thenReturn("UUID2");
+        when(contactPartiesNotification.sendToApplicant(caseData, TEST_CASE_ID_HYPHENATED, emailDocs)).thenReturn("UUID3");
+        when(contactPartiesNotification.sendToRespondent(caseData, TEST_CASE_ID_HYPHENATED, emailDocs)).thenReturn("UUID4");
 
         caseData.setDraftOrderContentCIC(draftOrderContentCIC);
 
@@ -520,6 +554,7 @@ class CaseworkerCreateAndSendOrderTest {
         final CaseData caseData = caseData();
         final String hyphenatedCaseRef = caseData.formatCaseRef(TEST_CASE_ID);
         caseData.setHyphenatedCaseRef(hyphenatedCaseRef);
+        caseData.setContactPartiesDocuments(getContactPartiesDocuments());
         caseData.getCicCase().setNotifyPartySubject(Set.of(SUBJECT));
         caseData.getCicCase().setNotifyPartyApplicant(Set.of(APPLICANT_CIC));
         caseData.getCicCase().setNotifyPartyRepresentative(Set.of(REPRESENTATIVE));
@@ -529,8 +564,8 @@ class CaseworkerCreateAndSendOrderTest {
         caseDetails.setData(caseData);
 
         doThrow(NotificationException.class)
-                .when(newOrderIssuedNotification)
-                .sendToSubject(caseData, hyphenatedCaseRef);
+                .when(contactPartiesNotification)
+                .sendToSubject(eq(caseData), eq(hyphenatedCaseRef), anyMap());
 
         SubmittedCallbackResponse submittedResponse = caseworkerCreateAndSendOrder.submitted(caseDetails, getApiCaseDetailsBefore());
 
@@ -538,11 +573,11 @@ class CaseworkerCreateAndSendOrderTest {
                 .isEqualTo("""
                     # Send order notification failed\s
                     ## Please resend the order""");
-        verify(newOrderIssuedNotification, times(1)).sendToSubject(any(CaseData.class), anyString());
+        verify(contactPartiesNotification, times(1)).sendToSubject(any(CaseData.class), anyString(), anyMap());
 
-        verify(newOrderIssuedNotification, never()).sendToRepresentative(any(CaseData.class), anyString());
-        verify(newOrderIssuedNotification, never()).sendToRespondent(any(CaseData.class), anyString());
-        verify(newOrderIssuedNotification, never()).sendToApplicant(any(CaseData.class), anyString());
+        verify(contactPartiesNotification, never()).sendToRepresentative(any(CaseData.class), anyString(), anyMap());
+        verify(contactPartiesNotification, never()).sendToRespondent(any(CaseData.class), anyString(), anyMap());
+        verify(contactPartiesNotification, never()).sendToApplicant(any(CaseData.class), anyString(), anyMap());
     }
 
     @Test
@@ -550,6 +585,7 @@ class CaseworkerCreateAndSendOrderTest {
         final CaseData caseData = caseData();
         final String hyphenatedCaseRef = caseData.formatCaseRef(TEST_CASE_ID);
         caseData.setHyphenatedCaseRef(hyphenatedCaseRef);
+        caseData.setContactPartiesDocuments(getContactPartiesDocuments());
         caseData.getCicCase().setNotifyPartySubject(Set.of(SUBJECT));
         caseData.getCicCase().setNotifyPartyApplicant(Set.of(APPLICANT_CIC));
         caseData.getCicCase().setNotifyPartyRepresentative(Set.of(REPRESENTATIVE));
@@ -559,8 +595,8 @@ class CaseworkerCreateAndSendOrderTest {
         caseDetails.setData(caseData);
 
         doThrow(NotificationException.class)
-                .when(newOrderIssuedNotification)
-                .sendToRepresentative(caseData, hyphenatedCaseRef);
+                .when(contactPartiesNotification)
+                .sendToRepresentative(eq(caseData),eq(hyphenatedCaseRef), anyMap());
 
         SubmittedCallbackResponse submittedResponse = caseworkerCreateAndSendOrder.submitted(caseDetails, getApiCaseDetailsBefore());
 
@@ -568,11 +604,11 @@ class CaseworkerCreateAndSendOrderTest {
                 .isEqualTo("""
                     # Send order notification failed\s
                     ## Please resend the order""");
-        verify(newOrderIssuedNotification, times(1)).sendToSubject(any(CaseData.class), anyString());
-        verify(newOrderIssuedNotification, times(1)).sendToRepresentative(any(CaseData.class), anyString());
+        verify(contactPartiesNotification, times(1)).sendToSubject(any(CaseData.class), anyString(), anyMap());
+        verify(contactPartiesNotification, times(1)).sendToRepresentative(any(CaseData.class), anyString(), anyMap());
 
-        verify(newOrderIssuedNotification, never()).sendToRespondent(any(CaseData.class), anyString());
-        verify(newOrderIssuedNotification, never()).sendToApplicant(any(CaseData.class), anyString());
+        verify(contactPartiesNotification, never()).sendToRespondent(any(CaseData.class), anyString(), anyMap());
+        verify(contactPartiesNotification, never()).sendToApplicant(any(CaseData.class), anyString(), anyMap());
 
     }
 
@@ -581,6 +617,7 @@ class CaseworkerCreateAndSendOrderTest {
         final CaseData caseData = caseData();
         final String hyphenatedCaseRef = caseData.formatCaseRef(TEST_CASE_ID);
         caseData.setHyphenatedCaseRef(hyphenatedCaseRef);
+        caseData.setContactPartiesDocuments(getContactPartiesDocuments());
         caseData.getCicCase().setNotifyPartySubject(Set.of(SUBJECT));
         caseData.getCicCase().setNotifyPartyApplicant(Set.of(APPLICANT_CIC));
         caseData.getCicCase().setNotifyPartyRepresentative(Set.of(REPRESENTATIVE));
@@ -590,8 +627,8 @@ class CaseworkerCreateAndSendOrderTest {
         caseDetails.setData(caseData);
 
         doThrow(NotificationException.class)
-                .when(newOrderIssuedNotification)
-                .sendToRespondent(caseData, hyphenatedCaseRef);
+                .when(contactPartiesNotification)
+                .sendToRespondent(eq(caseData), eq(hyphenatedCaseRef), anyMap());
 
         SubmittedCallbackResponse submittedResponse = caseworkerCreateAndSendOrder.submitted(caseDetails, getApiCaseDetailsBefore());
 
@@ -599,11 +636,11 @@ class CaseworkerCreateAndSendOrderTest {
                 .isEqualTo("""
                     # Send order notification failed\s
                     ## Please resend the order""");
-        verify(newOrderIssuedNotification, times(1)).sendToSubject(any(CaseData.class), anyString());
-        verify(newOrderIssuedNotification, times(1)).sendToRepresentative(any(CaseData.class), anyString());
-        verify(newOrderIssuedNotification, times(1)).sendToRespondent(any(CaseData.class), anyString());
+        verify(contactPartiesNotification, times(1)).sendToSubject(any(CaseData.class), anyString(), anyMap());
+        verify(contactPartiesNotification, times(1)).sendToRepresentative(any(CaseData.class), anyString(), anyMap());
+        verify(contactPartiesNotification, times(1)).sendToRespondent(any(CaseData.class), anyString(), anyMap());
 
-        verify(newOrderIssuedNotification, never()).sendToApplicant(any(CaseData.class), anyString());
+        verify(contactPartiesNotification, never()).sendToApplicant(any(CaseData.class), anyString(), anyMap());
     }
 
     @Test
@@ -611,6 +648,7 @@ class CaseworkerCreateAndSendOrderTest {
         final CaseData caseData = caseData();
         final String hyphenatedCaseRef = caseData.formatCaseRef(TEST_CASE_ID);
         caseData.setHyphenatedCaseRef(hyphenatedCaseRef);
+        caseData.setContactPartiesDocuments(getContactPartiesDocuments());
         caseData.getCicCase().setNotifyPartySubject(Set.of(SUBJECT));
         caseData.getCicCase().setNotifyPartyApplicant(Set.of(APPLICANT_CIC));
         caseData.getCicCase().setNotifyPartyRepresentative(Set.of(REPRESENTATIVE));
@@ -620,8 +658,8 @@ class CaseworkerCreateAndSendOrderTest {
         caseDetails.setData(caseData);
 
         doThrow(NotificationException.class)
-                .when(newOrderIssuedNotification)
-                .sendToApplicant(caseData, hyphenatedCaseRef);
+                .when(contactPartiesNotification)
+                .sendToApplicant(eq(caseData), eq(hyphenatedCaseRef), anyMap());
 
         SubmittedCallbackResponse submittedResponse = caseworkerCreateAndSendOrder.submitted(caseDetails, getApiCaseDetailsBefore());
 
@@ -629,10 +667,10 @@ class CaseworkerCreateAndSendOrderTest {
                 .isEqualTo("""
                     # Send order notification failed\s
                     ## Please resend the order""");
-        verify(newOrderIssuedNotification, times(1)).sendToSubject(any(CaseData.class), anyString());
-        verify(newOrderIssuedNotification, times(1)).sendToRepresentative(any(CaseData.class), anyString());
-        verify(newOrderIssuedNotification, times(1)).sendToRespondent(any(CaseData.class), anyString());
-        verify(newOrderIssuedNotification, times(1)).sendToApplicant(any(CaseData.class), anyString());
+        verify(contactPartiesNotification, times(1)).sendToSubject(any(CaseData.class), anyString(), anyMap());
+        verify(contactPartiesNotification, times(1)).sendToRepresentative(any(CaseData.class), anyString(), anyMap());
+        verify(contactPartiesNotification, times(1)).sendToRespondent(any(CaseData.class), anyString(), anyMap());
+        verify(contactPartiesNotification, times(1)).sendToApplicant(any(CaseData.class), anyString(), anyMap());
     }
 
     @Test
@@ -820,6 +858,13 @@ class CaseworkerCreateAndSendOrderTest {
             .dateTimeCreated(LocalDateTime.now())
             .hearingRelevant(YesOrNo.YES)
             .availableExternally(YesOrNo.NO)
+            .build();
+    }
+
+    private ContactPartiesDocuments getContactPartiesDocuments() {
+
+        return ContactPartiesDocuments.builder()
+            .documentList(buildDynamicMultiSelectDocumentList())
             .build();
     }
 

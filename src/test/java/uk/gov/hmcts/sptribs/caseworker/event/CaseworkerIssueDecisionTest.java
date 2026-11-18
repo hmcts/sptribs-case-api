@@ -32,6 +32,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentSaveException;
+import uk.gov.hmcts.sptribs.common.service.ContactPartiesService;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.content.DecisionTemplateContent;
 import uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants;
@@ -39,7 +40,8 @@ import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
-import uk.gov.hmcts.sptribs.notification.dispatcher.DecisionIssuedNotification;
+import uk.gov.hmcts.sptribs.notification.NotificationHelper;
+import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -77,13 +79,19 @@ class CaseworkerIssueDecisionTest {
     private IssueDecisionSelectTemplate issueDecisionSelectTemplate;
 
     @Mock
-    private DecisionIssuedNotification decisionIssuedNotification;
+    private ContactPartiesNotification contactPartiesNotification;
 
     @Mock
     private DocumentsService documentsService;
 
     @Mock
     private IssueDecisionFooter issueDecisionFooter;
+
+    @Mock
+    private NotificationHelper notificationHelper;
+
+    @Mock
+    private ContactPartiesService contactPartiesService;
 
     private final Clock fixedClock = Clock.fixed(
         LocalDate.of(2026, 5, 15)
@@ -97,8 +105,10 @@ class CaseworkerIssueDecisionTest {
     @BeforeEach
     void setUp() {
         issueDecision = new CaseworkerIssueDecision(
+            notificationHelper,
+            contactPartiesService,
             issueDecisionFooter,
-            decisionIssuedNotification,
+            contactPartiesNotification,
             fixedClock,
             documentsService
         );

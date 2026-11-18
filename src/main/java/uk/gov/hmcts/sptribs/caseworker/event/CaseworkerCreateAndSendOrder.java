@@ -3,7 +3,6 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestClientException;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -39,12 +38,15 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.CreateNewOrder;
 import uk.gov.hmcts.sptribs.common.event.page.EditNewOrderContentPage;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
+import uk.gov.hmcts.sptribs.common.service.ContactPartiesService;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.dispatcher.AnonymityAppliedNotification;
-import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
+import uk.gov.hmcts.sptribs.util.OrderNotificationUtil;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -90,8 +92,11 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
 
     private final ApplyAnonymity applyAnonymitySelect;
     private final DraftOrderFooter draftOrderFooter;
-    private final NewOrderIssuedNotification newOrderIssuedNotification;
+    private final ContactPartiesNotification contactPartiesNotification;
     private final AnonymityAppliedNotification anonymityAppliedNotification;
+    private final NotificationHelper notificationHelper;
+    private final ContactPartiesService contactPartiesService;
+    private static final int DOC_ATTACH_LIMIT = 10;
     private final SendOrderOrderDueDates orderDueDates;
     private final DocumentsService documentsService;
 
@@ -295,21 +300,13 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
     }
 
     private void sendOrderNotification(String caseNumber, CaseData caseData) {
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartySubject())) {
-            newOrderIssuedNotification.sendToSubject(caseData, caseNumber);
-        }
-
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRepresentative())) {
-            newOrderIssuedNotification.sendToRepresentative(caseData, caseNumber);
-        }
-
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRespondent())) {
-            newOrderIssuedNotification.sendToRespondent(caseData, caseNumber);
-        }
-
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyApplicant())) {
-            newOrderIssuedNotification.sendToApplicant(caseData, caseNumber);
-        }
-
+        OrderNotificationUtil.sendOrderNotification(
+            caseNumber,
+            caseData,
+            DOC_ATTACH_LIMIT,
+            notificationHelper,
+            contactPartiesNotification,
+            contactPartiesService
+        );
     }
 }
