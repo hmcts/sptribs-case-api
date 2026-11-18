@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestClientException;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -52,6 +53,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.CREATE_AND_SEND_NEW_ORDER;
@@ -308,5 +310,33 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
             contactPartiesNotification,
             contactPartiesService
         );
+//        if (caseData == null
+//            || caseData.getCicCase() == null
+//            || caseData.getContactPartiesDocuments() == null
+//            || caseData.getContactPartiesDocuments().getDocumentList() == null) {
+//            return;
+//        }
+
+//        final Map<String, String> uploadedDocuments = notificationHelper
+//            .buildDocumentList(caseData.getContactPartiesDocuments().getDocumentList(), DOC_ATTACH_LIMIT);
+//
+//        List<String> correspondenceIds = new ArrayList<>();
+//
+//        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartySubject())) {
+//            correspondenceIds.add(contactPartiesNotification.sendToSubject(caseData, caseNumber, uploadedDocuments));
+//        }
+//        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRepresentative())) {
+//            correspondenceIds.add(contactPartiesNotification.sendToRepresentative(caseData, caseNumber, uploadedDocuments));
+//        }
+//        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRespondent())) {
+//            correspondenceIds.add(contactPartiesNotification.sendToRespondent(caseData, caseNumber, uploadedDocuments));
+//        }
+//        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyApplicant())) {
+//            correspondenceIds.add(contactPartiesNotification.sendToApplicant(caseData, caseNumber, uploadedDocuments));
+//        }
+//
+//        if (!correspondenceIds.isEmpty()) {
+//            contactPartiesService.linkCorrespondenceIdsToDocuments(caseData, uploadedDocuments, correspondenceIds);
+//        }
     }
 }

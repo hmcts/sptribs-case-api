@@ -125,5 +125,9 @@
   "cicCaseCompensationClaimLinkCIC": "No",
   "cicCaseIsRepresentativePresent": "Yes",
   "stayIsCaseStayed": "No",
-  "hearingSummaryExists": "YES"
+  "hearingSummaryExists": "YES",
+  "contactPartiesDocumentsDocumentList": {
+    "value": [],
+    "list_items": []
+  }
 }
