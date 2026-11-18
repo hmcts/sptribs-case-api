@@ -736,11 +736,13 @@ public class NotificationHelperTest {
     void shouldNotAddSubjectWhenEmailIsNullOrEmpty(String email) {
         final CicCase cicCase = CicCase.builder()
             .partiesCIC(Set.of(PartiesCIC.SUBJECT))
+            .respondentEmail("respondent@test.com")
             .email(email)
             .build();
 
         Set<NotificationParties> correspondenceParties = getNotificationPartiesBundle(cicCase);
 
+        assertThat(correspondenceParties).isNotEmpty();
         assertThat(correspondenceParties).doesNotContain(SUBJECT);
     }
 
@@ -749,11 +751,13 @@ public class NotificationHelperTest {
     void shouldNotAddRepresentativeWhenRepresentativeEmailIsNullOrEmpty(String email) {
         final CicCase cicCase = CicCase.builder()
             .partiesCIC(Set.of(PartiesCIC.REPRESENTATIVE))
+            .respondentEmail("respondent@test.com")
             .representativeEmailAddress(email)
             .build();
 
         Set<NotificationParties> correspondenceParties = getNotificationPartiesBundle(cicCase);
 
+        assertThat(correspondenceParties).isNotEmpty();
         assertThat(correspondenceParties).doesNotContain(REPRESENTATIVE);
     }
 
@@ -762,10 +766,13 @@ public class NotificationHelperTest {
     void shouldNotAddApplicantWhenApplicantEmailIsNullOrEmpty(String email) {
         final CicCase cicCase = CicCase.builder()
             .partiesCIC(Set.of(PartiesCIC.APPLICANT))
+            .respondentEmail("respondent@test.com")
             .applicantEmailAddress(email)
             .build();
 
         Set<NotificationParties> correspondenceParties = getNotificationPartiesBundle(cicCase);
+
+        assertThat(correspondenceParties).isNotEmpty();
         assertThat(correspondenceParties).doesNotContain(APPLICANT);
     }
 
