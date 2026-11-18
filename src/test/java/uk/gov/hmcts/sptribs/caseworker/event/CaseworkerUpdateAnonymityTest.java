@@ -12,6 +12,7 @@ import uk.gov.hmcts.ccd.sdk.type.FlagDetail;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ApplyAnonymity;
 import uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -39,6 +40,8 @@ import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_UPDATE_ANONYMITY;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.REPRESENTATIVE;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBJECT;
 
 @ExtendWith(MockitoExtension.class)
 class CaseworkerUpdateAnonymityTest {
@@ -63,7 +66,7 @@ class CaseworkerUpdateAnonymityTest {
 
     @Mock
     private AnonymisationService anonymisationService;
-    
+
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -170,6 +173,131 @@ class CaseworkerUpdateAnonymityTest {
 
         verify(notificationDispatcher, times(1))
             .sendToCorrespondenceParties(any(NotificationContext.class));
+    }
+
+    @Test
+    void shouldSuccessfullySendNotificationsOnSubmitted() {
+        CaseData caseDataAfter = CaseData.builder()
+            .hyphenatedCaseRef("1234-5678-9012-3456")
+            .cicCase(CicCase.builder()
+                .anonymiseYesOrNo(YesOrNo.YES)
+                .anonymisedAppellantName("AAC")
+                .build())
+            .build();
+
+        CaseData caseDataBefore = CaseData.builder()
+            .cicCase(CicCase.builder()
+                .anonymiseYesOrNo(YesOrNo.NO)
+                .anonymityAlreadyApplied(YesOrNo.NO)
+                .anonymisedAppellantName(null)
+                .build())
+            .build();
+
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(caseDataAfter);
+        CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(caseDataBefore);
+
+        doAnswer(invocation -> {
+            NotificationContext context = invocation.getArgument(0);
+            if (context.getNotification() == anonymityAppliedNotification) {
+                context.getSent().add(REPRESENTATIVE);
+            }
+            return null;
+        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
+
+        SubmittedCallbackResponse response = caseworkerUpdateAnonymity.submitted(details, beforeDetails);
+
+        //Then
+        assertThat(response.getConfirmationHeader())
+            .isEqualTo("""
+                # Anonymity update notification sent. \
+                \n## A notification has been sent to: Representative\
+                """);
+    }
+
+    @Test
+    void shouldShowErrorMessageOnSubmittedIfNotificationFails() {
+        CaseData caseDataAfter = CaseData.builder()
+            .hyphenatedCaseRef("1234-5678-9012-3456")
+            .cicCase(CicCase.builder()
+                .anonymiseYesOrNo(YesOrNo.YES)
+                .anonymisedAppellantName("AAC")
+                .build())
+            .build();
+
+        CaseData caseDataBefore = CaseData.builder()
+            .cicCase(CicCase.builder()
+                .anonymiseYesOrNo(YesOrNo.NO)
+                .anonymityAlreadyApplied(YesOrNo.NO)
+                .anonymisedAppellantName(null)
+                .build())
+            .build();
+
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(caseDataAfter);
+        CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(caseDataBefore);
+
+        doAnswer(invocation -> {
+            NotificationContext context = invocation.getArgument(0);
+            if (context.getNotification() == anonymityAppliedNotification) {
+                context.getErrors().add(REPRESENTATIVE);
+            }
+            return null;
+        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
+
+        SubmittedCallbackResponse response = caseworkerUpdateAnonymity.submitted(details, beforeDetails);
+
+        //Then
+        assertThat(response.getConfirmationHeader())
+            .isEqualTo("""
+                # Send anonymity notification failed \
+                \n## A notification could not be sent to: Representative \
+                \n## Please resend the notification.""");
+    }
+
+    @Test
+    void shouldShowPartialSentErrorMessageOnSubmittedIfSomeNotificationsFail() {
+        CaseData caseDataAfter = CaseData.builder()
+            .hyphenatedCaseRef("1234-5678-9012-3456")
+            .cicCase(CicCase.builder()
+                .anonymiseYesOrNo(YesOrNo.YES)
+                .anonymisedAppellantName("AAC")
+                .build())
+            .build();
+
+        CaseData caseDataBefore = CaseData.builder()
+            .cicCase(CicCase.builder()
+                .anonymiseYesOrNo(YesOrNo.NO)
+                .anonymityAlreadyApplied(YesOrNo.NO)
+                .anonymisedAppellantName(null)
+                .build())
+            .build();
+
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(caseDataAfter);
+        CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(caseDataBefore);
+
+        doAnswer(invocation -> {
+            NotificationContext context = invocation.getArgument(0);
+            if (context.getNotification() == anonymityAppliedNotification) {
+                context.getErrors().add(REPRESENTATIVE);
+                context.getSent().add(SUBJECT);
+            }
+            return null;
+        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
+
+        SubmittedCallbackResponse response = caseworkerUpdateAnonymity.submitted(details, beforeDetails);
+
+        //Then
+        assertThat(response.getConfirmationHeader())
+            .isEqualTo("""
+                # Anonymity update notification sent.\
+                \n## A notification has been sent to: Subject\
+                \n## A notification could not be sent to: Representative\
+                \n## Please resend the notification.""");
     }
 
     @Test
