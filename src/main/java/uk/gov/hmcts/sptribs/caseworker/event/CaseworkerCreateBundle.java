@@ -389,6 +389,25 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         return existingFoldersMap;
     }
 
+    /**
+     * Configures the audio/video evidence folder for a given bundle.
+     *
+     * <p>Why this is needed:
+     * When a bundle is generated, the bundling service returns all bundles for the case, including pre-existing
+     * historical bundles. Because audio/video evidence documents are dynamically evaluated for the case at the
+     * time this callback runs:
+     * <ul>
+     *   <li>Pre-existing bundles must retain their original folders and documents to prevent retroactive mutations
+     *       (e.g., stripping historical media folders or polluting them with newly uploaded media).</li>
+     *   <li>Newly created bundles must reflect current evidence: if audio/video evidence exists, the designated
+     *       folder is created or updated; if none exists, any placeholder folder from the template is removed
+     *       to avoid empty folders in the bundle index.</li>
+     * </ul>
+     *
+     * @param bundle the bundle to configure
+     * @param audioVideoDocuments current audio/video evidence documents for the case
+     * @param existingFoldersMap map of bundle IDs to original folder lists for pre-existing bundles
+     */
     private void configureBundleAudioVideoEvidenceFolder(Bundle bundle,
                                                          List<ListValue<BundleDocument>> audioVideoDocuments,
                                                          Map<String, List<ListValue<BundleFolder>>> existingFoldersMap) {
