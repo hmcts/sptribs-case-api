@@ -52,7 +52,7 @@ public class CaseworkerHearingOptions implements CCDConfig<CaseData, State, User
             .page("hearingOptionsHearingDetails")
             .pageLabel("Hearing Details")
             .complex(CaseData::getListing)
-                .optional(Listing::getHearingVenues, "venueNotListedOption!=\"VenueNotListed\"")
+                .optional(Listing::getHearingVenues, "venueNotListedOption!=\"VenueNotListed\"", true)
                 .optionalWithLabel(Listing::getVenueNotListedOption, " ")
                 .optional(Listing::getRoomAtVenue)
                 .optional(Listing::getAddlInstr)
