@@ -75,32 +75,37 @@ class CaseDataRepositoryImplIT extends IntegrationTestBase {
     }
 
     @Test
-    void givenCCDReference_thenShouldFindCaseBySearchPartiesEmail() {
-        caseDataITManager.addCaseData(123L,"Submitted", """
-                {
-                  "SearchCriteria": {
-                    "SearchParties": [
-                      {
-                        "value": {
-                          "EmailAddress": "test@example.com"
-                        }
-                      }
-                    ]
-                  }
-                }
-            """);
-
-        var result = repository.findCase("123", "test@example.com");
-
-        assertThat(result).isPresent();
-    }
-
-    @Test
     void givenCCDReference_thenShouldReturnEmptyWhenEmailDoesNotMatch() {
         caseDataITManager.addCaseData(123L,"Submitted", "{}");
 
         var result = repository.findCase("123", "wrong@example.com");
 
         assertThat(result).isEmpty();
+    }
+
+    @Test
+    void givenCCDReference_thenShouldFindCaseByCicCaseRepresentativeEmailAddress() {
+        caseDataITManager.addCaseData(123L,"Submitted", """
+                {
+                  "cicCaseRepresentativeEmailAddress": "testRep@example.com"
+                }
+            """);
+
+        var result = repository.findCase("123", "testRep@example.com");
+
+        assertThat(result).isPresent();
+    }
+
+    @Test
+    void givenCCDReference_thenShouldFindCaseByCicCaseApplicantEmailAddress() {
+        caseDataITManager.addCaseData(123L,"Submitted", """
+                {
+                  "cicCaseApplicantEmailAddress": "testApplicant@example.com"
+                }
+            """);
+
+        var result = repository.findCase("123", "testApplicant@example.com");
+
+        assertThat(result).isPresent();
     }
 }
