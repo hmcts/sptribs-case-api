@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.systemupdate.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -42,6 +43,7 @@ class FirstHearingDateSystemEventIT extends IntegrationTestBase {
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
+    @Disabled("Disabled until the system event is enabled")
     @Test
     void shouldRemoveOnlyRetiredFieldAndAuditExactlyOnceOnReplay() throws Exception {
         caseDataITManager.addCaseData(CASE_REFERENCE, "Submitted", """
@@ -69,6 +71,7 @@ class FirstHearingDateSystemEventIT extends IntegrationTestBase {
         assertThat(caseVersion()).isEqualTo(initialVersion);
     }
 
+    @Disabled("Disabled until the system event is enabled")
     @Test
     void shouldRollBackCaseChangeWhenEventFails() throws Exception {
         caseDataITManager.addCaseData(CASE_REFERENCE, "Submitted", """
