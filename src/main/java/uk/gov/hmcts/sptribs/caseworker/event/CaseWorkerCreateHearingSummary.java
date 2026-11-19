@@ -132,6 +132,7 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
         caseData.getListing().setHearingStatus(Complete);
         caseData.setJudicialId(judicialService.populateJudicialId(caseData));
         caseData.getListing().getSummary().setJudgeList(null);
+        caseData.getListing().setHearingTypeChangeWarning("no-warning");
         caseData.setListing(recordListHelper.saveSummary(details.getData()));
         caseData.setCurrentEvent("");
         uploadRecFile(caseData);

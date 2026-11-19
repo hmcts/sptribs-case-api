@@ -239,6 +239,11 @@ public class Listing {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private String hearingSummaryExists;
 
+    @Builder.Default
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private String hearingTypeChangeWarning = "no-warning";
+
     @JsonUnwrapped
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})

@@ -19,6 +19,7 @@ public final class PageShowConditionsUtil {
     private static final String ORDER_TYPE_UPLOAD_CONDITION = "cicCaseOrderIssuingType = \"UploadOrder\"";
 
     private static final String ANONYMITY_ALREADY_APPLIED = "cicCaseAnonymityAlreadyApplied!=\"Yes\"";
+    private static final String HEARING_TYPE_CHANGE_WARNING = "hearingTypeChangeWarning!=\"no-warning\"";
 
     private PageShowConditionsUtil() {
     }
@@ -52,6 +53,7 @@ public final class PageShowConditionsUtil {
         map.put("hearingOutcome", EDIT_SUMMARY);
         map.put("hearingRecordingUpload", EDIT_SUMMARY);
         map.put("editHearingSummary", EDIT_SUMMARY_SHOW_WARNING_PAGE);
+        map.put("hearingTypeWarning", HEARING_TYPE_CHANGE_WARNING);
         return map;
     }
 
