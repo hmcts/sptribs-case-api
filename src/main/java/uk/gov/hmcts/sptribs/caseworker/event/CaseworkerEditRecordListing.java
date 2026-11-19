@@ -14,6 +14,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingTypeAndFormat;
+import uk.gov.hmcts.sptribs.caseworker.event.page.HearingTypeWarning;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingVenues;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ListingChangeReason;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RecordNotifyParties;
@@ -62,6 +63,8 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
 
     private static final CcdPageConfiguration hearingTypeAndFormat = new HearingTypeAndFormat();
 
+    private static final CcdPageConfiguration hearingTypeWarning = new HearingTypeWarning();
+
     private static final CcdPageConfiguration listingChangeReason = new ListingChangeReason();
 
     private static final CcdPageConfiguration remoteHearingInfo = new RemoteHearingInfo();
@@ -96,6 +99,7 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
         PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         selectHearing.addTo(pageBuilder);
         hearingTypeAndFormat.addTo(pageBuilder);
+        hearingTypeWarning.addTo(pageBuilder);
         addRegionInfo(pageBuilder);
         hearingVenues.addTo(pageBuilder);
         remoteHearingInfo.addTo(pageBuilder);
@@ -159,6 +163,7 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
         recordListHelper.getNotificationParties(caseData);
         caseData.setListing(recordListHelper.checkAndUpdateVenueInformation(caseData.getListing()));
         caseData.setCurrentEvent("");
+        caseData.getListing().setHearingTypeChangeWarning("no-warning");
 
         final String hearingName = caseData.getCicCase().getHearingList().getValue().getLabel();
 

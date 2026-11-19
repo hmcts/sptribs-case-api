@@ -18,7 +18,6 @@ import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.CASE_STATE
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.CCD_REFERENCE;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.DUE_DATE;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.HEARING_DATE;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.HEARING_TYPE;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.LAST_MODIFIED_DATE;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.LAST_STATE_MODIFIED_DATE;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.SUBJECT_NAME;
