@@ -154,6 +154,16 @@ tasks.register('functional', Test) {
   exclude "uk/gov/hmcts/sptribs/smoke/**"
 }
 
+tasks.register('functionalCleanupTest', Test) {
+  description = 'Tests functional cleanup against an isolated database and HTTP server'
+  group = 'Verification'
+  testClassesDirs = sourceSets.functionalTest.output.classesDirs
+  classpath = sourceSets.functionalTest.runtimeClasspath
+  include '**/*CleanupTest.class'
+}
+
+check.dependsOn functionalCleanupTest
+
 task integration(type: Test) {
   description = "Runs integration tests"
   group = "Verification"

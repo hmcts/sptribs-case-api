@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.testutil.data;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -35,6 +36,9 @@ public class FunctionalTestDataManager {
 
     protected static Connection connection;
 
+    @Autowired
+    private CcdCaseCleanup ccdCaseCleanup;
+
     @Value("${postgres.host}")
     private String host;
 
@@ -53,6 +57,7 @@ public class FunctionalTestDataManager {
 
 
     public void connectToDB() {
+        ccdCaseCleanup.validateConfiguration();
         if (connection != null) {
             try {
                 if (!connection.isClosed()) {
@@ -78,13 +83,33 @@ public class FunctionalTestDataManager {
     public void clearDown(long reference) throws SQLException {
         log.info("Starting clearDown for reference: {}", reference);
 
-        deleteCaseEvent(reference);
-        deleteCaseData(reference);
-        deleteCaseCorrespondences(reference);
-        deleteCaseDocuments(reference);
+        connection.setAutoCommit(false);
+        try {
+            if (ccdCaseCleanup.isEnabled()) {
+                CcdCaseCleanup.execute(connection, "DELETE FROM ccd.es_queue WHERE reference = ?", reference);
+            }
+            // Remove document links before their parents; failed cleanup rolls the whole local deletion back.
+            CcdCaseCleanup.execute(connection, "DELETE FROM public.correspondence_document WHERE correspondence_id IN "
+                + "(SELECT id FROM public.case_correspondences WHERE case_reference_number = ?)", reference);
+            deleteCaseDocuments(reference);
+            deleteCaseCorrespondences(reference);
+            deleteCaseEvent(reference);
+            deleteCaseData(reference);
+            connection.commit();
+        } catch (SQLException | RuntimeException exception) {
+            connection.rollback();
+            throw exception;
+        } finally {
+            connection.setAutoCommit(true);
+        }
 
-        //are we doing the same ref many times?? as we dont clear the list
-        log.info("Clear down completed for reference: {}", reference);
+        if (ccdCaseCleanup.isEnabled()) {
+            ccdCaseCleanup.deleteCcdPointer(reference);
+            ccdCaseCleanup.deleteSearchProjections(reference);
+        }
+        testReferences.remove(reference);
+        log.info("Clear down completed for reference: {}; CCD and Elasticsearch cleanup enabled: {}",
+            reference, ccdCaseCleanup.isEnabled());
     }
 
     public void deleteCaseDocConstants(long[] references) {
@@ -141,11 +166,17 @@ public class FunctionalTestDataManager {
     }
 
     public void addReference(Long id) {
-        testReferences.add(id);
+        synchronized (testReferences) {
+            if (!testReferences.contains(id)) {
+                testReferences.add(id);
+            }
+        }
     }
 
     public List<Long> getTestReferences() {
-        return Collections.unmodifiableList(testReferences);
+        synchronized (testReferences) {
+            return List.copyOf(testReferences);
+        }
     }
 
     public void closeAll() {
