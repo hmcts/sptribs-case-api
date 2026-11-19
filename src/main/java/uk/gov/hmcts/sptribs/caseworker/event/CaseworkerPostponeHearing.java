@@ -20,11 +20,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.notification.NotificationConstantProfiles;
 import uk.gov.hmcts.sptribs.notification.dispatcher.HearingPostponedNotification;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
 import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
-import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 
 import java.time.LocalDate;
 
@@ -124,14 +122,10 @@ public class CaseworkerPostponeHearing implements CCDConfig<CaseData, State, Use
         final CaseData caseData = details.getData();
         final String caseReference = caseData.getHyphenatedCaseRef();
 
-        NotificationContextRequest notificationContextRequest = NotificationContextRequest.builder()
-            .caseData(caseData)
-            .caseReference(caseReference)
-            .notification(hearingPostponedNotification)
-            .build();
-
-        NotificationContext notificationContext = NotificationConstantProfiles.POSTPONE_HEARING
-            .buildContext(notificationContextRequest);
+        NotificationContext notificationContext = NotificationContext.forNotification(
+            caseData,
+            caseReference,
+            hearingPostponedNotification);
 
         notificationDispatcher.sendToCorrespondenceParties(notificationContext);
 

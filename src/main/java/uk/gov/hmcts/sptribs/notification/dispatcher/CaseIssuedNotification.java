@@ -19,7 +19,7 @@ import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
-import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.time.LocalDate;
@@ -188,8 +188,8 @@ public class CaseIssuedNotification implements PartiesNotification {
                 .toList();
     }
 
-    public Set<NotificationParties> buildCorrespondenceParties(NotificationContextRequest request) {
-        CicCase cicCase = request.getCaseData().getCicCase();
+    public Set<NotificationParties> buildCorrespondenceParties(NotificationContext context) {
+        CicCase cicCase = context.getCaseData().getCicCase();
 
         return getNotificationParties(cicCase);
     }

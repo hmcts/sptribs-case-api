@@ -25,11 +25,9 @@ import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
-import uk.gov.hmcts.sptribs.notification.NotificationConstantProfiles;
 import uk.gov.hmcts.sptribs.notification.dispatcher.DssUpdateCaseSubmissionNotification;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
 import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
-import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -199,16 +197,12 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
                                                CaseDetails<CaseData, State> beforeDetails) {
 
         final CaseData caseData = details.getData();
-        String caseNumber = caseData.getHyphenatedCaseRef();
+        String caseReference = caseData.getHyphenatedCaseRef();
 
-        NotificationContextRequest notificationContextRequest = NotificationContextRequest.builder()
-            .caseData(caseData)
-            .caseReference(caseNumber)
-            .notification(dssUpdateCaseSubmissionNotification)
-            .build();
-
-        NotificationContext notificationContext = NotificationConstantProfiles.DSS_UPDATE_CASE
-            .buildContext(notificationContextRequest);
+        NotificationContext notificationContext = NotificationContext.forNotification(
+            caseData,
+            caseReference,
+            dssUpdateCaseSubmissionNotification);
 
         notificationDispatcher.sendToCorrespondenceParties(notificationContext);
 

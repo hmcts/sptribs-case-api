@@ -24,11 +24,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.notification.NotificationConstantProfiles;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ListingCreatedNotification;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
 import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
-import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 
 import java.time.LocalDate;
 
@@ -159,18 +157,14 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         final CaseData caseData = details.getData();
         final String caseReference = caseData.getHyphenatedCaseRef();
 
-        NotificationContextRequest notificationContextRequest = NotificationContextRequest.builder()
-            .caseData(caseData)
-            .caseReference(caseReference)
-            .notification(listingCreatedNotification)
-            .build();
-
-        NotificationContext notificationContext = NotificationConstantProfiles.RECORD_LISTING
-            .buildContext(notificationContextRequest);
+        NotificationContext notificationContext = NotificationContext.forNotification(
+            caseData,
+            caseReference,
+            listingCreatedNotification);
 
         notificationDispatcher.sendToCorrespondenceParties(notificationContext);
 
-        if (isEmpty(notificationContext.getErrors()) && !isEmpty(notificationContext.getCorrespondenceParties())) {
+        if (isEmpty(notificationContext.getErrors()) && !isEmpty(notificationContext.getSent())) {
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Listing record created %n## %s",
                     generateSimpleMessageFromSentList(notificationContext.getSent())))

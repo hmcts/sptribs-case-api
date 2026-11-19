@@ -28,11 +28,9 @@ import uk.gov.hmcts.sptribs.document.bundling.model.BundleIdAndTimestamp;
 import uk.gov.hmcts.sptribs.document.bundling.model.Callback;
 import uk.gov.hmcts.sptribs.document.model.AbstractCaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
-import uk.gov.hmcts.sptribs.notification.NotificationConstantProfiles;
 import uk.gov.hmcts.sptribs.notification.dispatcher.BundleCreatedNotification;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
 import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
-import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -184,14 +182,10 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
                 .build();
         }
 
-        NotificationContextRequest notificationContextRequest = NotificationContextRequest.builder()
-            .caseData(caseData)
-            .caseReference(caseReference)
-            .notification(bundleCreatedNotification)
-            .build();
-
-        NotificationContext notificationContext = NotificationConstantProfiles.BUNDLE_CREATED
-            .buildContext(notificationContextRequest);
+        NotificationContext notificationContext = NotificationContext.forNotification(
+            caseData,
+            caseReference,
+            bundleCreatedNotification);
 
         notificationDispatcher.sendToCorrespondenceParties(notificationContext);
 

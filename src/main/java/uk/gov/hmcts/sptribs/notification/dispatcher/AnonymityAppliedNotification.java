@@ -15,7 +15,7 @@ import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
-import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.time.LocalDate;
@@ -91,10 +91,10 @@ public class AnonymityAppliedNotification implements PartiesNotification {
     }
 
     @Override
-    public Set<NotificationParties> buildCorrespondenceParties(NotificationContextRequest request) {
+    public Set<NotificationParties> buildCorrespondenceParties(NotificationContext context) {
         Set<NotificationParties> correspondenceParties = new HashSet<>();
-        CaseData caseData = request.getCaseData();
-        CaseData beforeData = request.getPreviousCaseData() != null ? request.getPreviousCaseData() : null;
+        CaseData caseData = context.getCaseData();
+        CaseData beforeData = context.getBeforeData() != null ? context.getBeforeData() : null;
 
         if (isAnonymityNewlyApplied(caseData, beforeData)) {
             correspondenceParties.add(TRIBUNAL);

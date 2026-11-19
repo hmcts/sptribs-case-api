@@ -289,10 +289,6 @@ class CaseworkerRecordListingTest {
         doAnswer(invocation -> {
             NotificationContext context = invocation.getArgument(0);
             if (context.getNotification() == listingCreatedNotification) {
-                context.getCorrespondenceParties().add(NotificationParties.REPRESENTATIVE);
-                context.getCorrespondenceParties().add(NotificationParties.SUBJECT);
-                context.getCorrespondenceParties().add(NotificationParties.APPLICANT);
-                context.getCorrespondenceParties().add(NotificationParties.RESPONDENT);
 
                 context.getSent().add(REPRESENTATIVE);
                 context.getSent().add(SUBJECT);

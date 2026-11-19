@@ -193,9 +193,6 @@ class CaseworkerIssueFinalDecisionTest {
         doAnswer(invocation -> {
             NotificationContext context = invocation.getArgument(0);
             if (context.getNotification() == caseFinalDecisionIssuedNotification) {
-                context.getCorrespondenceParties().add(NotificationParties.SUBJECT);
-                context.getCorrespondenceParties().add(NotificationParties.RESPONDENT);
-                context.getCorrespondenceParties().add(NotificationParties.REPRESENTATIVE);
                 context.getSent().add(SUBJECT);
                 context.getSent().add(REPRESENTATIVE);
                 context.getSent().add(RESPONDENT);
@@ -216,10 +213,6 @@ class CaseworkerIssueFinalDecisionTest {
         doAnswer(invocation -> {
             NotificationContext context = invocation.getArgument(0);
             if (context.getNotification() == caseFinalDecisionIssuedNotification) {
-                context.getCorrespondenceParties().add(NotificationParties.APPLICANT);
-                context.getCorrespondenceParties().add(NotificationParties.SUBJECT);
-                context.getCorrespondenceParties().add(NotificationParties.REPRESENTATIVE);
-                context.getCorrespondenceParties().add(NotificationParties.RESPONDENT);
                 context.getSent().add(APPLICANT);
                 context.getSent().add(SUBJECT);
                 context.getSent().add(REPRESENTATIVE);

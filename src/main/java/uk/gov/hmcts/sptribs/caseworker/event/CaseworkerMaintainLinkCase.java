@@ -12,11 +12,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.notification.NotificationConstantProfiles;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseUnlinkedNotification;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
 import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
-import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 
 import static java.lang.String.format;
 import static org.springframework.util.CollectionUtils.isEmpty;
@@ -73,16 +71,12 @@ public class CaseworkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
         final CaseData caseData = details.getData();
-        String caseNumber = caseData.getHyphenatedCaseRef();
+        String caseReference = caseData.getHyphenatedCaseRef();
 
-        NotificationContextRequest request = NotificationContextRequest.builder()
-            .caseData(caseData)
-            .caseReference(caseNumber)
-            .notification(caseUnlinkedNotification)
-            .build();
-
-        NotificationContext notificationContext = NotificationConstantProfiles.MAINTAIN_LINK.buildContext(
-            request);
+        NotificationContext notificationContext = NotificationContext.forNotification(
+            caseData,
+            caseReference,
+            caseUnlinkedNotification);
 
         notificationDispatcher.sendToCorrespondenceParties(notificationContext);
 

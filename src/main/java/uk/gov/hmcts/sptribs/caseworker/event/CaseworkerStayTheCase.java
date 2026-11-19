@@ -15,11 +15,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.notification.NotificationConstantProfiles;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseStayedNotification;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
 import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
-import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 
 import static java.lang.String.format;
 import static org.springframework.util.CollectionUtils.isEmpty;
@@ -110,16 +108,12 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
                                                CaseDetails<CaseData, State> beforeDetails) {
 
         final CaseData caseData = details.getData();
-        String caseNumber = caseData.getHyphenatedCaseRef();
+        String caseReference = caseData.getHyphenatedCaseRef();
 
-        NotificationContextRequest request = NotificationContextRequest.builder()
-            .caseData(caseData)
-            .caseReference(caseNumber)
-            .notification(caseStayedNotification)
-            .build();
-
-        NotificationContext notificationContext = NotificationConstantProfiles.STAY_THE_CASE.buildContext(
-            request);
+        NotificationContext notificationContext = NotificationContext.forNotification(
+            caseData,
+            caseReference,
+            caseStayedNotification);
 
         notificationDispatcher.sendToCorrespondenceParties(notificationContext);
 

@@ -9,7 +9,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
-import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.util.HashSet;
@@ -60,7 +60,7 @@ public class DssUpdateCaseSubmissionNotification implements PartiesNotification 
     }
 
     @Override
-    public Set<NotificationParties> buildCorrespondenceParties(NotificationContextRequest request) {
+    public Set<NotificationParties> buildCorrespondenceParties(NotificationContext context) {
         Set<NotificationParties> correspondenceParties = new HashSet<>();
 
         correspondenceParties.add(APPLICANT);

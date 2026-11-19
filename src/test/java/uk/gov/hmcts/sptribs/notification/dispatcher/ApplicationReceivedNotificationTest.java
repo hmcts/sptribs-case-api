@@ -20,7 +20,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
-import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.util.HashMap;
@@ -171,11 +171,11 @@ public class ApplicationReceivedNotificationTest {
                 .cicCase(cicCase)
                 .build();
 
-            NotificationContextRequest request = NotificationContextRequest.builder()
+            NotificationContext context = NotificationContext.builder()
                 .caseData(caseData)
                 .build();
 
-            Set<NotificationParties> correspondenceParties = applicationReceivedNotification.buildCorrespondenceParties(request);
+            Set<NotificationParties> correspondenceParties = applicationReceivedNotification.buildCorrespondenceParties(context);
 
             assertThat(correspondenceParties).contains(SUBJECT, APPLICANT, REPRESENTATIVE);
         }

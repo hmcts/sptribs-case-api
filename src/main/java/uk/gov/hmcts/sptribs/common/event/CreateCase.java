@@ -40,11 +40,9 @@ import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
-import uk.gov.hmcts.sptribs.notification.NotificationConstantProfiles;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ApplicationReceivedNotification;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
 import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
-import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -173,14 +171,10 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
             }
         }
 
-        NotificationContextRequest request = NotificationContextRequest.builder()
-            .caseData(caseData)
-            .caseReference(caseReference)
-            .notification(applicationReceivedNotification)
-            .build();
-
-        NotificationContext notificationContext = NotificationConstantProfiles.CREATE_CASE
-            .buildContext(request);
+        NotificationContext notificationContext = NotificationContext.forNotification(
+            caseData,
+            caseReference,
+            applicationReceivedNotification);
 
         notificationDispatcher.sendToCorrespondenceParties(notificationContext);
 

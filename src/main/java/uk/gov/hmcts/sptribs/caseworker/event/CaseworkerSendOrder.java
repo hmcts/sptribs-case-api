@@ -34,11 +34,9 @@ import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
-import uk.gov.hmcts.sptribs.notification.NotificationConstantProfiles;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
 import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
-import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -254,14 +252,10 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         final CaseData caseData = details.getData();
         final String caseReference = caseData.getHyphenatedCaseRef();
 
-        NotificationContextRequest request = NotificationContextRequest.builder()
-            .caseData(caseData)
-            .caseReference(caseReference)
-            .notification(newOrderIssuedNotification)
-            .build();
-
-        NotificationContext notificationContext = NotificationConstantProfiles.SEND_ORDER
-            .buildContext(request);
+        NotificationContext notificationContext = NotificationContext.forNotification(
+            caseData,
+            caseReference,
+            newOrderIssuedNotification);
 
         notificationDispatcher.sendToCorrespondenceParties(notificationContext);
 

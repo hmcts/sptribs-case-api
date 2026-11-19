@@ -14,7 +14,7 @@ import uk.gov.hmcts.sptribs.notification.DssNotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
-import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.util.HashSet;
@@ -114,9 +114,9 @@ public class DssApplicationReceivedNotification implements PartiesNotification {
         return citizenDashboardEnabled ? APPLICATION_RECEIVED_NEW_CD_CY : APPLICATION_RECEIVED_CY;
     }
 
-    public Set<NotificationParties> buildCorrespondenceParties(NotificationContextRequest request) {
+    public Set<NotificationParties> buildCorrespondenceParties(NotificationContext context) {
         Set<NotificationParties> correspondenceParties = new HashSet<>();
-        CaseData caseData = request.getCaseData();
+        CaseData caseData = context.getCaseData();
         DssCaseData dssCaseData = caseData.getDssCaseData();
 
         if (dssCaseData.getSubjectEmailAddress() != null) {

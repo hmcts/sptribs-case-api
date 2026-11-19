@@ -14,11 +14,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.service.AnonymisationService;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
-import uk.gov.hmcts.sptribs.notification.NotificationConstantProfiles;
 import uk.gov.hmcts.sptribs.notification.dispatcher.AnonymityAppliedNotification;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
 import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
-import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -106,15 +104,12 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
 
         coreCaseApiService.submitSupplementaryDataToCcd(details.getId() == null ? null : details.getId().toString());
 
-        NotificationContextRequest request = NotificationContextRequest.builder()
-            .caseData(caseData)
-            .caseReference(caseReference)
-            .notification(anonymityAppliedNotification)
-            .previousCaseData(beforeDetails.getData())
-            .build();
-
-        NotificationContext notificationContext = NotificationConstantProfiles.CASE_FLAG
-            .buildContext(request);
+        NotificationContext notificationContext = NotificationContext.withBeforeData(
+            caseData,
+            caseReference,
+            anonymityAppliedNotification,
+            beforeDetails.getData())
+           ;
 
         notificationDispatcher.sendToCorrespondenceParties(notificationContext);
 

@@ -31,11 +31,9 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
-import uk.gov.hmcts.sptribs.notification.NotificationConstantProfiles;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseWithdrawnNotification;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
 import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
-import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +41,7 @@ import java.util.List;
 import static java.lang.String.format;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CLOSE_THE_CASE;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateCombinedNotificationMessageFromSentAndErrorLists;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -213,14 +212,10 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
         final CaseData caseData = details.getData();
         final String caseReference = caseData.getHyphenatedCaseRef();
 
-        NotificationContextRequest request = NotificationContextRequest.builder()
-            .caseData(caseData)
-            .caseReference(caseReference)
-            .notification(caseWithdrawnNotification)
-            .build();
-
-        NotificationContext notificationContext = NotificationConstantProfiles.CLOSE_CASE
-            .buildContext(request);
+        NotificationContext notificationContext = NotificationContext.forNotification(
+            caseData,
+            caseReference,
+            caseWithdrawnNotification);
 
         notificationDispatcher.sendToCorrespondenceParties(notificationContext);
 
@@ -233,6 +228,13 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
         if (isEmpty(notificationContext.getErrors())) {
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(message)
+                .build();
+        }
+        if (!isEmpty(notificationContext.getErrors()) && !isEmpty(notificationContext.getSent())) {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(generateCombinedNotificationMessageFromSentAndErrorLists(notificationContext.getSent(),
+                    notificationContext.getErrors(), "Case closed.")
+                )
                 .build();
         } else {
             return SubmittedCallbackResponse.builder()

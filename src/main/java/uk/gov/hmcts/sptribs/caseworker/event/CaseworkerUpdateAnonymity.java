@@ -19,11 +19,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.service.AnonymisationService;
-import uk.gov.hmcts.sptribs.notification.NotificationConstantProfiles;
 import uk.gov.hmcts.sptribs.notification.dispatcher.AnonymityAppliedNotification;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
 import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
-import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -105,14 +103,10 @@ public class CaseworkerUpdateAnonymity implements CCDConfig<CaseData, State, Use
         final CaseData caseData = details.getData();
         final String caseReference = caseData.getHyphenatedCaseRef();
 
-        NotificationContextRequest notificationContextRequest = NotificationContextRequest.builder()
-            .caseData(caseData)
-            .caseReference(caseReference)
-            .notification(anonymityAppliedNotification)
-            .build();
-
-        NotificationContext notificationContext = NotificationConstantProfiles.UPDATE_ANONYMITY
-            .buildContext(notificationContextRequest);
+        NotificationContext notificationContext = NotificationContext.forNotification(
+            caseData,
+            caseReference,
+            anonymityAppliedNotification);
 
         notificationDispatcher.sendToCorrespondenceParties(notificationContext);
 

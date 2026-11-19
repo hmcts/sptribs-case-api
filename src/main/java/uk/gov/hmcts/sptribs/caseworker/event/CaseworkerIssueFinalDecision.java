@@ -28,11 +28,9 @@ import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
-import uk.gov.hmcts.sptribs.notification.NotificationConstantProfiles;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseFinalDecisionIssuedNotification;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
 import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
-import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -163,14 +161,10 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
         Document finalDecisionGuidance = getFinalDecisionGuidanceDocument(details.getId());
         caseData.getCaseIssueFinalDecision().setFinalDecisionGuidance(finalDecisionGuidance);
 
-        NotificationContextRequest notificationContextRequest = NotificationContextRequest.builder()
-            .caseData(caseData)
-            .caseReference(caseReference)
-            .notification(caseFinalDecisionIssuedNotification)
-            .build();
-
-        NotificationContext notificationContext = NotificationConstantProfiles.ISSUE_FINAL_DECISION
-            .buildContext(notificationContextRequest);
+        NotificationContext notificationContext = NotificationContext.forNotification(
+            caseData,
+            caseReference,
+            caseFinalDecisionIssuedNotification);
 
         notificationDispatcher.sendToCorrespondenceParties(notificationContext);
 

@@ -36,10 +36,8 @@ import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
-import uk.gov.hmcts.sptribs.notification.NotificationConstantProfiles;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
 import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
-import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
 import java.time.LocalDate;
@@ -133,14 +131,10 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         final CaseData caseData = details.getData();
         final String caseReference = caseData.getHyphenatedCaseRef();
 
-        NotificationContextRequest notificationContextRequest = NotificationContextRequest.builder()
-            .caseData(caseData)
-            .caseReference(caseReference)
-            .notification(dssApplicationReceivedNotification)
-            .build();
-
-        NotificationContext notificationContext = NotificationConstantProfiles.CIC_SUBMIT_CASE
-            .buildContext(notificationContextRequest);
+        NotificationContext notificationContext = NotificationContext.forNotification(
+            caseData,
+            caseReference,
+            dssApplicationReceivedNotification);
 
         notificationDispatcher.sendToCorrespondenceParties(notificationContext);
 

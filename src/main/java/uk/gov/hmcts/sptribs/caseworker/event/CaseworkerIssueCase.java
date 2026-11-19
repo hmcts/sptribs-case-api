@@ -21,11 +21,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.notification.NotificationConstantProfiles;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseIssuedNotification;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
 import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
-import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -127,14 +125,10 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
         final CaseData caseData = details.getData();
         final String caseReference = caseData.getHyphenatedCaseRef();
 
-        NotificationContextRequest request = NotificationContextRequest.builder()
-            .caseData(caseData)
-            .caseReference(caseReference)
-            .notification(caseIssuedNotification)
-            .build();
-
-        NotificationContext notificationContext = NotificationConstantProfiles.ISSUE_CASE
-            .buildContext(request);
+        NotificationContext notificationContext = NotificationContext.forNotification(
+            caseData,
+            caseReference,
+            caseIssuedNotification);
 
         notificationDispatcher.sendToCorrespondenceParties(notificationContext);
 

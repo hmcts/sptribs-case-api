@@ -39,17 +39,16 @@ import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
-import uk.gov.hmcts.sptribs.notification.NotificationConstantProfiles;
 import uk.gov.hmcts.sptribs.notification.dispatcher.AnonymityAppliedNotification;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
 import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
-import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static org.springframework.util.CollectionUtils.isEmpty;
@@ -284,53 +283,39 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
         final CaseData caseData = details.getData();
         final String caseReference = caseData.getHyphenatedCaseRef();
 
-        NotificationContextRequest request = NotificationContextRequest.builder()
-            .caseData(caseData)
-            .caseReference(caseReference)
-            .notification(newOrderIssuedNotification)
-            .build();
+        NotificationContext orderContext = NotificationContext.forNotification(
+            caseData, caseReference, newOrderIssuedNotification);
 
-        NotificationContext notificationContext = NotificationConstantProfiles.CREATE_AND_SEND_ORDER
-            .buildContext(request);
+        NotificationContext anonymityContext = NotificationContext.withBeforeData(
+            caseData, caseReference, anonymityAppliedNotification, beforeDetails.getData());
 
-        notificationDispatcher.sendToCorrespondenceParties(notificationContext);
+        List.of(orderContext, anonymityContext)
+            .forEach(notificationDispatcher::sendToCorrespondenceParties);
 
-        NotificationContextRequest anonymityRequest = NotificationContextRequest.builder()
-            .caseData(caseData)
-            .caseReference(caseReference)
-            .notification(anonymityAppliedNotification)
-            .previousCaseData(beforeDetails.getData())
-            .build();
+        List<String> combinedErrors = Stream.of(orderContext, anonymityContext)
+            .flatMap(c -> c.getErrors().stream())
+            .toList();
 
-        NotificationContext notificationContextAnonymity = NotificationConstantProfiles.ANONYMITY_APPLIED
-            .buildContext(anonymityRequest);
-
-        notificationDispatcher.sendToCorrespondenceParties(notificationContextAnonymity);
-
-        List<String> combinedErrors = new ArrayList<>(notificationContext.getErrors());
-        combinedErrors.addAll(notificationContextAnonymity.getErrors());
-
-        List<String> combinedCorrespondence = notificationContext.getSent();
-        combinedCorrespondence.addAll(notificationContextAnonymity.getSent());
+        List<String> combinedSent = Stream.of(orderContext, anonymityContext)
+            .flatMap(c -> c.getSent().stream())
+            .toList();
 
         if (isEmpty(combinedErrors)) {
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Order sent %n## %s",
-                    generateSimpleMessageFromSentList(combinedCorrespondence)))
+                    generateSimpleMessageFromSentList(combinedSent)))
                 .build();
         }
-        if (!isEmpty(notificationContext.getErrors()) && !isEmpty(notificationContext.getSent())) {
+        if (!isEmpty(combinedSent)) {
             return SubmittedCallbackResponse.builder()
-                .confirmationHeader(generateCombinedNotificationMessageFromSentAndErrorLists(combinedCorrespondence,
-                    combinedErrors, "Order sent.")
-                )
+                .confirmationHeader(generateCombinedNotificationMessageFromSentAndErrorLists(
+                    combinedSent, combinedErrors, "Order sent."))
                 .build();
-        } else {
-            return SubmittedCallbackResponse.builder()
-                .confirmationHeader(
-                    format("Failed to send order notifications for case %n## %s %n## Please resend the notification.",
-                        generateSimpleErrorMessage(combinedErrors)))
+        }
+        return SubmittedCallbackResponse.builder()
+            .confirmationHeader(format(
+                "Failed to send order notifications for case %n## %s %n## Please resend the notification.",
+                generateSimpleErrorMessage(combinedErrors)))
             .build();
-        }
     }
 }

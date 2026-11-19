@@ -22,11 +22,9 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
-import uk.gov.hmcts.sptribs.notification.NotificationConstantProfiles;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseReinstatedNotification;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
 import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
-import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -136,16 +134,12 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
 
 
         final CaseData caseData = details.getData();
-        String caseNumber = caseData.getHyphenatedCaseRef();
+        String caseReference = caseData.getHyphenatedCaseRef();
 
-        NotificationContextRequest request = NotificationContextRequest.builder()
-            .caseData(caseData)
-            .caseReference(caseNumber)
-            .notification(caseReinstatedNotification)
-            .build();
-
-        NotificationContext notificationContext = NotificationConstantProfiles.REINSTATE_CASE.buildContext(
-            request);
+        NotificationContext notificationContext = NotificationContext.forNotification(
+            caseData,
+            caseReference,
+            caseReinstatedNotification);
 
         notificationDispatcher.sendToCorrespondenceParties(notificationContext);
 

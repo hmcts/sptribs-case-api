@@ -32,7 +32,9 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -212,15 +214,22 @@ public class CaseworkerCancelHearingIT {
     void shouldReturnErrorMessageIfNotificationsFailOnSubmitted() throws Exception {
         final CaseData caseData = caseData();
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+
         caseData.setCicCase(
             CicCase.builder()
-                .representativeFullName("Rep Name")
                 .respondentName("Respondent Name")
-                .applicantFullName("Applicant Name")
+                .respondentEmail("respondent@test.com")
                 .hearingNotificationParties(
-                    Set.of(SUBJECT, REPRESENTATIVE, APPLICANT, RESPONDENT))
+                    Set.of(RESPONDENT))
                 .build()
         );
+
+        doThrow(new RuntimeException("Notification Failed to Send"))
+            .when(notificationServiceCIC)
+            .sendEmail(argThat(request ->
+                    request != null
+                        && "respondent@test.com".equals(request.getDestinationAddress())),
+                any(), any());
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
             .contentType(APPLICATION_JSON)
@@ -236,15 +245,12 @@ public class CaseworkerCancelHearingIT {
             .andReturn()
             .getResponse()
             .getContentAsString();
-
         assertThatJson(response)
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Hearing cancelled")
+            .contains("# Cancel hearing notification failed")
             .contains("## Please resend the notification")
-            .contains("Representative")
-            .contains("Applicant")
-            .contains("Subject");
+            .contains("Respondent");
     }
 
     @Test

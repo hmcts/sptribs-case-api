@@ -27,11 +27,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.notification.NotificationConstantProfiles;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ListingUpdatedNotification;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
 import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
-import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 
 import java.util.List;
 
@@ -181,18 +179,14 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
         final CaseData caseData = details.getData();
         final String caseReference = caseData.getHyphenatedCaseRef();
 
-        NotificationContextRequest notificationContextRequest = NotificationContextRequest.builder()
-            .caseData(caseData)
-            .caseReference(caseReference)
-            .notification(listingUpdatedNotification)
-            .build();
-
-        NotificationContext notificationContext = NotificationConstantProfiles.EDIT_RECORD_LISTING
-            .buildContext(notificationContextRequest);
+        NotificationContext notificationContext = NotificationContext.forNotification(
+            caseData,
+            caseReference,
+            listingUpdatedNotification);
 
         notificationDispatcher.sendToCorrespondenceParties(notificationContext);
 
-        if (isEmpty(notificationContext.getErrors()) && !isEmpty(notificationContext.getCorrespondenceParties())) {
+        if (isEmpty(notificationContext.getErrors()) && !isEmpty(notificationContext.getSent())) {
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Listing record updated %n## If any changes are made to this hearing,"
                         + " %n## remember to make those changes in this listing record. %n## %s",

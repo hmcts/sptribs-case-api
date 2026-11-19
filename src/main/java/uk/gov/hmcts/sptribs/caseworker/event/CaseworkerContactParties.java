@@ -25,12 +25,10 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.PartiesToContact;
 import uk.gov.hmcts.sptribs.common.service.ContactPartiesService;
-import uk.gov.hmcts.sptribs.notification.NotificationConstantProfiles;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
 import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
-import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -160,20 +158,17 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
                                                CaseDetails<CaseData, State> beforeDetails) {
 
         final CaseData caseData = details.getData();
-        String caseNumber = caseData.getHyphenatedCaseRef();
+        String caseReference = caseData.getHyphenatedCaseRef();
 
         final Map<String, String> uploadedDocuments = notificationHelper
             .buildDocumentList(caseData.getContactPartiesDocuments().getDocumentList(), DOC_ATTACH_LIMIT);
 
-        NotificationContextRequest request = NotificationContextRequest.builder()
-            .caseData(caseData)
-            .caseReference(caseNumber)
-            .notification(contactPartiesNotification)
-            .uploadedDocuments(uploadedDocuments)
-            .build();
-
-        NotificationContext notificationContext = NotificationConstantProfiles.CONTACT_PARTIES.buildContext(
-            request);
+        NotificationContext notificationContext = NotificationContext.withUploadedDocuments(
+            caseData,
+            caseReference,
+            contactPartiesNotification,
+            uploadedDocuments
+        );
 
         notificationDispatcher.sendToCorrespondenceParties(notificationContext);
 

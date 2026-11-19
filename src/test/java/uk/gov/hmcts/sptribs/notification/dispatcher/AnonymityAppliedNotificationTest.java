@@ -15,7 +15,7 @@ import uk.gov.hmcts.sptribs.notification.NotificationConstants;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
-import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.time.LocalDate;
@@ -44,7 +44,7 @@ class AnonymityAppliedNotificationTest {
     private NotificationHelper notificationHelper;
 
     @Mock
-    private NotificationContextRequest notificationContextRequest;
+    private NotificationContext notificationContext;
 
     private AnonymityAppliedNotification anonymityAppliedNotification;
 
@@ -144,10 +144,10 @@ class AnonymityAppliedNotificationTest {
                 .build())
             .build();
 
-        when(notificationContextRequest.getCaseData()).thenReturn(caseData);
-        when(notificationContextRequest.getPreviousCaseData()).thenReturn(null);
+        when(notificationContext.getCaseData()).thenReturn(caseData);
+        when(notificationContext.getBeforeData()).thenReturn(null);
 
-        assertThat(anonymityAppliedNotification.buildCorrespondenceParties(notificationContextRequest)).contains(TRIBUNAL);
+        assertThat(anonymityAppliedNotification.buildCorrespondenceParties(notificationContext)).contains(TRIBUNAL);
     }
 
     @Test
@@ -169,10 +169,10 @@ class AnonymityAppliedNotificationTest {
                 .build())
             .build();
 
-        when(notificationContextRequest.getCaseData()).thenReturn(caseData);
-        when(notificationContextRequest.getPreviousCaseData()).thenReturn(beforeData);
+        when(notificationContext.getCaseData()).thenReturn(caseData);
+        when(notificationContext.getBeforeData()).thenReturn(beforeData);
 
-        assertThat(anonymityAppliedNotification.buildCorrespondenceParties(notificationContextRequest)).contains(TRIBUNAL);
+        assertThat(anonymityAppliedNotification.buildCorrespondenceParties(notificationContext)).contains(TRIBUNAL);
     }
 
     @Test
@@ -195,10 +195,10 @@ class AnonymityAppliedNotificationTest {
                 .build())
             .build();
 
-        when(notificationContextRequest.getCaseData()).thenReturn(caseData);
-        when(notificationContextRequest.getPreviousCaseData()).thenReturn(beforeCaseData);
+        when(notificationContext.getCaseData()).thenReturn(caseData);
+        when(notificationContext.getBeforeData()).thenReturn(beforeCaseData);
 
-        assertThat(anonymityAppliedNotification.buildCorrespondenceParties(notificationContextRequest)).doesNotContain(TRIBUNAL);
+        assertThat(anonymityAppliedNotification.buildCorrespondenceParties(notificationContext)).doesNotContain(TRIBUNAL);
     }
 
     @Test
@@ -212,10 +212,10 @@ class AnonymityAppliedNotificationTest {
                 .build())
             .build();
 
-        when(notificationContextRequest.getCaseData()).thenReturn(caseData);
-        when(notificationContextRequest.getPreviousCaseData()).thenReturn(null);
+        when(notificationContext.getCaseData()).thenReturn(caseData);
+        when(notificationContext.getBeforeData()).thenReturn(null);
 
-        assertThat(anonymityAppliedNotification.buildCorrespondenceParties(notificationContextRequest)).doesNotContain(TRIBUNAL);
+        assertThat(anonymityAppliedNotification.buildCorrespondenceParties(notificationContext)).doesNotContain(TRIBUNAL);
     }
 
     @Test
@@ -229,18 +229,18 @@ class AnonymityAppliedNotificationTest {
                 .build())
             .build();
 
-        when(notificationContextRequest.getCaseData()).thenReturn(caseData);
-        when(notificationContextRequest.getPreviousCaseData()).thenReturn(null);
+        when(notificationContext.getCaseData()).thenReturn(caseData);
+        when(notificationContext.getBeforeData()).thenReturn(null);
 
-        assertThat(anonymityAppliedNotification.buildCorrespondenceParties(notificationContextRequest)).doesNotContain(TRIBUNAL);
+        assertThat(anonymityAppliedNotification.buildCorrespondenceParties(notificationContext)).doesNotContain(TRIBUNAL);
     }
 
     @Test
     void shouldNotAddTribunalToCorrespondenceNotificationIfCaseDataIsNull() {
-        when(notificationContextRequest.getCaseData()).thenReturn(null);
-        when(notificationContextRequest.getPreviousCaseData()).thenReturn(null);
+        when(notificationContext.getCaseData()).thenReturn(null);
+        when(notificationContext.getBeforeData()).thenReturn(null);
 
-        assertThat(anonymityAppliedNotification.buildCorrespondenceParties(notificationContextRequest)).doesNotContain(TRIBUNAL);
+        assertThat(anonymityAppliedNotification.buildCorrespondenceParties(notificationContext)).doesNotContain(TRIBUNAL);
     }
 
     @Test

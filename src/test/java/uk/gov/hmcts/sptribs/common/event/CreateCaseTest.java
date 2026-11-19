@@ -15,7 +15,6 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
@@ -28,6 +27,7 @@ import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ApplicationReceivedNotification;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
 import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
+import uk.gov.hmcts.sptribs.testutil.TestConstants;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -53,6 +53,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC.SUBJECT;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.APPLICANT;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_HYPHENATED;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
@@ -365,9 +366,9 @@ class CreateCaseTest {
         doAnswer(invocation -> {
             NotificationContext context = invocation.getArgument(0);
             if (context.getNotification() == applicationReceivedNotification) {
-                context.getCorrespondenceParties().add(NotificationParties.REPRESENTATIVE);
-                context.getCorrespondenceParties().add(NotificationParties.APPLICANT);
-                context.getCorrespondenceParties().add(NotificationParties.SUBJECT);
+                context.getSent().add(TestConstants.REPRESENTATIVE);
+                context.getSent().add(APPLICANT);
+                context.getSent().add(TestConstants.SUBJECT);
             }
             return null;
         }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
