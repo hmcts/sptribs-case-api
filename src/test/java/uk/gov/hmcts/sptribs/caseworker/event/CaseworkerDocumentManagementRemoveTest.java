@@ -24,7 +24,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.document.model.OrderDecisionUploadCICDocument;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
 import java.util.ArrayList;
@@ -34,6 +36,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -100,7 +108,7 @@ public class CaseworkerDocumentManagementRemoveTest {
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        CICDocument doc = CICDocument.builder()
+        OrderDecisionUploadCICDocument doc = OrderDecisionUploadCICDocument.builder()
             .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build()).build();
         caseData.setCaseIssueFinalDecision(CaseIssueFinalDecision.builder().document(doc).build());
         caseData.setCaseIssueDecision(CaseIssueDecision.builder().decisionDocument(doc).build());
@@ -133,7 +141,7 @@ public class CaseworkerDocumentManagementRemoveTest {
         updatedCaseDetails.setData(caseData);
         final CaseData oldData = caseData();
 
-        CICDocument docOld = CICDocument.builder()
+        OrderDecisionUploadCICDocument docOld = OrderDecisionUploadCICDocument.builder()
             .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build()).build();
         oldData.setCaseIssueFinalDecision(CaseIssueFinalDecision.builder().document(docOld).build());
         oldData.setCaseIssueDecision(CaseIssueDecision.builder().decisionDocument(docOld).build());
@@ -181,7 +189,7 @@ public class CaseworkerDocumentManagementRemoveTest {
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        CICDocument doc = CICDocument.builder()
+        OrderDecisionUploadCICDocument doc = OrderDecisionUploadCICDocument.builder()
             .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build()).build();
         caseData.setCaseIssueFinalDecision(CaseIssueFinalDecision.builder().document(doc).build());
         caseData.setCaseIssueDecision(CaseIssueDecision.builder().decisionDocument(doc).build());
@@ -215,7 +223,7 @@ public class CaseworkerDocumentManagementRemoveTest {
         updatedCaseDetails.setData(caseData);
         final CaseData oldData = caseData();
 
-        CICDocument docOld = CICDocument.builder()
+        OrderDecisionUploadCICDocument docOld = OrderDecisionUploadCICDocument.builder()
             .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build()).build();
         oldData.setCaseIssueFinalDecision(CaseIssueFinalDecision.builder().document(docOld).build());
         oldData.setCaseIssueDecision(CaseIssueDecision.builder().decisionDocument(docOld).build());
@@ -249,6 +257,52 @@ public class CaseworkerDocumentManagementRemoveTest {
         assertThat(response).isNotNull();
         assertThat(response.getData().getCicCase().getRemovedDocumentList()).hasSize(0);
         assertThat(documentMgmtResponse).isNotNull();
+    }
+
+    @Test
+    void shouldGrantSeniorCaseworkerAndTeamLeaderRemoveAccess() {
+        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+
+        caseworkerDocumentManagementRemove.configure(configBuilder);
+
+        final Event<CaseData, UserRole, State> event = getEventsFrom(configBuilder).values().stream()
+            .filter(e -> CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE.equals(e.getId()))
+            .findFirst()
+            .orElseThrow();
+
+        assertThat(getEventsFrom(configBuilder).values())
+            .extracting(Event::getId)
+            .contains(CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE);
+
+        assertThat(getEventsFrom(configBuilder).values())
+            .extracting(Event::getGrants)
+            .extracting(map -> map.get(ST_CIC_SENIOR_CASEWORKER))
+            .contains(Permissions.CREATE_READ_UPDATE_DELETE);
+
+        assertThat(getEventsFrom(configBuilder).values())
+            .extracting(Event::getGrants)
+            .extracting(map -> map.get(ST_CIC_HEARING_CENTRE_TEAM_LEADER))
+            .contains(Permissions.CREATE_READ_UPDATE_DELETE);
+
+        assertThat(getEventsFrom(configBuilder).values())
+            .extracting(Event::getGrants)
+            .extracting(map -> map.get(ST_CIC_CASEWORKER))
+            .doesNotContain(Permissions.CREATE_READ_UPDATE_DELETE);
+
+        assertThat(getEventsFrom(configBuilder).values())
+            .extracting(Event::getGrants)
+            .extracting(map -> map.get(ST_CIC_HEARING_CENTRE_ADMIN))
+            .doesNotContain(Permissions.CREATE_READ_UPDATE_DELETE);
+
+        assertThat(getEventsFrom(configBuilder).values())
+            .extracting(Event::getGrants)
+            .extracting(map -> map.get(ST_CIC_JUDGE))
+            .doesNotContain(Permissions.CREATE_READ_UPDATE_DELETE);
+
+        assertThat(getEventsFrom(configBuilder).values())
+            .extracting(Event::getGrants)
+            .extracting(map -> map.get(ST_CIC_SENIOR_JUDGE))
+            .doesNotContain(Permissions.CREATE_READ_UPDATE_DELETE);
     }
 
 

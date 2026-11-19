@@ -22,12 +22,13 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.document.DocumentUtil;
-import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.OrderDecisionUploadCICDocument;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 
 import java.time.LocalDate;
@@ -83,7 +84,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
             final UUID uuid = UUID.randomUUID();
             final Document guidanceDocument = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
             final Document decisionDocument = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
-            final CICDocument document = CICDocument.builder()
+            final OrderDecisionUploadCICDocument document = OrderDecisionUploadCICDocument.builder()
                 .documentLink(decisionDocument)
                 .documentEmailContent("content")
                 .build();
@@ -103,7 +104,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
 
             //Then
             verify(notificationService).sendEmail(any(NotificationRequest.class), selectedDocumentsCaptor.capture(),
-                eq(TEST_CASE_ID.toString()), eq(null));
+                eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT));
             verify(notificationHelper).buildEmailNotificationRequest(
                 data.getCicCase().getEmail(),
                 true,
@@ -143,7 +144,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
 
             //Then
             verify(notificationService).sendEmail(any(NotificationRequest.class), selectedDocumentsCaptor.capture(),
-                eq(TEST_CASE_ID.toString()), eq(null));
+                eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT));
             verify(notificationHelper).buildEmailNotificationRequest(
                 data.getCicCase().getEmail(),
                 true,
@@ -207,7 +208,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
             String guidanceDocumentUuid = DocumentUtil.getUuid(guidanceDocument);
             //Then
             verify(notificationService).sendEmail(any(NotificationRequest.class), selectedDocumentsCaptor.capture(),
-                eq(TEST_CASE_ID.toString()), eq(null));
+                eq(TEST_CASE_ID.toString()), eq(Party.RESPONDENT));
             verify(notificationHelper).buildEmailNotificationRequest(
                 data.getCicCase().getRespondentEmail(),
                 true,
@@ -245,7 +246,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
 
             //Then
             verify(notificationService).sendEmail(any(NotificationRequest.class), selectedDocumentsCaptor.capture(),
-                eq(TEST_CASE_ID.toString()), eq(null));
+                eq(TEST_CASE_ID.toString()), eq(Party.RESPONDENT));
             verify(notificationHelper).buildEmailNotificationRequest(
                 data.getCicCase().getRespondentEmail(),
                 true,
@@ -289,7 +290,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
             String guidanceDocumentUuid = DocumentUtil.getUuid(guidanceDocument);
             //Then
             verify(notificationService).sendEmail(any(NotificationRequest.class), selectedDocumentsCaptor.capture(),
-                eq(TEST_CASE_ID.toString()), eq(null));
+                eq(TEST_CASE_ID.toString()), eq(Party.REPRESENTATIVE));
             verify(notificationHelper).buildEmailNotificationRequest(
                 data.getCicCase().getRepresentativeEmailAddress(),
                 true,
@@ -332,7 +333,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
 
             //Then
             verify(notificationService).sendEmail(any(NotificationRequest.class), selectedDocumentsCaptor.capture(),
-                eq(TEST_CASE_ID.toString()), eq(null));
+                eq(TEST_CASE_ID.toString()), eq(Party.REPRESENTATIVE));
             verify(notificationHelper).buildEmailNotificationRequest(
                 data.getCicCase().getRepresentativeEmailAddress(),
                 true,
@@ -378,7 +379,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
             data.getCicCase().setApplicantEmailAddress("testapp@outlook.com");
 
             Document decisionDocument = TestDataHelper.getDocumentWithBinary("decisionDocument");
-            final CICDocument document = CICDocument.builder()
+            final OrderDecisionUploadCICDocument document = OrderDecisionUploadCICDocument.builder()
                 .documentLink(decisionDocument)
                 .documentEmailContent("content")
                 .build();
@@ -403,7 +404,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
             String guidanceDocumentUuid = DocumentUtil.getUuid(guidanceDocument);
             //Then
             verify(notificationService).sendEmail(any(NotificationRequest.class), selectedDocumentsCaptor.capture(),
-                eq(TEST_CASE_ID.toString()), eq(null));
+                eq(TEST_CASE_ID.toString()), eq(Party.APPLICANT));
             verify(notificationHelper).buildEmailNotificationRequest(
                 data.getCicCase().getApplicantEmailAddress(),
                 true,
@@ -459,7 +460,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
             data.getCicCase().setEmail("testsubject@outlook.com");
 
             Document decisionDocument = TestDataHelper.getDocumentWithBinary("decisionDocument");
-            final CICDocument document = CICDocument.builder()
+            final OrderDecisionUploadCICDocument document = OrderDecisionUploadCICDocument.builder()
                 .documentLink(decisionDocument)
                 .documentEmailContent("content")
                 .build();
@@ -482,7 +483,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
             String guidanceDocumentUuid = DocumentUtil.getUuid(guidanceDocument);
             //Then
             verify(notificationService).sendEmail(any(NotificationRequest.class), selectedDocumentsCaptor.capture(),
-                eq(TEST_CASE_ID.toString()), eq(null));
+                eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT));
             verify(notificationHelper).buildEmailNotificationRequest(
                 eq(data.getCicCase().getEmail()),
                 eq(true),

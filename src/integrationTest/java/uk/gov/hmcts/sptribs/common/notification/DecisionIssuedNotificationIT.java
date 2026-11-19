@@ -17,7 +17,7 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
-import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.document.model.OrderDecisionUploadCICDocument;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.dispatcher.DecisionIssuedNotification;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
@@ -96,7 +96,7 @@ public class DecisionIssuedNotificationIT {
                     .build())
                 .caseIssueDecision(CaseIssueDecision.builder()
                     .decisionNotice(UPLOAD_FROM_COMPUTER)
-                    .decisionDocument(CICDocument.builder()
+                    .decisionDocument(OrderDecisionUploadCICDocument.builder()
                         .documentLink(Document.builder()
                             .url("http://dm-store-aat.service.core-compute-aat.internal/documents/0ebad3a7-223e-4185-b8ce-ccb50a87e982")
                             .filename("DRAFT :Order--[null]--09-05-2024 15:11:08.pdf")
@@ -181,7 +181,7 @@ public class DecisionIssuedNotificationIT {
                     .build())
                 .caseIssueDecision(CaseIssueDecision.builder()
                     .decisionNotice(UPLOAD_FROM_COMPUTER)
-                    .decisionDocument(CICDocument.builder()
+                    .decisionDocument(OrderDecisionUploadCICDocument.builder()
                         .documentLink(Document.builder()
                             .url("http://dm-store-aat.service.core-compute-aat.internal/documents/0ebad3a7-223e-4185-b8ce-ccb50a87e982")
                             .filename("DRAFT :Order--[null]--09-05-2024 15:11:08.pdf")
@@ -267,7 +267,7 @@ public class DecisionIssuedNotificationIT {
                     .build())
                 .caseIssueDecision(CaseIssueDecision.builder()
                     .decisionNotice(UPLOAD_FROM_COMPUTER)
-                    .decisionDocument(CICDocument.builder()
+                    .decisionDocument(OrderDecisionUploadCICDocument.builder()
                         .documentLink(Document.builder()
                             .url("http://dm-store-aat.service.core-compute-aat.internal/documents/0ebad3a7-223e-4185-b8ce-ccb50a87e982")
                             .filename("DRAFT :Order--[null]--09-05-2024 15:11:08.pdf")
@@ -319,7 +319,7 @@ public class DecisionIssuedNotificationIT {
                     .build())
                 .caseIssueDecision(CaseIssueDecision.builder()
                     .decisionNotice(UPLOAD_FROM_COMPUTER)
-                    .decisionDocument(CICDocument.builder()
+                    .decisionDocument(OrderDecisionUploadCICDocument.builder()
                         .documentLink(Document.builder()
                             .url("http://dm-store-aat.service.core-compute-aat.internal/documents/0ebad3a7-223e-4185-b8ce-ccb50a87e982")
                             .filename("DRAFT :Order--[null]--09-05-2024 15:11:08.pdf")
@@ -418,7 +418,7 @@ public class DecisionIssuedNotificationIT {
                     .build())
                 .caseIssueDecision(CaseIssueDecision.builder()
                     .decisionNotice(UPLOAD_FROM_COMPUTER)
-                    .decisionDocument(CICDocument.builder()
+                    .decisionDocument(OrderDecisionUploadCICDocument.builder()
                         .documentLink(Document.builder()
                             .url("http://dm-store-aat.service.core-compute-aat.internal/documents/0ebad3a7-223e-4185-b8ce-ccb50a87e982")
                             .filename("DRAFT :Order--[null]--09-05-2024 15:11:08.pdf")
@@ -469,7 +469,7 @@ public class DecisionIssuedNotificationIT {
                     .build())
                 .caseIssueDecision(CaseIssueDecision.builder()
                     .decisionNotice(UPLOAD_FROM_COMPUTER)
-                    .decisionDocument(CICDocument.builder()
+                    .decisionDocument(OrderDecisionUploadCICDocument.builder()
                         .documentLink(Document.builder()
                             .url("http://dm-store-aat.service.core-compute-aat.internal/documents/0ebad3a7-223e-4185-b8ce-ccb50a87e982")
                             .filename("DRAFT :Order--[null]--09-05-2024 15:11:08.pdf")
@@ -519,7 +519,7 @@ public class DecisionIssuedNotificationIT {
                     .build())
                 .caseIssueDecision(CaseIssueDecision.builder()
                     .decisionNotice(UPLOAD_FROM_COMPUTER)
-                    .decisionDocument(CICDocument.builder()
+                    .decisionDocument(OrderDecisionUploadCICDocument.builder()
                         .documentLink(Document.builder()
                             .url("http://dm-store-aat.service.core-compute-aat.internal/documents/0ebad3a7-223e-4185-b8ce-ccb50a87e982")
                             .filename("DRAFT :Order--[null]--09-05-2024 15:11:08.pdf")
@@ -570,7 +570,7 @@ public class DecisionIssuedNotificationIT {
                     .build())
                 .caseIssueDecision(CaseIssueDecision.builder()
                     .decisionNotice(UPLOAD_FROM_COMPUTER)
-                    .decisionDocument(CICDocument.builder()
+                    .decisionDocument(OrderDecisionUploadCICDocument.builder()
                         .documentLink(Document.builder()
                             .url("http://dm-store-aat.service.core-compute-aat.internal/documents/0ebad3a7-223e-4185-b8ce-ccb50a87e982")
                             .filename("DRAFT :Order--[null]--09-05-2024 15:11:08.pdf")

@@ -65,6 +65,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORK
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.convertToCICDocuments;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToDocument;
 
 @Slf4j
@@ -131,16 +132,19 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
                                                                        final CaseDetails<CaseData, State> beforeDetails) {
-
         final CaseData caseData = details.getData();
-        if (caseData.getCicCase().getOrderFile() != null) {
-            updateCategoryToDocument(caseData.getCicCase().getOrderFile(), DocumentType.TRIBUNAL_DIRECTION.getCategory());
+        final List<ListValue<CICDocument>> documents = caseData.getCicCase().getOrderFile() != null
+            ? convertToCICDocuments(caseData.getCicCase().getOrderFile())
+            : null;
+
+        if (documents != null) {
+            updateCategoryToDocument(documents, DocumentType.TRIBUNAL_DIRECTION.getCategory());
         }
 
         DraftOrderCIC selectedDraftOrder = null;
         String selectedDynamicDraft = null;
         final Order order = Order.builder()
-            .uploadedFile(caseData.getCicCase().getOrderFile())
+            .uploadedFile(documents)
             .dueDateList(caseData.getOrderDueDates())
             .parties(getRecipients(caseData.getCicCase()))
             .orderSentDate(LocalDate.now())
@@ -148,8 +152,8 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
 
         List<String> errors = new ArrayList<>();
 
-        if (caseData.getCicCase().getOrderIssuingType() != null && caseData.getCicCase().getDraftOrderDynamicList() != null
-            && caseData.getCicCase().getOrderIssuingType().equals(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)) {
+        if (OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT.equals(caseData.getCicCase().getOrderIssuingType())
+            && caseData.getCicCase().getDraftOrderDynamicList() != null) {
 
             selectedDynamicDraft = caseData.getCicCase().getDraftOrderDynamicList().getValue().getLabel();
             for (ListValue<DraftOrderCIC> draftOrderCICValue : caseData.getCicCase().getDraftOrderCICList()) {
@@ -172,12 +176,9 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
                     }
                 }
             }
-        } else if (caseData.getCicCase().getOrderIssuingType() != null
-            && caseData.getCicCase().getOrderIssuingType().equals(OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER)) {
-
-            List<ListValue<CICDocument>> uploadedOrderDocuments = caseData.getCicCase().getOrderFile();
-
-            for (ListValue<CICDocument> uploadedOrderDocument : uploadedOrderDocuments) {
+        } else if (OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER.equals(caseData.getCicCase().getOrderIssuingType())
+            && documents != null) {
+            for (ListValue<CICDocument> uploadedOrderDocument : documents) {
 
                 try {
 
