@@ -24,6 +24,7 @@ import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
+import uk.gov.hmcts.sptribs.caseworker.util.PageShowConditionsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
@@ -211,6 +212,7 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
     private void addRegionInfo(PageBuilder pageBuilder) {
         pageBuilder.page("regionInfo", this::midEvent)
             .pageLabel("Region Data")
+            .pageShowConditions(PageShowConditionsUtil.editSummaryShowConditions())
             .label("labelEditRecordingRegionData", "")
             .complex(CaseData::getListing)
             .readonly(Listing::getRegionsMessage)
