@@ -1,6 +1,6 @@
 {
   "caseNameHmctsInternal": "Subject AutoTesting",
-  "orderContentOrderTemplate": "CIC3_Rule_27",
+  "orderContentOrderTemplate": "CIC6_General_Directions",
   "orderContentMainContent": "Lorem ipsum main content",
   "orderContentOrderSignature": "Lorem ipsum signature",
   "cicCaseOrderTemplateIssued": {
@@ -12,16 +12,16 @@
   "cicCaseDraftOrderDynamicList": {
     "value": {
       "code": "4420904d-17cf-4c89-aebe-45e4acb7428b",
-      "label": "CIC3 - Rule 27--09-05-2024 09:04:04.pdf--draft.pdf"
+      "label": "CIC6 - General Directions--09-05-2024 09:04:04.pdf--draft.pdf"
     },
     "list_items": [
       {
         "code": "4420904d-17cf-4c89-aebe-45e4acb7428b",
-        "label": "CIC3 - Rule 27--09-05-2024 09:04:04.pdf--draft.pdf"
+        "label": "CIC6 - General Directions--09-05-2024 09:04:04.pdf--draft.pdf"
       }
     ],
     "valueCode": "4420904d-17cf-4c89-aebe-45e4acb7428b",
-    "valueLabel": "CIC3 - Rule 27--09-05-2024 09:04:04.pdf--draft.pdf"
+    "valueLabel": "CIC6 - General Directions--09-05-2024 09:04:04.pdf--draft.pdf"
   },
   "cicCaseDraftOrderCICList": [
     {
@@ -33,7 +33,7 @@
           "document_binary_url": "http://dm-store.service.core-compute.internal/documents/6bcdb209-ba65-4f31-a12a-5abbdf250fb6/binary",
           "category_id": "TD"
         },
-        "orderContentOrderTemplate": "CIC3_Rule_27",
+        "orderContentOrderTemplate": "CIC6_General_Directions",
         "orderContentMainContent": "Lorem ipsum main content",
         "orderContentOrderSignature": "Lorem ipsum signature"
       }

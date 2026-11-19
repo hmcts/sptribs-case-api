@@ -4,11 +4,11 @@
       "list_items": [
         {
           "code": "${json-unit.any-string}",
-          "label": "CIC3 - Rule 27--26-04-2024 10:09:12.pdf--draft.pdf"
+          "label": "CIC6 - General Directions--26-04-2024 10:09:12.pdf--draft.pdf"
         },
         {
           "code": "${json-unit.any-string}",
-          "label": "CIC3 - Rule 27--26-04-2024 10:09:12.pdf--draft.pdf"
+          "label": "CIC6 - General Directions--26-04-2024 10:09:12.pdf--draft.pdf"
         }
       ]
     },
@@ -22,7 +22,7 @@
             "document_binary_url": "http://dm-store.service.core-compute.internal/documents/5d76ff31-8547-4702-b2c8-34c43a53d220/binary",
             "category_id": "TD"
           },
-          "orderContentOrderTemplate": "CIC3_Rule_27",
+          "orderContentOrderTemplate": "CIC6_General_Directions",
           "orderContentMainContent": "Order Main Content",
           "orderContentOrderSignature": "Order Signatory"
         }
@@ -36,7 +36,7 @@
             "document_binary_url": "http://dm-store.service.core-compute.internal/documents/5d76ff31-8547-4702-b2c8-34c43a53d220/binary",
             "category_id": "TD"
           },
-          "orderContentOrderTemplate": "CIC3_Rule_27",
+          "orderContentOrderTemplate": "CIC6_General_Directions",
           "orderContentMainContent": "Order Main Content",
           "orderContentOrderSignature": "Order Signatory"
         }

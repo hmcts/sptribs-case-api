@@ -39,7 +39,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_DRAFT_ORDER;
 import static uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference.ENGLISH;
-import static uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate.CIC3_RULE_27;
+import static uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate.CIC6_GENERAL_DIRECTIONS;
 import static uk.gov.hmcts.sptribs.ciccase.model.SchemeCic.Year2012;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
@@ -106,7 +106,7 @@ public class CaseworkerCreateDraftOrderIT {
             )
             .hearingList(getHearingList())
             .draftOrderContentCIC(DraftOrderContentCIC.builder()
-                .orderTemplate(CIC3_RULE_27)
+                .orderTemplate(CIC6_GENERAL_DIRECTIONS)
                 .orderSignature("Mr Judge")
                 .mainContent("Draft Order Content")
                 .build()
@@ -134,7 +134,7 @@ public class CaseworkerCreateDraftOrderIT {
             anyMap(),
             eq(TEST_CASE_ID),
             eq(TEST_AUTHORIZATION_TOKEN),
-            eq(CIC3_RULE_27.getId()),
+            eq(CIC6_GENERAL_DIRECTIONS.getId()),
             eq(ENGLISH),
             anyString()
         )).thenReturn(documentInfo);
@@ -162,7 +162,7 @@ public class CaseworkerCreateDraftOrderIT {
             anyMap(),
             eq(TEST_CASE_ID),
             eq(TEST_AUTHORIZATION_TOKEN),
-            eq(CIC3_RULE_27.getId()),
+            eq(CIC6_GENERAL_DIRECTIONS.getId()),
             eq(ENGLISH),
             anyString()
         );
@@ -185,7 +185,7 @@ public class CaseworkerCreateDraftOrderIT {
             .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
             .hearingList(getHearingList())
             .draftOrderContentCIC(DraftOrderContentCIC.builder()
-                .orderTemplate(CIC3_RULE_27)
+                .orderTemplate(CIC6_GENERAL_DIRECTIONS)
                 .orderSignature("Mr Judge")
                 .mainContent("Draft Order Content")
                 .build()
