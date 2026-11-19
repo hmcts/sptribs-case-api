@@ -15,6 +15,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.PostponeHearingNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.event.page.PostponeHearingSelectReason;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SelectHearing;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
+import uk.gov.hmcts.sptribs.caseworker.service.HearingJudgeTaskService;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -52,15 +53,19 @@ public class CaseworkerPostponeHearing implements CCDConfig<CaseData, State, Use
 
     private final HearingService hearingService;
 
+    private final HearingJudgeTaskService hearingJudgeTaskService;
+
     private final RecordListHelper recordListHelper;
 
     private final HearingPostponedNotification hearingPostponedNotification;
 
     @Autowired
     public CaseworkerPostponeHearing(HearingService hearingService,
-                                     RecordListHelper recordListHelper,
+                                      HearingJudgeTaskService hearingJudgeTaskService,
+                                      RecordListHelper recordListHelper,
                                      HearingPostponedNotification hearingPostponedNotification) {
         this.hearingService = hearingService;
+        this.hearingJudgeTaskService = hearingJudgeTaskService;
         this.recordListHelper = recordListHelper;
         this.hearingPostponedNotification = hearingPostponedNotification;
     }
@@ -86,6 +91,8 @@ public class CaseworkerPostponeHearing implements CCDConfig<CaseData, State, Use
         selectHearing.addTo(pageBuilder);
         selectReason.addTo(pageBuilder);
         notifyParties.addTo(pageBuilder);
+        eventBuilder.fields().readonlyNoSummary(CaseData::getCancelHearingJudgeTaskTrigger,
+            "[STATE]=\"NEVER_SHOW\"");
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
@@ -108,6 +115,7 @@ public class CaseworkerPostponeHearing implements CCDConfig<CaseData, State, Use
         caseData.setCurrentEvent("");
         caseData.getListing().setHearingStatus(Postponed);
         caseData.getListing().setPostponeDate(LocalDate.now());
+        hearingJudgeTaskService.updateTask(caseData, caseData.getListing());
 
         final String hearingName = caseData.getCicCase().getHearingList().getValue().getLabel();
 

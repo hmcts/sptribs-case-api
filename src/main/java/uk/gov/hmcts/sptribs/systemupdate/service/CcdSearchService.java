@@ -41,20 +41,27 @@ public class CcdSearchService {
     public List<CaseDetails> searchForAllCasesWithQuery(
         final BoolQueryBuilder query, CICUser user, String serviceAuth, final State... states) {
 
+        if (pageSize <= 0) {
+            throw new IllegalArgumentException("Case search page size must be positive");
+        }
+
         final List<CaseDetails> allCaseDetails = new ArrayList<>();
         int from = 0;
-        int totalResults = pageSize;
+        int totalResults = 0;
 
         try {
-            while (totalResults == pageSize) {
+            do {
                 final SearchResult searchResult =
                     searchForCasesWithQuery(from, pageSize, query, user, serviceAuth);
 
+                if (from == 0) {
+                    // CCD can filter cases after searching, so page length is not a reliable stopping condition.
+                    totalResults = searchResult.getTotal();
+                }
                 allCaseDetails.addAll(searchResult.getCases());
 
                 from += pageSize;
-                totalResults = searchResult.getTotal();
-            }
+            } while (from < totalResults);
         } catch (final FeignException e) {
             final String message = String.format("Failed to complete search for Cases with state of %s", Arrays.toString(states));
             log.error(message, e);
@@ -115,7 +122,9 @@ public class CcdSearchService {
         final SearchSourceBuilder sourceBuilder = SearchSourceBuilder
             .searchSource()
             .sort(DUE_DATE, ASC)
+            .sort("reference", ASC)
             .query(query)
+            .trackTotalHits(true)
             .from(from)
             .size(size);
 
