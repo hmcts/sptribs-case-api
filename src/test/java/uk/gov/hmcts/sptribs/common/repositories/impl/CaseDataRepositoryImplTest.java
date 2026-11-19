@@ -52,6 +52,20 @@ class CaseDataRepositoryImplTest {
     }
 
     @Test
+    void shouldExcludeOnlyDssExpiredWhenCheckingCaseExists() {
+        when(jdbcTemplate.queryForObject(anyString(), anyMap(), eq(Integer.class))).thenReturn(1);
+
+        assertThat(repository.checkCaseExists("123")).isTrue();
+
+        verify(jdbcTemplate).queryForObject(anyString(), eq(Map.of(
+            "ccdReference", 123L,
+            "caseType", "CriminalInjuriesCompensation",
+            "jurisdiction", "ST_CIC",
+            "expiredState", "DSS-Expired"
+        )), eq(Integer.class));
+    }
+
+    @Test
     void shouldReturnFalseWhenCountIsZero() {
         when(jdbcTemplate.queryForObject(anyString(), anyMap(), eq(Integer.class)))
             .thenReturn(0);
