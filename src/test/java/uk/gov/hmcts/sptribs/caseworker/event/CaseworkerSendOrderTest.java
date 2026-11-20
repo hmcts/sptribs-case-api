@@ -42,6 +42,8 @@ import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.model.OrderDecisionUploadCICDocument;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -55,6 +57,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -68,7 +71,9 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.DATE_MODEL;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.RESPONDENT;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SOLICITOR_ADDRESS;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBJECT;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBJECT_ADDRESS;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASEWORKER_USER_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -99,6 +104,9 @@ class CaseworkerSendOrderTest {
 
     @Mock
     private DocumentsService documentsService;
+
+    @Mock
+    private NotificationDispatcher notificationDispatcher;
 
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
@@ -681,6 +689,72 @@ class CaseworkerSendOrderTest {
 
         // Then
         assertThat(s.getConfirmationHeader()).contains("# Order sent");
+    }
+
+    @Test
+    void shouldShowErrorMessageWhenNotificationFails() {
+        // Given
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CicCase cicCase = CicCase.builder()
+            .build();
+        final CaseData caseData = CaseData.builder()
+            .cicCase(cicCase)
+            .build();
+        caseDetails.setData(caseData);
+
+        //When
+        doAnswer(invocation -> {
+            NotificationContext context = invocation.getArgument(0);
+            if (context.getNotification() == newOrderIssuedNotification) {
+                context.getErrors().add(SUBJECT);
+            }
+            return null;
+        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
+
+        caseworkerSendOrder.submitted(caseDetails, beforeDetails);
+        SubmittedCallbackResponse response = caseworkerSendOrder.submitted(caseDetails, beforeDetails);
+
+        //Then
+        assertThat(response.getConfirmationHeader())
+            .isEqualTo("""
+                # Send order notification failed \
+                \n## A notification could not be sent to: Subject \
+                \n## Please resend the notification.""");
+    }
+
+    @Test
+    void shouldShowPartialSentErrorMessageWhenNotificationSendsAndFails() {
+        // Given
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CicCase cicCase = CicCase.builder()
+            .build();
+        final CaseData caseData = CaseData.builder()
+            .cicCase(cicCase)
+            .build();
+        caseDetails.setData(caseData);
+
+        //When
+        doAnswer(invocation -> {
+            NotificationContext context = invocation.getArgument(0);
+            if (context.getNotification() == newOrderIssuedNotification) {
+                context.getErrors().add(SUBJECT);
+                context.getSent().add(RESPONDENT);
+            }
+            return null;
+        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
+
+        caseworkerSendOrder.submitted(caseDetails, beforeDetails);
+        SubmittedCallbackResponse response = caseworkerSendOrder.submitted(caseDetails, beforeDetails);
+
+        //Then
+        assertThat(response.getConfirmationHeader())
+            .isEqualTo("""
+                # Order sent.\
+                \n## A notification has been sent to: Respondent\
+                \n## A notification could not be sent to: Subject\
+                \n## Please resend the notification.""");
     }
 
     @Test

@@ -2,82 +2,76 @@ package uk.gov.hmcts.sptribs.notification;
 
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 
 import java.util.Map;
+import java.util.Set;
 
 public interface PartiesNotification {
+
     default void sendToSubject(final CaseData caseData, final String caseNumber) {
-        //No operation
+        // No operation
     }
 
-    default String sendToSubject(
-        final CaseData caseData,
-        final String caseNumber,
-        final Map<String, String> uploadedDocuments
-    ) {
+    default String sendToSubject(final CaseData caseData,
+                                 final String caseNumber,
+                                 final Map<String, String> uploadedDocuments) {
         sendToSubject(caseData, caseNumber);
         return null;
     }
 
     default void sendToSubject(final DssCaseData dssCaseData, final String caseNumber) {
-        //No operation
+        // No operation
     }
 
     default void sendToApplicant(final CaseData caseData, final String caseNumber) {
-        //No operation
+        // No operation
     }
 
-    default String sendToApplicant(
-        final CaseData caseData,
-        final String caseNumber,
-        final Map<String, String> uploadedDocuments
-    ) {
+    default String sendToApplicant(final CaseData caseData,
+                                   final String caseNumber,
+                                   final Map<String, String> uploadedDocuments) {
         sendToApplicant(caseData, caseNumber);
         return null;
     }
 
-
     default void sendToRepresentative(final CaseData caseData, final String caseNumber) {
-        //No operation
+        // No operation
     }
 
-    default String sendToRepresentative(
-        final CaseData caseData,
-        final String caseNumber,
-        final Map<String, String> uploadedDocuments
-    ) {
+    default String sendToRepresentative(final CaseData caseData,
+                                        final String caseNumber,
+                                        final Map<String, String> uploadedDocuments) {
         sendToRepresentative(caseData, caseNumber);
         return null;
     }
 
     default void sendToRepresentative(final DssCaseData dssCaseData, final String caseNumber) {
-        //No operation
+        // No operation
     }
 
     default void sendToRespondent(final CaseData caseData, final String caseNumber) {
-        //No operation
+        // No operation
     }
 
-    default String sendToRespondent(
-        final CaseData caseData,
-        final String caseNumber,
-        final Map<String, String> uploadedDocuments
-    ) {
+    default String sendToRespondent(final CaseData caseData,
+                                    final String caseNumber,
+                                    final Map<String, String> uploadedDocuments) {
         sendToRespondent(caseData, caseNumber);
         return null;
     }
 
     default void sendToTribunal(final CaseData caseData, final String caseNumber) {
-        //No operation
+        // No operation
     }
 
-    default String sendToTribunal(
-        final CaseData caseData,
-        final String caseNumber,
-        final Map<String, String> uploadedDocuments
-    ) {
+    default String sendToTribunal(final CaseData caseData,
+                                  final String caseNumber,
+                                  final Map<String, String> uploadedDocuments) {
         sendToTribunal(caseData, caseNumber);
         return null;
     }
 
+    Set<NotificationParties> buildCorrespondenceParties(NotificationContext context);
 }

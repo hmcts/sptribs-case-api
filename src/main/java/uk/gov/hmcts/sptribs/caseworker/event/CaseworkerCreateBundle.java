@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -17,7 +16,6 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
@@ -31,6 +29,8 @@ import uk.gov.hmcts.sptribs.document.bundling.model.Callback;
 import uk.gov.hmcts.sptribs.document.model.AbstractCaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.notification.dispatcher.BundleCreatedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -46,11 +46,13 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.extractDocumentsFromListValues;
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.getAllCaseDocuments;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CREATE_BUNDLE;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateCombinedNotificationMessageFromSentAndErrorLists;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
-import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessage;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessageFromSentList;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -72,12 +74,9 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRole> {
 
     private final BundlingService bundlingService;
+    private final NotificationDispatcher notificationDispatcher;
     private final AudioVideoEvidenceBundleService audioVideoEvidenceBundleService;
-
-    @Autowired
     private final Clock clock;
-
-    @Autowired
     private final BundleCreatedNotification bundleCreatedNotification;
 
     @Value("${feature.citizen-dashboard.enabled}")
@@ -174,34 +173,40 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
 
+        final CaseData caseData = details.getData();
+        final String caseReference = caseData.getHyphenatedCaseRef();
+
         if (details.getState() == CaseClosed) {
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader("# Bundle created.")
                 .build();
         }
 
-        BundleCreatedNotification.DispatchResult result = bundleCreatedNotification.dispatch(
-            details.getData(), details.getData().getHyphenatedCaseRef());
+        NotificationContext notificationContext = NotificationContext.forNotification(
+            caseData,
+            caseReference,
+            bundleCreatedNotification);
 
-        if (!result.failedParties().isEmpty()) {
+        notificationDispatcher.sendToCorrespondenceParties(notificationContext);
+
+        if (isEmpty(notificationContext.getErrors()) && !isEmpty(notificationContext.getSent())) {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Bundle created. %n## %s",
+                    generateSimpleMessageFromSentList(notificationContext.getSent())))
+                .build();
+        }
+        if (!isEmpty(notificationContext.getSent()) && !isEmpty(notificationContext.getErrors())) {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(generateCombinedNotificationMessageFromSentAndErrorLists(
+                    notificationContext.getSent(), notificationContext.getErrors(), "Bundle created."))
+                .build();
+        } else {
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(
                     format("# Bundle creation notification failed %n## %s %n## Please resend the notification.",
-                        generateSimpleErrorMessage(result.failedParties().stream().map(NotificationParties::getLabel).toList()))
-                )
+                        generateSimpleErrorMessage(notificationContext.getErrors())))
                 .build();
         }
-
-        if (result.sentParties().isEmpty()) {
-            return SubmittedCallbackResponse.builder()
-                .confirmationHeader("# Bundle created.")
-                .build();
-        }
-
-        return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Bundle created. %n## %s",
-                generateSimpleMessage(result.sentParties())))
-            .build();
     }
 
     private void setCaseBundleRequestDocuments(CaseData caseData, List<CaseworkerCICDocument> allDocuments) {
