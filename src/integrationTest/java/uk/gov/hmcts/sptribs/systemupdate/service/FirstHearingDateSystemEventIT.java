@@ -27,6 +27,7 @@ import static uk.gov.hmcts.sptribs.systemupdate.event.SystemMigrateCase.SYSTEM_M
     "ccd.decentralised-runtime.system-user.first-name=Case Service",
     "ccd.decentralised-runtime.system-user.last-name=System"
 })
+@Disabled("Disabled until the system event is enabled")
 class FirstHearingDateSystemEventIT extends IntegrationTestBase {
 
     private static final long CASE_REFERENCE = 123L;
@@ -43,7 +44,6 @@ class FirstHearingDateSystemEventIT extends IntegrationTestBase {
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
-    @Disabled("Disabled until the system event is enabled")
     @Test
     void shouldRemoveOnlyRetiredFieldAndAuditExactlyOnceOnReplay() throws Exception {
         caseDataITManager.addCaseData(CASE_REFERENCE, "Submitted", """
@@ -71,7 +71,6 @@ class FirstHearingDateSystemEventIT extends IntegrationTestBase {
         assertThat(caseVersion()).isEqualTo(initialVersion);
     }
 
-    @Disabled("Disabled until the system event is enabled")
     @Test
     void shouldRollBackCaseChangeWhenEventFails() throws Exception {
         caseDataITManager.addCaseData(CASE_REFERENCE, "Submitted", """
