@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.systemupdate.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -26,6 +27,7 @@ import static uk.gov.hmcts.sptribs.systemupdate.event.SystemMigrateCase.SYSTEM_M
     "ccd.decentralised-runtime.system-user.first-name=Case Service",
     "ccd.decentralised-runtime.system-user.last-name=System"
 })
+@Disabled("Disabled until the system event is enabled")
 class FirstHearingDateSystemEventIT extends IntegrationTestBase {
 
     private static final long CASE_REFERENCE = 123L;

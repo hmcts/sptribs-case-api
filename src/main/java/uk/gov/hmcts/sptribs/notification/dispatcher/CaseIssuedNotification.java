@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -24,7 +23,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static uk.gov.hmcts.sptribs.notification.EmailRespondentResponses.IN_TIME_RESPONSE;
 import static uk.gov.hmcts.sptribs.notification.EmailRespondentResponses.OUT_OF_TIME_RESPONSE;
@@ -113,9 +111,10 @@ public class CaseIssuedNotification implements PartiesNotification {
             cicCase.getIsCaseInTime().toBoolean() ? buildTimeString(true, dueDate) : buildTimeString(false, dueDate));
 
         final NotificationResponse notificationResponse;
-        if (ObjectUtils.isNotEmpty(caseData.getCaseIssue().getDocumentList())) {
-            final Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
+        if (caseData.getCaseIssue() != null && ObjectUtils.isNotEmpty(caseData.getCaseIssue().getDocumentList())) {
             final List<CaseworkerCICDocument> selectedDocuments = getSelectedDocuments(caseData);
+            final Map<String, String> uploadedDocuments = notificationHelper
+                .buildDocumentListFromDocuments(selectedDocuments, DOC_ATTACH_LIMIT);
             // Send Email
             notificationResponse = sendEmailNotificationWithAttachment(cicCase.getAlternativeRespondentEmail(),
                 templateVarsRespondent,
@@ -171,16 +170,7 @@ public class CaseIssuedNotification implements PartiesNotification {
         return notificationService.sendLetter(letterRequest, caseReferenceNumber);
     }
 
-    private Map<String, String> getUploadedDocuments(CaseData caseData) {
-        final CaseIssue caseIssue = caseData.getCaseIssue();
-        return notificationHelper.buildDocumentList(caseIssue.getDocumentList(), DOC_ATTACH_LIMIT);
-    }
-
     private List<CaseworkerCICDocument> getSelectedDocuments(CaseData caseData) {
-        var selectedDocIds = DocumentListUtil.extractDocumentIds(caseData.getCaseIssue().getDocumentList().getValue());
-        return selectedDocIds.stream().map(id -> DocumentListUtil.getCaseDocumentById(id, caseData))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .toList();
+        return DocumentListUtil.requireSelectedCaseIssueDocuments(caseData);
     }
 }
