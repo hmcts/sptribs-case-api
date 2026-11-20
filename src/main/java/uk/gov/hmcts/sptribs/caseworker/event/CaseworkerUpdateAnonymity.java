@@ -103,10 +103,11 @@ public class CaseworkerUpdateAnonymity implements CCDConfig<CaseData, State, Use
         final CaseData caseData = details.getData();
         final String caseReference = caseData.getHyphenatedCaseRef();
 
-        NotificationContext notificationContext = NotificationContext.forNotification(
+        NotificationContext notificationContext = NotificationContext.withBeforeData(
             caseData,
             caseReference,
-            anonymityAppliedNotification);
+            anonymityAppliedNotification,
+            beforeDetails.getData());
 
         notificationDispatcher.sendToCorrespondenceParties(notificationContext);
 
