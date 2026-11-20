@@ -12,5 +12,10 @@
   "cicCaseCaseSubcategory": "other",
   "cicCasePartiesCIC": [
     "SubjectCIC"
-  ]
+  ],
+  "cicCaseNotifyPartyRespondent": [
+    "RespondentCIC"
+  ],
+  "cicCaseRespondentName": "Appeals team",
+  "cicCaseRespondentEmail": "appeals.team@cica.gov.uk"
 }

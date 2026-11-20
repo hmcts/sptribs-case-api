@@ -1,8 +1,9 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
@@ -10,18 +11,20 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
-import uk.gov.hmcts.sptribs.caseworker.util.EventUtil;
-import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseStayedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 
 import static java.lang.String.format;
-import static org.apache.commons.collections4.CollectionUtils.isEmpty;
+import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_STAY_THE_CASE;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateCombinedNotificationMessageFromSentAndErrorLists;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessageFromSentList;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
@@ -35,10 +38,11 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRole> {
 
-    @Autowired
-    private CaseStayedNotification caseStayedNotification;
+    private final CaseStayedNotification caseStayedNotification;
+    private final NotificationDispatcher notificationDispatcher;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -103,37 +107,35 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
 
-        final CaseData data = details.getData();
-        final String claimNumber = data.getHyphenatedCaseRef();
+        final CaseData caseData = details.getData();
+        String caseReference = caseData.getHyphenatedCaseRef();
 
-        try {
-            sendCaseStayedNotification(claimNumber, data);
-        } catch (Exception notificationException) {
-            log.error("Case stay notification failed with exception : {}", notificationException.getMessage());
+        NotificationContext notificationContext = NotificationContext.forNotification(
+            caseData,
+            caseReference,
+            caseStayedNotification);
+
+        notificationDispatcher.sendToCorrespondenceParties(notificationContext);
+
+        if (CollectionUtils.isEmpty(notificationContext.getErrors())) {
             return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Case stay notification failed %n## Please resend the notification"))
+                .confirmationHeader(format("# Stay Added to Case %n## %s",
+                    generateSimpleMessageFromSentList(notificationContext.getSent())))
                 .build();
         }
-
-        return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Stay Added to Case %n## %s",
-                MessageUtil.generateSimpleMessage(EventUtil.getNotificationParties(data.getCicCase()))))
-            .build();
-    }
-
-    private void sendCaseStayedNotification(String caseReference, CaseData caseData) {
-        final CicCase cicCase = caseData.getCicCase();
-
-        if (!isEmpty(cicCase.getSubjectCIC())) {
-            caseStayedNotification.sendToSubject(caseData, caseReference);
-        }
-
-        if (!isEmpty(cicCase.getApplicantCIC())) {
-            caseStayedNotification.sendToApplicant(caseData, caseReference);
-        }
-
-        if (!isEmpty(cicCase.getRepresentativeCIC())) {
-            caseStayedNotification.sendToRepresentative(caseData, caseReference);
+        if (!isEmpty(notificationContext.getErrors()) && !isEmpty(notificationContext.getSent())) {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(generateCombinedNotificationMessageFromSentAndErrorLists(notificationContext.getSent(),
+                    notificationContext.getErrors(), "Stay Added to Case.")
+                )
+                .build();
+        } else {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(
+                    format("# Case stay notification failed %n## %s %n## Please resend the notification.",
+                        generateSimpleErrorMessage(notificationContext.getErrors()))
+                )
+                .build();
         }
     }
 }

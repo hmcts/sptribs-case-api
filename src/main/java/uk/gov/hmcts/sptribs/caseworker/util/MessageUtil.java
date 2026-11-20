@@ -109,9 +109,14 @@ public final class MessageUtil {
     public static String generateSimpleErrorMessage(final List<String> errors) {
         final StringBuilder message = new StringBuilder(100);
 
-        message.append("A notification could not be sent to: ");
-        errors.forEach(e -> message.append(e).append(COMMA_SPACE));
+        if (errors.isEmpty()) {
+            return "No notification recipients found";
+        }
 
+        message.append("A notification could not be sent to: ");
+        errors.stream()
+            .sorted()
+            .forEach(e -> message.append(e).append(COMMA_SPACE));
         return message.substring(0, message.length() - 2);
     }
 
@@ -124,5 +129,43 @@ public final class MessageUtil {
             log.error("Document entity has no filename {}", errorMessage);
             return FAILED_SAVING_DOCUMENT_WITH_NO_FILENAME_TO_DATABASE;
         }
+    }
+
+    public static String generateHeaderFooterMessageFromSentList(
+        List<String> sentList, String header, String footer) {
+
+        final String notificationMessage = generateSimpleMessageFromSentList(sentList);
+
+        String message = notificationMessage.isEmpty()
+            ? format("# %s", header)
+            : format("# %s%n## %s", header, notificationMessage);
+
+        if (StringUtils.hasText(footer)) {
+            message = message + format("%n## %s", footer);
+        }
+        return message;
+    }
+
+    public static String generateSimpleMessageFromSentList(List<String> sentList) {
+
+        final StringBuilder message = new StringBuilder(100);
+
+        if (sentList.isEmpty()) {
+            return "";
+        }
+
+        message.append("A notification has been sent to: ");
+        sentList.stream()
+            .sorted()
+            .forEach(party -> message.append(party).append(COMMA_SPACE));
+
+        return message.substring(0, message.length() - 2);
+    }
+
+
+    public static String generateCombinedNotificationMessageFromSentAndErrorLists(
+        List<String> sent, List<String> errors, String header) {
+        final String footer = generateSimpleErrorMessage(errors) + "\n## Please resend the notification.";
+        return generateHeaderFooterMessageFromSentList(sent, header, footer);
     }
 }

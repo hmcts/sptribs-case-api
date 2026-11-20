@@ -32,10 +32,11 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -199,7 +200,11 @@ public class CaseworkerCancelHearingIT {
             .inPath(CONFIRMATION_HEADER)
             .isString()
             .contains("# Hearing cancelled \n"
-                + "## A notification has been sent to: Subject, Respondent, Representative, Applicant");
+                + "## A notification has been sent to:")
+            .contains("Subject")
+            .contains("Respondent")
+            .contains("Representative")
+            .contains("Applicant");
 
         verify(notificationServiceCIC, times(4)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
         verifyNoMoreInteractions(notificationServiceCIC);
@@ -209,15 +214,22 @@ public class CaseworkerCancelHearingIT {
     void shouldReturnErrorMessageIfNotificationsFailOnSubmitted() throws Exception {
         final CaseData caseData = caseData();
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+
         caseData.setCicCase(
             CicCase.builder()
-                .representativeFullName("Rep Name")
                 .respondentName("Respondent Name")
-                .applicantFullName("Applicant Name")
+                .respondentEmail("respondent@test.com")
                 .hearingNotificationParties(
-                    Set.of(SUBJECT, REPRESENTATIVE, APPLICANT, RESPONDENT))
+                    Set.of(RESPONDENT))
                 .build()
         );
+
+        doThrow(new RuntimeException("Notification Failed to Send"))
+            .when(notificationServiceCIC)
+            .sendEmail(argThat(request ->
+                    request != null
+                        && "respondent@test.com".equals(request.getDestinationAddress())),
+                any(), any());
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
             .contentType(APPLICATION_JSON)
@@ -233,13 +245,12 @@ public class CaseworkerCancelHearingIT {
             .andReturn()
             .getResponse()
             .getContentAsString();
-
         assertThatJson(response)
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Cancel hearing notification failed \n## Please resend the notification");
-
-        verifyNoInteractions(notificationServiceCIC);
+            .contains("# Cancel hearing notification failed")
+            .contains("## Please resend the notification")
+            .contains("Respondent");
     }
 
     @Test

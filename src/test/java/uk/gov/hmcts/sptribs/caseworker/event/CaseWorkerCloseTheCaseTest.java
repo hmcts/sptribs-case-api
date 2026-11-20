@@ -33,6 +33,7 @@ import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseWithdrawnNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -74,6 +75,9 @@ class CaseWorkerCloseTheCaseTest {
 
     @Mock
     private CaseWithdrawnNotification caseWithdrawnNotification;
+
+    @Mock
+    private NotificationDispatcher notificationDispatcher;
 
     @Mock
     private DocumentsService documentsService;
