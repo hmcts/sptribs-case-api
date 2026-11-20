@@ -60,7 +60,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOK
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_HYPHENATED;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCICDocumentList;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getOrderDecisionUploadCICDocumentList;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
 @ExtendWith(SpringExtension.class)
@@ -147,7 +147,7 @@ public class CaseworkerSendOrderIT {
 
         final CaseData caseData = CaseData.builder()
             .cicCase(CicCase.builder()
-                .orderFile(getCICDocumentList("order.pdf"))
+                .orderFile(getOrderDecisionUploadCICDocumentList("order.pdf"))
                 .notifyPartySubject(Set.of(SUBJECT))
                 .notifyPartyRespondent(Set.of(RESPONDENT))
                 .notifyPartyRepresentative(Set.of(REPRESENTATIVE))
