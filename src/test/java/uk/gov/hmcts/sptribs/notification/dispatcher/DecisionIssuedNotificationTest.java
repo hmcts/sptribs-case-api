@@ -17,8 +17,8 @@ import uk.gov.hmcts.sptribs.caseworker.model.NoticeOption;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
-import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.OrderDecisionUploadCICDocument;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
@@ -73,7 +73,7 @@ public class DecisionIssuedNotificationTest {
             data.getCicCase().setEmail("testrepr@outlook.com");
 
             final UUID uuid = UUID.randomUUID();
-            final CICDocument document = CICDocument.builder()
+            final OrderDecisionUploadCICDocument document = OrderDecisionUploadCICDocument.builder()
                 .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())
                 .documentEmailContent("content")
                 .build();
@@ -238,7 +238,7 @@ public class DecisionIssuedNotificationTest {
             data.getCicCase().setRepresentativeEmailAddress("testrepr@outlook.com");
 
             final UUID uuid = UUID.randomUUID();
-            final CICDocument document = CICDocument.builder()
+            final OrderDecisionUploadCICDocument document = OrderDecisionUploadCICDocument.builder()
                 .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())
                 .documentEmailContent("content")
                 .build();
@@ -329,7 +329,7 @@ public class DecisionIssuedNotificationTest {
             data.getCicCase().setApplicantEmailAddress("testApplicant@outlook.com");
 
             final UUID uuid = UUID.randomUUID();
-            final CICDocument document = CICDocument.builder()
+            final OrderDecisionUploadCICDocument document = OrderDecisionUploadCICDocument.builder()
                 .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())
                 .documentEmailContent("content")
                 .build();
@@ -426,7 +426,7 @@ public class DecisionIssuedNotificationTest {
             data.getCicCase().setEmail("testrepr@outlook.com");
 
             final UUID uuid = UUID.randomUUID();
-            final CICDocument document = CICDocument.builder()
+            final OrderDecisionUploadCICDocument document = OrderDecisionUploadCICDocument.builder()
                 .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())
                 .documentEmailContent("content")
                 .build();
