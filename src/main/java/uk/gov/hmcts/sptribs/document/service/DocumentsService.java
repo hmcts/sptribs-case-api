@@ -226,6 +226,10 @@ public class DocumentsService {
             .build();
     }
 
+    public boolean isDocumentOnCase(Long ccdReference, String documentId) {
+        return documentsRepository.findOnCaseByDocumentId(ccdReference, documentId).isPresent();
+    }
+
     public List<DocumentEntity> getAudioVideoDocuments(Long caseReferenceNumber) {
         if (caseReferenceNumber == null) {
             return List.of();

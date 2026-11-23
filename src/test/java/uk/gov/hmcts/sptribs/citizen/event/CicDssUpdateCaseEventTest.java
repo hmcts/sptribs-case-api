@@ -3,6 +3,8 @@ package uk.gov.hmcts.sptribs.citizen.event;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -97,6 +99,40 @@ class CicDssUpdateCaseEventTest {
                 .extracting(Event::getGrants)
                 .extracting(map -> map.get(ST_CIC_WA_CONFIG_USER))
                 .contains(Permissions.CREATE_READ_UPDATE);
+    }
+
+    @Test
+    void shouldAllowDraftAndDssDraftButExcludeDssExpired() {
+        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        cicDssUpdateCaseEvent.configure(configBuilder);
+
+        Event<CaseData, UserRole, State> event = getEventsFrom(configBuilder).get(CITIZEN_DSS_UPDATE_CASE_SUBMISSION);
+        assertThat(event.getPreState()).contains(State.Draft, State.DSS_Draft).doesNotContain(State.DSS_Expired);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = {"Draft", "DSS_Draft"})
+    void shouldAddDocumentsAndTextWithoutChangingDraftState(State state) {
+        final CaseData caseData = CaseData.builder()
+            .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
+            .dssCaseData(getDssCaseData())
+            .build();
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
+        details.setState(state);
+        details.setData(caseData);
+        when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+        when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = cicDssUpdateCaseEvent.aboutToSubmit(details, details);
+
+        assertThat(response.getErrors()).isEmpty();
+        assertThat(details.getState()).isEqualTo(state);
+        assertThat(response.getState()).isNull();
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(2);
+        assertThat(response.getData().getMessages()).hasSize(1);
+        verify(documentsService, times(2)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(DocumentType.DSS_OTHER), eq(CaseDocumentType.APPLICATION));
     }
 
     @Test
