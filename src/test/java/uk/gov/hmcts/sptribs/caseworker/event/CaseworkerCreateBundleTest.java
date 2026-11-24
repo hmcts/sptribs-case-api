@@ -258,6 +258,42 @@ class CaseworkerCreateBundleTest {
     }
 
     @Test
+    void shouldShowPartiallySentMessageWhenSomeNotificationsFailToSend() {
+
+        final CaseData caseData = caseData();
+        final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList();
+        final CicCase cicCase = CicCase.builder().build();
+        cicCase.setApplicantDocumentsUploaded(cicDocuments);
+        caseData.setCicCase(cicCase);
+        caseData.setHyphenatedCaseRef("1234-5678-3456");
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        doAnswer(invocation -> {
+            NotificationContext context = invocation.getArgument(0);
+            if (context.getNotification() == bundleCreatedNotification) {
+                context.getSent().add(REPRESENTATIVE);
+                context.getSent().add(RESPONDENT);
+                context.getErrors().add(SUBJECT);
+            }
+            return null;
+        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
+
+        SubmittedCallbackResponse createBundleSubmittedResponse =
+            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+
+        assertThat(createBundleSubmittedResponse.getConfirmationHeader())
+            .isEqualTo("""
+                # Bundle created.\
+                \n## A notification has been sent to: Representative, Respondent\
+                \n## A notification could not be sent to: Subject\
+                \n## Please resend the notification.""");
+    }
+
+    @Test
     void shouldProceedWhenAudioVideoEvidenceIsEmpty() {
         final CaseData caseData = caseData();
         final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList();
