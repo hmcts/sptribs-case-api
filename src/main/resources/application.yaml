@@ -277,6 +277,8 @@ feature:
     batchPauseMs: ${INITIAL_DOCUMENTS_MIGRATION_BATCH_PAUSE:5000}
   citizen-dashboard:
     enabled: ${CITIZEN_DASHBOARD_ENABLED:false}
+  role-assignment:
+    enabled: ${ROLE_ASSIGNMENT_ENABLED:${role_assignment_enabled:false}}
 
 caseinfo:
   apps:

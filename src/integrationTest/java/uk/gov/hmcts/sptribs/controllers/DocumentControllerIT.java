@@ -61,7 +61,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SERVICE_AUTH_TOKE
 
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = "ROLE_ASSIGNMENT_ENABLED=true")
 @AutoConfigureMockMvc
 @ContextConfiguration(initializers = {IdamWireMock.PropertiesInitializer.class})
 class DocumentControllerIT {

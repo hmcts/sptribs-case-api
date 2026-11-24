@@ -156,9 +156,9 @@ public class DocumentController {
 
     @GetMapping(value = "/{ccdReference}/documents/{documentId}/download")
     @Operation(summary = "Download a document by its ID and verify against case reference and postcode",
-        description = "Checks case membership and document ownership before fetching with the caller's token. "
-            + "On a CDAM metadata not-found response, checks the caller's case roles, assigns the creator role "
-            + "if absent and retries metadata retrieval once.")
+        description = "Checks case membership, postcode and document ownership before downloading. "
+            + "With role assignment enabled, downloads as the caller and retries a metadata 404 once after "
+            + "ensuring the creator role. Otherwise downloads as the system user.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Document downloaded successfully"),
         @ApiResponse(responseCode = "400", description = "Invalid CCD reference or document ID"),

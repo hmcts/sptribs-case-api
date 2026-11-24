@@ -49,7 +49,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CITIZEN_DSS_UP
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUTHORIZATION;
 
 /** Exercises the real access/update/role services and CCD Feign clients against a local HTTP server. */
-@SpringBootTest
+@SpringBootTest(properties = "ROLE_ASSIGNMENT_ENABLED=true")
 class CicaCaseUpdateServiceIT {
 
     private static final String CASE_ID = "1234567890123456";

@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.ciccase.service;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAssignmentApi;
@@ -25,11 +26,17 @@ public class CicaRoleService {
     private final IdamService idamService;
     private final AuthTokenGenerator authTokenGenerator;
 
+    @Value("${feature.role-assignment.enabled}")
+    private boolean roleAssignmentEnabled;
+
     /**
      * Ensures the authenticated citizen has the creator role. Callers must verify case membership first;
      * an assigned role does not replace downstream permission checks with the citizen's token.
      */
     public void ensureCreatorRole(String ccdReference, String userAuthToken) {
+        if (!roleAssignmentEnabled) {
+            return;
+        }
         CICUser user = idamService.retrieveUser(userAuthToken);
         if (user == null || user.getUserInfo() == null || user.getUserInfo().getUid() == null
             || user.getUserInfo().getUid().isBlank()) {

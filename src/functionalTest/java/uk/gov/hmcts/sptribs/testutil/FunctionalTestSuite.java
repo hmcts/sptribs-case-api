@@ -466,7 +466,7 @@ public abstract class FunctionalTestSuite {
         }
     }
 
-    private UploadResponse uploadTestDocument(ClassPathResource resource, String filename) {
+    protected UploadResponse uploadTestDocument(ClassPathResource resource, String filename) {
         log.debug("Uploading FT test document");
         final List<AppsConfig.AppsDetails> appDetails = appsConfig.getApps();
         if (!appDetails.isEmpty() && appDetails.getFirst() != null) {

@@ -53,7 +53,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 
-@SpringBootTest(properties = {"s2s-authorised.services=sptribs_frontend", "s2s.stub=false"})
+@SpringBootTest(properties = {"s2s-authorised.services=sptribs_frontend", "s2s.stub=false", "ROLE_ASSIGNMENT_ENABLED=true"})
 @AutoConfigureMockMvc
 @ContextConfiguration(initializers = {IdamWireMock.PropertiesInitializer.class})
 class CicaRoleAssignmentIT {

@@ -10,6 +10,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
@@ -61,6 +62,7 @@ class CicaCaseUpdateServiceTest {
 
     @BeforeEach
     void setUp() {
+        ReflectionTestUtils.setField(service, "roleAssignmentEnabled", true);
         // Token generation is not reached when case membership is denied.
         org.mockito.Mockito.lenient().when(authTokenGenerator.generate()).thenReturn(S2S);
     }
@@ -94,6 +96,18 @@ class CicaCaseUpdateServiceTest {
         assertThat(document.getDocumentLink().getFilename()).isEqualTo("evidence.pdf");
         assertThat(document.getComment()).isEqualTo("Evidence");
         verifyNoInteractions(cicaRoleService);
+    }
+
+    @Test
+    void shouldPropagateCitizenNotFoundWithoutRecoveryWhenRoleAssignmentDisabled() {
+        ReflectionTestUtils.setField(service, "roleAssignmentEnabled", false);
+        FeignException notFound = failure(404);
+        when(coreCaseDataApi.startEvent(AUTH, S2S, CASE_ID, CITIZEN_DSS_UPDATE_CASE_SUBMISSION)).thenThrow(notFound);
+
+        assertThatThrownBy(() -> service.updateCase(CASE_ID, AUTH, update)).isSameAs(notFound);
+
+        verify(coreCaseDataApi).startEvent(AUTH, S2S, CASE_ID, CITIZEN_DSS_UPDATE_CASE_SUBMISSION);
+        verifyNoInteractions(cicaRoleService, extendedCaseDataApi);
     }
 
     @Test

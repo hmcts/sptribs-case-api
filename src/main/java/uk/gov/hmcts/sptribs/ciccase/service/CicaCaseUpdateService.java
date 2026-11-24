@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.ciccase.service;
 
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
@@ -29,6 +30,9 @@ public class CicaCaseUpdateService {
     private final ExtendedCaseDataApi extendedCaseDataApi;
     private final AuthTokenGenerator authTokenGenerator;
 
+    @Value("${feature.role-assignment.enabled}")
+    private boolean roleAssignmentEnabled;
+
     public void updateCase(String ccdReference, String authorisation, CicaCaseUpdate update) {
         // This lookup includes Draft cases and verifies membership independently of CCD case roles.
         cicaCaseService.checkIfUserHasAccess(ccdReference, authorisation);
@@ -50,7 +54,7 @@ public class CicaCaseUpdateService {
         try {
             submitUpdate(ccdReference, authorisation, serviceToken, data);
         } catch (FeignException exception) {
-            if (exception.status() != 404) {
+            if (exception.status() != 404 || !roleAssignmentEnabled) {
                 throw exception;
             }
             cicaRoleService.ensureCreatorRole(ccdReference, authorisation);

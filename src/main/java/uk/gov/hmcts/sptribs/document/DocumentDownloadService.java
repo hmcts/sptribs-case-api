@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.document;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import uk.gov.hmcts.sptribs.document.model.DownloadedDocumentResponse;
 import uk.gov.hmcts.sptribs.exception.CaseNotFoundException;
 import uk.gov.hmcts.sptribs.exception.DocumentDownloadException;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
+import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 
 import java.net.URLConnection;
@@ -26,6 +28,10 @@ public class DocumentDownloadService {
     private final CaseDocumentClientApi caseDocumentClientApi;
     private final AuthTokenGenerator authTokenGenerator;
     private final CicaRoleService cicaRoleService;
+    private final IdamService idamService;
+
+    @Value("${feature.role-assignment.enabled}")
+    private boolean roleAssignmentEnabled;
 
     /** Callers must verify case membership, postcode and document ownership before invoking this method. */
     public DownloadedDocumentResponse downloadDocument(String ccdReference, String authorisation, String documentId) {
@@ -35,11 +41,14 @@ public class DocumentDownloadService {
             UUID documentUuid = UUID.fromString(documentId);
             String serviceAuth = authTokenGenerator.generate();
 
-            Document documentMetadata = getDocumentMetadataWithRoleRecovery(
-                ccdReference, authorisation, serviceAuth, documentUuid);
+            String downloadAuth = roleAssignmentEnabled
+                ? authorisation : idamService.retrieveSystemUpdateUserDetails().getAuthToken();
+            Document documentMetadata = roleAssignmentEnabled
+                ? getDocumentMetadataWithRoleRecovery(ccdReference, downloadAuth, serviceAuth, documentUuid)
+                : getDocumentMetadata(downloadAuth, serviceAuth, documentUuid);
 
             ResponseEntity<byte[]> binaryResponse = caseDocumentClientApi.getDocumentBinary(
-                authorisation,
+                downloadAuth,
                 serviceAuth,
                 documentUuid
             );

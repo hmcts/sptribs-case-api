@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.document;
 import feign.FeignException;
 import feign.Request;
 import feign.Response;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -12,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaRoleService;
@@ -19,6 +21,8 @@ import uk.gov.hmcts.sptribs.document.model.DownloadedDocumentResponse;
 import uk.gov.hmcts.sptribs.exception.CaseNotFoundException;
 import uk.gov.hmcts.sptribs.exception.DocumentDownloadException;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
+import uk.gov.hmcts.sptribs.idam.CICUser;
+import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 
 import java.nio.charset.StandardCharsets;
@@ -51,8 +55,33 @@ class DocumentDownloadServiceTest {
     @Mock
     private CicaRoleService cicaRoleService;
 
+    @Mock
+    private IdamService idamService;
+
     @InjectMocks
     private DocumentDownloadService documentDownloadService;
+
+    @BeforeEach
+    void enableRoleAssignment() {
+        ReflectionTestUtils.setField(documentDownloadService, "roleAssignmentEnabled", true);
+    }
+
+    @Test
+    void shouldNotAttemptRecoveryWhenSystemUserCannotReadMetadata() {
+        ReflectionTestUtils.setField(documentDownloadService, "roleAssignmentEnabled", false);
+        UUID documentId = UUID.randomUUID();
+        String systemToken = "Bearer system-token";
+        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(new CICUser(systemToken, null));
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+        when(caseDocumentClientApi.getDocument(systemToken, TEST_SERVICE_AUTH_TOKEN, documentId)).thenThrow(failure(404));
+
+        assertThatThrownBy(() -> documentDownloadService.downloadDocument(TEST_CASE_ID_STRING, TEST_AUTHORIZATION_TOKEN,
+            documentId.toString())).isInstanceOf(CaseNotFoundException.class);
+
+        verify(caseDocumentClientApi).getDocument(systemToken, TEST_SERVICE_AUTH_TOKEN, documentId);
+        verifyNoMoreInteractions(caseDocumentClientApi);
+        verifyNoInteractions(cicaRoleService);
+    }
 
     @Test
     void shouldDownloadDocumentSuccessfully() {

@@ -8,6 +8,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAssignmentApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRole;
@@ -56,6 +57,7 @@ class CicaRoleServiceTest {
 
     @BeforeEach
     void setUpCitizen() {
+        ReflectionTestUtils.setField(cicaRoleService, "roleAssignmentEnabled", true);
         when(idamService.retrieveUser(USER_AUTH_TOKEN))
             .thenReturn(new CICUser(USER_AUTH_TOKEN, UserInfo.builder().uid(USER_ID).build()));
     }

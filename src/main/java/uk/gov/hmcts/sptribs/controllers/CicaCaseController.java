@@ -50,13 +50,13 @@ public class CicaCaseController {
         produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Add citizen documents and information to a case, including Draft cases",
         description = "Checks case membership without a postcode and submits the DSS update event as the citizen. "
-            + "On a CCD 404, ensures the caller has the creator role and retries once. The case state is unchanged.")
+            + "When role assignment is enabled, a CCD 404 triggers creator-role recovery and one retry.")
     @ApiResponses({
         @ApiResponse(responseCode = "201", description = "Update submitted"),
         @ApiResponse(responseCode = "400", description = "Invalid reference or update"),
         @ApiResponse(responseCode = "401", description = "Invalid authentication token"),
         @ApiResponse(responseCode = "403", description = "User or service cannot access the case"),
-        @ApiResponse(responseCode = "404", description = "CCD case or event not found after recovery"),
+        @ApiResponse(responseCode = "404", description = "CCD case or event not found"),
         @ApiResponse(responseCode = "409", description = "CCD update conflict"),
         @ApiResponse(responseCode = "422", description = "CCD callback validation failed"),
         @ApiResponse(responseCode = "502", description = "CCD could not be reached")
@@ -159,11 +159,11 @@ public class CicaCaseController {
     @PostMapping(value = "/{ccdReference}/role-assignments")
     @Operation(
         summary = "Ensure the authenticated case member has the creator role",
-        description = "Verifies the caller belongs to the case before checking their CCD roles. "
-            + "Assigns [CREATOR] only if absent. The caller cannot choose another user or role."
+        description = "Verifies the caller belongs to the case. When role assignment is enabled, checks "
+            + "the caller's CCD roles and assigns [CREATOR] only if absent. The caller cannot choose another user or role."
     )
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "204", description = "Creator role assigned or already present", content = @Content),
+        @ApiResponse(responseCode = "204", description = "Role assigned, already present or assignment disabled", content = @Content),
         @ApiResponse(responseCode = "400", description = "Invalid reference or missing required header", content = @Content),
         @ApiResponse(responseCode = "401", description = "Invalid authentication token", content = @Content),
         @ApiResponse(responseCode = "403", description = "User or service cannot access the case", content = @Content),
