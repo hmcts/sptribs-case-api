@@ -133,9 +133,7 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
                                                CaseDetails<CaseData, State> beforeDetails) {
 
 
-        final CaseData caseData = CaseData.builder()
-            .hyphenatedCaseRef("1234-1234-1234-1234")
-            .build();
+        final CaseData caseData = details.getData();
         String caseReference = caseData.getHyphenatedCaseRef();
 
         NotificationContext notificationContext = NotificationContext.forNotification(

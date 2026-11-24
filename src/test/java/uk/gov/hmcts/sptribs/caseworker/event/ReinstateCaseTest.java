@@ -332,9 +332,13 @@ class ReinstateCaseTest {
         CicCase cicCase = CicCase.builder()
             .build();
         caseData.setCicCase(cicCase);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
 
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setData(caseData);
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setId(TEST_CASE_ID);
+        beforeDetails.setData(caseData);
 
         doAnswer(invocation -> {
             NotificationContext context = invocation.getArgument(0);
@@ -366,9 +370,13 @@ class ReinstateCaseTest {
         CicCase cicCase = CicCase.builder()
             .build();
         caseData.setCicCase(cicCase);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
 
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setData(caseData);
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setId(TEST_CASE_ID);
+        beforeDetails.setData(caseData);
 
         doAnswer(invocation -> {
             NotificationContext context = invocation.getArgument(0);
@@ -381,8 +389,6 @@ class ReinstateCaseTest {
         SubmittedCallbackResponse responseReinstate =
             reinstateCase.submitted(updatedCaseDetails, beforeDetails);
 
-
-        //Then
         assertThat(responseReinstate.getConfirmationHeader())
             .isEqualTo("""
                 # Case Reinstate notification failed \
