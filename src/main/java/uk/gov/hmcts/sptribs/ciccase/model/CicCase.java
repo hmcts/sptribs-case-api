@@ -25,10 +25,10 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CollectionDefaultAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
-import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.model.OrderDecisionUploadCICDocument;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -240,10 +240,10 @@ public class CicCase {
     @CCD(
         label = "Upload a file to the system",
         typeOverride = Collection,
-        typeParameterOverride = "CICDocument",
+        typeParameterOverride = "OrderDecisionUploadCICDocument",
         access = {DefaultAccess.class}
     )
-    private List<ListValue<CICDocument>> orderFile;
+    private List<ListValue<OrderDecisionUploadCICDocument>> orderFile;
 
     @CCD(
         label = "Case category",

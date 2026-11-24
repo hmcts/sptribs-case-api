@@ -35,10 +35,10 @@ import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.content.PreviewDraftOrderTemplateContent;
-import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.model.OrderDecisionUploadCICDocument;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 
@@ -299,7 +299,7 @@ public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole
                 .binaryUrl(cdamDocument.links.binary.href)
                 .build();
 
-            CICDocument doc = CICDocument.builder()
+            OrderDecisionUploadCICDocument doc = OrderDecisionUploadCICDocument.builder()
                 .documentEmailContent("Test Decision")
                 .documentLink(document)
                 .build();

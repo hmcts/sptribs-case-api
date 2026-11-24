@@ -36,9 +36,10 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
-import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.document.DocumentUtil;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.model.OrderDecisionUploadCICDocument;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
@@ -84,8 +85,8 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SUBJECT_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getApiCaseDetailsBefore;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCICDocumentList;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCicCase;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getOrderDecisionUploadCICDocumentList;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_SEND_ORDER;
 
 
@@ -148,11 +149,11 @@ class CaseworkerSendOrderTest {
         draftOrderCICListValue.setId("0");
 
         final UUID uuid = UUID.randomUUID();
-        final CICDocument document = CICDocument.builder()
+        final OrderDecisionUploadCICDocument document = OrderDecisionUploadCICDocument.builder()
             .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())
             .documentEmailContent("content")
             .build();
-        final ListValue<CICDocument> documentListValue = new ListValue<>();
+        final ListValue<OrderDecisionUploadCICDocument> documentListValue = new ListValue<>();
         documentListValue.setValue(document);
 
         final CicCase cicCase = CicCase.builder()
@@ -212,11 +213,11 @@ class CaseworkerSendOrderTest {
         draftOrderCICListValue.setId("0");
 
         final UUID uuid = UUID.randomUUID();
-        final CICDocument document = CICDocument.builder()
+        final OrderDecisionUploadCICDocument document = OrderDecisionUploadCICDocument.builder()
             .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())
             .documentEmailContent("content")
             .build();
-        final ListValue<CICDocument> documentListValue = new ListValue<>();
+        final ListValue<OrderDecisionUploadCICDocument> documentListValue = new ListValue<>();
         documentListValue.setValue(document);
 
         final CicCase cicCase = CicCase.builder()
@@ -277,11 +278,11 @@ class CaseworkerSendOrderTest {
         draftOrderCICListValue.setId("0");
 
         final UUID uuid = UUID.randomUUID();
-        final CICDocument document = CICDocument.builder()
+        final OrderDecisionUploadCICDocument document = OrderDecisionUploadCICDocument.builder()
             .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())
             .documentEmailContent("content")
             .build();
-        final ListValue<CICDocument> documentListValue = new ListValue<>();
+        final ListValue<OrderDecisionUploadCICDocument> documentListValue = new ListValue<>();
         documentListValue.setValue(document);
 
         final CicCase cicCase = CicCase.builder()
@@ -341,7 +342,7 @@ class CaseworkerSendOrderTest {
         draftOrderCICListValue.setValue(draftOrderCIC);
         draftOrderCICListValue.setId("0");
 
-        final List<ListValue<CICDocument>> documentList = getCICDocumentList("file.pdf");
+        final List<ListValue<OrderDecisionUploadCICDocument>> documentList = getOrderDecisionUploadCICDocumentList("file.pdf");
 
         final CicCase cicCase = CicCase.builder()
             .draftOrderCICList(List.of(draftOrderCICListValue))
@@ -398,7 +399,7 @@ class CaseworkerSendOrderTest {
         draftOrderCICListValue.setValue(draftOrderCIC);
         draftOrderCICListValue.setId("0");
 
-        final List<ListValue<CICDocument>> documentList = getCICDocumentList("file.pdf");
+        final List<ListValue<OrderDecisionUploadCICDocument>> documentList = getOrderDecisionUploadCICDocumentList("file.pdf");
 
         final CicCase cicCase = CicCase.builder()
             .draftOrderCICList(List.of(draftOrderCICListValue))
@@ -464,7 +465,7 @@ class CaseworkerSendOrderTest {
         draftOrderList.add(firstValue);
         draftOrderList.add(secondValue);
 
-        final List<ListValue<CICDocument>> documentList = getCICDocumentList("file.pdf");
+        final List<ListValue<OrderDecisionUploadCICDocument>> documentList = getOrderDecisionUploadCICDocumentList("file.pdf");
 
         final CicCase cicCase = CicCase.builder()
             .draftOrderCICList(draftOrderList)
@@ -567,11 +568,11 @@ class CaseworkerSendOrderTest {
         draftOrderCICListValue2.setValue(draftOrderCIC2);
 
         final UUID uuid = UUID.randomUUID();
-        final CICDocument cicDocument = CICDocument.builder()
+        final OrderDecisionUploadCICDocument cicDocument = OrderDecisionUploadCICDocument.builder()
                 .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())
                 .documentEmailContent("content")
                 .build();
-        final ListValue<CICDocument> documentListValue = new ListValue<>();
+        final ListValue<OrderDecisionUploadCICDocument> documentListValue = new ListValue<>();
         documentListValue.setValue(cicDocument);
 
         final CicCase cicCase = CicCase.builder()
@@ -648,7 +649,7 @@ class CaseworkerSendOrderTest {
             .build();
         draftOrderCICList.add(listValue);
 
-        final List<ListValue<CICDocument>> documentList = getCICDocumentList("file.pdf");
+        final List<ListValue<OrderDecisionUploadCICDocument>> documentList = getOrderDecisionUploadCICDocumentList("file.pdf");
 
         final CicCase cicCase = CicCase.builder()
             .draftOrderDynamicList(dynamicList)
@@ -776,7 +777,7 @@ class CaseworkerSendOrderTest {
             .orderSignature("signature")
             .orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS)
             .build();
-        final List<ListValue<CICDocument>> documentList = getCICDocumentList(
+        final List<ListValue<OrderDecisionUploadCICDocument>> documentList = getOrderDecisionUploadCICDocumentList(
             OrderTemplate.CIC6_GENERAL_DIRECTIONS.getLabel() + "--[Test Name]--09-05-2024 09:04:04.pdf");
         final DraftOrderCIC orderCIC = DraftOrderCIC.builder()
             .draftOrderContentCIC(contentCIC)
@@ -813,7 +814,7 @@ class CaseworkerSendOrderTest {
     void shouldStoreErrorsWhenBuildAndSaveNewDocumentEntityThrowsRuntimeExceptionForUploadedOrder() {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         details.setId(TEST_CASE_ID);
-        List<ListValue<CICDocument>> uploadedOrderDocuments = new ArrayList<>();
+        List<ListValue<OrderDecisionUploadCICDocument>> uploadedOrderDocuments = new ArrayList<>();
 
         Document document = Document.builder()
             .filename("Order--[Test Name]--09-05-2024 09:04:04.pdf")
@@ -821,11 +822,11 @@ class CaseworkerSendOrderTest {
             .url("url/documents/uuid")
             .build();
 
-        CICDocument cicDocument = CICDocument.builder()
+        OrderDecisionUploadCICDocument cicDocument = OrderDecisionUploadCICDocument.builder()
             .documentLink(document)
             .build();
 
-        ListValue<CICDocument> cicDocumentListValue = new ListValue<>();
+        ListValue<OrderDecisionUploadCICDocument> cicDocumentListValue = new ListValue<>();
         cicDocumentListValue.setId("123");
         cicDocumentListValue.setValue(cicDocument);
 
@@ -895,23 +896,23 @@ class CaseworkerSendOrderTest {
             .url("url/documents/uuid2")
             .build();
 
-        CICDocument cicDocument = CICDocument.builder()
+        OrderDecisionUploadCICDocument cicDocument = OrderDecisionUploadCICDocument.builder()
             .documentLink(document)
             .build();
 
-        ListValue<CICDocument> cicDocumentListValue = new ListValue<>();
+        ListValue<OrderDecisionUploadCICDocument> cicDocumentListValue = new ListValue<>();
         cicDocumentListValue.setId("123");
         cicDocumentListValue.setValue(cicDocument);
 
-        CICDocument cicDocument2 = CICDocument.builder()
+        OrderDecisionUploadCICDocument cicDocument2 = OrderDecisionUploadCICDocument.builder()
             .documentLink(document2)
             .build();
 
-        ListValue<CICDocument> cicDocumentListValue2 = new ListValue<>();
+        ListValue<OrderDecisionUploadCICDocument> cicDocumentListValue2 = new ListValue<>();
         cicDocumentListValue2.setId("1234");
         cicDocumentListValue2.setValue(cicDocument2);
 
-        List<ListValue<CICDocument>> uploadedOrderDocuments = new ArrayList<>();
+        List<ListValue<OrderDecisionUploadCICDocument>> uploadedOrderDocuments = new ArrayList<>();
         uploadedOrderDocuments.add(cicDocumentListValue);
         uploadedOrderDocuments.add(cicDocumentListValue2);
 
@@ -929,7 +930,7 @@ class CaseworkerSendOrderTest {
 
         // Then
         assertThat(response.getData().getCicCase().getOrderList().getFirst().getValue().getUploadedFile())
-            .isEqualTo(uploadedOrderDocuments);
+            .isEqualTo(DocumentUtil.convertToCICDocuments(uploadedOrderDocuments));
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(document, TEST_CASE_ID,
             DocumentType.TRIBUNAL_DIRECTION, CaseDocumentType.ORDER);

@@ -20,6 +20,8 @@ public final class DocumentFileTypes {
         Set.of("jpg", "jpeg", "bmp", "tif", "tiff", "png")
     );
 
+    public static final Set<String> ORDER_DECISION_UPLOAD_EXTENSIONS = Set.of("pdf");
+
     public static final Set<String> BUNDLE_DOCUMENT_EXTENSIONS = Set.of(
         "pdf", "txt", "xlsx", "docx", "doc", "xls", "jpg", "jpeg", "tiff", "bmp", "gif", "svg", "png"
     );

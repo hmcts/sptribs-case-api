@@ -21,7 +21,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
-import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.document.model.OrderDecisionUploadCICDocument;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
 import java.util.ArrayList;
@@ -88,7 +88,7 @@ public class CaseworkerDocumentManagementRemoveIT extends IntegrationTestBase {
             .build();
         final ListValue<Order> orderListValue = new ListValue<>();
         orderListValue.setValue(order);
-        final CICDocument doc = CICDocument.builder()
+        final OrderDecisionUploadCICDocument doc = OrderDecisionUploadCICDocument.builder()
             .documentLink(Document.builder()
                 .url("url1")
                 .binaryUrl("url1")

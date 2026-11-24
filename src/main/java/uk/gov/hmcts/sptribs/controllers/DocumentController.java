@@ -38,6 +38,7 @@ import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.model.DownloadedDocumentResponse;
 import uk.gov.hmcts.sptribs.document.service.DocumentDownloadStatusService;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.exception.CaseNotFoundException;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
@@ -46,6 +47,7 @@ import uk.gov.hmcts.sptribs.notification.model.Party;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 @Tag(name = "Document Controller")
 @Slf4j
@@ -153,12 +155,16 @@ public class DocumentController {
     }
 
     @GetMapping(value = "/{ccdReference}/documents/{documentId}/download")
-    @Operation(summary = "Download a document by its ID and verify against case reference and postcode")
+    @Operation(summary = "Download a document by its ID and verify against case reference and postcode",
+        description = "Checks case membership and document ownership before fetching with the caller's token. "
+            + "On a CDAM metadata not-found response, checks the caller's case roles, assigns the creator role "
+            + "if absent and retries metadata retrieval once.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Document downloaded successfully"),
         @ApiResponse(responseCode = "400", description = "Invalid CCD reference or document ID"),
-        @ApiResponse(responseCode = "401", description = "Unauthorized - Postcode mismatch or document does not belong to the case"),
-        @ApiResponse(responseCode = "404", description = "Document not found"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - Postcode mismatch"),
+        @ApiResponse(responseCode = "403", description = "Caller cannot access the document"),
+        @ApiResponse(responseCode = "404", description = "Document not found on this case"),
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<Resource> downloadDocumentByCaseAndId(
@@ -194,10 +200,12 @@ public class DocumentController {
             validateCaseEntity(cicaCaseEntity, ccdReference);
 
             Party party = resolveParty(authorisation, cicaCaseEntity);
+            UUID documentUuid = UUID.fromString(documentId);
+            if (!documentsService.isDocumentOnCase(Long.valueOf(ccdReference), documentUuid.toString())) {
+                throw new CaseNotFoundException("Document not found on case");
+            }
             DownloadedDocumentResponse documentResponse = documentDownloadService.downloadDocument(
-                authorisation,
-                documentId
-            );
+                ccdReference, authorisation, documentUuid.toString());
 
             log.info(
                 "event=document_download_retrieved journey=cica_dashboard step=document_download outcome=success "
