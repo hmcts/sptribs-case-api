@@ -324,4 +324,69 @@ class ReinstateCaseTest {
 
         assertThat(response.getErrors()).hasSize(2);
     }
+
+    @Test
+    void shouldShowPartiallySentMessageIfSomeNotificationsFailOnSubmitted() {
+        final CaseData caseData = caseData();
+
+        CicCase cicCase = CicCase.builder()
+            .build();
+        caseData.setCicCase(cicCase);
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+
+
+        doAnswer(invocation -> {
+            NotificationContext context = invocation.getArgument(0);
+            if (context.getNotification() == caseReinstatedNotification) {
+                context.getSent().add(RESPONDENT);
+                context.getSent().add(SUBJECT);
+                context.getErrors().add(REPRESENTATIVE);
+            }
+            return null;
+        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
+
+        SubmittedCallbackResponse responseReinstate =
+            reinstateCase.submitted(updatedCaseDetails, beforeDetails);
+
+
+        //Then
+        assertThat(responseReinstate.getConfirmationHeader())
+            .isEqualTo("""
+                # Case reinstated.\
+                \n## A notification has been sent to: Respondent, Subject\
+                \n## A notification could not be sent to: Representative\
+                \n## Please resend the notification.""");
+    }
+
+    @Test
+    void shouldShowErrorMessageIfAllNotificationsFailOnSubmitted() {
+        final CaseData caseData = caseData();
+
+        CicCase cicCase = CicCase.builder()
+            .build();
+        caseData.setCicCase(cicCase);
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+
+
+        doAnswer(invocation -> {
+            NotificationContext context = invocation.getArgument(0);
+            if (context.getNotification() == caseReinstatedNotification) {
+                context.getErrors().add(REPRESENTATIVE);
+            }
+            return null;
+        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
+
+        SubmittedCallbackResponse responseReinstate =
+            reinstateCase.submitted(updatedCaseDetails, beforeDetails);
+
+
+        //Then
+        assertThat(responseReinstate.getConfirmationHeader())
+            .isEqualTo("""
+                # Case Reinstate notification failed \
+                \n## A notification could not be sent to: Representative \
+                \n## Please resend the notification.""");
+    }
 }
