@@ -7,12 +7,12 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.document.model.OrderDecisionUploadCICDocument;
 
 import java.util.List;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.PageShowConditionsUtil.issueDecisionShowConditions;
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateDecisionDocumentFormat;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateOrderDecisionUploadCICDocumentFormat;
 
 public class IssueDecisionUploadNotice implements CcdPageConfiguration {
 
@@ -27,6 +27,8 @@ public class IssueDecisionUploadNotice implements CcdPageConfiguration {
                     Upload a copy of the decision notice that you want to add to this case.
 
                     The decision notice should be:
+
+                    - in PDF (.pdf) format
 
                     - a maximum of 100MB in size (larger files must be split)
 
@@ -43,8 +45,8 @@ public class IssueDecisionUploadNotice implements CcdPageConfiguration {
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                    CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
-        CICDocument uploadedDocument = data.getCaseIssueDecision().getDecisionDocument();
-        final List<String> errors = validateDecisionDocumentFormat(uploadedDocument);
+        OrderDecisionUploadCICDocument uploadedDocument = data.getCaseIssueDecision().getDecisionDocument();
+        final List<String> errors = validateOrderDecisionUploadCICDocumentFormat(uploadedDocument);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)

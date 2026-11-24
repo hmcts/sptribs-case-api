@@ -41,6 +41,7 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.CitizenCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.model.OrderDecisionUploadCICDocument;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 
 import java.time.LocalDate;
@@ -516,6 +517,23 @@ public class TestDataHelper {
         documentListValue.setValue(document);
         return documentListValue;
     }
+
+
+    public static List<ListValue<OrderDecisionUploadCICDocument>> getOrderDecisionUploadCICDocumentList(String... fileNames) {
+        List<ListValue<OrderDecisionUploadCICDocument>> documentList = new ArrayList<>();
+        for (String fileName : fileNames) {
+            Document document = getDocumentWithBinary(fileName);
+            OrderDecisionUploadCICDocument cicDocument = OrderDecisionUploadCICDocument.builder()
+                .documentLink(document)
+                .documentEmailContent("some email content")
+                .build();
+            ListValue<OrderDecisionUploadCICDocument> documentListValue = new ListValue<>();
+            documentListValue.setValue(cicDocument);
+            documentList.add(documentListValue);
+        }
+        return documentList;
+    }
+
 
     public static List<ListValue<CICDocument>> getCICDocumentList(String... fileNames) {
         List<ListValue<CICDocument>> documentList = new ArrayList<>();
