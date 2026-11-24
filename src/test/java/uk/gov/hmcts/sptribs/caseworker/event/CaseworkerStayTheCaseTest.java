@@ -162,8 +162,6 @@ class CaseworkerStayTheCaseTest {
         }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
 
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
-            caseworkerStayTheCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse stayedResponse = caseworkerStayTheCase.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
