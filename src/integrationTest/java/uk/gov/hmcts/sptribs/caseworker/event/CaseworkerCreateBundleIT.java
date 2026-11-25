@@ -3,10 +3,15 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EmptySource;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -24,18 +29,24 @@ import uk.gov.hmcts.sptribs.cdam.model.Document.DocumentLink;
 import uk.gov.hmcts.sptribs.cdam.model.Document.Links;
 import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundleResponse;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundlingClient;
 import uk.gov.hmcts.sptribs.document.bundling.model.AudioVideoEvidenceBundleDocument;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleCallback;
+import uk.gov.hmcts.sptribs.document.bundling.model.BundleFolder;
 import uk.gov.hmcts.sptribs.document.model.AbstractCaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
+import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
@@ -50,6 +61,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -59,9 +71,14 @@ import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -69,10 +86,15 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CREATE_BUNDLE;
+import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.AUDIO_VIDEO_EVIDENCE_FOLDER_NAME;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.BUNDLE_CREATED_EMAIL_CITIZEN;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.BUNDLE_CREATED_EMAIL_RESPONDENT;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_HYPHENATED;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCICDocumentList;
@@ -80,7 +102,11 @@ import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocum
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+    properties = {
+        "feature.citizen-dashboard.enabled=true",
+        "uk.gov.notify.email.templateVars.respondentEmail=configured-respondent@example.com"
+    })
 @AutoConfigureMockMvc
 @ContextConfiguration(initializers = {IdamWireMock.PropertiesInitializer.class})
 public class CaseworkerCreateBundleIT {
@@ -118,6 +144,9 @@ public class CaseworkerCreateBundleIT {
     @MockitoBean
     private DocumentsService documentsService;
 
+    @MockitoBean
+    private NotificationServiceCIC notificationServiceCIC;
+
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().findAndRegisterModules();
     private static final TypeReference<HashMap<String, Object>> TYPE_REFERENCE = new TypeReference<>() {
     };
@@ -143,6 +172,175 @@ public class CaseworkerCreateBundleIT {
     void setClock() {
         when(clock.instant()).thenReturn(instant);
         when(clock.getZone()).thenReturn(zoneId);
+    }
+
+    @AfterEach
+    void cleanUpMocks() {
+        reset(
+            webMvcConfig,
+            authTokenGenerator,
+            bundlingClient,
+            clock,
+            pdfServiceClient,
+            caseDocumentClientApi,
+            documentsService,
+            notificationServiceCIC
+        );
+    }
+
+    @Test
+    void shouldNotNotifyAnyoneWhenCreatingBundleForClosedCase() throws Exception {
+        String response = submittedResponse(notificationCaseData(), State.CaseClosed);
+
+        assertThatJson(response).inPath("$.confirmation_header").isEqualTo("# Bundle created.");
+        verifyNoInteractions(notificationServiceCIC);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = State.class, names = {"CaseManagement", "AwaitingHearing", "ReadyToList"})
+    void shouldNotifyEligiblePartiesInNonClosedStates(State state) throws Exception {
+        String response = submittedResponse(notificationCaseData(), state);
+
+        assertThat(confirmationHeader(response))
+            .isEqualTo("# Bundle created. \n## A notification has been sent to: Subject, Respondent, Representative, Applicant");
+
+        ArgumentCaptor<NotificationRequest> requests = ArgumentCaptor.forClass(NotificationRequest.class);
+        verify(notificationServiceCIC, times(4)).sendEmail(requests.capture(), eq(TEST_CASE_ID_HYPHENATED), isNull());
+        assertThat(requests.getAllValues())
+            .extracting(NotificationRequest::getTemplate)
+            .containsExactly(BUNDLE_CREATED_EMAIL_CITIZEN, BUNDLE_CREATED_EMAIL_RESPONDENT,
+                BUNDLE_CREATED_EMAIL_CITIZEN, BUNDLE_CREATED_EMAIL_CITIZEN);
+        assertThat(requests.getAllValues())
+            .extracting(NotificationRequest::getDestinationAddress)
+            .containsExactly("subject@example.com", "respondent@example.com",
+                "representative@example.com", "applicant@example.com");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = CaseSubcategory.class, names = {"FATAL", "MINOR"})
+    void shouldNotNotifySubjectForFatalOrMinorCase(CaseSubcategory subcategory) throws Exception {
+        CaseData caseData = notificationCaseData();
+        caseData.getCicCase().setCaseSubcategory(subcategory);
+
+        String response = submittedResponse(caseData, State.CaseManagement);
+
+        assertThat(confirmationHeader(response))
+            .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent, Representative, Applicant");
+        ArgumentCaptor<NotificationRequest> requests = ArgumentCaptor.forClass(NotificationRequest.class);
+        verify(notificationServiceCIC, times(3)).sendEmail(requests.capture(), eq(TEST_CASE_ID_HYPHENATED), isNull());
+        assertThat(requests.getAllValues())
+            .extracting(NotificationRequest::getDestinationAddress)
+            .containsExactly("respondent@example.com", "representative@example.com", "applicant@example.com");
+    }
+
+    @Test
+    void shouldNotifyRespondentWhenOtherStoredEmailAddressesAreMissing() throws Exception {
+        CaseData caseData = notificationCaseData();
+        caseData.getCicCase().setEmail(null);
+        caseData.getCicCase().setRepresentativeEmailAddress("");
+        caseData.getCicCase().setApplicantEmailAddress(null);
+
+        String response = submittedResponse(caseData, State.ReadyToList);
+
+        assertThat(confirmationHeader(response))
+            .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent");
+        ArgumentCaptor<NotificationRequest> requests = ArgumentCaptor.forClass(NotificationRequest.class);
+        verify(notificationServiceCIC).sendEmail(requests.capture(), eq(TEST_CASE_ID_HYPHENATED), isNull());
+        assertThat(requests.getValue().getDestinationAddress()).isEqualTo("respondent@example.com");
+    }
+
+    @ParameterizedTest
+    @EmptySource
+    @ValueSource(strings = "   ")
+    void shouldReportRespondentFailureWhenStoredAddressIsBlank(String respondentEmail) throws Exception {
+        CaseData caseData = notificationCaseData();
+        caseData.getCicCase().setRespondentEmail(respondentEmail);
+        doThrow(new IllegalArgumentException("Missing respondent email"))
+            .when(notificationServiceCIC).sendEmail(argThat(request -> request != null
+                && Objects.equals(request.getDestinationAddress(), respondentEmail)), eq(TEST_CASE_ID_HYPHENATED), isNull());
+
+        String response = submittedResponse(caseData, State.CaseManagement);
+
+        assertThat(confirmationHeader(response)).isEqualTo("""
+            # Bundle creation notification failed\s
+            ## A notification could not be sent to: Respondent\s
+            ## Please resend the notification.""");
+        ArgumentCaptor<NotificationRequest> requests = ArgumentCaptor.forClass(NotificationRequest.class);
+        verify(notificationServiceCIC, times(4)).sendEmail(requests.capture(), eq(TEST_CASE_ID_HYPHENATED), isNull());
+        assertThat(requests.getAllValues())
+            .extracting(NotificationRequest::getDestinationAddress)
+            .containsExactly("subject@example.com", respondentEmail, "representative@example.com", "applicant@example.com");
+    }
+
+    @Test
+    void shouldNotifyRemainingPartiesWhenSomeEmailAddressesAreMissing() throws Exception {
+        CaseData caseData = notificationCaseData();
+        caseData.getCicCase().setEmail("");
+        caseData.getCicCase().setRepresentativeEmailAddress(null);
+
+        String response = submittedResponse(caseData, State.AwaitingHearing);
+
+        assertThat(confirmationHeader(response))
+            .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent, Applicant");
+        ArgumentCaptor<NotificationRequest> requests = ArgumentCaptor.forClass(NotificationRequest.class);
+        verify(notificationServiceCIC, times(2)).sendEmail(requests.capture(), eq(TEST_CASE_ID_HYPHENATED), isNull());
+        assertThat(requests.getAllValues())
+            .extracting(NotificationRequest::getDestinationAddress)
+            .containsExactly("respondent@example.com", "applicant@example.com");
+    }
+
+    @Test
+    void shouldNotifyRespondentWhenCaseUsesDefaultRespondentEmail() throws Exception {
+        CaseData caseData = notificationCaseData();
+        caseData.setCicCase(CicCase.builder()
+            .caseSubcategory(CaseSubcategory.FATAL)
+            .partiesCIC(Set.of())
+            .build());
+
+        String response = submittedResponse(caseData, State.CaseManagement);
+
+        assertThat(confirmationHeader(response))
+            .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent");
+        ArgumentCaptor<NotificationRequest> requests = ArgumentCaptor.forClass(NotificationRequest.class);
+        verify(notificationServiceCIC).sendEmail(requests.capture(), eq(TEST_CASE_ID_HYPHENATED), isNull());
+        assertThat(requests.getValue().getDestinationAddress()).isEqualTo("appeals.team@cica.gov.uk");
+    }
+
+    @Test
+    void shouldNotNotifyApplicantOrRepresentativeWhenTheyAreNotCaseParties() throws Exception {
+        CaseData caseData = notificationCaseData();
+        caseData.getCicCase().setPartiesCIC(Set.of(PartiesCIC.SUBJECT));
+
+        String response = submittedResponse(caseData, State.CaseManagement);
+
+        assertThat(confirmationHeader(response))
+            .isEqualTo("# Bundle created. \n## A notification has been sent to: Subject, Respondent");
+        ArgumentCaptor<NotificationRequest> requests = ArgumentCaptor.forClass(NotificationRequest.class);
+        verify(notificationServiceCIC, times(2)).sendEmail(requests.capture(), eq(TEST_CASE_ID_HYPHENATED), isNull());
+        assertThat(requests.getAllValues())
+            .extracting(NotificationRequest::getDestinationAddress)
+            .containsExactly("subject@example.com", "respondent@example.com");
+    }
+
+    @Test
+    void shouldContinueNotifyingOtherPartiesWhenSomeSendsFail() throws Exception {
+        doThrow(new IllegalStateException("Notification failed"))
+            .when(notificationServiceCIC).sendEmail(argThat(request -> request != null
+                && Set.of("subject@example.com", "representative@example.com")
+                    .contains(request.getDestinationAddress())), eq(TEST_CASE_ID_HYPHENATED), isNull());
+
+        String response = submittedResponse(notificationCaseData(), State.CaseManagement);
+
+        assertThat(confirmationHeader(response)).isEqualTo("""
+            # Bundle creation notification failed\s
+            ## A notification could not be sent to: Subject, Representative\s
+            ## Please resend the notification.""");
+        ArgumentCaptor<NotificationRequest> requests = ArgumentCaptor.forClass(NotificationRequest.class);
+        verify(notificationServiceCIC, times(4)).sendEmail(requests.capture(), eq(TEST_CASE_ID_HYPHENATED), isNull());
+        assertThat(requests.getAllValues())
+            .extracting(NotificationRequest::getDestinationAddress)
+            .containsExactly("subject@example.com", "respondent@example.com",
+                "representative@example.com", "applicant@example.com");
     }
 
     @Test
@@ -581,7 +779,7 @@ public class CaseworkerCreateBundleIT {
         assertThat(caseBundles).hasSize(3);
 
         @SuppressWarnings("unchecked")
-        HashMap<String, Object> firstBundleValue = (HashMap<String, Object>) caseBundles.get(0).get("value");
+        HashMap<String, Object> firstBundleValue = (HashMap<String, Object>) caseBundles.getFirst().get("value");
         assertThat(firstBundleValue.get("id")).isEqualTo(newBundleUUID);
         assertThat(firstBundleValue.get("dateAndTime")).isNotNull();
 
@@ -606,7 +804,7 @@ public class CaseworkerCreateBundleIT {
             (List<HashMap<String, Object>>) data.get("caseBundleIdsAndTimestamps");
         assertThat(bundleIdsAndTimestamps).hasSize(1);
         @SuppressWarnings("unchecked")
-        HashMap<String, Object> timestampEntry = (HashMap<String, Object>) bundleIdsAndTimestamps.get(0).get("value");
+        HashMap<String, Object> timestampEntry = (HashMap<String, Object>) bundleIdsAndTimestamps.getFirst().get("value");
         assertThat(timestampEntry.get("bundleId")).isEqualTo(newBundleUUID);
     }
 
@@ -656,13 +854,419 @@ public class CaseworkerCreateBundleIT {
 
         assertThat(caseBundles).hasSize(1);
         @SuppressWarnings("unchecked")
-        HashMap<String, Object> bundleValue = (HashMap<String, Object>) caseBundles.get(0).get("value");
+        HashMap<String, Object> bundleValue = (HashMap<String, Object>) caseBundles.getFirst().get("value");
         assertThat(bundleValue.get("dateAndTime")).isNotNull();
 
         @SuppressWarnings("unchecked")
         List<HashMap<String, Object>> bundleIdsAndTimestamps =
             (List<HashMap<String, Object>>) data.get("caseBundleIdsAndTimestamps");
         assertThat(bundleIdsAndTimestamps).hasSize(1);
+    }
+
+    @Test
+    void shouldHideAudioVideoEvidenceFolderInBundleWhenNoAudioVideoFilesExist() throws Exception {
+        final CaseData caseData = caseData();
+        caseData.setCaseNumber("1616591401473378");
+        CicCase cicCase = CicCase.builder().build();
+        cicCase.setApplicantDocumentsUploaded(
+            List.of(
+                toListValue(buildCaseworkerDoc(
+                    "paper.pdf",
+                    "http://dm/documents/3/binary",
+                    DocumentType.APPLICATION_FORM,
+                    LocalDate.of(2026, 1, 8)
+                ))
+            )
+        );
+        caseData.setCicCase(cicCase);
+
+        when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTHORIZATION);
+        when(documentsService.getAudioVideoDocuments(any())).thenReturn(List.of());
+
+        List<ListValue<BundleFolder>> folders = new ArrayList<>();
+        folders.add(ListValue.<BundleFolder>builder()
+            .id("1")
+            .value(BundleFolder.builder().name("Applications").sortIndex(1).build())
+            .build());
+        folders.add(ListValue.<BundleFolder>builder()
+            .id("2")
+            .value(BundleFolder.builder().name(AUDIO_VIDEO_EVIDENCE_FOLDER_NAME).sortIndex(2).build())
+            .build());
+        folders.add(ListValue.<BundleFolder>builder()
+            .id("3")
+            .value(BundleFolder.builder().name("Orders").sortIndex(3).build())
+            .build());
+
+        List<ListValue<Bundle>> apiReturnedBundles = new ArrayList<>();
+        apiReturnedBundles.add(ListValue.<Bundle>builder()
+            .id("1")
+            .value(Bundle.builder().id(UUID.randomUUID().toString()).folders(folders).build())
+            .build());
+
+        BundleResponse bundleResponse = mock(BundleResponse.class);
+        LinkedHashMap<String, Object> responseData = new LinkedHashMap<>();
+        responseData.put("caseBundles", OBJECT_MAPPER.convertValue(apiReturnedBundles, LIST_TYPE_REFERENCE));
+        when(bundleResponse.getData()).thenReturn(responseData);
+
+        when(bundlingClient.createBundle(
+            eq(SERVICE_AUTHORIZATION),
+            eq(TEST_AUTHORIZATION_TOKEN),
+            any(BundleCallback.class)
+        )).thenReturn(bundleResponse);
+
+        String response = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
+                .contentType(APPLICATION_JSON)
+                .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .content(objectMapper.writeValueAsString(callbackRequest(caseData, CREATE_BUNDLE)))
+                .accept(APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        HashMap<String, Object> responseMap = objectMapper.readValue(response, TYPE_REFERENCE);
+        @SuppressWarnings("unchecked")
+        HashMap<String, Object> data = (HashMap<String, Object>) responseMap.get("data");
+        @SuppressWarnings("unchecked")
+        List<HashMap<String, Object>> caseBundles = (List<HashMap<String, Object>>) data.get("caseBundles");
+
+        assertThat(caseBundles).hasSize(1);
+        @SuppressWarnings("unchecked")
+        HashMap<String, Object> bundleValue = (HashMap<String, Object>) caseBundles.getFirst().get("value");
+        @SuppressWarnings("unchecked")
+        List<HashMap<String, Object>> bundleFolders = (List<HashMap<String, Object>>) bundleValue.get("folders");
+
+        assertThat(bundleFolders).hasSize(2);
+        assertThat(bundleFolders)
+            .extracting(folder -> {
+                @SuppressWarnings("unchecked")
+                HashMap<String, Object> folderVal = (HashMap<String, Object>) folder.get("value");
+                return (String) folderVal.get("name");
+            })
+            .containsExactlyInAnyOrder("Applications", "Orders")
+            .doesNotContain(AUDIO_VIDEO_EVIDENCE_FOLDER_NAME);
+    }
+
+    @Test
+    void shouldShowAudioVideoEvidenceFolderWithFilesWhenAudioVideoFilesExist() throws Exception {
+        final CaseData caseData = caseData();
+        caseData.setCaseNumber("1616591401473378");
+        CicCase cicCase = CicCase.builder().build();
+        cicCase.setApplicantDocumentsUploaded(
+            List.of(
+                toListValue(buildCaseworkerDoc(
+                    "paper.pdf",
+                    "http://dm/documents/3/binary",
+                    DocumentType.APPLICATION_FORM,
+                    LocalDate.of(2026, 1, 8)
+                ))
+            )
+        );
+        caseData.setCicCase(cicCase);
+
+        when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTHORIZATION);
+        when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).thenReturn("pdf".getBytes());
+
+        DocumentEntity audioDoc1 = DocumentEntity.builder()
+            .documentFilename("hearing-audio.mp3")
+            .documentBinaryUrl(buildDmStoreBinaryUrl(VALID_DOCUMENT_ID_1))
+            .documentTypeName(DocumentType.LINKED_DOCS.name())
+            .savedAt(OffsetDateTime.parse("2026-01-10T10:00:00Z"))
+            .build();
+        DocumentEntity audioDoc2 = DocumentEntity.builder()
+            .documentFilename("cctv-evidence.mp4")
+            .documentBinaryUrl(buildDmStoreBinaryUrl(VALID_DOCUMENT_ID_2))
+            .documentTypeName(DocumentType.POLICE_EVIDENCE.name())
+            .savedAt(OffsetDateTime.parse("2026-01-12T10:00:00Z"))
+            .build();
+        when(documentsService.getAudioVideoDocuments(any())).thenReturn(List.of(audioDoc1, audioDoc2));
+
+        DocumentLink self = new DocumentLink();
+        self.href = "http://dm-store/documents/generated";
+        DocumentLink binary = new DocumentLink();
+        binary.href = "http://dm-store/documents/generated/binary";
+        Links links = new Links();
+        links.self = self;
+        links.binary = binary;
+        uk.gov.hmcts.sptribs.cdam.model.Document uploadedDoc = new uk.gov.hmcts.sptribs.cdam.model.Document();
+        uploadedDoc.links = links;
+        uploadedDoc.originalDocumentName = "audio-video-evidence-1616591401473378.pdf";
+        UploadResponse uploadResponse = new UploadResponse();
+        uploadResponse.setDocuments(List.of(uploadedDoc));
+        when(caseDocumentClientApi.uploadDocuments(eq(TEST_AUTHORIZATION_TOKEN), eq(SERVICE_AUTHORIZATION), any()))
+            .thenReturn(uploadResponse);
+
+        List<ListValue<BundleFolder>> folders = new ArrayList<>();
+        folders.add(ListValue.<BundleFolder>builder()
+            .id("1")
+            .value(BundleFolder.builder().name("Applications").sortIndex(1).build())
+            .build());
+        folders.add(ListValue.<BundleFolder>builder()
+            .id("2")
+            .value(BundleFolder.builder().name(AUDIO_VIDEO_EVIDENCE_FOLDER_NAME).sortIndex(2).build())
+            .build());
+
+        List<ListValue<Bundle>> apiReturnedBundles = new ArrayList<>();
+        apiReturnedBundles.add(ListValue.<Bundle>builder()
+            .id("1")
+            .value(Bundle.builder().id(UUID.randomUUID().toString()).folders(folders).build())
+            .build());
+
+        BundleResponse bundleResponse = mock(BundleResponse.class);
+        LinkedHashMap<String, Object> responseData = new LinkedHashMap<>();
+        responseData.put("caseBundles", OBJECT_MAPPER.convertValue(apiReturnedBundles, LIST_TYPE_REFERENCE));
+        when(bundleResponse.getData()).thenReturn(responseData);
+
+        when(bundlingClient.createBundle(
+            eq(SERVICE_AUTHORIZATION),
+            eq(TEST_AUTHORIZATION_TOKEN),
+            any(BundleCallback.class)
+        )).thenReturn(bundleResponse);
+
+        String response = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
+                .contentType(APPLICATION_JSON)
+                .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .content(objectMapper.writeValueAsString(callbackRequest(caseData, CREATE_BUNDLE)))
+                .accept(APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        HashMap<String, Object> responseMap = objectMapper.readValue(response, TYPE_REFERENCE);
+        @SuppressWarnings("unchecked")
+        HashMap<String, Object> data = (HashMap<String, Object>) responseMap.get("data");
+        @SuppressWarnings("unchecked")
+        List<HashMap<String, Object>> caseBundles = (List<HashMap<String, Object>>) data.get("caseBundles");
+
+        assertThat(caseBundles).hasSize(1);
+        @SuppressWarnings("unchecked")
+        HashMap<String, Object> bundleValue = (HashMap<String, Object>) caseBundles.getFirst().get("value");
+        @SuppressWarnings("unchecked")
+        List<HashMap<String, Object>> bundleFolders = (List<HashMap<String, Object>>) bundleValue.get("folders");
+
+        assertThat(bundleFolders).hasSize(2);
+        @SuppressWarnings("unchecked")
+        HashMap<String, Object> avFolder = bundleFolders.stream()
+            .filter(folder -> {
+                @SuppressWarnings("unchecked")
+                HashMap<String, Object> folderVal = (HashMap<String, Object>) folder.get("value");
+                return AUDIO_VIDEO_EVIDENCE_FOLDER_NAME.equalsIgnoreCase((String) folderVal.get("name"));
+            })
+            .findFirst()
+            .orElseThrow();
+
+        @SuppressWarnings("unchecked")
+        HashMap<String, Object> avFolderVal = (HashMap<String, Object>) avFolder.get("value");
+        @SuppressWarnings("unchecked")
+        List<HashMap<String, Object>> avDocuments = (List<HashMap<String, Object>>) avFolderVal.get("documents");
+
+        assertThat(avDocuments).hasSize(2);
+        assertThat(avDocuments)
+            .extracting(doc -> {
+                @SuppressWarnings("unchecked")
+                HashMap<String, Object> docVal = (HashMap<String, Object>) doc.get("value");
+                return (String) docVal.get("name");
+            })
+            .containsExactlyInAnyOrder("hearing-audio.mp3", "cctv-evidence.mp4");
+    }
+
+    @Test
+    void shouldPreserveExistingBundleFoldersWhenNewBundleCreatedWithAudioVideoEvidence() throws Exception {
+        final CaseData caseData = caseData();
+        caseData.setCaseNumber("1616591401473378");
+        CicCase cicCase = CicCase.builder().build();
+        cicCase.setApplicantDocumentsUploaded(
+            List.of(
+                toListValue(buildCaseworkerDoc(
+                    "paper.pdf",
+                    "http://dm/documents/3/binary",
+                    DocumentType.APPLICATION_FORM,
+                    LocalDate.of(2026, 1, 8)
+                ))
+            )
+        );
+        caseData.setCicCase(cicCase);
+
+        final String existingOldBundleUUID = UUID.randomUUID().toString();
+        final String newBundleUUID = UUID.randomUUID().toString();
+
+        List<ListValue<BundleFolder>> oldFolders = new ArrayList<>();
+        oldFolders.add(ListValue.<BundleFolder>builder()
+            .id("1")
+            .value(BundleFolder.builder().name("Applications").sortIndex(1).build())
+            .build());
+
+        Bundle oldBundle = Bundle.builder()
+            .id(existingOldBundleUUID)
+            .folders(oldFolders)
+            .build();
+
+        CaseData caseDataBefore = caseData();
+        caseDataBefore.setCaseBundles(List.of(
+            ListValue.<Bundle>builder().id("1").value(oldBundle).build()
+        ));
+
+        when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTHORIZATION);
+        when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).thenReturn("pdf".getBytes());
+
+        DocumentEntity audioDoc1 = DocumentEntity.builder()
+            .documentFilename("hearing-audio.mp3")
+            .documentBinaryUrl(buildDmStoreBinaryUrl(VALID_DOCUMENT_ID_1))
+            .documentTypeName(DocumentType.LINKED_DOCS.name())
+            .savedAt(OffsetDateTime.parse("2026-01-10T10:00:00Z"))
+            .build();
+        DocumentEntity audioDoc2 = DocumentEntity.builder()
+            .documentFilename("cctv-evidence.mp4")
+            .documentBinaryUrl(buildDmStoreBinaryUrl(VALID_DOCUMENT_ID_2))
+            .documentTypeName(DocumentType.POLICE_EVIDENCE.name())
+            .savedAt(OffsetDateTime.parse("2026-01-12T10:00:00Z"))
+            .build();
+        when(documentsService.getAudioVideoDocuments(any())).thenReturn(List.of(audioDoc1, audioDoc2));
+
+        DocumentLink self = new DocumentLink();
+        self.href = "http://dm-store/documents/generated";
+        DocumentLink binary = new DocumentLink();
+        binary.href = "http://dm-store/documents/generated/binary";
+        Links links = new Links();
+        links.self = self;
+        links.binary = binary;
+        uk.gov.hmcts.sptribs.cdam.model.Document uploadedDoc = new uk.gov.hmcts.sptribs.cdam.model.Document();
+        uploadedDoc.links = links;
+        uploadedDoc.originalDocumentName = "audio-video-evidence-1616591401473378.pdf";
+        UploadResponse uploadResponse = new UploadResponse();
+        uploadResponse.setDocuments(List.of(uploadedDoc));
+        when(caseDocumentClientApi.uploadDocuments(eq(TEST_AUTHORIZATION_TOKEN), eq(SERVICE_AUTHORIZATION), any()))
+            .thenReturn(uploadResponse);
+
+        List<ListValue<BundleFolder>> newFolders = new ArrayList<>();
+        newFolders.add(ListValue.<BundleFolder>builder()
+            .id("1")
+            .value(BundleFolder.builder().name("Applications").sortIndex(1).build())
+            .build());
+        newFolders.add(ListValue.<BundleFolder>builder()
+            .id("2")
+            .value(BundleFolder.builder().name(AUDIO_VIDEO_EVIDENCE_FOLDER_NAME).sortIndex(2).build())
+            .build());
+
+        List<ListValue<Bundle>> apiReturnedBundles = new ArrayList<>();
+        apiReturnedBundles.add(ListValue.<Bundle>builder()
+            .id("1")
+            .value(Bundle.builder().id(existingOldBundleUUID).folders(new ArrayList<>(oldFolders)).build())
+            .build());
+        apiReturnedBundles.add(ListValue.<Bundle>builder()
+            .id("2")
+            .value(Bundle.builder().id(newBundleUUID).folders(newFolders).build())
+            .build());
+
+        BundleResponse bundleResponse = mock(BundleResponse.class);
+        LinkedHashMap<String, Object> responseData = new LinkedHashMap<>();
+        responseData.put("caseBundles", OBJECT_MAPPER.convertValue(apiReturnedBundles, LIST_TYPE_REFERENCE));
+        when(bundleResponse.getData()).thenReturn(responseData);
+
+        when(bundlingClient.createBundle(
+            eq(SERVICE_AUTHORIZATION),
+            eq(TEST_AUTHORIZATION_TOKEN),
+            any(BundleCallback.class)
+        )).thenReturn(bundleResponse);
+
+        String response = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
+                .contentType(APPLICATION_JSON)
+                .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .content(objectMapper.writeValueAsString(callbackRequest(caseData, caseDataBefore, CREATE_BUNDLE)))
+                .accept(APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        HashMap<String, Object> responseMap = objectMapper.readValue(response, TYPE_REFERENCE);
+        @SuppressWarnings("unchecked")
+        HashMap<String, Object> data = (HashMap<String, Object>) responseMap.get("data");
+        @SuppressWarnings("unchecked")
+        List<HashMap<String, Object>> caseBundles = (List<HashMap<String, Object>>) data.get("caseBundles");
+
+        assertThat(caseBundles).hasSize(2);
+
+        @SuppressWarnings("unchecked")
+        HashMap<String, Object> oldBundleVal = caseBundles.stream()
+            .map(bundle -> (HashMap<String, Object>) bundle.get("value"))
+            .filter(bundle -> existingOldBundleUUID.equals(bundle.get("id")))
+            .findFirst()
+            .orElseThrow();
+        @SuppressWarnings("unchecked")
+        List<HashMap<String, Object>> oldBundleFolders = (List<HashMap<String, Object>>) oldBundleVal.get("folders");
+        assertThat(oldBundleFolders).hasSize(1);
+        assertThat(oldBundleFolders)
+            .extracting(folder -> {
+                @SuppressWarnings("unchecked")
+                HashMap<String, Object> folderVal = (HashMap<String, Object>) folder.get("value");
+                return (String) folderVal.get("name");
+            })
+            .doesNotContain(AUDIO_VIDEO_EVIDENCE_FOLDER_NAME);
+
+        @SuppressWarnings("unchecked")
+        HashMap<String, Object> newBundleVal = caseBundles.stream()
+            .map(bundle -> (HashMap<String, Object>) bundle.get("value"))
+            .filter(bundle -> newBundleUUID.equals(bundle.get("id")))
+            .findFirst()
+            .orElseThrow();
+        @SuppressWarnings("unchecked")
+        List<HashMap<String, Object>> newBundleFolders = (List<HashMap<String, Object>>) newBundleVal.get("folders");
+        assertThat(newBundleFolders).hasSize(2);
+        @SuppressWarnings("unchecked")
+        HashMap<String, Object> avFolder = newBundleFolders.stream()
+            .filter(folder -> {
+                @SuppressWarnings("unchecked")
+                HashMap<String, Object> folderVal = (HashMap<String, Object>) folder.get("value");
+                return AUDIO_VIDEO_EVIDENCE_FOLDER_NAME.equalsIgnoreCase((String) folderVal.get("name"));
+            })
+            .findFirst()
+            .orElseThrow();
+
+        @SuppressWarnings("unchecked")
+        HashMap<String, Object> avFolderVal = (HashMap<String, Object>) avFolder.get("value");
+        @SuppressWarnings("unchecked")
+        List<HashMap<String, Object>> avDocuments = (List<HashMap<String, Object>>) avFolderVal.get("documents");
+        assertThat(avDocuments).hasSize(2);
+    }
+
+    private String confirmationHeader(String response) throws Exception {
+        return objectMapper.readTree(response).path("confirmation_header").asText();
+    }
+
+    private String submittedResponse(CaseData caseData, State state) throws Exception {
+        return mockMvc.perform(post(SUBMITTED_URL)
+                .contentType(APPLICATION_JSON)
+                .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .content(objectMapper.writeValueAsString(callbackRequest(caseData, CREATE_BUNDLE, state.getName())))
+                .accept(APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    }
+
+    private CaseData notificationCaseData() {
+        CaseData caseData = caseData();
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        caseData.setCicCase(CicCase.builder()
+            .caseSubcategory(CaseSubcategory.OTHER)
+            .fullName("Subject")
+            .email("subject@example.com")
+            .respondentEmail("respondent@example.com")
+            .respondentName("Respondent")
+            .partiesCIC(Set.of(PartiesCIC.SUBJECT, PartiesCIC.REPRESENTATIVE, PartiesCIC.APPLICANT))
+            .representativeFullName("Representative")
+            .representativeEmailAddress("representative@example.com")
+            .applicantFullName("Applicant")
+            .applicantEmailAddress("applicant@example.com")
+            .build());
+        return caseData;
     }
 
     private void populateCaseDocuments(final CaseData caseData) {

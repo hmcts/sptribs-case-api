@@ -16,7 +16,7 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
-import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.document.model.OrderDecisionUploadCICDocument;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -60,7 +60,7 @@ public class IssueDecisionUploadNoticeIT {
 
     @Test
     void shouldValidateDecisionDocumentInMidEvent() throws Exception {
-        final CICDocument document = CICDocument.builder()
+        final OrderDecisionUploadCICDocument document = OrderDecisionUploadCICDocument.builder()
             .documentLink(Document.builder().filename("test.pdf").build())
             .documentEmailContent("some email content")
             .build();

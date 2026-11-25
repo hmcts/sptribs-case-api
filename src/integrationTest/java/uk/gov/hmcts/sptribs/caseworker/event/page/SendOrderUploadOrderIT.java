@@ -26,7 +26,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.SEND_ORDER_UPLOAD_ORDE
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCICDocumentList;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getOrderDecisionUploadCICDocumentList;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_SEND_ORDER;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
@@ -62,7 +62,7 @@ public class SendOrderUploadOrderIT {
     void shouldValidateOrderFileInMidEvent() throws Exception {
         final CaseData caseData = CaseData.builder()
             .cicCase(CicCase.builder()
-                .orderFile(getCICDocumentList("file.pdf"))
+                .orderFile(getOrderDecisionUploadCICDocumentList("file.pdf"))
                 .build())
             .build();
 

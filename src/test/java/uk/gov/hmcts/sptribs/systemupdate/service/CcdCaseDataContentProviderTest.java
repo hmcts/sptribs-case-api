@@ -90,4 +90,5 @@ class CcdCaseDataContentProviderTest {
                 c -> c.getEvent().getDescription())
             .contains(START_EVENT_TOKEN, data, SYSTEM_MIGRATE_CASE, SUMMARY, DESCRIPTION);
     }
+
 }

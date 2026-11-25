@@ -1,12 +1,12 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import org.jspecify.annotations.NonNull;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
@@ -18,11 +18,10 @@ import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
-import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
-import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
@@ -32,6 +31,8 @@ import uk.gov.hmcts.sptribs.document.bundling.client.BundlingService;
 import uk.gov.hmcts.sptribs.document.bundling.model.AudioVideoEvidenceBundleDocument;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleCallback;
+import uk.gov.hmcts.sptribs.document.bundling.model.BundleDocument;
+import uk.gov.hmcts.sptribs.document.bundling.model.BundleFolder;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleIdAndTimestamp;
 import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
@@ -54,14 +55,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
+import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.AUDIO_VIDEO_EVIDENCE_FOLDER_NAME;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -94,6 +94,11 @@ class CaseworkerCreateBundleTest {
     @Mock
     private Clock clock;
 
+    @BeforeEach
+    void setUp() {
+        caseworkerCreateBundle.setCitizenDashboardEnabled(true);
+    }
+
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
 
@@ -121,9 +126,19 @@ class CaseworkerCreateBundleTest {
     }
 
     @Test
-    void shouldNotAddSubmittedIfCitizenDashboardIsDisabled() {
-        ReflectionTestUtils.setField(caseworkerCreateBundle, "citizenDashboardEnabled", false);
+    void shouldAddSubmittedCallbackWhenCitizenDashboardEnabled() {
+        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
+        caseworkerCreateBundle.configure(configBuilder);
+
+        assertThat(getEventsFrom(configBuilder).values())
+            .extracting(Event::getSubmittedCallback)
+            .doesNotContainNull();
+    }
+
+    @Test
+    void shouldNotAddSubmittedCallbackWhenCitizenDashboardDisabled() {
+        caseworkerCreateBundle.setCitizenDashboardEnabled(false);
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         caseworkerCreateBundle.configure(configBuilder);
@@ -131,18 +146,8 @@ class CaseworkerCreateBundleTest {
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getSubmittedCallback)
             .containsOnlyNulls();
-    }
-
-    @Test
-    void shouldAddSubmittedIfCitizenDashboardIsEnabled() {
-        ReflectionTestUtils.setField(caseworkerCreateBundle, "citizenDashboardEnabled", true);
-
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
-
-        caseworkerCreateBundle.configure(configBuilder);
-
         assertThat(getEventsFrom(configBuilder).values())
-            .extracting(Event::getSubmittedCallback)
+            .extracting(Event::getAboutToSubmitCallback)
             .doesNotContainNull();
     }
 
@@ -245,6 +250,495 @@ class CaseworkerCreateBundleTest {
     }
 
     @Test
+    void shouldHideAudioVideoEvidenceFolderWhenNoAudioVideoFilesExist() {
+        final CaseData caseData = caseData();
+        final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList();
+        final CicCase cicCase = CicCase.builder().build();
+        cicCase.setApplicantDocumentsUploaded(cicDocuments);
+        caseData.setCicCase(cicCase);
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        List<ListValue<BundleFolder>> folders = new ArrayList<>();
+        folders.add(ListValue.<BundleFolder>builder()
+            .id("1")
+            .value(BundleFolder.builder().name("Applications").sortIndex(1).build())
+            .build());
+        folders.add(ListValue.<BundleFolder>builder()
+            .id("2")
+            .value(BundleFolder.builder().name(AUDIO_VIDEO_EVIDENCE_FOLDER_NAME).sortIndex(2).build())
+            .build());
+        folders.add(ListValue.<BundleFolder>builder()
+            .id("3")
+            .value(BundleFolder.builder().name("Orders").sortIndex(3).build())
+            .build());
+
+        Bundle bundle = Bundle.builder()
+            .id("test-bundle-id")
+            .folders(folders)
+            .build();
+
+        when(clock.instant()).thenReturn(instant);
+        when(clock.getZone()).thenReturn(zoneId);
+        when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
+        when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
+        when(bundlingService.buildBundleListValues(anyList())).thenCallRealMethod();
+        when(audioVideoEvidenceBundleService.createAudioVideoEvidenceBundleDocument(TEST_CASE_ID))
+            .thenReturn(Optional.empty());
+        when(bundlingService.createBundle(any(BundleCallback.class), eq(TEST_CASE_ID)))
+            .thenReturn(List.of(bundle));
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+
+        assertThat(response.getErrors()).isNull();
+        List<ListValue<Bundle>> caseBundles = response.getData().getCaseBundles();
+        assertThat(caseBundles).isNotNull().hasSize(1);
+        List<ListValue<BundleFolder>> remainingFolders = caseBundles.getFirst().getValue().getFolders();
+        assertThat(remainingFolders).hasSize(2);
+        assertThat(remainingFolders)
+            .extracting(f -> f.getValue().getName())
+            .containsExactly("Applications", "Orders")
+            .doesNotContain(AUDIO_VIDEO_EVIDENCE_FOLDER_NAME);
+        verify(audioVideoEvidenceBundleService, never()).createAudioVideoBundleDocuments(any());
+    }
+
+    @Test
+    void shouldSetFoldersToNullWhenAudioVideoFolderWasOnlyFolderAndNoFilesExist() {
+        final CaseData caseData = caseData();
+        final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList();
+        final CicCase cicCase = CicCase.builder().build();
+        cicCase.setApplicantDocumentsUploaded(cicDocuments);
+        caseData.setCicCase(cicCase);
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        List<ListValue<BundleFolder>> folders = new ArrayList<>();
+        folders.add(ListValue.<BundleFolder>builder()
+            .id("1")
+            .value(BundleFolder.builder().name(AUDIO_VIDEO_EVIDENCE_FOLDER_NAME).sortIndex(1).build())
+            .build());
+
+        Bundle bundle = Bundle.builder()
+            .id("test-bundle-id")
+            .folders(folders)
+            .build();
+
+        when(clock.instant()).thenReturn(instant);
+        when(clock.getZone()).thenReturn(zoneId);
+        when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
+        when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
+        when(bundlingService.buildBundleListValues(anyList())).thenCallRealMethod();
+        when(audioVideoEvidenceBundleService.createAudioVideoEvidenceBundleDocument(TEST_CASE_ID))
+            .thenReturn(Optional.empty());
+        when(bundlingService.createBundle(any(BundleCallback.class), eq(TEST_CASE_ID)))
+            .thenReturn(List.of(bundle));
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+
+        assertThat(response.getErrors()).isNull();
+        List<ListValue<Bundle>> caseBundles = response.getData().getCaseBundles();
+        assertThat(caseBundles).isNotNull().hasSize(1);
+        assertThat(caseBundles.getFirst().getValue().getFolders()).isNull();
+    }
+
+    @Test
+    void shouldShowAudioVideoEvidenceFolderWithFilesWhenAudioVideoFilesExist() {
+        final CaseData caseData = caseData();
+        final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList();
+        final CicCase cicCase = CicCase.builder().build();
+        cicCase.setApplicantDocumentsUploaded(cicDocuments);
+        caseData.setCicCase(cicCase);
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        List<ListValue<BundleFolder>> folders = new ArrayList<>();
+        folders.add(ListValue.<BundleFolder>builder()
+            .id("1")
+            .value(BundleFolder.builder().name("Applications").sortIndex(1).build())
+            .build());
+        folders.add(ListValue.<BundleFolder>builder()
+            .id("2")
+            .value(BundleFolder.builder().name(AUDIO_VIDEO_EVIDENCE_FOLDER_NAME).sortIndex(2).build())
+            .build());
+
+        Bundle bundle = Bundle.builder()
+            .id("test-bundle-id")
+            .folders(folders)
+            .build();
+
+        final AudioVideoEvidenceBundleDocument audioVideoBundleDocument = AudioVideoEvidenceBundleDocument.builder()
+            .documentLink(Document.builder().filename("audio-video-evidence-123.pdf").build())
+            .date(LocalDate.of(2026, 8, 5))
+            .build();
+
+        final List<ListValue<BundleDocument>> avDocs = List.of(
+            ListValue.<BundleDocument>builder()
+                .id("1")
+                .value(BundleDocument.builder()
+                    .name("hearing.mp3")
+                    .description("Audio Document")
+                    .sortIndex(1)
+                    .sourceDocument(Document.builder().filename("hearing.mp3").build())
+                    .build())
+                .build(),
+            ListValue.<BundleDocument>builder()
+                .id("2")
+                .value(BundleDocument.builder()
+                    .name("cctv.mp4")
+                    .description("Video Document")
+                    .sortIndex(2)
+                    .sourceDocument(Document.builder().filename("cctv.mp4").build())
+                    .build())
+                .build()
+        );
+
+        when(clock.instant()).thenReturn(instant);
+        when(clock.getZone()).thenReturn(zoneId);
+        when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
+        when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
+        when(bundlingService.buildBundleListValues(anyList())).thenCallRealMethod();
+        when(audioVideoEvidenceBundleService.createAudioVideoEvidenceBundleDocument(TEST_CASE_ID))
+            .thenReturn(Optional.of(audioVideoBundleDocument));
+        when(audioVideoEvidenceBundleService.createAudioVideoBundleDocuments(TEST_CASE_ID))
+            .thenReturn(avDocs);
+        when(bundlingService.createBundle(any(BundleCallback.class), eq(TEST_CASE_ID)))
+            .thenReturn(List.of(bundle));
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+
+        assertThat(response.getErrors()).isNull();
+        List<ListValue<Bundle>> caseBundles = response.getData().getCaseBundles();
+        assertThat(caseBundles).isNotNull().hasSize(1);
+        List<ListValue<BundleFolder>> bundleFolders = caseBundles.getFirst().getValue().getFolders();
+        assertThat(bundleFolders).hasSize(2);
+
+        Optional<ListValue<BundleFolder>> avFolder = bundleFolders.stream()
+            .filter(f -> AUDIO_VIDEO_EVIDENCE_FOLDER_NAME.equalsIgnoreCase(f.getValue().getName()))
+            .findFirst();
+        assertThat(avFolder).isPresent();
+        assertThat(avFolder.get().getValue().getDocuments()).hasSize(2);
+        assertThat(avFolder.get().getValue().getDocuments())
+            .extracting(d -> d.getValue().getName())
+            .containsExactly("hearing.mp3", "cctv.mp4");
+        verify(audioVideoEvidenceBundleService).createAudioVideoBundleDocuments(TEST_CASE_ID);
+    }
+
+    @Test
+    void shouldCreateAudioVideoEvidenceFolderWhenNotPresentInBundleAndFilesExist() {
+        final CaseData caseData = caseData();
+        final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList();
+        final CicCase cicCase = CicCase.builder().build();
+        cicCase.setApplicantDocumentsUploaded(cicDocuments);
+        caseData.setCicCase(cicCase);
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        List<ListValue<BundleFolder>> folders = new ArrayList<>();
+        folders.add(ListValue.<BundleFolder>builder()
+            .id("1")
+            .value(BundleFolder.builder().name("Applications").sortIndex(1).build())
+            .build());
+
+        Bundle bundle = Bundle.builder()
+            .id("test-bundle-id")
+            .folders(folders)
+            .build();
+
+        final AudioVideoEvidenceBundleDocument audioVideoBundleDocument = AudioVideoEvidenceBundleDocument.builder()
+            .documentLink(Document.builder().filename("audio-video-evidence-123.pdf").build())
+            .date(LocalDate.of(2026, 8, 5))
+            .build();
+
+        final List<ListValue<BundleDocument>> avDocs = List.of(
+            ListValue.<BundleDocument>builder()
+                .id("1")
+                .value(BundleDocument.builder()
+                    .name("hearing.mp3")
+                    .description("Audio Document")
+                    .sortIndex(1)
+                    .sourceDocument(Document.builder().filename("hearing.mp3").build())
+                    .build())
+                .build()
+        );
+
+        when(clock.instant()).thenReturn(instant);
+        when(clock.getZone()).thenReturn(zoneId);
+        when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
+        when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
+        when(bundlingService.buildBundleListValues(anyList())).thenCallRealMethod();
+        when(audioVideoEvidenceBundleService.createAudioVideoEvidenceBundleDocument(TEST_CASE_ID))
+            .thenReturn(Optional.of(audioVideoBundleDocument));
+        when(audioVideoEvidenceBundleService.createAudioVideoBundleDocuments(TEST_CASE_ID))
+            .thenReturn(avDocs);
+        when(bundlingService.createBundle(any(BundleCallback.class), eq(TEST_CASE_ID)))
+            .thenReturn(List.of(bundle));
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+
+        assertThat(response.getErrors()).isNull();
+        List<ListValue<Bundle>> caseBundles = response.getData().getCaseBundles();
+        assertThat(caseBundles).isNotNull().hasSize(1);
+        List<ListValue<BundleFolder>> bundleFolders = caseBundles.getFirst().getValue().getFolders();
+        assertThat(bundleFolders).hasSize(2);
+
+        Optional<ListValue<BundleFolder>> avFolder = bundleFolders.stream()
+            .filter(f -> AUDIO_VIDEO_EVIDENCE_FOLDER_NAME.equalsIgnoreCase(f.getValue().getName()))
+            .findFirst();
+        assertThat(avFolder).isPresent();
+        assertThat(avFolder.get().getValue().getName()).isEqualTo(AUDIO_VIDEO_EVIDENCE_FOLDER_NAME);
+        assertThat(avFolder.get().getValue().getDocuments()).hasSize(1);
+        assertThat(avFolder.get().getValue().getDocuments().getFirst().getValue().getName()).isEqualTo("hearing.mp3");
+    }
+
+    @Test
+    void shouldNotAddAudioVideoEvidenceFolderToExistingBundlesWhenNewBundleIsCreatedWithAudioVideoDocs() {
+        final CaseData caseData = caseData();
+        final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList();
+        final CicCase cicCase = CicCase.builder().build();
+        cicCase.setApplicantDocumentsUploaded(cicDocuments);
+        caseData.setCicCase(cicCase);
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        final String existingBundleId = "old-bundle-uuid";
+        final String newBundleId = "new-bundle-uuid";
+
+        final List<ListValue<BundleFolder>> oldFolders = new ArrayList<>();
+        oldFolders.add(ListValue.<BundleFolder>builder()
+            .id("1")
+            .value(BundleFolder.builder().name("Applications").sortIndex(1).build())
+            .build());
+
+        final Bundle oldBundle = Bundle.builder()
+            .id(existingBundleId)
+            .folders(oldFolders)
+            .build();
+
+        final List<ListValue<Bundle>> existingBundles = new ArrayList<>();
+        existingBundles.add(ListValue.<Bundle>builder().id("1").value(oldBundle).build());
+
+        final CaseData beforeCaseData = caseData();
+        beforeCaseData.setCaseBundles(existingBundles);
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(beforeCaseData);
+
+        final List<ListValue<BundleFolder>> newFolders = new ArrayList<>();
+        newFolders.add(ListValue.<BundleFolder>builder()
+            .id("1")
+            .value(BundleFolder.builder().name("Applications").sortIndex(1).build())
+            .build());
+        newFolders.add(ListValue.<BundleFolder>builder()
+            .id("2")
+            .value(BundleFolder.builder().name(AUDIO_VIDEO_EVIDENCE_FOLDER_NAME).sortIndex(2).build())
+            .build());
+
+        final Bundle newBundle = Bundle.builder()
+            .id(newBundleId)
+            .folders(newFolders)
+            .build();
+
+        final List<ListValue<BundleFolder>> oldFoldersCopy = new ArrayList<>();
+        oldFoldersCopy.add(ListValue.<BundleFolder>builder()
+            .id("1")
+            .value(BundleFolder.builder().name("Applications").sortIndex(1).build())
+            .build());
+        final Bundle oldBundleFromApi = Bundle.builder()
+            .id(existingBundleId)
+            .folders(oldFoldersCopy)
+            .build();
+
+        final AudioVideoEvidenceBundleDocument audioVideoBundleDocument = AudioVideoEvidenceBundleDocument.builder()
+            .documentLink(Document.builder().filename("audio-video-evidence-123.pdf").build())
+            .date(LocalDate.of(2026, 8, 5))
+            .build();
+
+        final List<ListValue<BundleDocument>> avDocs = List.of(
+            ListValue.<BundleDocument>builder()
+                .id("1")
+                .value(BundleDocument.builder()
+                    .name("hearing.mp3")
+                    .description("Audio Document")
+                    .sortIndex(1)
+                    .sourceDocument(Document.builder().filename("hearing.mp3").build())
+                    .build())
+                .build()
+        );
+
+        when(clock.instant()).thenReturn(instant);
+        when(clock.getZone()).thenReturn(zoneId);
+        when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
+        when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
+        when(bundlingService.buildBundleListValues(anyList())).thenCallRealMethod();
+        when(audioVideoEvidenceBundleService.createAudioVideoEvidenceBundleDocument(TEST_CASE_ID))
+            .thenReturn(Optional.of(audioVideoBundleDocument));
+        when(audioVideoEvidenceBundleService.createAudioVideoBundleDocuments(TEST_CASE_ID))
+            .thenReturn(avDocs);
+        when(bundlingService.createBundle(any(BundleCallback.class), eq(TEST_CASE_ID)))
+            .thenReturn(List.of(oldBundleFromApi, newBundle));
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        assertThat(response.getErrors()).isNull();
+        final List<ListValue<Bundle>> caseBundles = response.getData().getCaseBundles();
+        assertThat(caseBundles).isNotNull().hasSize(2);
+
+        final Bundle responseOldBundle = caseBundles.stream()
+            .map(ListValue::getValue)
+            .filter(b -> existingBundleId.equals(b.getId()))
+            .findFirst()
+            .orElseThrow();
+        assertThat(responseOldBundle.getFolders()).hasSize(1);
+        assertThat(responseOldBundle.getFolders().getFirst().getValue().getName()).isEqualTo("Applications");
+        assertThat(responseOldBundle.getFolders())
+            .extracting(f -> f.getValue().getName())
+            .doesNotContain(AUDIO_VIDEO_EVIDENCE_FOLDER_NAME);
+
+        final Bundle responseNewBundle = caseBundles.stream()
+            .map(ListValue::getValue)
+            .filter(b -> newBundleId.equals(b.getId()))
+            .findFirst()
+            .orElseThrow();
+        assertThat(responseNewBundle.getFolders()).hasSize(2);
+        final Optional<ListValue<BundleFolder>> newAvFolder = responseNewBundle.getFolders().stream()
+            .filter(f -> AUDIO_VIDEO_EVIDENCE_FOLDER_NAME.equalsIgnoreCase(f.getValue().getName()))
+            .findFirst();
+        assertThat(newAvFolder).isPresent();
+        assertThat(newAvFolder.get().getValue().getDocuments()).hasSize(1);
+        assertThat(newAvFolder.get().getValue().getDocuments().getFirst().getValue().getName()).isEqualTo("hearing.mp3");
+    }
+
+    @Test
+    void shouldNotRemoveAudioVideoEvidenceFolderFromExistingBundlesWhenNewBundleIsCreatedWithoutAudioVideoDocs() {
+        final CaseData caseData = caseData();
+        final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList();
+        final CicCase cicCase = CicCase.builder().build();
+        cicCase.setApplicantDocumentsUploaded(cicDocuments);
+        caseData.setCicCase(cicCase);
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        final String existingBundleId = "old-bundle-uuid";
+        final String newBundleId = "new-bundle-uuid";
+
+        final List<ListValue<BundleFolder>> oldFolders = new ArrayList<>();
+        oldFolders.add(ListValue.<BundleFolder>builder()
+            .id("1")
+            .value(BundleFolder.builder().name("Applications").sortIndex(1).build())
+            .build());
+        oldFolders.add(ListValue.<BundleFolder>builder()
+            .id("2")
+            .value(BundleFolder.builder()
+                .name(AUDIO_VIDEO_EVIDENCE_FOLDER_NAME)
+                .sortIndex(2)
+                .documents(List.of(
+                    ListValue.<BundleDocument>builder()
+                        .id("1")
+                        .value(BundleDocument.builder().name("old-hearing.mp3").sortIndex(1).build())
+                        .build()
+                ))
+                .build())
+            .build());
+
+        final Bundle oldBundle = Bundle.builder()
+            .id(existingBundleId)
+            .folders(oldFolders)
+            .build();
+
+        final List<ListValue<Bundle>> existingBundles = new ArrayList<>();
+        existingBundles.add(ListValue.<Bundle>builder().id("1").value(oldBundle).build());
+
+        final CaseData beforeCaseData = caseData();
+        beforeCaseData.setCaseBundles(existingBundles);
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(beforeCaseData);
+
+        final List<ListValue<BundleFolder>> newFolders = new ArrayList<>();
+        newFolders.add(ListValue.<BundleFolder>builder()
+            .id("1")
+            .value(BundleFolder.builder().name("Applications").sortIndex(1).build())
+            .build());
+        newFolders.add(ListValue.<BundleFolder>builder()
+            .id("2")
+            .value(BundleFolder.builder().name(AUDIO_VIDEO_EVIDENCE_FOLDER_NAME).sortIndex(2).build())
+            .build());
+
+        final Bundle newBundle = Bundle.builder()
+            .id(newBundleId)
+            .folders(newFolders)
+            .build();
+
+        final List<ListValue<BundleFolder>> oldFoldersCopy = new ArrayList<>(oldFolders);
+        final Bundle oldBundleFromApi = Bundle.builder()
+            .id(existingBundleId)
+            .folders(oldFoldersCopy)
+            .build();
+
+        when(clock.instant()).thenReturn(instant);
+        when(clock.getZone()).thenReturn(zoneId);
+        when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
+        when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
+        when(bundlingService.buildBundleListValues(anyList())).thenCallRealMethod();
+        when(audioVideoEvidenceBundleService.createAudioVideoEvidenceBundleDocument(TEST_CASE_ID))
+            .thenReturn(Optional.empty());
+        when(bundlingService.createBundle(any(BundleCallback.class), eq(TEST_CASE_ID)))
+            .thenReturn(List.of(oldBundleFromApi, newBundle));
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        assertThat(response.getErrors()).isNull();
+        final List<ListValue<Bundle>> caseBundles = response.getData().getCaseBundles();
+        assertThat(caseBundles).isNotNull().hasSize(2);
+
+        final Bundle responseOldBundle = caseBundles.stream()
+            .map(ListValue::getValue)
+            .filter(b -> existingBundleId.equals(b.getId()))
+            .findFirst()
+            .orElseThrow();
+        assertThat(responseOldBundle.getFolders()).hasSize(2);
+        final Optional<ListValue<BundleFolder>> oldAvFolder = responseOldBundle.getFolders().stream()
+            .filter(f -> AUDIO_VIDEO_EVIDENCE_FOLDER_NAME.equalsIgnoreCase(f.getValue().getName()))
+            .findFirst();
+        assertThat(oldAvFolder).isPresent();
+        assertThat(oldAvFolder.get().getValue().getDocuments()).hasSize(1);
+        assertThat(oldAvFolder.get().getValue().getDocuments().getFirst().getValue().getName()).isEqualTo("old-hearing.mp3");
+
+        final Bundle responseNewBundle = caseBundles.stream()
+            .map(ListValue::getValue)
+            .filter(b -> newBundleId.equals(b.getId()))
+            .findFirst()
+            .orElseThrow();
+        assertThat(responseNewBundle.getFolders()).hasSize(1);
+        assertThat(responseNewBundle.getFolders().getFirst().getValue().getName()).isEqualTo("Applications");
+        assertThat(responseNewBundle.getFolders())
+            .extracting(f -> f.getValue().getName())
+            .doesNotContain(AUDIO_VIDEO_EVIDENCE_FOLDER_NAME);
+    }
+
+    @Test
     void shouldDeleteAudioVideoEvidenceDocumentWhenBundleCreationFails() {
         final CaseData caseData = caseData();
         final CicCase cicCase = CicCase.builder().build();
@@ -332,100 +826,6 @@ class CaseworkerCreateBundleTest {
         )).isInstanceOf(RuntimeException.class).hasMessage("unexpected");
 
         verify(bundlingService, never()).createBundle(any(BundleCallback.class), eq(TEST_CASE_ID));
-    }
-
-    @Test
-    void shouldSuccessfullySendNotificationToRepresentative() {
-
-        final CaseData caseData = caseData();
-        final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList();
-        final CicCase cicCase = CicCase.builder().build();
-        cicCase.setApplicantDocumentsUploaded(cicDocuments);
-        caseData.setCicCase(cicCase);
-        caseData.setHyphenatedCaseRef("1234-5678-3456");
-        cicCase.setRepresentativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE));
-
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-
-        doAnswer(invocation -> {
-            cicCase.setResNotificationResponse(NotificationResponse.builder().build());
-            return null;
-        }).when(bundleCreatedNotification).sendToRespondent(any(), any());
-
-        doAnswer(invocation -> {
-            cicCase.setRepNotificationResponse(NotificationResponse.builder().build());
-            return null;
-        }).when(bundleCreatedNotification).sendToRepresentative((CaseData) any(), any());
-
-        SubmittedCallbackResponse createBundleSubmittedResponse =
-            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
-
-        assertThat(createBundleSubmittedResponse.getConfirmationHeader())
-            .isEqualTo("# Bundle created. \n## A notification has been sent to: Representative, Respondent");
-    }
-
-    @Test
-    void shouldSuccessfullySendNotificationToApplicant() {
-
-        final CaseData caseData = caseData();
-        final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList();
-        final CicCase cicCase = CicCase.builder().build();
-        cicCase.setApplicantDocumentsUploaded(cicDocuments);
-        caseData.setCicCase(cicCase);
-        caseData.setHyphenatedCaseRef("1234-5678-3456");
-        cicCase.setApplicantCIC(Set.of(ApplicantCIC.APPLICANT_CIC));
-
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-
-        doAnswer(invocation -> {
-            cicCase.setResNotificationResponse(NotificationResponse.builder().build());
-            return null;
-        }).when(bundleCreatedNotification).sendToRespondent(any(), any());
-
-        doAnswer(invocation -> {
-            cicCase.setAppNotificationResponse(NotificationResponse.builder().build());
-            return null;
-        }).when(bundleCreatedNotification).sendToApplicant(any(), any());
-
-        SubmittedCallbackResponse createBundleSubmittedResponse =
-            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
-
-        assertThat(createBundleSubmittedResponse.getConfirmationHeader())
-            .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent, Applicant");
-    }
-
-    @Test
-    void shouldReturnFailedToSendNotificationOnError() {
-
-        final CaseData caseData = caseData();
-        final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList();
-        final CicCase cicCase = CicCase.builder().build();
-        cicCase.setApplicantDocumentsUploaded(cicDocuments);
-        caseData.setCicCase(cicCase);
-        cicCase.setRepresentativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE));
-
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-
-        doThrow(new RuntimeException("Notification Failed")).when(bundleCreatedNotification).sendToRespondent(any(), any());
-        doThrow(new RuntimeException("Notification Failed")).when(bundleCreatedNotification).sendToRepresentative((CaseData) any(), any());
-
-        SubmittedCallbackResponse createBundleSubmittedResponse =
-            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
-
-        assertThat(createBundleSubmittedResponse.getConfirmationHeader())
-            .isEqualTo("""
-                # Bundle creation notification failed\s
-                ## A notification could not be sent to: Respondent, Representative\s
-                ## Please resend the notification.""");
     }
 
     @Test
@@ -1223,24 +1623,60 @@ class CaseworkerCreateBundleTest {
     @Test
     void shouldNotNotifyIfCaseClosed() {
         final CaseData caseData = caseData();
-        final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList();
-        final CicCase cicCase = CicCase.builder().build();
-        cicCase.setApplicantDocumentsUploaded(cicDocuments);
-        caseData.setCicCase(cicCase);
-        caseData.setHyphenatedCaseRef("1234-5678-3456");
-        cicCase.setRepresentativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE));
-
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        updatedCaseDetails.setState(CaseClosed);
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-
-        SubmittedCallbackResponse createBundleSubmittedResponse =
-            caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
-
-        assertThat(createBundleSubmittedResponse.getConfirmationHeader())
-            .isEqualTo("# Bundle created.");
+        assertThat(submitBundle(caseData, CaseClosed).getConfirmationHeader()).isEqualTo("# Bundle created.");
         verifyNoInteractions(bundleCreatedNotification);
+    }
+
+    @Test
+    void shouldShowOnlyRecipientsSentInThisCallback() {
+        CaseData caseData = caseData();
+        caseData.setCicCase(CicCase.builder().build());
+        caseData.getCicCase().setSubjectNotifyList(NotificationResponse.builder().build());
+        when(bundleCreatedNotification.dispatch(caseData, "1234-5678-3456"))
+            .thenReturn(new BundleCreatedNotification.DispatchResult(
+                Set.of(NotificationParties.RESPONDENT, NotificationParties.APPLICANT), List.of()));
+
+        SubmittedCallbackResponse response = submitBundle(caseData);
+
+        assertThat(response.getConfirmationHeader())
+            .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent, Applicant");
+        verify(bundleCreatedNotification).dispatch(caseData, "1234-5678-3456");
+    }
+
+    @Test
+    void shouldConfirmBundleWhenNoNotificationWasSent() {
+        CaseData caseData = caseData();
+        when(bundleCreatedNotification.dispatch(caseData, "1234-5678-3456"))
+            .thenReturn(new BundleCreatedNotification.DispatchResult(Set.of(), List.of()));
+
+        assertThat(submitBundle(caseData).getConfirmationHeader()).isEqualTo("# Bundle created.");
+    }
+
+    @Test
+    void shouldReportFailedRecipients() {
+        CaseData caseData = caseData();
+        when(bundleCreatedNotification.dispatch(caseData, "1234-5678-3456"))
+            .thenReturn(new BundleCreatedNotification.DispatchResult(Set.of(NotificationParties.APPLICANT),
+                List.of(NotificationParties.SUBJECT, NotificationParties.REPRESENTATIVE)));
+
+        assertThat(submitBundle(caseData).getConfirmationHeader()).isEqualTo("""
+            # Bundle creation notification failed\s
+            ## A notification could not be sent to: Subject, Representative\s
+            ## Please resend the notification.""");
+    }
+
+    private SubmittedCallbackResponse submitBundle(CaseData caseData) {
+        return submitBundle(caseData, State.CaseManagement);
+    }
+
+    private SubmittedCallbackResponse submitBundle(CaseData caseData, State state) {
+        caseData.setHyphenatedCaseRef("1234-5678-3456");
+
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setState(state);
+        details.setData(caseData);
+        details.setId(TEST_CASE_ID);
+
+        return caseworkerCreateBundle.submitted(details, CaseDetails.<CaseData, State>builder().build());
     }
 }
