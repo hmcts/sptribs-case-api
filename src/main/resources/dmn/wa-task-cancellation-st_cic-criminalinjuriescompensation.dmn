@@ -17,6 +17,11 @@
           <text>state</text>
         </inputExpression>
       </input>
+      <input id="InputClause_hearingJudgeCancellation" label="Hearing judge task cancellation key">
+        <inputExpression id="LiteralExpression_hearingJudgeCancellation" typeRef="boolean">
+          <text>if (additionalData != null and additionalData.Data != null and additionalData.Data.cancelHearingJudgeTaskTrigger != null and additionalData.Data.cancelHearingJudgeTaskTrigger != "") then true else false</text>
+        </inputExpression>
+      </input>
       <output id="OutputClause_18zgoaj" label="Action" name="action" typeRef="string" />
       <output id="OutputClause_0tu8bqp" label="Warning Code" name="warningCode" typeRef="string" />
       <output id="OutputClause_1kfc3jv" label="Warning Text" name="warningText" typeRef="string" />
@@ -32,6 +37,7 @@
         <inputEntry id="UnaryTests_1ah5t17">
           <text></text>
         </inputEntry>
+        <inputEntry id="UnaryTests_closeHearingJudge"><text></text></inputEntry>
         <outputEntry id="LiteralExpression_1c4vo81">
           <text>"Cancel"</text>
         </outputEntry>
@@ -55,6 +61,7 @@
         <inputEntry id="UnaryTests_0bv4k05">
           <text></text>
         </inputEntry>
+        <inputEntry id="UnaryTests_referHearingJudge"><text></text></inputEntry>
         <outputEntry id="LiteralExpression_08a36m9">
           <text>"Cancel"</text>
         </outputEntry>
@@ -79,6 +86,7 @@
         <inputEntry id="UnaryTests_0scltnp">
           <text></text>
         </inputEntry>
+        <inputEntry id="UnaryTests_postponeHearingJudge"><text></text></inputEntry>
         <outputEntry id="LiteralExpression_1ev9vey">
           <text>"Cancel"</text>
         </outputEntry>
@@ -102,6 +110,7 @@
         <inputEntry id="UnaryTests_1r2wn5h">
           <text></text>
         </inputEntry>
+        <inputEntry id="UnaryTests_cancelHearingJudge"><text></text></inputEntry>
         <outputEntry id="LiteralExpression_0woda5r">
           <text>"Cancel"</text>
         </outputEntry>
@@ -125,6 +134,7 @@
         <inputEntry id="UnaryTests_reconfigure_3">
           <text></text>
         </inputEntry>
+        <inputEntry id="UnaryTests_reconfigureHearingJudge"><text></text></inputEntry>
         <outputEntry id="LiteralExpression_reconfigure_4">
           <text>"Reconfigure"</text>
         </outputEntry>
@@ -137,6 +147,16 @@
         <outputEntry id="LiteralExpression_reconfigure_7">
           <text></text>
         </outputEntry>
+      </rule>
+      <rule id="DecisionRule_cancelAssignHearingJudge">
+        <inputEntry id="UnaryTests_cancelJudgeFrom"><text></text></inputEntry>
+        <inputEntry id="UnaryTests_cancelJudgeEvent"><text>"caseworker-edit-record-listing", "caseworker-postpone-hearing", "caseworker-cancel-hearing"</text></inputEntry>
+        <inputEntry id="UnaryTests_cancelJudgeState"><text></text></inputEntry>
+        <inputEntry id="UnaryTests_cancelJudgeKey"><text>true</text></inputEntry>
+        <outputEntry id="LiteralExpression_cancelJudgeAction"><text>"Cancel"</text></outputEntry>
+        <outputEntry id="LiteralExpression_cancelJudgeWarningCode"><text></text></outputEntry>
+        <outputEntry id="LiteralExpression_cancelJudgeWarningText"><text></text></outputEntry>
+        <outputEntry id="LiteralExpression_cancelJudgeProcessCategory"><text>"HearingJudgeAssignment_" + additionalData.Data.cancelHearingJudgeTaskTrigger</text></outputEntry>
       </rule>
     </decisionTable>
   </decision>

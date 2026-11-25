@@ -5,6 +5,8 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -29,6 +31,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
@@ -62,8 +67,8 @@ class CcdSearchServiceTest {
             .must(matchQuery(STATE, Submitted))
             .filter(rangeQuery(DUE_DATE).lte(LocalDate.now()));
         final CICUser user = new CICUser(SYSTEM_UPDATE_AUTH_TOKEN, UserInfo.builder().build());
-        final SearchResult expected1 = SearchResult.builder().total(PAGE_SIZE).cases(createCaseDetailsList(PAGE_SIZE)).build();
-        final SearchResult expected2 = SearchResult.builder().total(1).cases(createCaseDetailsList(1)).build();
+        final SearchResult expected1 = SearchResult.builder().total(PAGE_SIZE + 1).cases(createCaseDetailsList(PAGE_SIZE)).build();
+        final SearchResult expected2 = SearchResult.builder().total(PAGE_SIZE + 1).cases(createCaseDetailsList(1)).build();
 
         when(coreCaseDataApi.searchCases(
             SYSTEM_UPDATE_AUTH_TOKEN,
@@ -84,6 +89,112 @@ class CcdSearchServiceTest {
         //Then
         assertThat(searchResult.size()).isEqualTo(101);
         assertNotNull(searchResult.listIterator(0));
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, 1, 99, 100, 101, 200, 250})
+    void shouldRetrieveAllPagesUsingTotalMatchingCases(int total) {
+        final CICUser user = new CICUser(SYSTEM_UPDATE_AUTH_TOKEN, UserInfo.builder().build());
+        final List<CaseDetails> expectedCases = createCaseDetailsList(total);
+        final int pageCount = Math.max(1, (total + PAGE_SIZE - 1) / PAGE_SIZE);
+        for (int page = 0; page < pageCount; page++) {
+            final int from = page * PAGE_SIZE;
+            when(coreCaseDataApi.searchCases(
+                SYSTEM_UPDATE_AUTH_TOKEN,
+                SERVICE_AUTHORIZATION,
+                CcdCaseType.CIC.getCaseTypeName(),
+                getSourceBuilder(from).toString()))
+                .thenReturn(SearchResult.builder().total(total)
+                    .cases(expectedCases.subList(from, Math.min(from + PAGE_SIZE, total))).build());
+        }
+
+        final List<CaseDetails> result = ccdSearchService.searchForAllCasesWithQuery(
+            getQuery(), user, SERVICE_AUTHORIZATION, Submitted);
+
+        assertThat(result).containsExactlyElementsOf(expectedCases);
+        for (int page = 0; page < pageCount; page++) {
+            verify(coreCaseDataApi).searchCases(
+                SYSTEM_UPDATE_AUTH_TOKEN,
+                SERVICE_AUTHORIZATION,
+                CcdCaseType.CIC.getCaseTypeName(),
+                getSourceBuilder(page * PAGE_SIZE).toString());
+        }
+        verifyNoMoreInteractions(coreCaseDataApi);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, 1, 50})
+    void shouldContinueAfterShortOrEmptyPages(int returnedPageSize) {
+        final CICUser user = new CICUser(SYSTEM_UPDATE_AUTH_TOKEN, UserInfo.builder().build());
+        final int total = 2 * PAGE_SIZE + 1;
+        final List<CaseDetails> expectedCases = new ArrayList<>();
+        for (int page = 0; page < 3; page++) {
+            final List<CaseDetails> cases = createCaseDetailsList(page < 2 ? returnedPageSize : 1);
+            expectedCases.addAll(cases);
+            when(coreCaseDataApi.searchCases(
+                SYSTEM_UPDATE_AUTH_TOKEN,
+                SERVICE_AUTHORIZATION,
+                CcdCaseType.CIC.getCaseTypeName(),
+                getSourceBuilder(page * PAGE_SIZE).toString()))
+                .thenReturn(SearchResult.builder().total(total).cases(cases).build());
+        }
+
+        final List<CaseDetails> result = ccdSearchService.searchForAllCasesWithQuery(
+            getQuery(), user, SERVICE_AUTHORIZATION, Submitted);
+
+        assertThat(result).containsExactlyElementsOf(expectedCases);
+        for (int page = 0; page < 3; page++) {
+            verify(coreCaseDataApi).searchCases(
+                SYSTEM_UPDATE_AUTH_TOKEN,
+                SERVICE_AUTHORIZATION,
+                CcdCaseType.CIC.getCaseTypeName(),
+                getSourceBuilder(page * PAGE_SIZE).toString());
+        }
+        verifyNoMoreInteractions(coreCaseDataApi);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, 1000})
+    void shouldBoundSearchByFirstTotalWhenLaterTotalsChange(int laterTotal) {
+        final CICUser user = new CICUser(SYSTEM_UPDATE_AUTH_TOKEN, UserInfo.builder().build());
+        final int total = 2 * PAGE_SIZE + 1;
+        final List<CaseDetails> expectedCases = createCaseDetailsList(total);
+        for (int page = 0; page < 3; page++) {
+            final int from = page * PAGE_SIZE;
+            when(coreCaseDataApi.searchCases(
+                SYSTEM_UPDATE_AUTH_TOKEN,
+                SERVICE_AUTHORIZATION,
+                CcdCaseType.CIC.getCaseTypeName(),
+                getSourceBuilder(from).toString()))
+                .thenReturn(SearchResult.builder().total(page == 0 ? total : laterTotal)
+                    .cases(expectedCases.subList(from, Math.min(from + PAGE_SIZE, total))).build());
+        }
+
+        final List<CaseDetails> result = ccdSearchService.searchForAllCasesWithQuery(
+            getQuery(), user, SERVICE_AUTHORIZATION, Submitted);
+
+        assertThat(result).containsExactlyElementsOf(expectedCases);
+        for (int page = 0; page < 3; page++) {
+            verify(coreCaseDataApi).searchCases(
+                SYSTEM_UPDATE_AUTH_TOKEN,
+                SERVICE_AUTHORIZATION,
+                CcdCaseType.CIC.getCaseTypeName(),
+                getSourceBuilder(page * PAGE_SIZE).toString());
+        }
+        verifyNoMoreInteractions(coreCaseDataApi);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, -1})
+    void shouldRejectNonPositivePageSize(int pageSize) {
+        setField(ccdSearchService, "pageSize", pageSize);
+        final CICUser user = new CICUser(SYSTEM_UPDATE_AUTH_TOKEN, UserInfo.builder().build());
+
+        final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+            () -> ccdSearchService.searchForAllCasesWithQuery(getQuery(), user, SERVICE_AUTHORIZATION, Submitted));
+
+        assertThat(exception).hasMessage("Case search page size must be positive");
+        verifyNoInteractions(coreCaseDataApi);
     }
 
     @Test
@@ -119,20 +230,30 @@ class CcdSearchServiceTest {
         assertNotNull(searchResult.listIterator(0));
     }
 
-    @Test
-    void shouldThrowCcdSearchFailedExceptionIfSearchFails() {
+    @ParameterizedTest
+    @ValueSource(ints = {0, PAGE_SIZE})
+    void shouldThrowCcdSearchFailedExceptionIfSearchFails(int failingOffset) {
         //Given
         final BoolQueryBuilder query = boolQuery()
             .must(matchQuery("state", Submitted))
             .filter(rangeQuery(DUE_DATE).lte(LocalDate.now()));
         final CICUser user = new CICUser(SYSTEM_UPDATE_AUTH_TOKEN, UserInfo.builder().build());
 
+        if (failingOffset > 0) {
+            when(coreCaseDataApi.searchCases(
+                SYSTEM_UPDATE_AUTH_TOKEN,
+                SERVICE_AUTHORIZATION,
+                CcdCaseType.CIC.getCaseTypeName(),
+                getSourceBuilder(0).toString()))
+                .thenReturn(SearchResult.builder().total(PAGE_SIZE + 1)
+                    .cases(createCaseDetailsList(PAGE_SIZE)).build());
+        }
         doThrow(feignException(422, "A reason")).when(coreCaseDataApi)
             .searchCases(
                 SYSTEM_UPDATE_AUTH_TOKEN,
                 SERVICE_AUTHORIZATION,
                 CcdCaseType.CIC.getCaseTypeName(),
-                getSourceBuilder(0).toString());
+                getSourceBuilder(failingOffset).toString());
 
         //When&Then
         final CcdSearchCaseException exception = assertThrows(
@@ -197,11 +318,17 @@ class CcdSearchServiceTest {
         return SearchSourceBuilder
             .searchSource()
             .sort(DUE_DATE, ASC)
-            .query(boolQuery()
-                .must(matchQuery(STATE, Submitted))
-                .filter(rangeQuery(DUE_DATE).lte(LocalDate.now())))
+            .sort("reference", ASC)
+            .query(getQuery())
+            .trackTotalHits(true)
             .from(from)
             .size(CcdSearchServiceTest.PAGE_SIZE);
+    }
+
+    private BoolQueryBuilder getQuery() {
+        return boolQuery()
+            .must(matchQuery(STATE, Submitted))
+            .filter(rangeQuery(DUE_DATE).lte(LocalDate.now()));
     }
 
 }
