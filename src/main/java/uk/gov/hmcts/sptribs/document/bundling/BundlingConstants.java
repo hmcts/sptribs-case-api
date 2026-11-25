@@ -21,6 +21,7 @@ public final class BundlingConstants {
     public static final String DOCUMENT_FILENAME = "document_filename";
     public static final String DOCUMENT_BINARY_URL = "document_binary_url";
     public static final String BUNDLE_FILE_NAME = "st_cic_bundle_all_case.yaml";
+    public static final String AUDIO_VIDEO_EVIDENCE_FOLDER_NAME = "Audio/video evidence documents";
 
     private BundlingConstants() {
 

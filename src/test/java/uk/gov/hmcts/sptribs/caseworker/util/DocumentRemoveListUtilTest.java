@@ -15,6 +15,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.document.model.OrderDecisionUploadCICDocument;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,7 @@ public class DocumentRemoveListUtilTest {
     void shouldSuccessfullyRemoveDocs() {
         //Given
         final CaseData caseData = caseData();
-        CICDocument doc = CICDocument.builder()
+        OrderDecisionUploadCICDocument doc = OrderDecisionUploadCICDocument.builder()
             .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build()).build();
         caseData.setCaseIssueFinalDecision(CaseIssueFinalDecision.builder().document(doc).build());
         caseData.setCaseIssueDecision(CaseIssueDecision.builder().decisionDocument(doc).build());
@@ -66,7 +67,7 @@ public class DocumentRemoveListUtilTest {
             .documents(get2Document())
             .build();
         oldData.setCloseCase(closeCaseOld);
-        CICDocument docOld = CICDocument.builder()
+        OrderDecisionUploadCICDocument docOld = OrderDecisionUploadCICDocument.builder()
             .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build()).build();
         oldData.setCaseIssueFinalDecision(CaseIssueFinalDecision.builder().document(docOld).build());
         oldData.setCaseIssueDecision(CaseIssueDecision.builder().decisionDocument(docOld).build());
@@ -94,7 +95,7 @@ public class DocumentRemoveListUtilTest {
     void shouldSuccessfullyRemoveDocsSizeDec() {
         //Given
         final CaseData caseData = caseData();
-        CICDocument doc = CICDocument.builder()
+        OrderDecisionUploadCICDocument doc = OrderDecisionUploadCICDocument.builder()
             .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build()).build();
         caseData.setCaseIssueFinalDecision(CaseIssueFinalDecision.builder().document(doc).build());
         caseData.setCaseIssueDecision(CaseIssueDecision.builder().decisionDocument(doc).build());
@@ -128,7 +129,7 @@ public class DocumentRemoveListUtilTest {
             .documents(get2Document())
             .build();
         oldData.setCloseCase(closeCaseOld);
-        CICDocument docOld = CICDocument.builder()
+        OrderDecisionUploadCICDocument docOld = OrderDecisionUploadCICDocument.builder()
             .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build()).build();
         oldData.setCaseIssueFinalDecision(CaseIssueFinalDecision.builder().document(docOld).build());
         oldData.setCaseIssueDecision(CaseIssueDecision.builder().decisionDocument(docOld).build());
