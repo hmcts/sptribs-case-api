@@ -746,6 +746,17 @@
           <text>"Review Order"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_09t0g64">
+        <inputEntry id="UnaryTests_1m24do5">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1aubjdf">
+          <text>"postponementGranted"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0l0lb9j">
+          <text>"Postponement Granted"</text>
+        </outputEntry>
+      </rule>
     </decisionTable>
   </decision>
   <dmndi:DMNDI>

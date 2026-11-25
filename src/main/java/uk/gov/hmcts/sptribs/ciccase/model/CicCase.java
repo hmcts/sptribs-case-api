@@ -139,6 +139,13 @@ public class CicCase {
     )
     private DynamicList orderIssuingDynamicRadioList;
 
+    /** Used as backing for form radio buttons. If set, also used to initiate WA tasks. */
+    @CCD(
+        label = "Is this a decision to postpone an upcoming hearing?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private YesOrNo orderIsPostponement;
+
     @CCD(
         label = "Template",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}

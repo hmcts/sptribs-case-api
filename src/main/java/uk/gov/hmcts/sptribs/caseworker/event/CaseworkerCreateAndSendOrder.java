@@ -20,6 +20,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.DraftOrderFooter;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderOrderDueDates;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderOrderIssuingSelect;
+import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderPostponementSelect;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendUploadOrder;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
@@ -82,6 +83,7 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToDocumen
 @RequiredArgsConstructor
 public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, UserRole> {
 
+    private static final CcdPageConfiguration orderPostponementSelect = new SendOrderPostponementSelect();
     private static final CcdPageConfiguration orderIssueSelect = new SendOrderOrderIssuingSelect();
     private static final CcdPageConfiguration createNewOrder = new CreateNewOrder();
     private static final CcdPageConfiguration editNewOrderContent = new EditNewOrderContentPage();
@@ -117,6 +119,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
 
         PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         applyAnonymitySelect.addTo(pageBuilder);
+        orderPostponementSelect.addTo(pageBuilder);
         orderIssueSelect.addTo(pageBuilder);
         createNewOrder.addTo(pageBuilder);
         editNewOrderContent.addTo(pageBuilder);
@@ -133,6 +136,10 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
         final CicCase cicCase = caseData.getCicCase();
 
         updateAnonymityAlreadyApplied(caseData);
+
+        // Clear out this flag. We have to do this on event start instead of event end, because the flag is used
+        // for WA task initiation.
+        cicCase.setOrderIsPostponement(null);
 
         DynamicList orderIssueTypeOptions = DynamicListUtil.createDynamicListFromEnumSet(
             EnumSet.of(
