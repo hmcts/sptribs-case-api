@@ -115,6 +115,29 @@
           <text>"HearingBundle"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_01hqitk">
+        <inputEntry id="UnaryTests_09ff2yc">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1eu1cqy">
+          <text>"caseworker-cancel-hearing"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0h8ge0t">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_07mtrij">
+          <text>"Cancel"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0nu0qvf">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1ftvgnl">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_19mgay8">
+          <text>"HearingPostponementGranted"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_reconfigure">
         <inputEntry id="UnaryTests_reconfigure_1">
           <text></text>

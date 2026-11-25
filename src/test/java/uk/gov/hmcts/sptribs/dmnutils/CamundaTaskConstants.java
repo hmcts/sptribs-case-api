@@ -117,6 +117,7 @@ public class CamundaTaskConstants {
     public static final String REVIEW_SPECIFIC_ACCESS_REQ_CTSC_TASK = "reviewSpecificAccessRequestCTSC";
 
     public static final String REVIEW_ORDER = "reviewOrder";
+    public static final String POSTPONEMENT_GRANTED_TASK = "postponementGranted";
 
     public static final String AUTO_COMPLETE_MODE = "Auto";
     public static final String DEFAULT_NONE_COMPLETE_MODE = "defaultNone";
@@ -129,4 +130,5 @@ public class CamundaTaskConstants {
     public static final String PROCESS_CATEGORY_HEARING_BUNDLE = "HearingBundle";
     public static final String PROCESS_CATEGORY_ISSUE_CASE = "IssueCase";
     public static final String PROCESS_CATEGORY_HEARING_COMPLETION = "HearingCompletion";
+    public static final String PROCESS_CATEGORY_HEARING_POSTPONEMENT_GRANTED = "HearingPostponementGranted";
 }

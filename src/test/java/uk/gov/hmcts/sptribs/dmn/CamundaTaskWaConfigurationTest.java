@@ -48,6 +48,7 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.LOCATION_NAME;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.MAJOR_PRIORITY;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.MINOR_PRIORITY;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.NEXT_HEARING_DATE;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.POSTPONEMENT_GRANTED_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PRIORITY_DATE_ORIGIN_REF;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PRIORITY_WORK_TYPE;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_CASE_WITHDRAWAL_DIR_LISTED_TASK;
@@ -1359,6 +1360,22 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(ROLE_CATEGORY, ROLE_CATEGORY_ADMIN, true)
                     .expectedValue(DUE_DATE_INTERVAL_DAYS, "5", true)
                     .expectedValue(DESCRIPTION, "", true)
+                    .build()
+            ),
+            Arguments.of(
+                POSTPONEMENT_GRANTED_TASK,
+                CaseDataBuilder.defaultCase().build(),
+                ConfigurationExpectationBuilder.defaultExpectations()
+                    .expectedValue(MINOR_PRIORITY, DEFAULT_MINOR_PRIORITY, true)
+                    .expectedValue(MAJOR_PRIORITY, DEFAULT_MAJOR_PRIORITY, true)
+                    .expectedValue(WORK_TYPE, DECISION_WORK_TYPE, true)
+                    .expectedValue(ROLE_CATEGORY, ROLE_CATEGORY_ADMIN, true)
+                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "1", true)
+                    .expectedValue(
+                        DESCRIPTION,
+                        "[Orders: Create and send order](/cases/case-details/${[CASE_REFERENCE]}/trigger/create-and-send-order)",
+                        true
+                    )
                     .build()
             )
         );

@@ -31,6 +31,7 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.FOLLOW_UP_NONCO
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.HEARING_WORK_TYPE;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ISSUE_CASE_TO_RESPONDENT_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ISSUE_DECISION_NOTICE_TASK;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.POSTPONEMENT_GRANTED_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PRIORITY_WORK_TYPE;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_CASE_WITHDRAWAL_DIR_LISTED_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_CASE_WITHDRAWAL_DIR_TASK;
@@ -40,6 +41,7 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_CATEGOR
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_CATEGORY_HEARING;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_CATEGORY_HEARING_BUNDLE;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_CATEGORY_HEARING_COMPLETION;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_CATEGORY_HEARING_POSTPONEMENT_GRANTED;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_CATEGORY_ISSUE_CASE;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_CATEGORY_PROCESSING;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_CORRECTIONS_TASK;
@@ -1409,6 +1411,21 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
                         "roleCategory", ROLE_CATEGORY_ADMIN
                     )
                 )
+            ),
+            Arguments.of(
+                "create-and-send-order",
+                "*",
+                Map.of("Data", Map.of("cicCaseOrderIsPostponement", "Yes")),
+                List.of(
+                    Map.of(
+                        "taskId", POSTPONEMENT_GRANTED_TASK,
+                        "name", "Postponement Granted",
+                        "workingDaysAllowed", 1,
+                        "processCategories", PROCESS_CATEGORY_HEARING_POSTPONEMENT_GRANTED,
+                        "workType", DECISION_WORK_TYPE,
+                        "roleCategory", ROLE_CATEGORY_ADMIN
+                    )
+                )
             )
         );
     }
@@ -1417,9 +1434,9 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
     void if_this_test_fails_needs_updating_with_your_changes() {
         //The purpose of this test is to prevent adding new rows without being tested
         DmnDecisionTableImpl logic = (DmnDecisionTableImpl) decision.getDecisionLogic();
-        assertThat(logic.getInputs().size(), is(5));
+        assertThat(logic.getInputs().size(), is(6));
         assertThat(logic.getOutputs().size(), is(7));
-        assertThat(logic.getRules().size(), is(63));
+        assertThat(logic.getRules().size(), is(64));
     }
 
     @ParameterizedTest(name = "event id: {0} post event state: {1} additional data: {2}")

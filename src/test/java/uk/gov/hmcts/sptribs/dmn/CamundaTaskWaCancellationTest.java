@@ -20,6 +20,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static uk.gov.hmcts.sptribs.DmnDecisionTable.WA_TASK_CANCELLATION_ST_CIC_CRIMINALINJURIESCOMPENSATION;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_CATEGORY_HEARING_BUNDLE;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_CATEGORY_HEARING_COMPLETION;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_CATEGORY_HEARING_POSTPONEMENT_GRANTED;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_CATEGORY_ISSUE_CASE;
 import static uk.gov.hmcts.sptribs.dmnutils.CancellationScenarioBuilder.event;
 
@@ -43,6 +44,7 @@ class CamundaTaskWaCancellationTest extends DmnDecisionTableBaseUnitTest {
             event("caseworker-cancel-hearing")
                 .cancel(PROCESS_CATEGORY_HEARING_COMPLETION)
                 .cancel(PROCESS_CATEGORY_HEARING_BUNDLE)
+                .cancel(PROCESS_CATEGORY_HEARING_POSTPONEMENT_GRANTED)
                 .reconfigureAll()
                 .build(),
             event("caseworker-record-listing")
@@ -69,7 +71,7 @@ class CamundaTaskWaCancellationTest extends DmnDecisionTableBaseUnitTest {
         DmnDecisionTableImpl logic = (DmnDecisionTableImpl) decision.getDecisionLogic();
         assertThat(logic.getInputs().size(), is(3));
         assertThat(logic.getOutputs().size(), is(4));
-        assertThat(logic.getRules().size(), is(5));
+        assertThat(logic.getRules().size(), is(6));
     }
 
     @ParameterizedTest(name = "from state: {0}, event id: {1}, state: {2}")
