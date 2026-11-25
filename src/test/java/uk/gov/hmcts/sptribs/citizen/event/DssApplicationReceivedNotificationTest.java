@@ -13,14 +13,17 @@ import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.sptribs.caseworker.model.EditCicaCaseDetails;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.notification.DssNotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -49,7 +52,7 @@ class DssApplicationReceivedNotificationTest {
     private static final String CICA_REFERENCE_NUMBER = "X/12/123456-TM1A";
 
     private static final EditCicaCaseDetails CICA_CASE_DETAILS = EditCicaCaseDetails.builder()
-            .cicaReferenceNumber(CICA_REFERENCE_NUMBER).build();
+        .cicaReferenceNumber(CICA_REFERENCE_NUMBER).build();
     @Mock
     private NotificationServiceCIC notificationService;
 
@@ -277,6 +280,60 @@ class DssApplicationReceivedNotificationTest {
                 eq(APPLICATION_RECEIVED_NEW_CD_CY));
             assertThat(templateVarsCaptor.getValue()).containsEntry(DASHBOARD_KEY, "https://frontend.url/dashboard");
             assertThat(dssCaseData.getSubjectNotificationResponse().getStatus()).isEqualTo(notificationResponse.getStatus());
+        }
+
+        @Test
+        void shouldAddSubjectWhenSubjectEmailAddressIsPresent() {
+            NotificationContext context = buildContext("subject@test.com", null);
+
+            Set<NotificationParties> result = dssApplicationReceivedNotification.buildCorrespondenceParties(context);
+
+            assertThat(result).containsExactly(NotificationParties.SUBJECT);
+        }
+
+        @Test
+        void shouldAddRepresentativeWhenRepresentativeEmailAddressIsPresent() {
+            NotificationContext context = buildContext(null, "rep@test.com");
+
+            Set<NotificationParties> result = dssApplicationReceivedNotification.buildCorrespondenceParties(context);
+
+            assertThat(result).containsExactly(NotificationParties.REPRESENTATIVE);
+        }
+
+        @Test
+        void shouldAddBothPartiesWhenBothEmailAddressesArePresent() {
+            NotificationContext context = buildContext("subject@test.com", "rep@test.com");
+
+            Set<NotificationParties> result = dssApplicationReceivedNotification.buildCorrespondenceParties(context);
+
+            assertThat(result).containsExactlyInAnyOrder(
+                NotificationParties.SUBJECT,
+                NotificationParties.REPRESENTATIVE
+            );
+        }
+
+        @Test
+        void shouldReturnEmptySetWhenBothEmailAddressesAreNull() {
+            NotificationContext context = buildContext(null, null);
+
+            Set<NotificationParties> result = dssApplicationReceivedNotification.buildCorrespondenceParties(context);
+
+            assertThat(result).isEmpty();
+        }
+
+        private NotificationContext buildContext(String subjectEmail, String representativeEmail) {
+            DssCaseData dssCaseData = DssCaseData.builder()
+                .subjectEmailAddress(subjectEmail)
+                .representativeEmailAddress(representativeEmail)
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .dssCaseData(dssCaseData)
+                .build();
+
+            return NotificationContext.builder()
+                .caseData(caseData)
+                .build();
         }
     }
 

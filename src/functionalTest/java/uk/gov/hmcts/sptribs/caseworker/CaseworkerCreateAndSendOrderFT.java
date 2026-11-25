@@ -210,7 +210,9 @@ public class CaseworkerCreateAndSendOrderFT extends FunctionalTestSuite {
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Send order notification failed \n## Please resend the order");
+            .contains("Failed to send order notifications for case")
+            .contains("## A notification could not be sent to: Representative")
+            .contains("## Please resend the notification.");
     }
 
     @Test

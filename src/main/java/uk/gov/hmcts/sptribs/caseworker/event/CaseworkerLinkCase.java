@@ -1,22 +1,27 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseLinkedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 
 import static java.lang.String.format;
+import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_LINK_CASE;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateCombinedNotificationMessageFromSentAndErrorLists;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessageFromSentList;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -34,16 +39,13 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 @Setter
+@RequiredArgsConstructor
 public class CaseworkerLinkCase implements CCDConfig<CaseData, State, UserRole> {
 
     private static final String ALWAYS_HIDE = "LinkedCasesComponentLauncher = \"DONOTSHOW\"";
 
     private final CaseLinkedNotification caseLinkedNotification;
-
-    @Autowired
-    public CaseworkerLinkCase(CaseLinkedNotification caseLinkedNotification) {
-        this.caseLinkedNotification = caseLinkedNotification;
-    }
+    private final NotificationDispatcher notificationDispatcher;
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -68,30 +70,35 @@ public class CaseworkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
-        CaseData data = details.getData();
-        try {
-            linkedCaseNotification(data.getHyphenatedCaseRef(), data);
-        } catch (Exception notificationException) {
-            log.error("Case Link notification failed with exception : {}", notificationException.getMessage());
+        final CaseData caseData = details.getData();
+        String caseReference = caseData.getHyphenatedCaseRef();
+
+        NotificationContext notificationContext = NotificationContext.forNotification(
+            caseData,
+            caseReference,
+            caseLinkedNotification);
+
+        notificationDispatcher.sendToCorrespondenceParties(notificationContext);
+
+        if (isEmpty(notificationContext.getErrors())) {
             return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Case Link notification failed %n## Please resend the notification"))
+                .confirmationHeader(format("# Case Link created %n## %s",
+                    generateSimpleMessageFromSentList(notificationContext.getSent())))
                 .build();
         }
-        return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Case Link created %n"))
-            .build();
-    }
-
-    private void linkedCaseNotification(String caseNumber, CaseData data) {
-        CicCase cicCase = data.getCicCase();
-        if (cicCase.getSubjectCIC() != null && !cicCase.getSubjectCIC().isEmpty()) {
-            caseLinkedNotification.sendToSubject(data, caseNumber);
-        }
-        if (cicCase.getApplicantCIC() != null && !cicCase.getApplicantCIC().isEmpty()) {
-            caseLinkedNotification.sendToApplicant(data, caseNumber);
-        }
-        if (cicCase.getRepresentativeCIC() != null && !cicCase.getRepresentativeCIC().isEmpty()) {
-            caseLinkedNotification.sendToRepresentative(data, caseNumber);
+        if (!isEmpty(notificationContext.getErrors()) && !isEmpty(notificationContext.getSent())) {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(generateCombinedNotificationMessageFromSentAndErrorLists(notificationContext.getSent(),
+                    notificationContext.getErrors(), "Case Link created.")
+                )
+                .build();
+        } else {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(
+                    format("# Case link notification failed %n## %s %n## Please resend the notification.",
+                        generateSimpleErrorMessage(notificationContext.getErrors()))
+                )
+                .build();
         }
     }
 }

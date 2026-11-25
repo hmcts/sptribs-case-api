@@ -17,6 +17,11 @@ public final class TestConstants {
     public static final String TEST_MIDDLE_NAME = "test_middle_name";
     public static final String TEST_LAST_NAME = "test_last_name";
 
+    public static final String APPLICANT = "Applicant";
+    public static final String SUBJECT = "Subject";
+    public static final String RESPONDENT = "Respondent";
+    public static final String REPRESENTATIVE = "Representative";
+
     public static final String APPLICANT_FIRST_NAME = "applicant_2_first_name";
 
     public static final String CONFIRMATION_HEADER = "$.confirmation_header";

@@ -21,18 +21,20 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseStayedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 
 import java.time.LocalDate;
 import java.util.Set;
 
-import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.doAnswer;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.APPLICANT;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.REPRESENTATIVE;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.RESPONDENT;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
@@ -46,6 +48,9 @@ class CaseworkerStayTheCaseTest {
 
     @Mock
     private CaseStayedNotification caseStayedNotification;
+
+    @Mock
+    private NotificationDispatcher notificationDispatcher;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -109,10 +114,6 @@ class CaseworkerStayTheCaseTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        doNothing().when(caseStayedNotification).sendToSubject(any(CaseData.class), eq(null));
-        doNothing().when(caseStayedNotification).sendToApplicant(any(CaseData.class), eq(null));
-        doNothing().when(caseStayedNotification).sendToRepresentative(any(CaseData.class), eq(null));
-
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerStayTheCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse stayedResponse = caseworkerStayTheCase.submitted(updatedCaseDetails, beforeDetails);
@@ -128,36 +129,128 @@ class CaseworkerStayTheCaseTest {
     }
 
     @Test
-    void shouldNotSendNotificationIfApplicantSubjectRepresentativeSetIsEmpty() {
+    void shouldSuccessfullySendOutNotificationsWhenSubmitted() {
         //Given
         final CaseData caseData = caseData();
-        caseData.getCicCase().setSubjectCIC(emptySet());
-        caseData.getCicCase().setSubjectCIC(emptySet());
-        caseData.getCicCase().setSubjectCIC(emptySet());
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        details.setData(caseData);
+        CicCase cicCase = new CicCase();
+        cicCase.setSubjectCIC(Set.of(SubjectCIC.SUBJECT));
+        cicCase.setApplicantCIC(Set.of(ApplicantCIC.APPLICANT_CIC));
+        cicCase.setRepresentativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE));
+        caseData.setCicCase(cicCase);
+        caseData.setNote("This is a test note");
+        CaseStay caseStay = new CaseStay();
+        caseStay.setStayReason(StayReason.AWAITING_OUTCOME_OF_LINKED_CASE);
+        caseStay.setAdditionalDetail("some detail");
+        caseStay.setFlagType(null);
+        caseStay.setExpirationDate(LocalDate.now());
+        caseData.setCaseStay(caseStay);
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        caseworkerStayTheCase.submitted(details, details);
+        doAnswer(invocation -> {
+            NotificationContext context = invocation.getArgument(0);
+            if (context.getNotification() == caseStayedNotification) {
+                context.getSent().add(REPRESENTATIVE);
+                context.getSent().add(RESPONDENT);
+                context.getSent().add(APPLICANT);
+            }
+            return null;
+        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
+
+
+        SubmittedCallbackResponse stayedResponse = caseworkerStayTheCase.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
-        verifyNoInteractions(caseStayedNotification);
+        assertThat(stayedResponse.getConfirmationHeader())
+            .isEqualTo("# Stay Added to Case \n## A notification has been sent to: Applicant, Representative, Respondent");
+    }
+
+
+    @Test
+    void shouldReturnErrorMessageForFailedNotificationsWhenSubmitted() {
+        //Given
+        final CaseData caseData = caseData();
+        CicCase cicCase = new CicCase();
+        cicCase.setSubjectCIC(Set.of(SubjectCIC.SUBJECT));
+        cicCase.setApplicantCIC(Set.of(ApplicantCIC.APPLICANT_CIC));
+        caseData.setCicCase(cicCase);
+        caseData.setNote("This is a test note");
+        CaseStay caseStay = new CaseStay();
+        caseStay.setStayReason(StayReason.AWAITING_OUTCOME_OF_LINKED_CASE);
+        caseStay.setAdditionalDetail("some detail");
+        caseStay.setFlagType(null);
+        caseStay.setExpirationDate(LocalDate.now());
+        caseData.setCaseStay(caseStay);
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        //When
+        doAnswer(invocation -> {
+            NotificationContext context = invocation.getArgument(0);
+            if (context.getNotification() == caseStayedNotification) {
+                context.getErrors().add(REPRESENTATIVE);
+            }
+            return null;
+        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
+
+
+        SubmittedCallbackResponse stayedResponse = caseworkerStayTheCase.submitted(updatedCaseDetails, beforeDetails);
+
+        //Then
+        assertThat(stayedResponse.getConfirmationHeader())
+            .isEqualTo("""
+                # Case stay notification failed \
+                \n## A notification could not be sent to: Representative \
+                \n## Please resend the notification.""");
     }
 
     @Test
-    void shouldNotSendNotificationIfApplicantSubjectRepresentativeSetIsNull() {
+    void shouldReturnPartialSentMessageForFailedAndSentNotificationsWhenSubmitted() {
         //Given
         final CaseData caseData = caseData();
-        caseData.getCicCase().setSubjectCIC(null);
-        caseData.getCicCase().setSubjectCIC(null);
-        caseData.getCicCase().setSubjectCIC(null);
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        details.setData(caseData);
+        CicCase cicCase = new CicCase();
+        cicCase.setSubjectCIC(Set.of(SubjectCIC.SUBJECT));
+        cicCase.setApplicantCIC(Set.of(ApplicantCIC.APPLICANT_CIC));
+        caseData.setCicCase(cicCase);
+        caseData.setNote("This is a test note");
+        CaseStay caseStay = new CaseStay();
+        caseStay.setStayReason(StayReason.AWAITING_OUTCOME_OF_LINKED_CASE);
+        caseStay.setAdditionalDetail("some detail");
+        caseStay.setFlagType(null);
+        caseStay.setExpirationDate(LocalDate.now());
+        caseData.setCaseStay(caseStay);
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        caseworkerStayTheCase.submitted(details, details);
+        doAnswer(invocation -> {
+            NotificationContext context = invocation.getArgument(0);
+            if (context.getNotification() == caseStayedNotification) {
+                context.getErrors().add(REPRESENTATIVE);
+                context.getSent().add(APPLICANT);
+            }
+            return null;
+        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
+
+
+        SubmittedCallbackResponse stayedResponse = caseworkerStayTheCase.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
-        verifyNoInteractions(caseStayedNotification);
+        assertThat(stayedResponse.getConfirmationHeader())
+            .isEqualTo("""
+                # Stay Added to Case.\
+                \n## A notification has been sent to: Applicant\
+                \n## A notification could not be sent to: Representative\
+                \n## Please resend the notification.""");
     }
 }

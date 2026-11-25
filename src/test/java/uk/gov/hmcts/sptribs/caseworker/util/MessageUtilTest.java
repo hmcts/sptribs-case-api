@@ -20,8 +20,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateCombinedNotificationMessageFromSentAndErrorLists;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessage;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASEWORKER_USER_EMAIL;
@@ -97,17 +97,7 @@ public class MessageUtilTest {
         String result = generateSimpleErrorMessage(errors);
 
         assertThat(result)
-            .isEqualTo("A notification could not be sent to: Subject, Applicant, Representative, Respondent");
-    }
-
-    @Test
-    void shouldGenerateSimpleErrorMessageWithoutPartiesIfErrorsIsEmptyList() {
-        final List<String> errors = emptyList();
-
-        String result = generateSimpleErrorMessage(errors);
-
-        assertThat(result)
-            .isEqualTo("A notification could not be sent to");
+            .isEqualTo("A notification could not be sent to: Applicant, Representative, Respondent, Subject");
     }
 
     @Test
@@ -224,5 +214,20 @@ public class MessageUtilTest {
 
         assertThat(result)
             .isEqualTo("A notification has been sent to: Respondent");
+    }
+
+    @Test
+    void shouldGenerateCombinedMessageWithSentAndErrors() {
+        final String result = generateCombinedNotificationMessageFromSentAndErrorLists(
+            List.of("Applicant", "Subject"),
+            List.of("Representative", "Respondent"),
+            "test event"
+        );
+
+        assertThat(result).isEqualTo("""
+            # test event\
+            \n## A notification has been sent to: Applicant, Subject\
+            \n## A notification could not be sent to: Representative, Respondent\
+            \n## Please resend the notification.""");
     }
 }

@@ -33,6 +33,8 @@ import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseWithdrawnNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,6 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -51,6 +54,8 @@ import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOCUMENT_VALIDATIO
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.APPLICANT_FIRST_NAME;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.REPRESENTATIVE;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBJECT;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_APPLICANT_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASEWORKER_USER_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -74,6 +79,9 @@ class CaseWorkerCloseTheCaseTest {
 
     @Mock
     private CaseWithdrawnNotification caseWithdrawnNotification;
+
+    @Mock
+    private NotificationDispatcher notificationDispatcher;
 
     @Mock
     private DocumentsService documentsService;
@@ -171,6 +179,111 @@ class CaseWorkerCloseTheCaseTest {
         assertThat(closedCase.getConfirmationHeader()).contains("Case closed");
         assertThat(response.getState()).isEqualTo(State.CaseClosed);
         verify(documentsService).saveDocuments(any(), any(), eq(CaseDocumentType.DOCUMENT_MANAGEMENT));
+    }
+
+    @Test
+    void shouldSuccessfullyShowNotificationsSentOnSubmitted() {
+        final CaseData caseData = closedCaseData();
+
+        final CloseCase closeCase = CloseCase.builder().build();
+        caseData.setCloseCase(closeCase);
+
+        final CicCase cicCase = CicCase.builder()
+            .build();
+
+        caseData.setCicCase(cicCase);
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+
+        //When
+        doAnswer(invocation -> {
+            NotificationContext context = invocation.getArgument(0);
+            if (context.getNotification() == caseWithdrawnNotification) {
+                context.getSent().add(REPRESENTATIVE);
+            }
+            return null;
+        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
+
+        final SubmittedCallbackResponse closedCase =
+            caseworkerCloseTheCase.submitted(updatedCaseDetails, beforeDetails);
+
+        assertThat(closedCase.getConfirmationHeader())
+            .contains("Case closed")
+            .contains("Representative");
+    }
+
+    @Test
+    void shouldSuccessfullyShowNotificationsPartlySentMessageOnSubmitted() {
+        final CaseData caseData = closedCaseData();
+
+        final CloseCase closeCase = CloseCase.builder().build();
+        caseData.setCloseCase(closeCase);
+
+        final CicCase cicCase = CicCase.builder()
+            .build();
+
+        caseData.setCicCase(cicCase);
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+
+        //When
+        doAnswer(invocation -> {
+            NotificationContext context = invocation.getArgument(0);
+            if (context.getNotification() == caseWithdrawnNotification) {
+                context.getErrors().add(REPRESENTATIVE);
+                context.getSent().add(SUBJECT);
+            }
+            return null;
+        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
+
+        final SubmittedCallbackResponse closedCase =
+            caseworkerCloseTheCase.submitted(updatedCaseDetails, beforeDetails);
+
+        assertThat(closedCase.getConfirmationHeader())
+            .isEqualTo("""
+                # Case closed.\
+                \n## A notification has been sent to: Subject\
+                \n## A notification could not be sent to: Representative\
+                \n## Please resend the notification.""");
+    }
+
+    @Test
+    void shouldSuccessfullyShowErrorMessageWhenNotificationsFailOnSubmitted() {
+        final CaseData caseData = closedCaseData();
+
+        final CloseCase closeCase = CloseCase.builder().build();
+        caseData.setCloseCase(closeCase);
+
+        final CicCase cicCase = CicCase.builder()
+            .build();
+
+        caseData.setCicCase(cicCase);
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+
+        //When
+        doAnswer(invocation -> {
+            NotificationContext context = invocation.getArgument(0);
+            if (context.getNotification() == caseWithdrawnNotification) {
+                context.getErrors().add(REPRESENTATIVE);
+            }
+            return null;
+        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
+
+        final SubmittedCallbackResponse closedCase =
+            caseworkerCloseTheCase.submitted(updatedCaseDetails, beforeDetails);
+
+        assertThat(closedCase.getConfirmationHeader())
+            .isEqualTo("""
+                # Case close notification failed \
+                \n## A notification could not be sent to: Representative \
+                \n## Please resend the notification.""");
     }
 
     @Test
