@@ -16,11 +16,15 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
+import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
@@ -31,6 +35,8 @@ import java.util.List;
 import java.util.UUID;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
+import static org.apache.commons.lang.StringUtils.substringAfterLast;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -46,6 +52,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentList;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -152,19 +159,18 @@ public class ContactPartiesSelectDocumentIT {
     @Test
     @DisabledIf(expression = "${feature.citizen-dashboard.enabled:true}", loadContext = true)
     void shouldReturnErrorWhenDocumentSizeExceedsLimit() throws Exception {
-        UUID documentId = UUID.randomUUID();
-        String label = "[Oversized Document](http://manage-case.demo.platform.hmcts.net/documents/" + documentId + ")";
-
-        DynamicListElement element = DynamicListElement.builder()
-            .label(label)
-            .code(UUID.randomUUID())
+        List<ListValue<CaseworkerCICDocument>> availableDocuments = getCaseworkerCICDocumentList("Oversized Document.pdf");
+        CaseData caseData = CaseData.builder()
+            .cicCase(CicCase.builder().applicantDocumentsUploaded(availableDocuments).build())
             .build();
+        DynamicMultiSelectList documentList = DocumentListUtil.prepareContactPartiesDocumentList(caseData,
+            "http://manage-case.demo.platform.hmcts.net");
+        assertThat(documentList.getListItems()).hasSize(1);
+        documentList.setValue(List.of(documentList.getListItems().getFirst()));
+        caseData.setContactPartiesDocuments(ContactPartiesDocuments.builder().documentList(documentList).build());
 
-        ContactPartiesDocuments contactPartiesDocuments = new ContactPartiesDocuments();
-        contactPartiesDocuments.setDocumentList(DynamicMultiSelectList.builder()
-            .value(List.of(element))
-            .listItems(List.of(element))
-            .build());
+        UUID documentId = UUID.fromString(substringAfterLast(
+            availableDocuments.getFirst().getValue().getDocumentLink().getUrl(), "/"));
 
         Document oversizedDocument = new Document();
         oversizedDocument.size = 3_000_000;
@@ -176,15 +182,11 @@ public class ContactPartiesSelectDocumentIT {
             .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
             .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
             .content(objectMapper.writeValueAsString(
-                callbackRequest(CaseData.builder()
-                    .contactPartiesDocuments(contactPartiesDocuments)
-                    .build(),
-                    CASEWORKER_CONTACT_PARTIES)))
+                callbackRequest(caseData, CASEWORKER_CONTACT_PARTIES)))
             .accept(APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.errors[0]").value("Unable to proceed because "
-                + label.substring(label.indexOf('[') + 1, label.indexOf(']'))
-                + " is larger than 2MB"));
+            .andExpect(jsonPath("$.errors[0]")
+                .value("Unable to proceed because Oversized Document.pdf is larger than 2MB"));
     }
 
     private List<DynamicListElement> populateContactPartiesDocumentsList() {

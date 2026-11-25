@@ -36,6 +36,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -78,6 +79,8 @@ class ContactPartiesNotificationTest {
         void shouldNotifySubjectOfContactPartiesWithEmailWithAttachments() {
             //Given
             final CaseData data = withSelectedContactPartiesDocument(getMockCaseData());
+            data.getContactPartiesDocuments().getDocumentList().getValue().getFirst()
+                .setLabel("[another.pdf](test.url/documents/other-document-id/binary)");
             data.getCicCase().setNotifyPartyMessage("message");
             data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
             data.getCicCase().setEmail("testSubject@outlook.com");
@@ -89,7 +92,7 @@ class ContactPartiesNotificationTest {
             notificationResponse.setId(NOTIFICATION_RESPONSE_ID);
 
             //When
-            when(notificationHelper.buildDocumentList(eq(data.getContactPartiesDocuments().getDocumentList()), eq(10)))
+            when(notificationHelper.buildDocumentListFromDocuments(anyList(), eq(10)))
                 .thenReturn(uploadedDocuments);
             when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
                 .thenReturn(NotificationRequest.builder().templateDocumentVars(uploadedDocuments).build());
@@ -111,6 +114,8 @@ class ContactPartiesNotificationTest {
                 templateVarsCaptor.capture(),
                 eq(TemplateName.CONTACT_PARTIES_EMAIL));
             assertThat(selectedDocumentsCaptor.getValue()).hasSize(1);
+            verify(notificationHelper).buildDocumentListFromDocuments(
+                List.of(data.getAllDocManagement().getCaseworkerCICDocument().getFirst().getValue()), 10);
             assertThat(templateVarsCaptor.getValue()).containsAllEntriesOf(comonVarsMap)
                 .doesNotContainKey(DASHBOARD_KEY);
         }
@@ -163,7 +168,7 @@ class ContactPartiesNotificationTest {
             notificationResponse.setId(NOTIFICATION_RESPONSE_ID);
 
             //When
-            when(notificationHelper.buildDocumentList(eq(data.getContactPartiesDocuments().getDocumentList()), eq(10)))
+            when(notificationHelper.buildDocumentListFromDocuments(anyList(), eq(10)))
                 .thenReturn(uploadedDocuments);
             when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
                 .thenReturn(NotificationRequest.builder().templateDocumentVars(getDocumentUploadMap()).build());
@@ -239,7 +244,7 @@ class ContactPartiesNotificationTest {
             notificationResponse.setId(NOTIFICATION_RESPONSE_ID);
 
             //When
-            when(notificationHelper.buildDocumentList(eq(data.getContactPartiesDocuments().getDocumentList()), eq(10)))
+            when(notificationHelper.buildDocumentListFromDocuments(anyList(), eq(10)))
                 .thenReturn(uploadedDocuments);
             when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
                 .thenReturn(NotificationRequest.builder().templateDocumentVars(getDocumentUploadMap()).build());
@@ -348,7 +353,7 @@ class ContactPartiesNotificationTest {
             notificationResponse.setId(NOTIFICATION_RESPONSE_ID);
 
             //When
-            when(notificationHelper.buildDocumentList(eq(data.getContactPartiesDocuments().getDocumentList()), eq(10)))
+            when(notificationHelper.buildDocumentListFromDocuments(anyList(), eq(10)))
                 .thenReturn(uploadedDocuments);
             when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
                 .thenReturn(NotificationRequest.builder().templateDocumentVars(getDocumentUploadMap()).build());
@@ -418,7 +423,7 @@ class ContactPartiesNotificationTest {
             notificationResponse.setId(NOTIFICATION_RESPONSE_ID);
 
             //When
-            when(notificationHelper.buildDocumentList(eq(data.getContactPartiesDocuments().getDocumentList()), eq(10)))
+            when(notificationHelper.buildDocumentListFromDocuments(anyList(), eq(10)))
                 .thenReturn(uploadedDocuments);
             when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
                 .thenReturn(NotificationRequest.builder().templateDocumentVars(getDocumentUploadMap()).build());
@@ -469,7 +474,7 @@ class ContactPartiesNotificationTest {
             notificationResponse.setId(NOTIFICATION_RESPONSE_ID);
 
             //When
-            when(notificationHelper.buildDocumentList(eq(data.getContactPartiesDocuments().getDocumentList()), eq(10)))
+            when(notificationHelper.buildDocumentListFromDocuments(anyList(), eq(10)))
                 .thenReturn(uploadedDocuments);
             when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
                 .thenReturn(NotificationRequest.builder().templateDocumentVars(uploadedDocuments).build());
