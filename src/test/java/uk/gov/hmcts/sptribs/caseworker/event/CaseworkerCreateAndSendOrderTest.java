@@ -113,6 +113,21 @@ class CaseworkerCreateAndSendOrderTest {
     }
 
     @Test
+    void shouldResetOrderIsPostponementInAboutToStartCallback() {
+        final CaseData caseData = CaseData.builder().build();
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CicCase cicCase = CicCase.builder()
+            .orderIsPostponement(YesOrNo.YES)
+            .build();
+        caseData.setCicCase(cicCase);
+        details.setData(caseData);
+
+        final var response = caseworkerCreateAndSendOrder.aboutToStart(details);
+
+        assertThat(response.getData().getCicCase().getOrderIsPostponement()).isNull();
+    }
+
+    @Test
     void shouldSetAnonymityAlreadyAppliedInAboutToStartCallback_AnonymityAlreadyAppliedIsNull() {
         final CaseData caseData = CaseData.builder().build();
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
