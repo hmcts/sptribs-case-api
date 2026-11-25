@@ -20,9 +20,10 @@ class CaseDataRepositoryImplIT extends IntegrationTestBase {
     @Autowired
     private CaseDataITManager caseDataITManager;
 
-    @Test
-    void givenCCDReference_thenShouldReturnTrueWhenCaseExistsAndValidState() {
-        caseDataITManager.addCaseData(123L, "Submitted", "{}");
+    @ParameterizedTest
+    @ValueSource(strings = {"Submitted", "Draft", "DSS-Draft"})
+    void givenCCDReference_thenShouldReturnTrueWhenCaseExistsAndValidState(String state) {
+        caseDataITManager.addCaseData(123L, state, "{}");
 
         boolean result = repository.checkCaseExists("123");
 
@@ -46,6 +47,18 @@ class CaseDataRepositoryImplIT extends IntegrationTestBase {
         boolean result = repository.checkCaseExists("123");
 
         assertThat(result).isFalse();
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"Draft", "DSS-Draft"})
+    void givenDraftCase_thenShouldVerifyMembershipWithoutPostcode(String state) {
+        caseDataITManager.addCaseData(123L, state, """
+            {"cicCaseEmail":"citizen@example.test","cicCaseAddress":{"PostCode":"AB1 2CD"}}
+            """);
+
+        assertThat(repository.checkCaseExists("123")).isTrue();
+        assertThat(repository.checkIfUserHasAccessToCase("123", "citizen@example.test")).isTrue();
+        assertThat(repository.checkIfUserHasAccessToCase("123", "another@example.test")).isFalse();
     }
 
     @Test

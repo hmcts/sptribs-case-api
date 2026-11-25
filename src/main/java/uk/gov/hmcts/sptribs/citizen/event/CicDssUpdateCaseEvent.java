@@ -46,9 +46,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateCombinedN
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessageFromSentList;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Draft;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Expired;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.Draft;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CREATOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
@@ -68,7 +66,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @RequiredArgsConstructor
 public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRole> {
 
-    private static final EnumSet<State> DSS_UPDATE_CASE_AVAILABLE_STATES = EnumSet.complementOf(EnumSet.of(Draft, DSS_Draft, DSS_Expired));
+    private static final EnumSet<State> DSS_UPDATE_CASE_AVAILABLE_STATES = EnumSet.complementOf(EnumSet.of(DSS_Expired));
 
     private final NotificationDispatcher notificationDispatcher;
 
