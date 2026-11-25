@@ -15,6 +15,7 @@ import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.util.Map;
 import java.util.Set;
@@ -50,7 +51,8 @@ public class ApplicationReceivedNotification implements PartiesNotification {
         addDashboardLink(templateVars);
 
         if (caseData.getCicCase().getContactPreferenceType() == ContactPreferenceType.EMAIL) {
-            NotificationResponse notificationResponse = sendEmailNotification(caseData.getCicCase().getEmail(), templateVars, caseNumber);
+            NotificationResponse notificationResponse = sendEmailNotification(caseData.getCicCase().getEmail(), templateVars, caseNumber,
+                Party.SUBJECT);
             caseData.getCicCase().setSubjectNotifyList(notificationResponse);
         }
     }
@@ -62,7 +64,8 @@ public class ApplicationReceivedNotification implements PartiesNotification {
         addDashboardLink(templateVars);
 
         if (cicCase.getApplicantContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            NotificationResponse notificationResponse = sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars, caseNumber);
+            NotificationResponse notificationResponse = sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars, caseNumber,
+                Party.APPLICANT);
             cicCase.setAppNotificationResponse(notificationResponse);
         }
     }
@@ -75,20 +78,21 @@ public class ApplicationReceivedNotification implements PartiesNotification {
 
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             NotificationResponse notificationResponse = sendEmailNotification(cicCase.getRepresentativeEmailAddress(),
-                templateVars, caseNumber);
+                templateVars, caseNumber, Party.REPRESENTATIVE);
             cicCase.setRepNotificationResponse(notificationResponse);
         }
     }
 
     private NotificationResponse sendEmailNotification(final String destinationAddress,
                                                        final Map<String, Object> templateVars,
-                                                       String caseReferenceNumber) {
+                                                       String caseReferenceNumber,
+                                                       Party receivingParty) {
 
         final NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
             destinationAddress,
             templateVars,
             getTemplateName());
-        return notificationService.sendEmail(request, caseReferenceNumber, null);
+        return notificationService.sendEmail(request, caseReferenceNumber, receivingParty);
     }
 
     private TemplateName getTemplateName() {

@@ -33,6 +33,7 @@ import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -325,7 +326,8 @@ public class CaseworkerCreateAndSendOrderIT {
             .contains("Respondent")
             .contains("Applicant");
 
-        verify(notificationServiceCIC, times(4)).sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
+        verify(notificationServiceCIC, times(4)).sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED),
+            any(Party.class));
         verifyNoMoreInteractions(notificationServiceCIC);
     }
 
@@ -352,7 +354,7 @@ public class CaseworkerCreateAndSendOrderIT {
                 .build())
             .build();
 
-        when(notificationServiceCIC.sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), eq(null)))
+        when(notificationServiceCIC.sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED), any(Party.class)))
             .thenThrow(new NotificationException(new NotificationClientException("GovNotify API Failure")));
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
@@ -375,7 +377,7 @@ public class CaseworkerCreateAndSendOrderIT {
                 .contains("Failed to send order notifications for case");
 
         verify(notificationServiceCIC, times(4)).sendEmail(any(), anyList(), eq(TEST_CASE_ID_HYPHENATED),
-            eq(null));
+            any(Party.class));
     }
 
     @Test
@@ -439,9 +441,9 @@ public class CaseworkerCreateAndSendOrderIT {
         ArgumentCaptor<NotificationRequest> captor =
             ArgumentCaptor.forClass(NotificationRequest.class);
         verify(notificationServiceCIC, times(1)).sendEmail(captor.capture(), eq(TEST_CASE_ID_HYPHENATED),
-            eq(null));
+            any(Party.class));
         verify(notificationServiceCIC, times(4)).sendEmail(captor.capture(), anyList(), eq(TEST_CASE_ID_HYPHENATED),
-            eq(null));
+            any(Party.class));
         verifyNoMoreInteractions(notificationServiceCIC);
 
         long anonymityTemplateCalls = captor.getAllValues().stream()
@@ -513,7 +515,7 @@ public class CaseworkerCreateAndSendOrderIT {
         ArgumentCaptor<NotificationRequest> captor =
             ArgumentCaptor.forClass(NotificationRequest.class);
         verify(notificationServiceCIC, times(4)).sendEmail(captor.capture(), anyList(), eq(TEST_CASE_ID_HYPHENATED),
-            eq(null));
+            any(Party.class));
         verifyNoMoreInteractions(notificationServiceCIC);
 
         long anonymityTemplateCalls = captor.getAllValues().stream()

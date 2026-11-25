@@ -19,6 +19,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
 import java.time.LocalDate;
@@ -188,7 +189,7 @@ class CaseworkerIssueCaseIT {
             .contains("# Case issued \n##  This case has now been issued. \n"
                 + "## A notification has been sent to: Applicant, Representative, Respondent, Subject");
 
-        verify(notificationServiceCIC, times(4)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
+        verify(notificationServiceCIC, times(4)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), any(Party.class));
         verifyNoMoreInteractions(notificationServiceCIC);
     }
 

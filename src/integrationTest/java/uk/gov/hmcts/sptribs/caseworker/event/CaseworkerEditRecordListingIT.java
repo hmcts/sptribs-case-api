@@ -28,6 +28,7 @@ import uk.gov.hmcts.sptribs.judicialrefdata.JudicialClient;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialUsersRequest;
 import uk.gov.hmcts.sptribs.judicialrefdata.model.UserProfileRefreshResponse;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
 import java.time.LocalDate;
@@ -288,7 +289,8 @@ public class CaseworkerEditRecordListingIT {
             .contains("## remember to make those changes in this listing record.")
             .contains("## A notification has been sent to: Representative, Respondent, Subject");
 
-        verify(notificationServiceCIC, times(3)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
+        verify(notificationServiceCIC, times(3)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED),
+            any(Party.class));
     }
 
     @Test

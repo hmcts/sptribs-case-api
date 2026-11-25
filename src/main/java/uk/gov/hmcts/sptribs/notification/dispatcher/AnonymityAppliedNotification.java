@@ -17,6 +17,7 @@ import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -51,7 +52,7 @@ public class AnonymityAppliedNotification implements PartiesNotification {
             TemplateName.ANONYMITY_APPLIED_EMAIL
         );
 
-        NotificationResponse response = notificationService.sendEmail(request, caseNumber, null);
+        NotificationResponse response = notificationService.sendEmail(request, caseNumber, Party.TRIBUNAL);
         caseData.getCicCase().setTribunalNotificationResponse(response);
     }
 

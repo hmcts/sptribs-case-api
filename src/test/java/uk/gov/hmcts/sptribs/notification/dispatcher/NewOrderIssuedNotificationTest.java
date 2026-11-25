@@ -24,6 +24,7 @@ import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.util.HashMap;
 import java.util.List;
@@ -91,7 +92,7 @@ public class NewOrderIssuedNotificationTest {
 
             //Then
             verify(notificationService).sendEmail(any(NotificationRequest.class), selectedDocumentsCaptor.capture(),
-                eq(TEST_CASE_ID.toString()), eq(null));
+                eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT));
             verify(notificationHelper).buildEmailNotificationRequest(
                 eq(data.getCicCase().getEmail()),
                 eq(true),
@@ -125,7 +126,7 @@ public class NewOrderIssuedNotificationTest {
             newOrderIssuedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
             verify(notificationService).sendEmail(any(NotificationRequest.class), selectedDocumentsCaptor.capture(),
-                eq(TEST_CASE_ID.toString()), eq(null));
+                eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT));
             assertThat(selectedDocumentsCaptor.getValue()).hasSize(1);
 
             verify(notificationHelper).buildEmailNotificationRequest(eq(data.getCicCase().getEmail()), eq(true),
@@ -186,7 +187,7 @@ public class NewOrderIssuedNotificationTest {
             assertThat(templateVarsCaptor.getValue()).doesNotContainKey(DASHBOARD_KEY);
 
             verify(notificationService).sendEmail(any(NotificationRequest.class),selectedDocumentsCaptor.capture(),
-                eq(TEST_CASE_ID.toString()), eq(null));
+                eq(TEST_CASE_ID.toString()), eq(Party.RESPONDENT));
             assertThat(selectedDocumentsCaptor.getValue()).hasSize(1);
         }
 
@@ -224,7 +225,7 @@ public class NewOrderIssuedNotificationTest {
             assertThat(templateVarsCaptor.getValue()).doesNotContainKey(DASHBOARD_KEY);
 
             verify(notificationService).sendEmail(any(NotificationRequest.class), selectedDocumentsCaptor.capture(),
-                eq(TEST_CASE_ID.toString()), eq(null));
+                eq(TEST_CASE_ID.toString()), eq(Party.REPRESENTATIVE));
             assertThat(selectedDocumentsCaptor.getValue()).hasSize(1);
             assertThat(selectedDocumentsCaptor.getValue().getFirst().getDocumentLink()).isEqualTo(document);
         }
@@ -279,7 +280,7 @@ public class NewOrderIssuedNotificationTest {
             assertThat(templateVarsCaptor.getValue()).doesNotContainKey(DASHBOARD_KEY);
 
             verify(notificationService).sendEmail(any(NotificationRequest.class), selectedDocumentsCaptor.capture(),
-                eq(TEST_CASE_ID.toString()), eq(null));
+                eq(TEST_CASE_ID.toString()), eq(Party.APPLICANT));
             assertThat(selectedDocumentsCaptor.getValue()).hasSize(1);
         }
 
@@ -301,7 +302,7 @@ public class NewOrderIssuedNotificationTest {
 
             //Then
             verify(notificationService).sendEmail(any(NotificationRequest.class), selectedDocumentsCaptor.capture(),
-                eq(TEST_CASE_ID.toString()), eq(null));
+                eq(TEST_CASE_ID.toString()), eq(Party.APPLICANT));
             verify(notificationHelper).buildEmailNotificationRequest(
                 eq(data.getCicCase().getApplicantEmailAddress()),
                 eq(true),
@@ -366,7 +367,7 @@ public class NewOrderIssuedNotificationTest {
 
             //Then
             verify(notificationService).sendEmail(any(NotificationRequest.class), selectedDocumentsCaptor.capture(),
-                eq(TEST_CASE_ID.toString()), eq(null));
+                eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT));
             verify(notificationHelper).buildEmailNotificationRequest(
                 eq(data.getCicCase().getEmail()),
                 eq(true),

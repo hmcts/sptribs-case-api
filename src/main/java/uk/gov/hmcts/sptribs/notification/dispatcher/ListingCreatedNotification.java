@@ -16,6 +16,7 @@ import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.util.Map;
 import java.util.Set;
@@ -47,7 +48,7 @@ public class ListingCreatedNotification implements PartiesNotification {
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             // Send Email
             notificationResponse = sendEmailNotification(templateVarsSubject,
-                cicCase.getEmail(), caseNumber);
+                cicCase.getEmail(), caseNumber, Party.SUBJECT);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVarsSubject);
             //SEND POST
@@ -70,7 +71,7 @@ public class ListingCreatedNotification implements PartiesNotification {
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             // Send Email
             notificationResponse = sendEmailNotification(templateVarsRepresentative,
-                cicCase.getRepresentativeEmailAddress(), caseNumber);
+                cicCase.getRepresentativeEmailAddress(), caseNumber, Party.REPRESENTATIVE);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVarsRepresentative);
             notificationResponse = sendLetterNotification(templateVarsRepresentative, caseNumber);
@@ -88,7 +89,7 @@ public class ListingCreatedNotification implements PartiesNotification {
         notificationHelper.setRecordingTemplateVars(templateVarsRespondent, listing);
         // Send Email
         final NotificationResponse notificationResponse = sendEmailNotification(templateVarsRespondent,
-            cicCase.getRespondentEmail(), caseNumber);
+            cicCase.getRespondentEmail(), caseNumber, Party.RESPONDENT);
         cicCase.setResHearingNotificationResponse(notificationResponse);
     }
 
@@ -103,7 +104,7 @@ public class ListingCreatedNotification implements PartiesNotification {
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             // Send Email
             notificationResponse = sendEmailNotification(templateVars,
-                cicCase.getApplicantEmailAddress(), caseNumber);
+                cicCase.getApplicantEmailAddress(), caseNumber, Party.APPLICANT);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getApplicantAddress(), templateVars);
             //SEND POST
@@ -114,13 +115,14 @@ public class ListingCreatedNotification implements PartiesNotification {
     }
 
     private NotificationResponse sendEmailNotification(final Map<String, Object> templateVars,
-                                                       String toEmail, String caseReferenceNumber) {
+                                                       String toEmail, String caseReferenceNumber,
+                                                       Party receivingParty) {
 
         final NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
             toEmail,
             templateVars,
             TemplateName.HEARING_CREATED_EMAIL);
-        return notificationService.sendEmail(request, caseReferenceNumber, null);
+        return notificationService.sendEmail(request, caseReferenceNumber, receivingParty);
     }
 
     private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter, String caseReferenceNumber) {

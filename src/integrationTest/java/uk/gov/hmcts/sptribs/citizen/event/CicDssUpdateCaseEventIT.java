@@ -21,6 +21,7 @@ import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
@@ -149,7 +150,8 @@ public class CicDssUpdateCaseEventIT {
             .isString()
             .contains("# CIC Dss Update Case Event Email notifications sent");
 
-        verify(notificationServiceCIC, times(2)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED.toString()), eq(null));
+        verify(notificationServiceCIC, times(2)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED.toString()),
+            any(Party.class));
         verifyNoMoreInteractions(notificationServiceCIC);
     }
 
@@ -160,7 +162,7 @@ public class CicDssUpdateCaseEventIT {
 
         doThrow(NotificationException.class)
             .when(notificationServiceCIC)
-            .sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID_HYPHENATED.toString()), eq(null));
+            .sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID_HYPHENATED.toString()), any(Party.class));
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
             .contentType(APPLICATION_JSON)

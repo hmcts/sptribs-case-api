@@ -14,6 +14,7 @@ import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.util.Map;
 import java.util.Set;
@@ -40,7 +41,8 @@ public class CaseUnlinkedNotification implements PartiesNotification {
         final Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, caseData);
 
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
-            NotificationResponse response = sendEmailNotification(cicCase.getEmail(), templateVars, caseNumber);
+            NotificationResponse response = sendEmailNotification(cicCase.getEmail(), templateVars, caseNumber,
+                Party.SUBJECT);
             cicCase.setSubjectNotifyList(response);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVars);
@@ -54,7 +56,8 @@ public class CaseUnlinkedNotification implements PartiesNotification {
 
         Map<String, Object> templateVars = notificationHelper.getApplicantCommonVars(caseNumber, caseData);
         if (cicCase.getApplicantContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            NotificationResponse response = sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars, caseNumber);
+            NotificationResponse response = sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars, caseNumber,
+                Party.APPLICANT);
             cicCase.setAppNotificationResponse(response);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getApplicantAddress(), templateVars);
@@ -69,7 +72,8 @@ public class CaseUnlinkedNotification implements PartiesNotification {
         Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, caseData);
 
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            NotificationResponse response = sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars, caseNumber);
+            NotificationResponse response = sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars, caseNumber,
+                Party.REPRESENTATIVE);
             cicCase.setRepNotificationResponse(response);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVars);
@@ -79,12 +83,13 @@ public class CaseUnlinkedNotification implements PartiesNotification {
 
     private NotificationResponse sendEmailNotification(final String destinationAddress,
                                                        final Map<String, Object> templateVars,
-                                                       String caseReferenceNumber) {
+                                                       String caseReferenceNumber,
+                                                       Party receivingParty) {
         NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
             destinationAddress,
             templateVars,
             TemplateName.CASE_UNLINKED_EMAIL);
-        return notificationService.sendEmail(request, caseReferenceNumber, null);
+        return notificationService.sendEmail(request, caseReferenceNumber, receivingParty);
     }
 
     private void sendLetterNotification(Map<String, Object> templateVarsLetter, String caseReferenceNumber) {

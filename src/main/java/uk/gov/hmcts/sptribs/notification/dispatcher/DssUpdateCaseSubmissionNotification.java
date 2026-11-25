@@ -11,6 +11,7 @@ import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -45,7 +46,7 @@ public class DssUpdateCaseSubmissionNotification implements PartiesNotification 
             templateVars,
                 UPDATE_RECEIVED);
 
-        notificationService.sendEmail(request, caseNumber, null);
+        notificationService.sendEmail(request, caseNumber, Party.APPLICANT);
     }
 
     @Override
@@ -56,7 +57,7 @@ public class DssUpdateCaseSubmissionNotification implements PartiesNotification 
             templateVars,
                 UPDATE_RECEIVED_CIC);
 
-        notificationService.sendEmail(request, caseNumber, null);
+        notificationService.sendEmail(request, caseNumber, Party.TRIBUNAL);
     }
 
     @Override

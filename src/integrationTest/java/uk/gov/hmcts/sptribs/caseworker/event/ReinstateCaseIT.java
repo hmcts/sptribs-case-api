@@ -23,6 +23,7 @@ import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.manager.CaseDataITManager;
 import uk.gov.hmcts.sptribs.manager.CaseDocumentITManager;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
 import java.time.OffsetDateTime;
@@ -323,7 +324,8 @@ public class ReinstateCaseIT extends IntegrationTestBase {
                         ## A notification has been sent to: Applicant, Representative, Respondent, Subject\s"""
             );
 
-        verify(notificationServiceCIC, times(4)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
+        verify(notificationServiceCIC, times(4)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED),
+            any(Party.class));
         verifyNoMoreInteractions(notificationServiceCIC);
     }
 

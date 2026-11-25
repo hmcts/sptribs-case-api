@@ -43,6 +43,7 @@ import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
@@ -185,7 +186,8 @@ public class CaseworkerCreateBundleIT {
             .isEqualTo("# Bundle created. \n## A notification has been sent to: Applicant, Representative, Respondent, Subject");
 
         ArgumentCaptor<NotificationRequest> requests = ArgumentCaptor.forClass(NotificationRequest.class);
-        verify(notificationServiceCIC, times(4)).sendEmail(requests.capture(), eq(TEST_CASE_ID_HYPHENATED), isNull());
+        verify(notificationServiceCIC, times(4)).sendEmail(requests.capture(), eq(TEST_CASE_ID_HYPHENATED),
+            any(Party.class));
         assertThat(requests.getAllValues())
             .extracting(NotificationRequest::getTemplate)
             .containsExactlyInAnyOrder(BUNDLE_CREATED_EMAIL_CITIZEN, BUNDLE_CREATED_EMAIL_RESPONDENT,
@@ -207,7 +209,8 @@ public class CaseworkerCreateBundleIT {
         assertThat(confirmationHeader(response))
             .isEqualTo("# Bundle created. \n## A notification has been sent to: Applicant, Representative, Respondent");
         ArgumentCaptor<NotificationRequest> requests = ArgumentCaptor.forClass(NotificationRequest.class);
-        verify(notificationServiceCIC, times(3)).sendEmail(requests.capture(), eq(TEST_CASE_ID_HYPHENATED), isNull());
+        verify(notificationServiceCIC, times(3)).sendEmail(requests.capture(), eq(TEST_CASE_ID_HYPHENATED),
+            any(Party.class));
         assertThat(requests.getAllValues())
             .extracting(NotificationRequest::getDestinationAddress)
             .containsExactlyInAnyOrder("respondent@example.com", "representative@example.com", "applicant@example.com");
@@ -225,7 +228,7 @@ public class CaseworkerCreateBundleIT {
         assertThat(confirmationHeader(response))
             .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent");
         ArgumentCaptor<NotificationRequest> requests = ArgumentCaptor.forClass(NotificationRequest.class);
-        verify(notificationServiceCIC).sendEmail(requests.capture(), eq(TEST_CASE_ID_HYPHENATED), isNull());
+        verify(notificationServiceCIC).sendEmail(requests.capture(), eq(TEST_CASE_ID_HYPHENATED), any(Party.class));
         assertThat(requests.getValue().getDestinationAddress()).isEqualTo("respondent@example.com");
     }
 
@@ -240,7 +243,8 @@ public class CaseworkerCreateBundleIT {
         assertThat(confirmationHeader(response))
             .isEqualTo("# Bundle created. \n## A notification has been sent to: Applicant, Respondent");
         ArgumentCaptor<NotificationRequest> requests = ArgumentCaptor.forClass(NotificationRequest.class);
-        verify(notificationServiceCIC, times(2)).sendEmail(requests.capture(), eq(TEST_CASE_ID_HYPHENATED), isNull());
+        verify(notificationServiceCIC, times(2)).sendEmail(requests.capture(), eq(TEST_CASE_ID_HYPHENATED),
+            any(Party.class));
         assertThat(requests.getAllValues())
             .extracting(NotificationRequest::getDestinationAddress)
             .containsExactlyInAnyOrder("respondent@example.com", "applicant@example.com");
@@ -259,7 +263,7 @@ public class CaseworkerCreateBundleIT {
         assertThat(confirmationHeader(response))
             .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent");
         ArgumentCaptor<NotificationRequest> requests = ArgumentCaptor.forClass(NotificationRequest.class);
-        verify(notificationServiceCIC).sendEmail(requests.capture(), eq(TEST_CASE_ID_HYPHENATED), isNull());
+        verify(notificationServiceCIC).sendEmail(requests.capture(), eq(TEST_CASE_ID_HYPHENATED), any(Party.class));
         assertThat(requests.getValue().getDestinationAddress()).isEqualTo("appeals.team@cica.gov.uk");
     }
 
@@ -273,7 +277,8 @@ public class CaseworkerCreateBundleIT {
         assertThat(confirmationHeader(response))
             .isEqualTo("# Bundle created. \n## A notification has been sent to: Respondent, Subject");
         ArgumentCaptor<NotificationRequest> requests = ArgumentCaptor.forClass(NotificationRequest.class);
-        verify(notificationServiceCIC, times(2)).sendEmail(requests.capture(), eq(TEST_CASE_ID_HYPHENATED), isNull());
+        verify(notificationServiceCIC, times(2)).sendEmail(requests.capture(), eq(TEST_CASE_ID_HYPHENATED),
+            any(Party.class));
         assertThat(requests.getAllValues())
             .extracting(NotificationRequest::getDestinationAddress)
             .containsExactlyInAnyOrder("subject@example.com", "respondent@example.com");
@@ -284,7 +289,7 @@ public class CaseworkerCreateBundleIT {
         doThrow(new IllegalStateException("Notification failed"))
             .when(notificationServiceCIC).sendEmail(argThat(request -> request != null
                 && Set.of("subject@example.com", "representative@example.com")
-                    .contains(request.getDestinationAddress())), eq(TEST_CASE_ID_HYPHENATED), isNull());
+                    .contains(request.getDestinationAddress())), eq(TEST_CASE_ID_HYPHENATED), any(Party.class));
 
         String response = submittedResponse(notificationCaseData(), State.CaseManagement);
 
@@ -294,7 +299,8 @@ public class CaseworkerCreateBundleIT {
                 + "## A notification could not be sent to: Representative, Subject\n"
                 + "## Please resend the notification.");
         ArgumentCaptor<NotificationRequest> requests = ArgumentCaptor.forClass(NotificationRequest.class);
-        verify(notificationServiceCIC, times(4)).sendEmail(requests.capture(), eq(TEST_CASE_ID_HYPHENATED), isNull());
+        verify(notificationServiceCIC, times(4)).sendEmail(requests.capture(), eq(TEST_CASE_ID_HYPHENATED),
+            any(Party.class));
         assertThat(requests.getAllValues())
             .extracting(NotificationRequest::getDestinationAddress)
             .containsExactlyInAnyOrder("subject@example.com", "respondent@example.com",

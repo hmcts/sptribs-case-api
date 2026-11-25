@@ -16,6 +16,7 @@ import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.util.Map;
 import java.util.Set;
@@ -49,7 +50,8 @@ public class CaseWithdrawnNotification implements PartiesNotification {
         addCaseClosedTemplateVars(caseData, templateVars);
 
         if (ContactPreferenceType.EMAIL.equals(cicCase.getContactPreferenceType())) {
-            final NotificationResponse caseWithdrawnNotifyResponse = sendEmailNotification(cicCase.getEmail(), templateVars, caseNumber);
+            final NotificationResponse caseWithdrawnNotifyResponse = sendEmailNotification(cicCase.getEmail(), templateVars, caseNumber,
+                Party.SUBJECT);
             cicCase.setSubjectNotifyList(caseWithdrawnNotifyResponse);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVars);
@@ -66,7 +68,7 @@ public class CaseWithdrawnNotification implements PartiesNotification {
 
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             final NotificationResponse caseWithdrawnNotifyResponse =
-                sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars, caseNumber);
+                sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars, caseNumber, Party.REPRESENTATIVE);
             cicCase.setRepNotificationResponse(caseWithdrawnNotifyResponse);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVars);
@@ -82,7 +84,7 @@ public class CaseWithdrawnNotification implements PartiesNotification {
         addCaseClosedTemplateVars(caseData, respondentTemplateVars);
 
         final NotificationResponse caseWithdrawnNotifyResponse =
-            sendEmailNotification(cicCase.getRespondentEmail(), respondentTemplateVars, caseNumber);
+            sendEmailNotification(cicCase.getRespondentEmail(), respondentTemplateVars, caseNumber, Party.RESPONDENT);
         cicCase.setResNotificationResponse(caseWithdrawnNotifyResponse);
     }
 
@@ -95,7 +97,7 @@ public class CaseWithdrawnNotification implements PartiesNotification {
 
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             final NotificationResponse caseWithdrawnNotifyResponse =
-                sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars, caseNumber);
+                sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars, caseNumber, Party.APPLICANT);
             cicCase.setAppNotificationResponse(caseWithdrawnNotifyResponse);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getApplicantAddress(), templateVars);
@@ -105,12 +107,13 @@ public class CaseWithdrawnNotification implements PartiesNotification {
 
     private NotificationResponse sendEmailNotification(final String destinationAddress,
                                                        final Map<String, Object> templateVars,
-                                                       String caseReferenceNumber) {
+                                                       String caseReferenceNumber,
+                                                       Party receivingParty) {
         final NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
             destinationAddress,
             templateVars,
             TemplateName.CASE_WITHDRAWN_EMAIL);
-        return notificationService.sendEmail(request, caseReferenceNumber, null);
+        return notificationService.sendEmail(request, caseReferenceNumber, receivingParty);
     }
 
     private void sendLetterNotification(Map<String, Object> templateVarsLetter, String caseReferenceNumber) {

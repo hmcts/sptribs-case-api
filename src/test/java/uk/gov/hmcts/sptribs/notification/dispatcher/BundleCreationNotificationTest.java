@@ -17,6 +17,7 @@ import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -67,7 +68,7 @@ public class BundleCreationNotificationTest {
             bundleCreatedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
             //Then
-            verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
+            verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.APPLICANT));
             verify(notificationHelper).buildEmailNotificationRequest(
                 eq(data.getCicCase().getApplicantEmailAddress()),
                 templateVarsCaptor.capture(),
@@ -90,7 +91,7 @@ public class BundleCreationNotificationTest {
             bundleCreatedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
             //Then
-            verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
+            verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.REPRESENTATIVE));
             verify(notificationHelper).buildEmailNotificationRequest(
                 eq(data.getCicCase().getRepresentativeEmailAddress()),
                 templateVarsCaptor.capture(),
@@ -112,7 +113,7 @@ public class BundleCreationNotificationTest {
             bundleCreatedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
             //Then
-            verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
+            verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.RESPONDENT));
             verify(notificationHelper).buildEmailNotificationRequest(
                 eq("respondent@example.com"),
                 templateVarsCaptor.capture(),
@@ -137,7 +138,7 @@ public class BundleCreationNotificationTest {
             bundleCreatedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
             //Then
-            verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
+            verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT));
             verify(notificationHelper).buildEmailNotificationRequest(
                 eq("testsubject@outlook.com"),
                 templateVarsCaptor.capture(),
@@ -170,7 +171,7 @@ public class BundleCreationNotificationTest {
             bundleCreatedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
             //Then
-            verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
+            verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.APPLICANT));
             verify(notificationHelper).buildEmailNotificationRequest(
                 eq(data.getCicCase().getApplicantEmailAddress()),
                 templateVarsCaptor.capture(),
@@ -197,7 +198,7 @@ public class BundleCreationNotificationTest {
             bundleCreatedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
             //Then
-            verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
+            verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT));
             verify(notificationHelper).buildEmailNotificationRequest(
                 eq("testsubject@outlook.com"),
                 templateVarsCaptor.capture(),
@@ -223,7 +224,7 @@ public class BundleCreationNotificationTest {
             bundleCreatedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
             //Then
-            verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
+            verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.REPRESENTATIVE));
             verify(notificationHelper).buildEmailNotificationRequest(
                 eq(data.getCicCase().getRepresentativeEmailAddress()),
                 templateVarsCaptor.capture(),
@@ -247,7 +248,7 @@ public class BundleCreationNotificationTest {
             bundleCreatedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
             //Then
-            verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
+            verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.RESPONDENT));
             verify(notificationHelper).buildEmailNotificationRequest(
                 eq("respondent@example.com"),
                 templateVarsCaptor.capture(),

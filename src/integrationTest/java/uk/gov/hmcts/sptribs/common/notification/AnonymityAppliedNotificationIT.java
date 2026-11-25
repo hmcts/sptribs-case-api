@@ -17,12 +17,14 @@ import uk.gov.hmcts.sptribs.notification.NotificationConstants;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.dispatcher.AnonymityAppliedNotification;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_NUMBER;
@@ -76,7 +78,7 @@ class AnonymityAppliedNotificationIT {
         anonymityAppliedNotification.sendToTribunal(data, TEST_CASE_ID.toString());
 
         verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()),
-            eq(null));
+            any(Party.class));
 
         final NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -112,7 +114,7 @@ class AnonymityAppliedNotificationIT {
 
         anonymityAppliedNotification.sendToTribunal(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(null));
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), any(Party.class));
 
         final NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 

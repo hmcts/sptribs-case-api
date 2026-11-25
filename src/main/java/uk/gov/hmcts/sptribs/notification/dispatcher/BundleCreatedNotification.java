@@ -13,6 +13,7 @@ import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.util.List;
 import java.util.Map;
@@ -56,7 +57,8 @@ public class BundleCreatedNotification implements PartiesNotification {
             templateVarsSubject,
             cicCase.getEmail(),
             BUNDLE_CREATED_EMAIL_CITIZEN,
-            caseNumber
+            caseNumber,
+            Party.SUBJECT
         );
 
         cicCase.setSubjectNotifyList(notificationResponse);
@@ -72,7 +74,7 @@ public class BundleCreatedNotification implements PartiesNotification {
         final NotificationResponse notificationResponse;
 
         notificationResponse = sendEmailNotification(templateVarsApplicant,
-        cicCase.getApplicantEmailAddress(), BUNDLE_CREATED_EMAIL_CITIZEN, caseNumber);
+        cicCase.getApplicantEmailAddress(), BUNDLE_CREATED_EMAIL_CITIZEN, caseNumber, Party.APPLICANT);
 
         cicCase.setAppNotificationResponse(notificationResponse);
     }
@@ -87,7 +89,7 @@ public class BundleCreatedNotification implements PartiesNotification {
         final NotificationResponse notificationResponse;
 
         notificationResponse = sendEmailNotification(templateVarsRepresentative,
-        cicCase.getRepresentativeEmailAddress(), BUNDLE_CREATED_EMAIL_CITIZEN, caseNumber);
+        cicCase.getRepresentativeEmailAddress(), BUNDLE_CREATED_EMAIL_CITIZEN, caseNumber, Party.REPRESENTATIVE);
 
         cicCase.setRepNotificationResponse(notificationResponse);
     }
@@ -103,7 +105,8 @@ public class BundleCreatedNotification implements PartiesNotification {
             templateVarsRespondent,
             cicCase.getRespondentEmail(),
             BUNDLE_CREATED_EMAIL_RESPONDENT,
-            caseNumber
+            caseNumber,
+            Party.RESPONDENT
         );
 
         cicCase.setResNotificationResponse(notificationResponse);
@@ -117,12 +120,12 @@ public class BundleCreatedNotification implements PartiesNotification {
     }
 
     private NotificationResponse sendEmailNotification(final Map<String, Object> templateVars, String toEmail, TemplateName templateName,
-                                                       String caseReferenceNumber) {
+                                                       String caseReferenceNumber, Party receivingParty) {
         return notificationService.sendEmail(
             notificationHelper.buildEmailNotificationRequest(toEmail,
                 templateVars,
                 templateName),
-            caseReferenceNumber, null);
+            caseReferenceNumber, receivingParty);
     }
 
     private void addDashboardLink(Map<String, Object> templateVars) {

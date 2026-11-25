@@ -22,6 +22,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
@@ -252,7 +253,7 @@ public class CaseworkerRecordListingIT {
             .isString()
             .contains("# Listing record created \n## A notification has been sent to: Applicant, Representative, Respondent, Subject");
 
-        verify(notificationServiceCIC, times(4)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
+        verify(notificationServiceCIC, times(4)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), any(Party.class));
     }
 
     @Test

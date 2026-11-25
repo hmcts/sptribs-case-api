@@ -16,6 +16,7 @@ import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -67,7 +68,8 @@ public class DssApplicationReceivedNotification implements PartiesNotification {
             templateVarsSubject,
             dssCaseData.getSubjectEmailAddress(),
             dssCaseData.getLanguagePreference(),
-            caseNumber
+            caseNumber,
+            Party.SUBJECT
         );
         dssCaseData.setSubjectNotificationResponse(notificationResponse);
     }
@@ -90,7 +92,8 @@ public class DssApplicationReceivedNotification implements PartiesNotification {
             templateVarsRep,
             dssCaseData.getRepresentativeEmailAddress(),
             dssCaseData.getLanguagePreference(),
-            caseNumber
+            caseNumber,
+            Party.REPRESENTATIVE
         );
         dssCaseData.setRepNotificationResponse(notificationResponse);
     }
@@ -98,12 +101,13 @@ public class DssApplicationReceivedNotification implements PartiesNotification {
     private NotificationResponse sendEmailNotification(final Map<String, Object> templateVars,
                                                        String toEmail,
                                                        LanguagePreference languagePreference,
-                                                       String caseReferenceNumber) {
+                                                       String caseReferenceNumber,
+                                                       Party receivingParty) {
 
         TemplateName templateName = WELSH.equals(languagePreference) ?  getWelshTemplateName() : getTemplateName();
         NotificationRequest request =
             dssNotificationHelper.buildEmailNotificationRequest(toEmail, templateVars, templateName);
-        return notificationService.sendEmail(request, caseReferenceNumber, null);
+        return notificationService.sendEmail(request, caseReferenceNumber, receivingParty);
     }
 
     private TemplateName getTemplateName() {

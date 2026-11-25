@@ -25,6 +25,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -233,7 +234,7 @@ public class CaseworkerRemoveStayIT {
             .isString()
             .contains("# Stay Removed from Case \n## A notification has been sent to: Subject, Representative, Applicant");
 
-        verify(notificationServiceCIC, times(3)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
+        verify(notificationServiceCIC, times(3)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), any(Party.class));
         verifyNoMoreInteractions(notificationServiceCIC);
     }
 
@@ -255,7 +256,7 @@ public class CaseworkerRemoveStayIT {
                 .build()
         );
 
-        when(notificationServiceCIC.sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(null)))
+        when(notificationServiceCIC.sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), any(Party.class)))
             .thenThrow(new NotificationException(new NotificationClientException("")));
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
@@ -278,7 +279,7 @@ public class CaseworkerRemoveStayIT {
             .isString()
             .contains("# Remove case stay notification failed \n## Please resend the notification");
 
-        verify(notificationServiceCIC, times(1)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
+        verify(notificationServiceCIC, times(1)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), any(Party.class));
         verifyNoMoreInteractions(notificationServiceCIC);
     }
 }

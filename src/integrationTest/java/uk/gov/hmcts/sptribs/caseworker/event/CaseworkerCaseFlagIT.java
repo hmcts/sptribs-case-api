@@ -22,6 +22,7 @@ import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
 import java.time.LocalDate;
@@ -216,7 +217,7 @@ public class CaseworkerCaseFlagIT {
             .contains("# Flag created \n## This Flag has been added to case");
 
         verify(notificationServiceCIC, times(1)).sendEmail(any(NotificationRequest.class),
-            eq(TEST_CASE_ID_HYPHENATED), eq(null));
+            eq(TEST_CASE_ID_HYPHENATED), any(Party.class));
     }
 
     @Test

@@ -10,6 +10,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -58,7 +59,7 @@ class DssUpdateCaseSubmissionNotificationTest {
 
         dssUpdateCaseSubmissionNotification.sendToApplicant(caseData, caseReference);
 
-        verify(notificationService).sendEmail(notificationRequest, caseReference, null);
+        verify(notificationService).sendEmail(notificationRequest, caseReference, Party.APPLICANT);
     }
 
     @Test
@@ -83,6 +84,6 @@ class DssUpdateCaseSubmissionNotificationTest {
 
         dssUpdateCaseSubmissionNotification.sendToTribunal(caseData, String.valueOf(TEST_CASE_ID));
 
-        verify(notificationService).sendEmail(notificationRequest, String.valueOf(TEST_CASE_ID), null);
+        verify(notificationService).sendEmail(notificationRequest, String.valueOf(TEST_CASE_ID), Party.TRIBUNAL);
     }
 }

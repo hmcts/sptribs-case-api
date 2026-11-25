@@ -14,6 +14,7 @@ import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.util.EnumSet;
 import java.util.Map;
@@ -44,7 +45,7 @@ public class HearingPostponedNotification implements PartiesNotification {
 
         final NotificationResponse hearingNotifyResponse;
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
-            hearingNotifyResponse = sendEmailNotification(cicCase.getEmail(), templateVars, caseNumber);
+            hearingNotifyResponse = sendEmailNotification(cicCase.getEmail(), templateVars, caseNumber, Party.SUBJECT);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVars);
             hearingNotifyResponse = sendLetterNotification(templateVars, caseNumber);
@@ -62,7 +63,7 @@ public class HearingPostponedNotification implements PartiesNotification {
         final NotificationResponse hearingNotifyResponse;
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             hearingNotifyResponse =
-                sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars, caseNumber);
+                sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars, caseNumber, Party.REPRESENTATIVE);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVars);
             hearingNotifyResponse = sendLetterNotification(templateVars, caseNumber);
@@ -79,17 +80,18 @@ public class HearingPostponedNotification implements PartiesNotification {
         notificationHelper.addHearingPostponedTemplateVars(cicCase, respondentTemplateVars);
 
         final NotificationResponse hearingNotifyResponse = sendEmailNotification(cicCase.getRespondentEmail(),
-            respondentTemplateVars, caseNumber);
+            respondentTemplateVars, caseNumber, Party.RESPONDENT);
         cicCase.setResNotificationResponse(hearingNotifyResponse);
     }
 
     private NotificationResponse sendEmailNotification(final String destinationAddress,
-                                                       final Map<String, Object> templateVars, String caseReferenceNumber) {
+                                                       final Map<String, Object> templateVars, String caseReferenceNumber,
+                                                       Party receivingParty) {
         final NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
             destinationAddress,
             templateVars,
             TemplateName.HEARING_POSTPONED_EMAIL);
-        return notificationService.sendEmail(request, caseReferenceNumber, null);
+        return notificationService.sendEmail(request, caseReferenceNumber, receivingParty);
     }
 
     private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter, String caseReferenceNumber) {

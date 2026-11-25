@@ -31,6 +31,7 @@ import uk.gov.hmcts.sptribs.judicialrefdata.model.UserProfileRefreshResponse;
 import uk.gov.hmcts.sptribs.manager.CaseDataITManager;
 import uk.gov.hmcts.sptribs.manager.CaseDocumentITManager;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
 import java.time.OffsetDateTime;
@@ -406,7 +407,7 @@ public class CaseworkerCloseTheCaseIT extends IntegrationTestBase {
                 + "## A notification has been sent to: Applicant, Representative, Respondent, Subject\n"
                 + "## Use 'Reinstate case' if this case needs to be reopened in the future.");
 
-        verify(notificationServiceCIC, times(4)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
+        verify(notificationServiceCIC, times(4)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), any(Party.class));
         verifyNoMoreInteractions(notificationServiceCIC);
     }
 

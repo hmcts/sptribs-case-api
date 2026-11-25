@@ -15,6 +15,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.dispatcher.BundleCreatedNotification;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.util.Map;
 
@@ -60,12 +61,12 @@ public class BundleCreatedNotificationIT {
             .build();
 
         final NotificationResponse expectedResponse = NotificationResponse.builder().build();
-        when(notificationServiceCIC.sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null)))
+        when(notificationServiceCIC.sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), any(Party.class)))
             .thenReturn(expectedResponse);
 
         bundleCreatedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(null));
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), any(Party.class));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -93,7 +94,7 @@ public class BundleCreatedNotificationIT {
 
         bundleCreatedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(null));
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), any(Party.class));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -121,7 +122,7 @@ public class BundleCreatedNotificationIT {
 
         bundleCreatedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(null));
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), any(Party.class));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -148,12 +149,12 @@ public class BundleCreatedNotificationIT {
             .build();
 
         final NotificationResponse expectedResponse = NotificationResponse.builder().build();
-        when(notificationServiceCIC.sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null)))
+        when(notificationServiceCIC.sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), any(Party.class)))
             .thenReturn(expectedResponse);
 
         bundleCreatedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(null));
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), any(Party.class));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 

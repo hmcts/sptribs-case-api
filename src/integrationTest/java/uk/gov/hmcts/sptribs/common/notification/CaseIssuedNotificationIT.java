@@ -23,6 +23,7 @@ import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseIssuedNotification;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -32,6 +33,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType.EMAIL;
@@ -83,7 +85,7 @@ public class CaseIssuedNotificationIT {
 
         caseIssuedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(null));
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), any(Party.class));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -150,7 +152,7 @@ public class CaseIssuedNotificationIT {
 
         caseIssuedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(null));
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), any(Party.class));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -218,7 +220,7 @@ public class CaseIssuedNotificationIT {
 
         caseIssuedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(null));
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), any(Party.class));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -294,7 +296,7 @@ public class CaseIssuedNotificationIT {
 
         caseIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(null));
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), any(Party.class));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -337,7 +339,7 @@ public class CaseIssuedNotificationIT {
 
         caseIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(null));
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), any(Party.class));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -413,7 +415,7 @@ public class CaseIssuedNotificationIT {
         caseIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
         verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(selectedDocuments), eq(TEST_CASE_ID.toString()),
-            eq(null));
+            any(Party.class));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -490,7 +492,7 @@ public class CaseIssuedNotificationIT {
         caseIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
         verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(),
-            eq(selectedDocuments), eq(TEST_CASE_ID.toString()), eq(null));
+            eq(selectedDocuments), eq(TEST_CASE_ID.toString()), any(Party.class));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 

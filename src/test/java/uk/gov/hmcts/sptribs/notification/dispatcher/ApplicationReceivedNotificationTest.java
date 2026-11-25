@@ -22,6 +22,7 @@ import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -73,7 +74,7 @@ public class ApplicationReceivedNotificationTest {
             applicationReceivedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
             //Then
-            verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
+            verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT));
             verify(notificationHelper).buildEmailNotificationRequest(
                 data.getCicCase().getEmail(),
                 new HashMap<>(),
@@ -106,7 +107,7 @@ public class ApplicationReceivedNotificationTest {
             applicationReceivedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
             //Then
-            verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
+            verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.APPLICANT));
             verify(notificationHelper).buildEmailNotificationRequest(
                 data.getCicCase().getApplicantEmailAddress(),
                 new HashMap<>(),
@@ -140,7 +141,7 @@ public class ApplicationReceivedNotificationTest {
             applicationReceivedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
             //Then
-            verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
+            verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.REPRESENTATIVE));
             verify(notificationHelper).buildEmailNotificationRequest(
                 data.getCicCase().getRepresentativeEmailAddress(),
                 new HashMap<>(),
@@ -207,7 +208,7 @@ public class ApplicationReceivedNotificationTest {
             applicationReceivedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
             //Then
-            verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
+            verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.REPRESENTATIVE));
             verify(notificationHelper).buildEmailNotificationRequest(
                 eq(data.getCicCase().getRepresentativeEmailAddress()),
                 templateVarsCaptor.capture(),

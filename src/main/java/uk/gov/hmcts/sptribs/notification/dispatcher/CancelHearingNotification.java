@@ -14,6 +14,7 @@ import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.util.Map;
 import java.util.Set;
@@ -43,7 +44,7 @@ public class CancelHearingNotification implements PartiesNotification {
 
         final NotificationResponse subjectNotificationResponse;
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
-            subjectNotificationResponse = sendEmailNotification(cicCase.getEmail(), subjectTemplateVars, caseNumber);
+            subjectNotificationResponse = sendEmailNotification(cicCase.getEmail(), subjectTemplateVars, caseNumber, Party.SUBJECT);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), subjectTemplateVars);
             subjectNotificationResponse = sendLetterNotification(subjectTemplateVars, caseNumber);
@@ -62,7 +63,7 @@ public class CancelHearingNotification implements PartiesNotification {
         final NotificationResponse representativeNotificationResponse;
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             representativeNotificationResponse = sendEmailNotification(cicCase.getRepresentativeEmailAddress(),
-                reprTemplateVars, caseNumber);
+                reprTemplateVars, caseNumber, Party.REPRESENTATIVE);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), reprTemplateVars);
             representativeNotificationResponse = sendLetterNotification(reprTemplateVars, caseNumber);
@@ -80,7 +81,7 @@ public class CancelHearingNotification implements PartiesNotification {
         notificationHelper.addHearingPostponedTemplateVars(cicCase, respondentTemplateVars);
 
         final NotificationResponse respondentNotificationResponse =
-            sendEmailNotification(cicCase.getRespondentEmail(), respondentTemplateVars, caseNumber);
+            sendEmailNotification(cicCase.getRespondentEmail(), respondentTemplateVars, caseNumber, Party.RESPONDENT);
 
         cicCase.setResNotificationResponse(respondentNotificationResponse);
     }
@@ -94,7 +95,8 @@ public class CancelHearingNotification implements PartiesNotification {
 
         final NotificationResponse applicantNotificationResponse;
         if (cicCase.getApplicantContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            applicantNotificationResponse = sendEmailNotification(cicCase.getApplicantEmailAddress(), applicantCommonVars, caseNumber);
+            applicantNotificationResponse = sendEmailNotification(cicCase.getApplicantEmailAddress(), applicantCommonVars, caseNumber,
+                Party.APPLICANT);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getApplicantAddress(), applicantCommonVars);
             applicantNotificationResponse = sendLetterNotification(applicantCommonVars, caseNumber);
@@ -105,12 +107,13 @@ public class CancelHearingNotification implements PartiesNotification {
 
     private NotificationResponse sendEmailNotification(final String destinationAddress,
                                                        final Map<String, Object> templateVars,
-                                                       String caseReferenceNumber) {
+                                                       String caseReferenceNumber,
+                                                       Party receivingParty) {
         final NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
             destinationAddress,
             templateVars,
             TemplateName.HEARING_CANCELLED_EMAIL);
-        return notificationService.sendEmail(request, caseReferenceNumber, null);
+        return notificationService.sendEmail(request, caseReferenceNumber, receivingParty);
     }
 
     private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter, String caseReferenceNumber) {

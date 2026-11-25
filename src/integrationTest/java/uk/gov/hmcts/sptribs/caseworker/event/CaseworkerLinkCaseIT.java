@@ -17,6 +17,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -117,7 +118,7 @@ public class CaseworkerLinkCaseIT {
             .isString()
             .contains("# Case Link created \n");
 
-        verify(notificationServiceCIC, times(3)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
+        verify(notificationServiceCIC, times(3)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), any(Party.class));
         verifyNoMoreInteractions(notificationServiceCIC);
     }
 
@@ -138,7 +139,7 @@ public class CaseworkerLinkCaseIT {
                 .build()
         );
 
-        when(notificationServiceCIC.sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(null)))
+        when(notificationServiceCIC.sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), any(Party.class)))
             .thenThrow(new NotificationException(new NotificationClientException("")));
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
@@ -163,7 +164,7 @@ public class CaseworkerLinkCaseIT {
             .contains("## A notification could not be sent to: Applicant, Representative, Subject")
             .contains("## Please resend the notification.");
 
-        verify(notificationServiceCIC, times(3)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
+        verify(notificationServiceCIC, times(3)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), any(Party.class));
         verifyNoMoreInteractions(notificationServiceCIC);
     }
 
