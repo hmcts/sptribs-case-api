@@ -723,4 +723,24 @@ public class CicCase {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate firstOrderDueDate;
 
+    @CCD(
+        label = "Which party gave this statement?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = DynamicRadioList
+    )
+    private DynamicList uploadPartyStatementParty;
+
+    @CCD(
+        label = "Upload a document",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Document uploadPartyStatementDocument;
+
+    @CCD(
+        label = "Statements",
+        typeOverride = Collection,
+        typeParameterOverride = "CaseworkerCICDocument",
+        access = {CollectionDefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private List<ListValue<CaseworkerCICDocument>> statementDocuments;
 }

@@ -113,6 +113,10 @@ public enum DocumentType implements HasLabel {
     @JsonAlias({"S Docs"})
     WITNESS_STATEMENT("S - Witness Statement", "Witness Statement", "S"),
 
+    @JsonProperty("Party Statement")
+    @JsonAlias({"S Docs"})
+    PARTY_STATEMENT("S - Party Statement", "Party Statement", "S"),
+
     @JsonProperty("Application for an extension of time")
     @JsonAlias({"TG Docs"})
     APPLICATION_FOR_AN_EXTENSION_OF_TIME("TG - Application for an extension of time", "Application for an extension of time",
