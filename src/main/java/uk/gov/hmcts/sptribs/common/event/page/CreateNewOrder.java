@@ -27,12 +27,15 @@ public class CreateNewOrder implements CcdPageConfiguration {
                 .pageShowConditions(PageShowConditionsUtil.createAndSendOrderConditions())
                 .label("LabelCreateNewOrder", "")
                 .label("createDraftOrder", "Draft to be created")
+                // Readonly fields do not need retainHiddenValue - their data is not dropped even when hidden.
+                // However, in CCD/XUI, if a page is hidden by PageShowCondition, the display context (e.g. readonly) is not read.
+                // Therefore, we need to add retainHiddenValue anyway.
                 .complex(CaseData::getDraftOrderContentCIC)
-                    .readonly(DraftOrderContentCIC::getOrderTemplate, HIDDEN)
+                    .readonly(DraftOrderContentCIC::getOrderTemplate, HIDDEN, true)
                     .done()
                 .complex(CaseData::getCicCase)
                     .mandatory(CicCase::getTemplateDynamicList)
-                    .readonly(CicCase::getReferralTypeForWA, HIDDEN)
+                    .readonly(CicCase::getReferralTypeForWA, HIDDEN, true)
                     .done()
                 .done();
     }
