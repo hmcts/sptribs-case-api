@@ -1,5 +1,12 @@
 test-url: ${TEST_URL:http://localhost:4013}
 
+test-case-cleanup:
+  enabled: ${FT_CASE_CLEANUP_ENABLED:false}
+  ccd-jdbc-url: ${FT_CCD_JDBC_URL:}
+  ccd-username: ${FT_CCD_DB_USERNAME:}
+  ccd-password: ${FT_CCD_DB_PASSWORD:}
+  elasticsearch-url: ${FT_ELASTICSEARCH_URL:}
+
 spring:
   flyway:
     enabled: false
