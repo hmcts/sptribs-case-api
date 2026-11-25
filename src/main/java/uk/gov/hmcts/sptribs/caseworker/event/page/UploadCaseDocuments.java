@@ -41,7 +41,7 @@ public class UploadCaseDocuments implements CcdPageConfiguration {
             .mandatory(DocumentManagement::getCaseworkerCICDocumentUpload)
             .done()
             .complex(CaseData::getAllDocManagement)
-            .readonly(DocumentManagement::getCaseworkerCICDocumentUpload, ALWAYS_HIDE)
+            .readonly(DocumentManagement::getCaseworkerCICDocumentUpload, ALWAYS_HIDE, true)
             .done();
     }
 

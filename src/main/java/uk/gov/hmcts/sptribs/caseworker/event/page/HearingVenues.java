@@ -43,20 +43,21 @@ public class HearingVenues implements CcdPageConfiguration {
                 "venueNotListedOption!= \"VenueNotListed\" AND (" + CURRENT_EVENT + CASEWORKER_RECORD_LISTING + "\""
                     + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_RECORD_LISTING + "\")")
             .readonly(Listing::getReadOnlyHearingVenueName,
-                CURRENT_EVENT + CASEWORKER_CREATE_HEARING_SUMMARY + "\"" + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_HEARING_SUMMARY + "\"")
+                CURRENT_EVENT + CASEWORKER_CREATE_HEARING_SUMMARY + "\"" + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_HEARING_SUMMARY + "\"",
+                true)
             .optional(Listing::getVenueNotListedOption)
-            .mandatory(Listing::getHearingVenueNameAndAddress, "venueNotListedOption= \"VenueNotListed\"")
+            .mandatory(Listing::getHearingVenueNameAndAddress, "venueNotListedOption= \"VenueNotListed\"", true)
             .optional(Listing::getRoomAtVenue)
             .optional(Listing::getAddlInstr,
-                CURRENT_EVENT + CASEWORKER_RECORD_LISTING + "\"" + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_RECORD_LISTING + "\"")
+                CURRENT_EVENT + CASEWORKER_RECORD_LISTING + "\"" + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_RECORD_LISTING + "\"", true)
             .label("theLabelListingDetails", "<h4>Hearing date</h4>")
             .mandatory(Listing::getDate)
             .mandatory(Listing::getSession)
             .mandatory(Listing::getHearingTime)
             .mandatory(Listing::getNumberOfDays)
             .mandatory(Listing::getAdditionalHearingDate, "numberOfDays = \"Yes\"")
-            .readonly(Listing::getHearingSummaryExists, ALWAYS_HIDE)
-            .readonly(Listing::getHearingStatus, ALWAYS_HIDE);
+            .readonly(Listing::getHearingSummaryExists, ALWAYS_HIDE, true)
+            .readonly(Listing::getHearingStatus, ALWAYS_HIDE, true);
 
     }
 
