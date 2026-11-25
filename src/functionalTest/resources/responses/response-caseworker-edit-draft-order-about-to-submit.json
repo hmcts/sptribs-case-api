@@ -19,7 +19,7 @@
             "document_binary_url": "${json-unit.any-string}",
             "category_id": "TD"
           },
-          "orderContentOrderTemplate": "CIC3_Rule_27",
+          "orderContentOrderTemplate": "CIC6_General_Directions",
           "orderContentMainContent": "Lorem ipsum main content",
           "orderContentOrderSignature": "Lorem ipsum signature"
         }

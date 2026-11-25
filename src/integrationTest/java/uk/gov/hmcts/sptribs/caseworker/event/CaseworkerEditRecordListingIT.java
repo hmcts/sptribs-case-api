@@ -55,7 +55,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType.EMAIL;
 import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.REPRESENTATIVE;
 import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.RESPONDENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.SUBJECT;
-import static uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate.CIC3_RULE_27;
+import static uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate.CIC6_GENERAL_DIRECTIONS;
 import static uk.gov.hmcts.sptribs.ciccase.model.SchemeCic.Year2012;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.ACCEPT_VALUE;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_JURISDICTION;
@@ -134,7 +134,7 @@ public class CaseworkerEditRecordListingIT {
             )
             .hearingList(getHearingList())
             .draftOrderContentCIC(DraftOrderContentCIC.builder()
-                .orderTemplate(CIC3_RULE_27)
+                .orderTemplate(CIC6_GENERAL_DIRECTIONS)
                 .orderSignature("Mr Judge")
                 .mainContent("Draft Order Content")
                 .build()
