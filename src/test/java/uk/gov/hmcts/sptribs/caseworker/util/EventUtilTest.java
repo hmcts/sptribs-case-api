@@ -165,7 +165,7 @@ public class EventUtilTest {
     @Test
     void shouldSuccessfullyGetMainContentStrikeOutNotice() {
         //Given
-        final DecisionTemplate decisionTemplate = DecisionTemplate.STRIKE_OUT_DECISION_NOTICE;
+        final DecisionTemplate decisionTemplate = DecisionTemplate.STRIKE_OUT_APPEAL;
 
         //When
         String result = EventUtil.getMainContent(decisionTemplate);
