@@ -12,6 +12,7 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingTypeAndFormat;
+import uk.gov.hmcts.sptribs.caseworker.event.page.HearingTypeWarning;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingVenues;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RecordNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RemoteHearingInfo;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
+import uk.gov.hmcts.sptribs.caseworker.util.PageShowConditionsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
@@ -58,6 +60,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     private static final String ALWAYS_HIDE = "venueNotListedOption=\"ALWAYS_HIDE\"";
 
     private static final CcdPageConfiguration hearingTypeAndFormat = new HearingTypeAndFormat();
+    private static final CcdPageConfiguration hearingTypeWarning = new HearingTypeWarning();
     private static final CcdPageConfiguration hearingVenues = new HearingVenues();
     private static final CcdPageConfiguration recordNotifyParties = new RecordNotifyParties();
     private static final CcdPageConfiguration remoteHearingInfo = new RemoteHearingInfo();
@@ -97,6 +100,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
         PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         hearingTypeAndFormat.addTo(pageBuilder);
+        hearingTypeWarning.addTo(pageBuilder);
         addRegionInfo(pageBuilder);
         hearingVenues.addTo(pageBuilder);
         remoteHearingInfo.addTo(pageBuilder);
@@ -146,6 +150,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         caseData.setCurrentEvent("");
         caseData.getListing().setHearingCreatedDate(LocalDate.now());
         caseData.getListing().setHearingStatus(Listed);
+        caseData.getListing().setHearingTypeChangeWarning("no-warning");
         caseData.setStitchHearingBundleTask(NO);
         caseData.setCompleteHearingOutcomeTask(NO);
         hearingService.addListing(caseData, caseData.getListing());
@@ -190,6 +195,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     private void addRegionInfo(PageBuilder pageBuilder) {
         pageBuilder.page("regionInfo", this::midEvent)
             .pageLabel("Region Data")
+            .pageShowConditions(PageShowConditionsUtil.editSummaryShowConditions())
             .label("LabelRegionInfoObj", "")
             .complex(CaseData::getListing)
             .readonly(Listing::getRegionsMessage)
