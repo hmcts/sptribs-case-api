@@ -50,6 +50,8 @@ Then open XUI at `http://localhost:3000`. See [docs/running-locally.md](docs/run
 
 ## Documentation
 
+Start here: [Your first week](docs/first-week.md), a five-day guided path from access to your first PR.
+
 Concepts:
 
 - [Architecture](docs/architecture.md)
@@ -63,6 +65,7 @@ Concepts:
 - [Data and persistence](docs/data-and-persistence.md)
 - [Configuration](docs/configuration.md)
 - [Scheduled tasks](docs/scheduled-tasks.md)
+- [Glossary](docs/glossary.md): terms used across these pages
 
 How-to guides:
 
