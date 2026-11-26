@@ -1,9 +1,18 @@
 # Special Tribunals Case API [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-This API handles callbacks from CCD for the Criminal Injuries Compensation (CIC) (and other services, in the future e.g. Mental Health) case type for Special Tribunals (ST).
+`sptribs-case-api` is the backend for Special Tribunals (ST). It defines the Criminal Injuries Compensation (CIC) CCD case type and handles every CCD callback for it. The service is designed to host further tribunals as additional case types.
 
 ## Overview
 
+- A Spring Boot service on port `4013`, built with Gradle.
+- A **decentralised** CCD service. It owns the `CriminalInjuriesCompensation` case type in the `ST_CIC` jurisdiction, and CCD routes every callback for that case type here. Case data is stored in this service's own Postgres database.
+- The CCD definition (events, states, fields, tabs, access) is written in Java with [ccd-config-generator](https://github.com/hmcts/ccd-config-generator) and generated at build time.
+- Caseworkers, judges and legal representatives use Manage Cases (XUI). Citizens use [sptribs-frontend](https://github.com/hmcts/sptribs-frontend) and [sptribs-dss-update-case-web](https://github.com/hmcts/sptribs-dss-update-case-web).
+- The service calls CDAM, GOV.UK Notify, document assembly, bundling and reference data. It publishes case events that Work Allocation consumes.
+
+## Architecture
+
+```
                         ┌──────────────────┐
                         │                  │
                         │ SPTRIBS-CASE-API │
@@ -22,40 +31,83 @@ This API handles callbacks from CCD for the Criminal Injuries Compensation (CIC)
           │ SPTRIBS-FRONTEND  │        │       XUI     │
           │                   │        │               │
           └───────────────────┘        └───────────────┘
+```
+
+CCD data store calls this service for every `about-to-start`, `mid-event`, `about-to-submit` and `submitted` callback. See [docs/architecture.md](docs/architecture.md) for the full component map, integrations and data flow.
+
+## Quick start
+
+Prerequisites: Java 21, access to the `sptribs-aat` Key Vault, and an active VPN (the local stack depends on services running in AAT).
+
+```sh
+az login
+az acr login --name hmctsprod
+./gradlew loadLocalEnvSecrets   # writes the local env file
+./gradlew bootWithCCD           # starts the API plus CCD and XUI in-process
+```
+
+Then open XUI at `http://localhost:3000`. See [docs/running-locally.md](docs/running-locally.md) for users, ports and troubleshooting.
+
+## Documentation
+
+Start here: [Your first week](docs/first-week.md), a five-day guided path from access to your first PR.
+
+Concepts:
+
+- [Architecture](docs/architecture.md)
+- [Case lifecycle](docs/case-lifecycle.md): states and transitions
+- [Events reference](docs/events-reference.md): every event and state
+- [Roles and access](docs/roles-and-access.md)
+- [Work allocation](docs/work-allocation.md)
+- [Notifications](docs/notifications.md)
+- [Documents and bundles](docs/documents-and-bundles.md)
+- [Hearings](docs/hearings.md)
+- [Data and persistence](docs/data-and-persistence.md)
+- [Configuration](docs/configuration.md)
+- [Scheduled tasks](docs/scheduled-tasks.md)
+- [Glossary](docs/glossary.md): terms used across these pages
+
+How-to guides:
+
+- [Adding an event](docs/adding-an-event.md)
+- [Adding a notification](docs/adding-a-notification.md)
+- [Adding a work allocation task](docs/adding-a-work-allocation-task.md)
+- [Adding a case type](docs/adding-a-case-type.md): onboarding a new tribunal
+- [Running locally](docs/running-locally.md)
+- [Testing](docs/testing.md)
+- [Release and deploy](docs/release-and-deploy.md)
+- [Support runbook](docs/support-runbook.md)
 
 ## Building and deploying the application
 
 ### Building the application
 
-The project uses [Gradle](https://gradle.org) as a build tool. It already contains
-`./gradlew` wrapper script, so there's no need to install gradle.
+The project uses [Gradle](https://gradle.org) as a build tool. It contains the `./gradlew` wrapper script, so there is no need to install Gradle.
 
-To build the project, execute the following command:
+To build the project, run:
 
     ./gradlew build
 
 ### Running the application locally
-You will need access to the sptribs-aat vault, and an active VPN to run locally, as it depends on services running on AAT.
 
-For running functional tests locally, we need to make sure all the local database access is pointing to local instances.
-please run:
+You need access to the `sptribs-aat` Key Vault and an active VPN, because the service depends on services running in AAT.
 
-        ./gradlew loadLocalEnvSecrets
+To point local database access at local instances (needed for `bootWithCCD` and the functional tests), run:
 
-to generate the local env file over the aat one, then your bootwithCCD and functional tests will use this.
+    ./gradlew loadLocalEnvSecrets
 
-This will require an Azure login, which can be done with the Azure CLI with:
-`az login` and following the steps to log into Azure
-`az acr login --name hmctsprod` to access the ACR namespace as part of `bootWithCCD` or `generateCCDConfig`/`buildCCDXlsx`
+This generates the local env file over the AAT one.
 
-Run the application by executing the following command:
+It requires an Azure login, using the Azure CLI:
+
+- `az login`, then follow the steps to log in to Azure.
+- `az acr login --name hmctsprod` to access the ACR namespace used by `bootWithCCD`, `generateCCDConfig` and `buildCCDXlsx`.
+
+Run the application on its own with:
 
     ./gradlew bootRun
 
-This will start the API container exposing the application's port
-(set to `4013` in this template app).
-
-In order to test if the application is up, you can call its health endpoint:
+This starts the API on port `4013`. To check that it is up, call its health endpoint:
 
     curl http://localhost:4013/health
 
@@ -65,56 +117,62 @@ You should get a response similar to this:
 
 ### Running the application locally with CCD and XUI
 
-If you would like to run the full CCD and XUI stack locally you can use:
+To run the full CCD and XUI stack locally, use:
 
-    ./gradlew bootWithCcd
+    ./gradlew bootWithCCD
 
-This will start a containers for the CFTLib components (`ccd-elasticsearch`,`xui-manage-org`, `xui-manage-cases`, postgres database)
-Then you can access XUI on `http://localhost:3000`
+This starts containers for the CFTLib components (`ccd-elasticsearch`, `xui-manage-org`, `xui-manage-cases` and a Postgres database). XUI is then available on `http://localhost:3000`.
 
 ### Generate CCD JSON files
 
-Generating the CCD JSON files will happen on every `./gradlew bootWithCcd` but you can manually trigger this with:
+The CCD JSON files are generated on every `./gradlew bootWithCCD`. To generate them manually, run:
 
     ./gradlew generateCCDConfig
 
-### Generate TypeScript definitions for CCD definition
+### Generate TypeScript definitions for the CCD definition
 
     ./gradlew generateTypeScript
 
-### Using a Local version of the CCD-Config-Generator
+### Using a local version of ccd-config-generator
 
-You can edit the `ccd-config generator` and test a local version by checking out the project, making changes and running the `publishToMavenLocal` gradle task
-Then uncomment the dependency in `build.gradle` like so:
+To test changes to `ccd-config-generator`, check out that project, make the changes and run its `publishToMavenLocal` Gradle task. Then uncomment the dependency in `build.gradle`:
+
 ```groovy
   implementation group: 'com.github.hmcts', name: 'ccd-config-generator', version: 'DEV-SNAPSHOT'
 ```
 
-### GitHub Labels
+### GitHub labels
+
 On a pull request you can add the following labels:
-- `enable_keep_helm` - to keep the deployment in the preview environment for testing after the pipeline has finished
-- `pr-values:wa` - use the `values.wa.preview.template.yaml` to deploy with Work Allocation pods
-- `pr-values:wa-ft-tests` - run the Work Allocation Functional tests (requires the above)
-- `enable_ccd_diff` - runs the `ccd-diff` workflow to show changes to the CCD definition
+
+- `enable_keep_helm` - keep the deployment in the preview environment for testing after the pipeline has finished
+- `pr-values:wa` - use `values.wa.preview.template.yaml` to deploy with Work Allocation pods
+- `pr-values:wa-ft-tests` - run the Work Allocation functional tests (requires the label above)
+- `enable_ccd_diff` - run the `ccd-diff` workflow to show changes to the CCD definition
+
+See [docs/release-and-deploy.md](docs/release-and-deploy.md) for the pipeline.
 
 ### Crons
 
-You can manually run a cron task from the cli:
+You can run a cron task manually from the command line:
 
 ```
 TASK_NAME=[task] java -jar sptribs-case-api.jar run
 
 # E.g.
-TASK_NAME=SystemProgressHeldCasesTask java -jar sptribs-case-api.jar
+TASK_NAME=SystemClearInactiveDssDraftCasesTask java -jar sptribs-case-api.jar
 
 # or
-TASK_NAME=SystemProgressHeldCasesTask ./gradlew bootRun
+TASK_NAME=SystemClearInactiveDssDraftCasesTask ./gradlew bootRun
 ```
+
+See [docs/scheduled-tasks.md](docs/scheduled-tasks.md) for every task and its schedule.
+
 ## Scripts
-`generate-env-ccd-definition.sh` can be used to generate a local copy of definition files for manual uploads per environment
 
-`deploy-demo-dmn.sh` can be used to manually deploy local DMN files to Demo environment
+- [`bin/generate-env-ccd-definition.sh`](bin/generate-env-ccd-definition.sh) generates a local copy of the definition files for manual upload, per environment.
+- [`bin/wa/deploy-demo-dmn.sh`](bin/wa/deploy-demo-dmn.sh) deploys local DMN files to the Demo environment manually.
 
-## License
+## Licence
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
