@@ -2,6 +2,9 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -13,6 +16,7 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ReinstateUploadDocuments;
+import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
 import uk.gov.hmcts.sptribs.caseworker.model.ReinstateReason;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -31,6 +35,7 @@ import uk.gov.hmcts.sptribs.notification.dispatcher.CaseReinstatedNotification;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -292,5 +297,38 @@ class ReinstateCaseTest {
         AboutToStartOrSubmitResponse<CaseData, State> response = reinstateUploadDocuments.midEvent(caseDetails, caseDetails);
 
         assertThat(response.getErrors()).hasSize(2);
+    }
+
+    @ParameterizedTest
+    @MethodSource("stateForReinstateMappings")
+    void shouldRestoreExpectedStateFromStoredStateForReinstate(String storedState, State expectedState) {
+        final CaseDetails<CaseData, State> updatedCaseDetails = buildCloseCaseDetailsForState(storedState);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = reinstateCase.aboutToSubmit(updatedCaseDetails,  new CaseDetails<>());
+
+        assertThat(response.getState()).isEqualTo(expectedState);
+    }
+
+    private static Stream<Arguments> stateForReinstateMappings() {
+        return Stream.of(
+            Arguments.of("Submitted", State.Submitted),
+            Arguments.of("DSS_Submitted", State.DSS_Submitted),
+            Arguments.of("NOT_A_STATE", State.CaseManagement),
+            Arguments.of(null, State.CaseManagement)
+        );
+    }
+
+    private CaseDetails<CaseData, State> buildCloseCaseDetailsForState(String storedState) {
+        final CaseData caseData = CaseData.builder()
+            .cicCase(CicCase.builder().reinstateDocumentsUpload(List.of()).build())
+            .closeCase(CloseCase.builder().stateForReinstate(storedState).build())
+            .build();
+
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
+        details.setData(caseData);
+        details.setState(State.CaseClosed);
+
+        return details;
     }
 }

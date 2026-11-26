@@ -13,6 +13,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.ReinstateNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ReinstateReasonSelect;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ReinstateUploadDocuments;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ReinstateWarning;
+import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -27,12 +28,12 @@ import uk.gov.hmcts.sptribs.notification.dispatcher.CaseReinstatedNotification;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static java.lang.String.format;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_REINSTATE_CASE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
@@ -105,6 +106,7 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
         final CaseDetails<CaseData, State> beforeDetails
     ) {
 
+        // Manage documents
         final CaseData caseData = details.getData();
         List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = caseData.getCicCase().getReinstateDocumentsUpload();
         List<ListValue<CaseworkerCICDocument>> documents = updateUploadedDocumentCategory(uploadedDocuments, false);
@@ -119,9 +121,20 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
             getDocumentsWithUpdatedCategory(documents, existingDocuments)));
         errors.addAll(documentsService.removeDocuments(getRemovedDocuments(existingDocuments, documents)));
 
+        // Get state to reinstate to
+        String stateForReinstateString = Optional.ofNullable(caseData.getCloseCase())
+            .map(CloseCase::getStateForReinstate)
+            .orElse(State.CaseManagement.name());
+        State stateForReinstate;
+        try {
+            stateForReinstate = State.valueOf(stateForReinstateString);
+        } catch (IllegalArgumentException e) {
+            stateForReinstate = State.CaseManagement;
+        }
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
-            .state(CaseManagement)
+            .state(stateForReinstate)
             .errors(errors)
             .build();
     }
