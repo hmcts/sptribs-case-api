@@ -2,6 +2,9 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -38,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -88,6 +92,10 @@ class CaseWorkerCloseTheCaseTest {
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_CLOSE_THE_CASE);
+
+        assertThat(getEventsFrom(configBuilder).values())
+            .extracting(Event::getPreState)
+            .contains(Set.of(State.DSS_Submitted, State.Submitted, State.CaseManagement, State.ReadyToList));
 
         assertThat(getEventsFrom(configBuilder).values())
                 .extracting(Event::isPublishToCamunda)
@@ -258,4 +266,37 @@ class CaseWorkerCloseTheCaseTest {
         }
     }
 
+    @ParameterizedTest
+    @MethodSource("stateForReinstateMappings")
+    void shouldSetExpectedStateForReinstateWhenClosingCase(State inputState, String expectedStateForReinstate) {
+        final CaseDetails<CaseData, State> updatedCaseDetails = buildCloseCaseDetailsForState(inputState);
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerCloseTheCase.aboutToSubmit(updatedCaseDetails, new CaseDetails<>());
+
+        assertThat(response.getState()).isEqualTo(State.CaseClosed);
+        assertThat(response.getData().getCloseCase().getStateForReinstate()).isEqualTo(expectedStateForReinstate);
+    }
+
+    private static Stream<Arguments> stateForReinstateMappings() {
+        return Stream.of(
+            Arguments.of(null, State.CaseManagement.name()),
+            Arguments.of(State.Submitted, State.Submitted.name()),
+            Arguments.of(State.DSS_Submitted, State.DSS_Submitted.name()),
+            Arguments.of(State.ReadyToList, State.CaseManagement.name()),
+            Arguments.of(State.CaseManagement, State.CaseManagement.name())
+        );
+    }
+
+    private CaseDetails<CaseData, State> buildCloseCaseDetailsForState(State inputState) {
+        final CaseData caseData = CaseData.builder()
+            .closeCase(CloseCase.builder().build())
+            .build();
+
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(caseData);
+        details.setId(TEST_CASE_ID);
+        details.setState(inputState);
+        return details;
+    }
 }

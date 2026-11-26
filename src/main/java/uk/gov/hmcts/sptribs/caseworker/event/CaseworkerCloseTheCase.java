@@ -42,7 +42,9 @@ import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CLOSE_THE_CASE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
@@ -101,7 +103,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
     public PageBuilder closeCase(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
             configBuilder.event(CASEWORKER_CLOSE_THE_CASE)
-                .forStates(CaseManagement, ReadyToList)
+                .forStates(DSS_Submitted, Submitted, CaseManagement, ReadyToList)
                 .name("Case: Close case")
                 .description("Close the case")
                 .showSummary()
@@ -174,6 +176,8 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
                                                                        CaseDetails<CaseData, State> beforeDetails) {
 
         final CaseData caseData = details.getData();
+
+        // Manage documents
         List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = caseData.getCloseCase().getDocumentsUpload();
         List<ListValue<CaseworkerCICDocument>> documents = updateUploadedDocumentCategory(uploadedDocuments, false);
         caseData.getCloseCase().setDocuments(documents);
@@ -181,6 +185,20 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
         List<String> errors = new ArrayList<>(documentsService.saveDocuments(
             details.getId(), getAddedDocuments(documents, existingDocuments), DOCUMENT_MANAGEMENT));
         errors.addAll(documentsService.removeDocuments(getRemovedDocuments(existingDocuments, documents)));
+
+        // Set state to reinstate to
+        String stateForReinstate = switch (details.getState()) {
+            case null -> CaseManagement.name();
+            case DSS_Submitted -> DSS_Submitted.name();
+            case Submitted -> Submitted.name();
+            // When closing a ReadyToList case, it should be reinstated to CaseManagement.
+            case CaseManagement, ReadyToList -> CaseManagement.name();
+            default -> {
+                log.error("Unexpected state when closing case. State: {}, Case: {}", details.getState(), details.getId());
+                yield CaseManagement.name();
+            }
+        };
+        caseData.getCloseCase().setStateForReinstate(stateForReinstate);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

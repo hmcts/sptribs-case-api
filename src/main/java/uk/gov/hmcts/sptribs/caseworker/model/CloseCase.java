@@ -129,4 +129,8 @@ public class CloseCase {
         access = {DefaultAccess.class}
     )
     private List<ListValue<CaseworkerCICDocumentUpload>>  documentsUpload;
+
+    /** The state we should reinstate the case to, if that were to occur. Default to `"CaseManagement"`. */
+    @CCD(access = {DefaultAccess.class}, retainHiddenValue = true)
+    private String stateForReinstate;
 }
